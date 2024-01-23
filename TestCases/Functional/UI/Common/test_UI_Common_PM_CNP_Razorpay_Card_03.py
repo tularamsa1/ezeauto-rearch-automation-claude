@@ -1,4 +1,3 @@
-import locale
 import random
 import sys
 import pytest
@@ -27,7 +26,7 @@ def test_common_100_103_190():
     """
     Sub Feature Code: UI_Common_PM_CNP_Debit_Card_Partial_Refund_Razorpay
     Sub Feature Description: Verification of debit card txn partial refund using refund api
-    TC naming code description: 100: Payment Method, 103: RemotePay, 190: TC_190
+    TC naming code description: 100: Payment Method, 103: CNP, 190: TC_190
     """
     expected_message = "Your payment is successfully completed! You may close the browser now."
     try:
@@ -260,13 +259,11 @@ def test_common_100_103_190():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 date_and_time_2 = date_time_converter.to_app_format(refund_created_time)
-                locale.setlocale(locale.LC_ALL, 'en_IN')
-                formatted_amount_app_1 = str(locale.currency(amount, grouping=True)).replace('₹', '')
                 expected_app_values = {
                     "pmt_status": "STATUS:AUTHORIZED",
                     "pmt_mode": "PAY LINK",
                     "txn_id": original_txn_id,
-                    "txn_amt": formatted_amount_app_1,
+                    "txn_amt": "{:,.2f}".format(amount),
                     "order_id": order_id,
                     "msg": "PAYMENT SUCCESSFUL",
                     "customer_name": txn_customer_name,
@@ -407,17 +404,29 @@ def test_common_100_103_190():
                 response = [x for x in response["txns"] if x["txnId"] == original_txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api_original = response["status"]
+                logger.debug(f"status_api_original: {status_api_original}")
                 amount_api_original = int(response["amount"])
+                logger.debug(f"amount_api_original: {amount_api_original}")
                 payment_mode_api_original = response["paymentMode"]
+                logger.debug(f"payment_mode_api_original: {payment_mode_api_original}")
                 state_api_original = response["states"][0]
+                logger.debug(f"state_api_original: {state_api_original}")
                 settlement_status_api_original = response["settlementStatus"]
+                logger.debug(f"settlement_status_api_original: {settlement_status_api_original}")
                 issuer_code_api_original = response["issuerCode"]
+                logger.debug(f"issuer_code_api_original: {issuer_code_api_original}")
                 acquirer_code_api_original = response["acquirerCode"]
+                logger.debug(f"acquirer_code_api_original: {acquirer_code_api_original}")
                 org_code_api_original = response["orgCode"]
+                logger.debug(f"org_code_api_original: {org_code_api_original}")
                 txn_type_api_original = response["txnType"]
+                logger.debug(f"txn_type_api_original: {txn_type_api_original}")
                 auth_code_api_original = response["authCode"]
+                logger.debug(f"auth_code_api_original: {auth_code_api_original}")
                 date_api_original = response["createdTime"]
+                logger.debug(f"date_api_original: {date_api_original}")
                 order_id_api_original = response["orderNumber"]
+                logger.debug(f"order_id_api_original: {order_id_api_original}")
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
@@ -428,15 +437,25 @@ def test_common_100_103_190():
                 response = [x for x in response["txns"] if x["txnId"] == txn_id_after_refund][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api_refunded = response["status"]
+                logger.debug(f"status_api_refunded: {status_api_refunded}")
                 amount_api_refunded = int(response["amount"])
+                logger.debug(f"amount_api_refunded: {amount_api_refunded}")
                 payment_mode_api_refunded = response["paymentMode"]
+                logger.debug(f"payment_mode_api_refunded: {payment_mode_api_refunded}")
                 state_api_refunded = response["states"][0]
+                logger.debug(f"state_api_refunded: {state_api_refunded}")
                 settlement_status_api_refunded = response["settlementStatus"]
+                logger.debug(f"settlement_status_api_refunded: {settlement_status_api_refunded}")
                 acquirer_code_api_refunded = response["acquirerCode"]
+                logger.debug(f"acquirer_code_api_refunded: {acquirer_code_api_refunded}")
                 org_code_api_refunded = response["orgCode"]
+                logger.debug(f"org_code_api_refunded: {org_code_api_refunded}")
                 txn_type_api_refunded = response["txnType"]
+                logger.debug(f"txn_type_api_refunded: {txn_type_api_refunded}")
                 date_api_refunded = response["createdTime"]
+                logger.debug(f"date_api_refunded: {date_api_refunded}")
                 order_id_api_refunded = response["orderNumber"]
+                logger.debug(f"order_id_api_refunded: {order_id_api_refunded}")
                 actual_api_values = {
                     "pmt_status": status_api_original,
                     "pmt_state": state_api_original,
@@ -506,24 +525,24 @@ def test_common_100_103_190():
                 logger.debug(f"Query to fetch Txn_id from the DB : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 original_txn_id_db = result['id'].values[0]
-                amount_txn_db = result['amount'].values[0]
-                payment_mode_db = result['payment_mode'].values[0]
-                state_db = result['state'].values[0]
-                status_db = result['status'].values[0]
-                acquirer_code_db = result['acquirer_code'].values[0]
-                payment_gateway_db = result['payment_gateway'].values[0]
-                settlement_status_db = result['settlement_status'].values[0]
-                txn_type_db = result['txn_type'].values[0]
-                org_code_db = result['org_code'].values[0]
                 logger.debug(f"txn id from txn table : {original_txn_id_db}")
+                amount_txn_db = result['amount'].values[0]
                 logger.debug(f"amount from txn table : {amount_txn_db}")
+                payment_mode_db = result['payment_mode'].values[0]
                 logger.debug(f"paymentMode from txn table : {payment_mode_db}")
+                state_db = result['state'].values[0]
                 logger.debug(f"state from txn table : {state_db}")
+                status_db = result['status'].values[0]
                 logger.debug(f"status from txn table : {status_db}")
+                acquirer_code_db = result['acquirer_code'].values[0]
                 logger.debug(f"acquirer_code from txn table : {acquirer_code_db}")
+                payment_gateway_db = result['payment_gateway'].values[0]
                 logger.debug(f"payment_gateway from txn table : {payment_gateway_db}")
+                settlement_status_db = result['settlement_status'].values[0]
                 logger.debug(f"settlement_status from txn table : {settlement_status_db}")
+                txn_type_db = result['txn_type'].values[0]
                 logger.debug(f"txn type from txn table : {txn_type_db}")
+                org_code_db = result['org_code'].values[0]
                 logger.debug(f"Org code from txn table : {org_code_db}")
 
                 actual_db_values = {"pmt_status": status_db,
@@ -561,37 +580,45 @@ def test_common_100_103_190():
                 logger.info(f"Started Portal validation for the test case : {testcase_id}")
                 date_and_time_portal = date_time_converter.to_portal_format(created_time)
                 date_and_time_portal_refund = date_time_converter.to_portal_format(refund_created_time)
-                locale.setlocale(locale.LC_ALL, 'en_IN')
-                formatted_amount_portal_1 = str(locale.currency(amount, grouping=True)).replace('₹', '')
-                formatted_amount_portal_2 = str(locale.currency(amount_refund, grouping=True)).replace('₹', '')
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
                     "txn_id": original_txn_id,
                     "pmt_state": "AUTHORIZED",
                     "pmt_type": "CNP",
-                    "txn_amt": formatted_amount_portal_1,
+                    "txn_amt": "{:,.2f}".format(amount),
                     "username": app_username,
                     "date_time_2": date_and_time_portal_refund,
                     "txn_id_2": txn_id_after_refund,
                     "pmt_state_2": "REFUND_POSTED",
                     "pmt_type_2": "CNP",
-                    "txn_amt_2": formatted_amount_portal_2,
+                    "txn_amt_2": "{:,.2f}".format(amount_refund),
                     "username_2": app_username
                 }
                 logger.debug(f"expectedPortalValues : {expected_portal_values}")
 
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time_2 = transaction_details[0]['Date & Time']
+                logger.debug(f"date_time_2: {date_time_2}")
                 txn_id_portal_2 = transaction_details[0]['Transaction ID']
+                logger.debug(f"txn_id_portal_2: {txn_id_portal_2}")
                 total_amount_2 = transaction_details[0]['Total Amount'].split()
+                logger.debug(f"total_amount_2: {total_amount_2}")
                 status_2 = transaction_details[0]['Status']
+                logger.debug(f"status_2: {status_2}")
                 username_2 = transaction_details[0]['Username']
+                logger.debug(f"username_2: {username_2}")
                 date_time = transaction_details[1]['Date & Time']
+                logger.debug(f"date_time: {date_time}")
                 txn_id_portal = transaction_details[1]['Transaction ID']
+                logger.debug(f"txn_id_portal: {txn_id_portal}")
                 total_amount = transaction_details[1]['Total Amount'].split()
+                logger.debug(f"total_amount: {total_amount}")
                 transaction_type = transaction_details[1]['Type']
+                logger.debug(f"transaction_type: {transaction_type}")
                 status = transaction_details[1]['Status']
+                logger.debug(f"status: {status}")
                 username = transaction_details[1]['Username']
+                logger.debug(f"username: {username}")
 
                 actual_portal_values = {
                     "date_time": date_time,
@@ -619,18 +646,16 @@ def test_common_100_103_190():
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
-                locale.setlocale(locale.LC_ALL, 'en_IN')
-                formatted_amount_charge_slip = str(locale.currency(amount, grouping=True)).replace('₹', 'Rs.')
-                expected_chargeslip_values = {
+                expected_charge_slip_values = {
                     "payment_option": "SALE",
                     "CARD TYPE": 'MasterCard',
-                    'BASE AMOUNT:': formatted_amount_charge_slip,
+                    'BASE AMOUNT:': f"Rs.{amount:,}.00",
                     'date': txn_date, 'time': txn_time
                 }
-                logger.debug(f"expected_chargeslip_values : {expected_chargeslip_values} for the testcase_id {testcase_id}")
+                logger.debug(f"expected_chargeslip_values : {expected_charge_slip_values} for the testcase_id {testcase_id}")
                 receipt_validator.perform_charge_slip_validations(original_txn_id,
                                                                   {"username": app_username, "password": app_password},
-                                                                  expected_chargeslip_values)
+                                                                  expected_charge_slip_values)
             except Exception as e:
                 Configuration.perform_charge_slip_val_exception(testcase_id, e)
             logger.info(f"Completed ChargeSlip validation for the test case : {testcase_id}")

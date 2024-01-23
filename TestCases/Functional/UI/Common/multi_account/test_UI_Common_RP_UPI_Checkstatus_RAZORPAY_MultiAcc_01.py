@@ -1,4 +1,3 @@
-import locale
 import random
 import sys
 from datetime import datetime
@@ -53,34 +52,32 @@ def test_common_100_111_033():
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='RAZORPAY_PSP',
                                                            portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
-
-        account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
-            org_code, portal_un=portal_username, portal_pw=portal_password)
-        account_label_name = account_labels['name1']
-
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+        account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
+            org_code, portal_un=portal_username, portal_pw=portal_password)
+        account_label_name = account_labels['name1']
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' AND acc_label_id=(select id from label " \
                 f"where name='{account_label_name}' AND org_code ='{org_code}')"
         logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query)
         upi_mc_id = result['id'].values[0]
-        acc_label_id = result['acc_label_id'].values[0]
-        mid = result['virtual_mid'].values[0]
-        tid = result['virtual_tid'].values[0]
         logger.debug(f"Query result, upi_mc_id : {upi_mc_id}")
+        acc_label_id = result['acc_label_id'].values[0]
         logger.debug(f"Query result, acc_label_id : {acc_label_id}")
+        mid = result['virtual_mid'].values[0]
+        logger.debug(f"mid : {mid}")
+        tid = result['virtual_tid'].values[0]
+        logger.debug(f"tid : {tid}")
         TestSuiteSetup.launch_browser_and_context_initialize(browser_type="firefox")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
-
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -107,29 +104,28 @@ def test_common_100_111_033():
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
+            logger.debug(f"Query result, rrn : {rrn}")
             auth_code = result['auth_code'].values[0]
             txn_id = result['id'].values[0]
+            logger.debug(f"Query result, txn_id : {txn_id}")
             status = result['status'].values[0]
+            logger.debug(f"Query result, status : {status}")
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
-            settlement_status = result['settlement_status'].values[0]
-            acquirer_code = result['acquirer_code'].values[0]
-            issuer_code = result['issuer_code'].values[0]
-            org_code_txn = result['org_code'].values[0]
-            txn_type = result['txn_type'].values[0]
-            created_time = result['created_time'].values[0]
-            label_ids = str(result['label_ids'].values[0]).strip(',')
-            logger.debug(f"Query result, rrn : {rrn}")
-            logger.debug(f"Query result, txn_id : {txn_id}")
-            logger.debug(f"Query result, status : {status}")
-            logger.debug(f"Query result, customer_name : {customer_name}")
             logger.debug(f"Query result, payer_name : {payer_name}")
+            settlement_status = result['settlement_status'].values[0]
             logger.debug(f"Query result, settlement_status : {settlement_status}")
+            acquirer_code = result['acquirer_code'].values[0]
             logger.debug(f"Query result, acquirer_code : {acquirer_code}")
+            issuer_code = result['issuer_code'].values[0]
             logger.debug(f"Query result, issuer_code : {issuer_code}")
+            org_code_txn = result['org_code'].values[0]
             logger.debug(f"Query result, org_code_txn : {org_code_txn}")
+            txn_type = result['txn_type'].values[0]
             logger.debug(f"Query result, txn_type : {txn_type}")
+            created_time = result['created_time'].values[0]
             logger.debug(f"Query result, date_time : {created_time}")
+            label_ids = str(result['label_ids'].values[0]).strip(',')
             logger.debug(f"Query result,label_ids : {label_ids}")
             # ------------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -250,19 +246,33 @@ def test_common_100_111_033():
                 logger.debug(f"Response after filtering data of current txn is : {response}")
 
                 status_api = response["status"]
+                logger.debug(f"status_api: {status_api}")
                 amount_api = int(response["amount"])
+                logger.debug(f"amount_api: {amount_api}")
                 payment_mode_api = response["paymentMode"]
+                logger.debug(f"payment_mode_api: {payment_mode_api}")
                 state_api = response["states"][0]
+                logger.debug(f"state_api: {state_api}")
                 rrn_api = response["rrNumber"]
+                logger.debug(f"rrn_api: {rrn_api}")
                 settlement_status_api = response["settlementStatus"]
+                logger.debug(f"rrn_api: {rrn_api}")
                 issuer_code_api = response["issuerCode"]
+                logger.debug(f"issuer_code_api: {issuer_code_api}")
                 acquirer_code_api = response["acquirerCode"]
+                logger.debug(f"acquirer_code_api: {acquirer_code_api}")
                 orgCode_api = response["orgCode"]
+                logger.debug(f"orgCode_api: {orgCode_api}")
                 mid_api = response["mid"]
+                logger.debug(f"mid_api: {mid_api}")
                 tid_api = response["tid"]
+                logger.debug(f"tid_api: {tid_api}")
                 txn_type_api = response["txnType"]
+                logger.debug(f"txn_type_api: {txn_type_api}")
                 date_api = response["postingDate"]
+                logger.debug(f"date_api: {date_api}")
                 account_label_name_api = response["accountLabel"]
+                logger.debug(f"account_label_name_api: {account_label_name_api}")
 
                 actual_api_values = {
                     "pmt_status": status_api,
@@ -316,28 +326,42 @@ def test_common_100_111_033():
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 status_db = result["status"].iloc[0]
+                logger.debug(f"status_db : {status_db}")
                 payment_mode_db = result["payment_mode"].iloc[0]
+                logger.debug(f"payment_mode_db: {payment_mode_db}")
                 amount_db = int(result["amount"].iloc[0])
+                logger.debug(f"amount_db: {amount_db}")
                 state_db = result["state"].iloc[0]
+                logger.debug(f"state_db: {state_db}")
                 acquirer_code_db = result["acquirer_code"].iloc[0]
+                logger.debug(f"acquirer_code_db: {acquirer_code_db}")
                 bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"bank_code_db: {bank_code_db}")
                 settlement_status_db = result["settlement_status"].iloc[0]
+                logger.debug(f"settlement_status_db: {settlement_status_db}")
                 mid_db = result["mid"].values[0]
+                logger.debug(f"mid_db: {mid_db}")
                 tid_db = result["tid"].values[0]
+                logger.debug(f"tid_db: {tid_db}")
 
                 query = f"select * from payment_intent where id='{payment_intent_id}'"
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 payment_intent_status = result["status"].iloc[0]
+                logger.debug(f"payment_intent_status: {payment_intent_status}")
 
                 query = f"select * from upi_txn where txn_id='{txn_id}'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 upi_status_db = result["status"].iloc[0]
+                logger.debug(f"upi_status_db: {upi_status_db}")
                 upi_txn_type_db = result["txn_type"].iloc[0]
+                logger.debug(f"upi_txn_type_db: {upi_txn_type_db}")
                 upi_bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"upi_bank_code_db: {upi_bank_code_db}")
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
+                logger.debug(f"upi_mc_id_db: {upi_mc_id_db}")
 
                 actual_db_values = {
                     "pmt_status": status_db,
@@ -384,14 +408,23 @@ def test_common_100_111_033():
 
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time = transaction_details[0]['Date & Time']
+                logger.debug(f"date_time: {date_time}")
                 transaction_id = transaction_details[0]['Transaction ID']
+                logger.debug(f"transaction_id: {transaction_id}")
                 total_amount = transaction_details[0]['Total Amount'].split()
+                logger.debug(f"total_amount: {total_amount}")
                 auth_code = transaction_details[0]['Auth Code']
+                logger.debug(f"auth_code: {auth_code}")
                 rr_number = transaction_details[0]['RR Number']
+                logger.debug(f"rr_number: {rr_number}")
                 transaction_type = transaction_details[0]['Type']
+                logger.debug(f"transaction_type: {transaction_type}")
                 status = transaction_details[0]['Status']
+                logger.debug(f"status: {status}")
                 username = transaction_details[0]['Username']
+                logger.debug(f"username: {username}")
                 labels = transaction_details[0]['Labels']
+                logger.debug(f"labels: {labels}")
 
                 actual_portal_values = {
                     "date_time": date_time,
@@ -417,12 +450,10 @@ def test_common_100_111_033():
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
-                locale.setlocale(locale.LC_ALL, 'en_IN')
-                formatted_amount_charge_slip_1 = str(locale.currency(amount, grouping=True)).replace('₹', 'Rs.')
                 expected_values = {'PAID BY:': 'UPI',
                                    'merchant_ref_no': 'Ref # ' + str(order_id),
                                    'RRN': str(rrn),
-                                   'BASE AMOUNT:': formatted_amount_charge_slip_1,
+                                   'BASE AMOUNT:': f"Rs.{amount:,}.00",
                                    'date': txn_date,
                                    'time': txn_time,
                                    }
@@ -479,24 +510,25 @@ def test_common_100_111_034():
                                                            portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
 
-        account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
-            org_code, portal_un=portal_username, portal_pw=portal_password)
-        account_label_name = account_labels['name1']
-
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+        account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
+            org_code, portal_un=portal_username, portal_pw=portal_password)
+        account_label_name = account_labels['name1']
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' AND acc_label_id=(select id from label " \
                 f"where name='{account_label_name}' AND org_code ='{org_code}')"
         logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query)
         upi_mc_id = result['id'].values[0]
-        acc_label_id = result['acc_label_id'].values[0]
-        mid = result['virtual_mid'].values[0]
-        tid = result['virtual_tid'].values[0]
         logger.debug(f"Query result, upi_mc_id : {upi_mc_id}")
+        acc_label_id = result['acc_label_id'].values[0]
         logger.debug(f"Query result, acc_label_id : {acc_label_id}")
+        mid = result['virtual_mid'].values[0]
+        logger.debug(f"mid: {mid}")
+        tid = result['virtual_tid'].values[0]
+        logger.debug(f"tid: {tid}")
         TestSuiteSetup.launch_browser_and_context_initialize(browser_type="firefox")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -530,21 +562,20 @@ def test_common_100_111_034():
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id = result['id'].values[0]
-            created_time = result['created_time'].values[0]
-            created_time = result['created_time'].values[0]
-            status = result['status'].values[0]
-            customer_name = result['customer_name'].values[0]
-            payer_name = result['payer_name'].values[0]
-            org_code_txn = result['org_code'].values[0]
-            txn_type = result['txn_type'].values[0]
-            label_ids = str(result['label_ids'].values[0]).strip(',')
             logger.debug(f"Query result, txn_id : {txn_id}")
+            created_time = result['created_time'].values[0]
             logger.debug(f"Query result, created_time : {created_time}")
+            status = result['status'].values[0]
             logger.debug(f"Query result, status : {status}")
+            customer_name = result['customer_name'].values[0]
             logger.debug(f"Query result, customer_name : {customer_name}")
+            payer_name = result['payer_name'].values[0]
             logger.debug(f"Query result, payer_name : {payer_name}")
+            org_code_txn = result['org_code'].values[0]
             logger.debug(f"Query result, org_code_txn : {org_code_txn}")
+            txn_type = result['txn_type'].values[0]
             logger.debug(f"Query result, txn_type : {txn_type}")
+            label_ids = str(result['label_ids'].values[0]).strip(',')
             logger.debug(f"Query result, label_ids : {label_ids}")
             # -------------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -662,18 +693,31 @@ def test_common_100_111_034():
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
+                logger.debug(f"status_api: {status_api}")
                 amount_api = response["amount"]
+                logger.debug(f"amount_api: {amount_api}")
                 payment_mode_api = response["paymentMode"]
+                logger.debug(f"payment_mode_api: {payment_mode_api}")
                 state_api = response["states"][0]
+                logger.debug(f"state_api: {state_api}")
                 settlement_status_api = response["settlementStatus"]
+                logger.debug(f"settlement_status_api: {settlement_status_api}")
                 issuer_code_api = response["issuerCode"]
+                logger.debug(f"issuer_code_api: {issuer_code_api}")
                 acquirer_code_api = response["acquirerCode"]
+                logger.debug(f"acquirer_code_api: {acquirer_code_api}")
                 orgCode_api = response["orgCode"]
+                logger.debug(f"orgCode_api: {orgCode_api}")
                 mid_api = response["mid"]
+                logger.debug(f"mid_api: {mid_api}")
                 tid_api = response["tid"]
+                logger.debug(f"tid_api: {tid_api}")
                 txn_type_api = response["txnType"]
+                logger.debug(f"txn_type_api: {txn_type_api}")
                 date_api = response["postingDate"]
+                logger.debug(f"date_api: {date_api}")
                 account_label_name_api = response["accountLabel"]
+                logger.debug(f"account_label_name_api: {account_label_name_api}")
 
                 actual_api_values = {
                     "pmt_status": status_api,
@@ -725,28 +769,42 @@ def test_common_100_111_034():
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 status_db = result["status"].iloc[0]
+                logger.debug(f"status_db: {status_db}")
                 payment_mode_db = result["payment_mode"].iloc[0]
+                logger.debug(f"payment_mode_db: {payment_mode_db}")
                 amount_db = int(result["amount"].iloc[0])
+                logger.debug(f"amount_db: {amount_db}")
                 state_db = result["state"].iloc[0]
+                logger.debug(f"state_db: {state_db}")
                 acquirer_code_db = result["acquirer_code"].iloc[0]
+                logger.debug(f"acquirer_code_db: {acquirer_code_db}")
                 bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"bank_code_db: {bank_code_db}")
                 settlement_status_db = result["settlement_status"].iloc[0]
+                logger.debug(f"settlement_status_db: {settlement_status_db}")
                 mid_db = result["mid"].values[0]
+                logger.debug(f"mid_db: {mid_db}")
                 tid_db = result["tid"].values[0]
+                logger.debug(f"tid_db: {tid_db}")
 
                 query = f"select * from payment_intent where id='{payment_intent_id}'"
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 payment_intent_status = result["status"].iloc[0]
+                logger.debug(f"payment_intent_status : {payment_intent_status}")
 
                 query = f"select * from upi_txn where txn_id='{txn_id}'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 upi_status_db = result["status"].iloc[0]
+                logger.debug(f"upi_status_db: {upi_status_db}")
                 upi_txn_type_db = result["txn_type"].iloc[0]
+                logger.debug(f"upi_txn_type_db: {upi_txn_type_db}")
                 upi_bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"upi_bank_code_db: {upi_bank_code_db}")
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
+                logger.debug(f"upi_mc_id_db: {upi_mc_id_db}")
 
                 actual_db_values = {
                     "pmt_status": status_db,
@@ -789,12 +847,19 @@ def test_common_100_111_034():
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time = transaction_details[0]['Date & Time']
+                logger.debug(f"date_time: {date_time}")
                 transaction_id = transaction_details[0]['Transaction ID']
+                logger.debug(f"transaction_id: {transaction_id}")
                 total_amount = transaction_details[0]['Total Amount'].split()
+                logger.debug(f"total_amount: {total_amount}")
                 transaction_type = transaction_details[0]['Type']
+                logger.debug(f"transaction_type: {transaction_type}")
                 status = transaction_details[0]['Status']
+                logger.debug(f"status: {status}")
                 username = transaction_details[0]['Username']
+                logger.debug(f"username: {username}")
                 labels = transaction_details[0]['Labels']
+                logger.debug(f"labels: {labels}")
                 actual_portal_values = {
                     "pmt_state": str(status),
                     "pmt_type": transaction_type,
@@ -829,10 +894,7 @@ def test_common_100_111_048():
     """
     Sub Feature Code: UI_Common_PM_RP_UPI_Success_Via_Common_CheckStatus_with_2nd_label_MultiAcc_Razorpay
     Sub Feature Description: Multi Account - Performing a successful RP_UPI txn via Razorpay using check status second account (ex:acc2 label)
-    TC naming code description:
-    100: Payment Method
-    111: MultiAcc_RemotePay
-    048: TC_048
+    TC naming code description:100: Payment Method, 111: MultiAcc_RemotePay, 048: TC_048
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -859,24 +921,25 @@ def test_common_100_111_048():
                                                            portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='UPI')
 
-        account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
-            org_code, portal_un=portal_username, portal_pw=portal_password)
-        account_label_name = account_labels['name2']
-
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+        account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
+            org_code, portal_un=portal_username, portal_pw=portal_password)
+        account_label_name = account_labels['name2']
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' AND acc_label_id=(select id from label " \
                 f"where name='{account_label_name}' AND org_code ='{org_code}')"
         logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query)
         upi_mc_id = result['id'].values[0]
-        acc_label_id = result['acc_label_id'].values[0]
-        mid = result['virtual_mid'].values[0]
-        tid = result['virtual_tid'].values[0]
         logger.debug(f"Query result, upi_mc_id : {upi_mc_id}")
+        acc_label_id = result['acc_label_id'].values[0]
         logger.debug(f"Query result, acc_label_id : {acc_label_id}")
+        mid = result['virtual_mid'].values[0]
+        logger.debug(f"mid : {mid}")
+        tid = result['virtual_tid'].values[0]
+        logger.debug(f"tid: {tid}")
         TestSuiteSetup.launch_browser_and_context_initialize(browser_type="firefox")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -910,28 +973,28 @@ def test_common_100_111_048():
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             rrn = result['rr_number'].values[0]
-            txn_id = result['id'].values[0]
-            status = result['status'].values[0]
-            customer_name = result['customer_name'].values[0]
-            payer_name = result['payer_name'].values[0]
-            settlement_status = result['settlement_status'].values[0]
-            acquirer_code = result['acquirer_code'].values[0]
-            issuer_code = result['issuer_code'].values[0]
-            org_code_txn = result['org_code'].values[0]
-            txn_type = result['txn_type'].values[0]
-            created_time = result['created_time'].values[0]
-            label_ids = str(result['label_ids'].values[0]).strip(',')
             logger.debug(f"Query result, rrn : {rrn}")
+            txn_id = result['id'].values[0]
             logger.debug(f"Query result, txn_id : {txn_id}")
+            status = result['status'].values[0]
             logger.debug(f"Query result, status : {status}")
-            logger.debug(f"Query result, customer_name : {customer_name}")
+            customer_name = result['customer_name'].values[0]
+            logger.debug(f"customer_name : {customer_name}")
+            payer_name = result['payer_name'].values[0]
             logger.debug(f"Query result, payer_name : {payer_name}")
+            settlement_status = result['settlement_status'].values[0]
             logger.debug(f"Query result, settlement_status : {settlement_status}")
+            acquirer_code = result['acquirer_code'].values[0]
             logger.debug(f"Query result, acquirer_code : {acquirer_code}")
+            issuer_code = result['issuer_code'].values[0]
             logger.debug(f"Query result, issuer_code : {issuer_code}")
+            org_code_txn = result['org_code'].values[0]
             logger.debug(f"Query result, org_code_txn : {org_code_txn}")
+            txn_type = result['txn_type'].values[0]
             logger.debug(f"Query result, txn_type : {txn_type}")
+            created_time = result['created_time'].values[0]
             logger.debug(f"Query result, date_time : {created_time}")
+            label_ids = str(result['label_ids'].values[0]).strip(',')
             logger.debug(f"Query result,label_ids : {label_ids}")
             # -------------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -1051,19 +1114,33 @@ def test_common_100_111_048():
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
+                logger.debug(f"status_api: {status_api}")
                 amount_api = int(response["amount"])
+                logger.debug(f"amount_api: {amount_api}")
                 payment_mode_api = response["paymentMode"]
+                logger.debug(f"payment_mode_api: {payment_mode_api}")
                 state_api = response["states"][0]
+                logger.debug(f"state_api: {state_api}")
                 rrn_api = response["rrNumber"]
+                logger.debug(f"rrn_api: {rrn_api}")
                 settlement_status_api = response["settlementStatus"]
+                logger.debug(f"settlement_status_api: {settlement_status_api}")
                 issuer_code_api = response["issuerCode"]
+                logger.debug(f"issuer_code_api: {issuer_code_api}")
                 acquirer_code_api = response["acquirerCode"]
+                logger.debug(f"acquirer_code_api: {acquirer_code_api}")
                 orgCode_api = response["orgCode"]
+                logger.debug(f"orgCode_api: {orgCode_api}")
                 mid_api = response["mid"]
+                logger.debug(f"mid_api: {mid_api}")
                 tid_api = response["tid"]
+                logger.debug(f"tid_api: {tid_api}")
                 txn_type_api = response["txnType"]
+                logger.debug(f"txn_type_api: {txn_type_api}")
                 date_api = response["postingDate"]
+                logger.debug(f"date_api: {date_api}")
                 account_label_name_api = response["accountLabel"]
+                logger.debug(f"account_label_name_api: {account_label_name_api}")
 
                 actual_api_values = {
                     "pmt_status": status_api,
@@ -1116,28 +1193,42 @@ def test_common_100_111_048():
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 status_db = result["status"].iloc[0]
+                logger.debug(f"status_db: {status_db}")
                 payment_mode_db = result["payment_mode"].iloc[0]
+                logger.debug(f"payment_mode_db: {payment_mode_db}")
                 amount_db = int(result["amount"].iloc[0])
+                logger.debug(f"amount_db: {amount_db}")
                 state_db = result["state"].iloc[0]
+                logger.debug(f"state_db: {state_db}")
                 acquirer_code_db = result["acquirer_code"].iloc[0]
+                logger.debug(f"acquirer_code_db: {acquirer_code_db}")
                 bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"bank_code_db: {bank_code_db}")
                 settlement_status_db = result["settlement_status"].iloc[0]
+                logger.debug(f"settlement_status_db: {settlement_status_db}")
                 tid_db = result["tid"].values[0]
+                logger.debug(f"tid_db: {tid_db}")
                 mid_db = result["mid"].values[0]
+                logger.debug(f"mid_db: {mid_db}")
 
                 query = f"select * from payment_intent where id='{payment_intent_id}'"
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 payment_intent_status = result["status"].iloc[0]
+                logger.debug(f"payment_intent_status: {payment_intent_status}")
 
                 query = f"select * from upi_txn where txn_id='{txn_id}'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 upi_status_db = result["status"].iloc[0]
+                logger.debug(f"upi_status_db: {upi_status_db}")
                 upi_txn_type_db = result["txn_type"].iloc[0]
+                logger.debug(f"upi_txn_type_db: {upi_txn_type_db}")
                 upi_bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"upi_bank_code_db: {upi_bank_code_db}")
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
+                logger.debug(f"upi_mc_id_db: {upi_mc_id_db}")
 
                 actual_db_values = {
                     "pmt_status": status_db,
@@ -1169,12 +1260,10 @@ def test_common_100_111_048():
 
             try:
                 date_and_time_portal = date_time_converter.to_portal_format(created_time)
-                locale.setlocale(locale.LC_ALL, 'en_IN')
-                formatted_amount_app_1 = str(locale.currency(amount, grouping=True)).replace('₹', '')
                 expected_portal_values = {
                     "pmt_state": "AUTHORIZED",
                     "pmt_type": "UPI",
-                    "txn_amt": formatted_amount_app_1,
+                    "txn_amt": "{:,.2f}".format(amount),
                     "username": app_username,
                     "rrn": rrn,
                     "txn_id": txn_id,
@@ -1184,13 +1273,21 @@ def test_common_100_111_048():
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time = transaction_details[0]['Date & Time']
+                logger.debug(f"date_time: {date_time}")
                 transaction_id = transaction_details[0]['Transaction ID']
+                logger.debug(f"transaction_id: {transaction_id}")
                 total_amount = transaction_details[0]['Total Amount'].split()
+                logger.debug(f"total_amount: {total_amount}")
                 rr_number = transaction_details[0]['RR Number']
+                logger.debug(f"rr_number: {rr_number}")
                 transaction_type = transaction_details[0]['Type']
+                logger.debug(f"transaction_type: {transaction_type}")
                 status = transaction_details[0]['Status']
+                logger.debug(f"status: {status}")
                 username = transaction_details[0]['Username']
+                logger.debug(f"username: {username}")
                 labels = transaction_details[0]['Labels']
+                logger.debug(f"labels: {labels}")
                 actual_portal_values = {
                     "pmt_state": str(status),
                     "pmt_type": transaction_type,
@@ -1213,12 +1310,10 @@ def test_common_100_111_048():
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(created_time)
-                locale.setlocale(locale.LC_ALL, 'en_IN')
-                formatted_amount_charge_slip_1 = str(locale.currency(amount, grouping=True)).replace('₹', 'Rs.')
                 expected_values = {'PAID BY:': 'UPI',
                                    'merchant_ref_no': 'Ref # ' + str(order_id),
                                    'RRN': str(rrn),
-                                   'BASE AMOUNT:': formatted_amount_charge_slip_1,
+                                   'BASE AMOUNT:': f"Rs.{amount:,}.00",
                                    'date': txn_date,
                                    'time': txn_time,
                                    }

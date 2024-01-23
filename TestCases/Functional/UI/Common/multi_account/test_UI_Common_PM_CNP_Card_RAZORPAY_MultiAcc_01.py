@@ -23,11 +23,11 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
 @pytest.mark.uiVal
-def test_common_100_111_043():
+def test_common_100_112_043():
     """
     Sub Feature Code: UI_Common_PM_CNP_Credit_Card_Success_Razorpay_MultiAcc
     Sub Feature Description: Multi Account - Verification of a Remote Pay successful credit card txn
-    TC naming code description:100: Payment Method, 111: MultiAcc_CNP_CARD, 043: TC043
+    TC naming code description:100: Payment Method, 112: MultiAcc_CNP_CARD, 043: TC043
     """
     expected_message = "Your payment is successfully completed! You may close the browser now."
     try:
@@ -52,21 +52,22 @@ def test_common_100_111_043():
         testsuite_teardown.revert_cnp_payment_settings_default(org_code, bank_code='HDFC',
                                                                portal_un=portal_username,
                                                                portal_pw=portal_password, payment_gateway='RAZORPAY')
-        account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
-            org_code, portal_un=portal_username, portal_pw=portal_password)
-        account_label_name = account_labels['name1']
-        logger.debug(f"account_label_name: {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+        account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
+            org_code, portal_un=portal_username, portal_pw=portal_password)
+        account_label_name = account_labels['name1']
+        logger.debug(f"account_label_name: {account_label_name}")
         query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' AND acc_label_id=(select id from label " \
                 f"where name='{account_label_name}' AND org_code ='{org_code}')"
         logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query)
         upi_mc_id = result['id'].values[0]
-        acc_label_id = result['acc_label_id'].values[0]
         logger.debug(f"Query result, upi_mc_id : {upi_mc_id}")
+        acc_label_id = result['acc_label_id'].values[0]
         logger.debug(f"Query result, org_code : {acc_label_id}")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
@@ -126,32 +127,32 @@ def test_common_100_111_043():
                 Txn_id = result['id'].values[0]
                 logger.debug(f"Query result, Txn_id : {Txn_id}")
                 auth_code = result['auth_code'].values[0]
+                logger.debug(f"Query result, auth_code : {auth_code}")
                 rrn = result['rr_number'].values[0]
+                logger.debug(f"Query result, rrn : {rrn}")
                 txn_id = result['id'].values[0]
                 status = result['status'].values[0]
+                logger.debug(f"Query result, status : {status}")
                 customer_name = result['customer_name'].values[0]
+                logger.debug(f"Query result, customer_name : {customer_name}")
                 payer_name = result['payer_name'].values[0]
+                logger.debug(f"Query result, payer_name : {payer_name}")
                 mid = result['mid'].values[0]
+                logger.debug(f"Query result, mid : {mid}")
                 tid = result['tid'].values[0]
+                logger.debug(f"Query result, tid : {tid}")
                 posting_date = result['created_time'].values[0]
+                logger.debug(f"Query result, posting_date : {posting_date}")
                 org_code_txn = result['org_code'].values[0]
+                logger.debug(f"Query result, org_code_txn : {org_code_txn}")
                 txn_type = result['txn_type'].values[0]
+                logger.debug(f"Query result, txn_type : {txn_type}")
                 label_ids = str(result['label_ids'].values[0]).strip(',')
+                logger.debug(f"Query result, label_ids : {label_ids}")
                 settle_status = result['settlement_status'].values[0]
+                logger.debug(f"Query result, txn_settle_status : {settle_status}")
                 created_time = result['created_time'].values[0]
                 logger.debug(f"Query result, created_time from db : {created_time}")
-                logger.debug(f"Query result, txn_settle_status : {settle_status}")
-                logger.debug(f"Query result, auth_code : {auth_code}")
-                logger.debug(f"Query result, status : {status}")
-                logger.debug(f"Query result, posting_date : {posting_date}")
-                logger.debug(f"Query result, rrn : {rrn}")
-                logger.debug(f"Query result, mid : {mid}")
-                logger.debug(f"Query result, tid : {tid}")
-                logger.debug(f"Query result, customer_name : {customer_name}")
-                logger.debug(f"Query result, payer_name : {payer_name}")
-                logger.debug(f"Query result, org_code_txn : {org_code_txn}")
-                logger.debug(f"Query result, txn_type : {txn_type}")
-                logger.debug(f"Query result, label_ids : {label_ids}")
 
                 query = f"select * from cnp_txn where txn_id='{txn_id}';"
                 logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -467,14 +468,23 @@ def test_common_100_111_043():
 
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time = transaction_details[0]['Date & Time']
+                logger.debug(f"date_time: {date_time}")
                 transaction_id = transaction_details[0]['Transaction ID']
+                logger.debug(f"transaction_id: {transaction_id}")
                 total_amount = transaction_details[0]['Total Amount'].split()
+                logger.debug(f"total_amount: {total_amount}")
                 auth_code = transaction_details[0]['Auth Code']
+                logger.debug(f"auth_code: {auth_code}")
                 rr_number = transaction_details[0]['RR Number']
+                logger.debug(f"rr_number: {rr_number}")
                 transaction_type = transaction_details[0]['Type']
+                logger.debug(f"transaction_type: {transaction_type}")
                 status = transaction_details[0]['Status']
+                logger.debug(f"status: {status}")
                 username = transaction_details[0]['Username']
+                logger.debug(f"username: {username}")
                 labels = transaction_details[0]['Labels']
+                logger.debug(f"labels: {labels}")
 
                 actual_portal_values = {
                     "date_time": date_time,
@@ -532,14 +542,11 @@ def test_common_100_111_043():
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
 @pytest.mark.uiVal
-def test_common_100_111_049():
+def test_common_100_112_049():
     """
     Sub Feature Code: UI_Common_PM_CNP_Credit_Card_Success_Razorpay_with_2nd_label_MultiAcc
     Sub Feature Description: Multi Account - Performing a successful credit card txn via CNP link second account (ex:acc2 label)
-    TC naming code description:
-    100: Payment Method
-    111: MultiAcc_CNP_CARD
-    049: TC049
+    TC naming code description: 100: Payment Method, 112: MultiAcc_CNP_CARD, 049: TC049
     """
     expected_message = "Your payment is successfully completed! You may close the browser now."
     try:
@@ -565,15 +572,16 @@ def test_common_100_111_049():
         testsuite_teardown.revert_cnp_payment_settings_default(org_code, bank_code='HDFC',
                                                                portal_un=portal_username,
                                                                portal_pw=portal_password, payment_gateway='RAZORPAY')
-        account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
-            org_code, portal_un=portal_username, portal_pw=portal_password)
-        account_label_name = account_labels['name2']
-        print(f"account_label_name: {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+        account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
+            org_code, portal_un=portal_username, portal_pw=portal_password)
+        account_label_name = account_labels['name2']
+        print(f"account_label_name: {account_label_name}")
         query = "select * from upi_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' AND acc_label_id=(select id from label " \
                         f"where name='{account_label_name}' AND org_code ='{org_code}')"
@@ -1042,11 +1050,11 @@ def test_common_100_111_049():
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
 @pytest.mark.uiVal
-def test_common_100_111_050():
+def test_common_100_112_050():
     """
     Sub Feature Code: UI_Common_PM_CNP_Debit_Card_Success_Razorpay_with_2nd_label_MultiAcc
     Sub Feature Description: Multi Account - Performing a successful Debit card txn via CNP link second account (ex:acc2 label)
-    TC naming code description: 100: Payment Method, 111: MultiAcc_CNP_CARD, 050: TC050
+    TC naming code description: 100: Payment Method, 112: MultiAcc_CNP_CARD, 050: TC050
     """
     expected_message = "Your payment is successfully completed! You may close the browser now."
     try:
@@ -1072,23 +1080,24 @@ def test_common_100_111_050():
         testsuite_teardown.revert_cnp_payment_settings_default(org_code, bank_code='HDFC',
                                                                portal_un=portal_username,
                                                                portal_pw=portal_password, payment_gateway='RAZORPAY')
-        account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
-            org_code, portal_un=portal_username, portal_pw=portal_password)
-        account_label_name = account_labels['name2']
-        print(f"account_label_name: {account_label_name}")
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+        account_labels = testsuite_teardown.get_account_labels_and_set_default_account(
+            org_code, portal_un=portal_username, portal_pw=portal_password)
+        account_label_name = account_labels['name2']
+        print(f"account_label_name: {account_label_name}")
         query = "select * from upi_merchant_config where org_code ='" + str(
             org_code) + "' AND status = 'ACTIVE' AND bank_code = 'RAZORPAY_PSP' AND acc_label_id=(select id from label " \
                         f"where name='{account_label_name}' AND org_code ='{org_code}')"
         logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query)
         upi_mc_id = result['id'].values[0]
-        acc_label_id = result['acc_label_id'].values[0]
         logger.debug(f"Query result, upi_mc_id : {upi_mc_id}")
+        acc_label_id = result['acc_label_id'].values[0]
         logger.debug(f"Query result, org_code : {acc_label_id}")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
@@ -1145,39 +1154,38 @@ def test_common_100_111_050():
                     pass
                 else:
                     raise Exception("Success Message is not matching.")
-                query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
-                    order_id) + "';"
+                query = f"select * from txn where org_code = '{str(org_code)}' AND external_ref = '{str(order_id)}';"
                 logger.debug(f"Query to fetch Txn_id from the DB : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 Txn_id = result['id'].values[0]
                 logger.debug(f"Query result, Txn_id : {Txn_id}")
                 auth_code = result['auth_code'].values[0]
                 rrn = result['rr_number'].values[0]
+                logger.debug(f"Query result, rrn : {rrn}")
                 txn_id = result['id'].values[0]
                 status = result['status'].values[0]
+                logger.debug(f"Query result, status : {status}")
                 customer_name = result['customer_name'].values[0]
+                logger.debug(f"Query result, customer_name : {customer_name}")
                 payer_name = result['payer_name'].values[0]
+                logger.debug(f"Query result, payer_name : {payer_name}")
                 mid = result['mid'].values[0]
+                logger.debug(f"Query result, mid : {mid}")
                 tid = result['tid'].values[0]
+                logger.debug(f"Query result, tid : {tid}")
                 posting_date = result['created_time'].values[0]
+                logger.debug(f"Query result, posting_date : {posting_date}")
                 org_code_txn = result['org_code'].values[0]
+                logger.debug(f"Query result, org_code_txn : {org_code_txn}")
                 txn_type = result['txn_type'].values[0]
+                logger.debug(f"Query result, txn_type : {txn_type}")
                 label_ids = str(result['label_ids'].values[0]).strip(',')
+                logger.debug(f"Query result, label_ids : {label_ids}")
+                logger.debug(f"Query result, auth_code : {auth_code}")
                 settle_status = result['settlement_status'].values[0]
+                logger.debug(f"Query result, txn_settle_status : {settle_status}")
                 created_time = result['created_time'].values[0]
                 logger.debug(f"Query result, created_time from db : {created_time}")
-                logger.debug(f"Query result, txn_settle_status : {settle_status}")
-                logger.debug(f"Query result, auth_code : {auth_code}")
-                logger.debug(f"Query result, status : {status}")
-                logger.debug(f"Query result, posting_date : {posting_date}")
-                logger.debug(f"Query result, rrn : {rrn}")
-                logger.debug(f"Query result, mid : {mid}")
-                logger.debug(f"Query result, tid : {tid}")
-                logger.debug(f"Query result, customer_name : {customer_name}")
-                logger.debug(f"Query result, payer_name : {payer_name}")
-                logger.debug(f"Query result, org_code_txn : {org_code_txn}")
-                logger.debug(f"Query result, txn_type : {txn_type}")
-                logger.debug(f"Query result, label_ids : {label_ids}")
 
                 query = f"select * from cnp_txn where txn_id='{txn_id}';"
                 logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -1488,14 +1496,23 @@ def test_common_100_111_050():
 
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time = transaction_details[0]['Date & Time']
+                logger.debug(f"date_time: {date_time}")
                 transaction_id = transaction_details[0]['Transaction ID']
+                logger.debug(f"transaction_id: {transaction_id}")
                 total_amount = transaction_details[0]['Total Amount'].split()
+                logger.debug(f"total_amount: {total_amount}")
                 auth_code = transaction_details[0]['Auth Code']
+                logger.debug(f"auth_code: {auth_code}")
                 rr_number = transaction_details[0]['RR Number']
+                logger.debug(f"rr_number: {rr_number}")
                 transaction_type = transaction_details[0]['Type']
+                logger.debug(f"transaction_type: {transaction_type}")
                 status = transaction_details[0]['Status']
+                logger.debug(f"status: {status}")
                 username = transaction_details[0]['Username']
+                logger.debug(f"username: {username}")
                 labels = transaction_details[0]['Labels']
+                logger.debug(f"labels: {labels}")
 
                 actual_portal_values = {
                     "date_time": date_time,
@@ -1510,11 +1527,8 @@ def test_common_100_111_050():
                 }
 
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
-                                                actualPortal=actual_portal_values)
                 # ---------------------------------------------------------------------------------------------
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
-                                                actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")

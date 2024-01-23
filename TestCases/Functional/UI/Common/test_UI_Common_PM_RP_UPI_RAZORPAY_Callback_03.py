@@ -70,11 +70,14 @@ def test_common_100_103_201():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions AutoRefund is : {response}")
 
-        query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND " \
-                f"bank_code = 'RAZORPAY_PSP' and card_terminal_acquirer_code = 'NONE'"
-        logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+        query = f"select * from upi_merchant_config where bank_code = 'RAZORPAY_PSP' AND status = 'ACTIVE' AND " \
+                f"org_code = '{org_code}';"
+        logger.debug(f"Query to fetch pgMerchantId from upi_merchant_config : {query}")
         result = DBProcessor.getValueFromDB(query)
         upi_mc_id = result['id'].values[0]
+        logger.debug(f"Fetching mc_id from DB result: {upi_mc_id}")
+        upi_account_id = result['pgMerchantId'].values[0]
+        logger.debug(f"Fetching pgMerchantId from DB result for upi_account_id: {upi_account_id}")
 
         TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
         GlobalVariables.setupCompletedSuccessfully = True
@@ -91,8 +94,10 @@ def test_common_100_103_201():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             amount = random.randint(620, 700)
+            logger.info(f"amount is: {amount}")
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            logger.info(f"You order id is: {order_id}")
+            logger.info(f"order id is: {order_id}")
+
             api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
@@ -148,97 +153,52 @@ def test_common_100_103_201():
                 logger.info(f"Value for Ezetap org is: {org_setting_value} min.")
                 time.sleep(3 + (setting_value * 60))
 
-            query = f"select * from upi_merchant_config where bank_code = 'RAZORPAY_PSP' AND status = 'ACTIVE' AND " \
-                    f"org_code = '{org_code}'; "
-            logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            pg_merchant_id = result['pgMerchantId'].values[0]
-            vpa = result['vpa'].values[0]
-            upi_mc_id = result['id'].values[0]
-            upi_account_id = result['pgMerchantId'].values[0]
-
-            logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and upiMerchantid : {upi_mc_id}")
-
             query = f"select * from txn where org_code = '{org_code}' AND external_ref = '{str(order_id)}';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id = result['id'].values[0]
-            logger.debug(f"Query result, txn_id : {txn_id}")
-
+            logger.debug(f"Fetching txn_id from DB result: {txn_id}")
             original_rrn = result['rr_number'].values[0]
+            logger.debug(f"Fetching original_rrn from DB result: {original_rrn}")
             original_org_code_txn = result['org_code'].values[0]
+            logger.debug(f"Fetching original_org_code_txn from DB result: {original_org_code_txn}")
             original_txn_type = result['txn_type'].values[0]
-            logger.debug(f"Query result, Txn_id_expired and rrn_expired : {txn_id} and {original_rrn}")
+            logger.debug(f"Fetching original_txn_type from DB result: {original_txn_type}")
             posting_date = result['posting_date'].values[0]
+            logger.debug(f"Fetching posting_date from DB result: {posting_date}")
             created_time_original = result['created_time'].values[0]
+            logger.debug(f"Fetching created_time_original from DB result: {created_time_original}")
             mid = result['mid'].values[0]
+            logger.debug(f"Fetching mid from DB result: {mid}")
             tid = result['tid'].values[0]
+            logger.debug(f"Fetching tid from DB result: {tid}")
 
             query = f"select * from upi_txn where txn_id='{txn_id}'"
             logger.debug(f"Query to fetch data from upi_txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Query result : {result}")
+            logger.debug(f"Query result from upi_txn table : {result}")
             txn_ref = result['txn_ref'].values[0]
+            logger.debug(f"Fetching txn_ref from upi_txn table: {txn_ref}")
             txn_ref_3 = result['txn_ref3'].values[0]
+            logger.debug(f"Fetching txn_ref_3 from upi_txn table: {txn_ref_3}")
 
-            api_details = DBProcessor.get_api_details('razorpay_callback_generator_HMAC', request_body={
-                                                                              "entity": "event",
-                                                                              "account_id": upi_account_id,
-                                                                              "event": "payment.captured",
-                                                                              "contains": [
-                                                                                "payment"
-                                                                              ],
-                                                                              "payload": {
-                                                                                "payment": {
-                                                                                  "entity": {
-                                                                                    "id": txn_ref,
-                                                                                    "entity": "payment",
-                                                                                    "amount": amount * 100,
-                                                                                    "currency": "INR",
-                                                                                    "base_amount": amount * 100,
-                                                                                    "status": "captured",
-                                                                                    "order_id": txn_ref_3,
-                                                                                    "invoice_id": None,
-                                                                                    "international": None,
-                                                                                    "method": "upi",
-                                                                                    "amount_refunded": 0,
-                                                                                    "amount_transferred": 0,
-                                                                                    "refund_status": None,
-                                                                                    "captured": True,
-                                                                                    "description": None,
-                                                                                    "card_id": None,
-                                                                                    "bank": None,
-                                                                                    "wallet": None,
-                                                                                    "vpa": "gaurav.kumar@upi",
-                                                                                    "email": "gaurav.kumar@example.com",
-                                                                                    "contact": "+919876543210",
-                                                                                    "notes": {
-                                                                                        "receiver_type":"offline"
-                                                                                    },
-                                                                                    "fee": 2,
-                                                                                    "tax": 0,
-                                                                                    "error_code": None,
-                                                                                    "error_description": None,
-                                                                                    "error_source": None,
-                                                                                    "error_step": None,
-                                                                                    "error_reason": None,
-                                                                                    "acquirer_data": {
-                                                                                      "rrn": order_id
-                                                                                    },
-                                                                                    "created_at": 1567675356
-                                                                                  }}},
-                                                                              "created_at": 1567675356
-                                                                            })
-            response = APIProcessor.send_request(api_details)
+            api_details_hmac = DBProcessor.get_api_details('remote_pay_razorpay_callback_generator_HMAC_success')
+            api_details_hmac['RequestBody']['account_id'] = upi_account_id
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['id'] = txn_ref
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['amount'] = amount * 100
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['base_amount'] = amount * 100
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['order_id'] = txn_ref_3
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['acquirer_data']['rrn'] = order_id
+            response = APIProcessor.send_request(api_details_hmac)
             logger.debug(f"Response received for razorpay_callback_generator_HMAC api is : {response}")
             razorpay_signature = response['razorpay_signature']
             logger.debug(f"razorpay_signature received for razorpay_callback_generator_HMAC api is : "
                          f"{razorpay_signature}")
+
+            # calling confirm razorpay callback
             logger.debug(f"performing upi callback for razorpay")
-
-            api_details = DBProcessor.get_api_details('confirm_upi_callback_razorpay',
-                                                      request_body=api_details['RequestBody'])
-
+            api_details = DBProcessor.get_api_details('upi_confirm_razorpay',
+                                                      request_body=api_details_hmac['RequestBody'])
             api_details['Header'] = {'x-razorpay-signature': razorpay_signature,
                                      'Content-Type': 'application/json'}
             logger.debug(f"api details for upi_confirm_razorpay : {api_details}")
@@ -250,14 +210,21 @@ def test_common_100_103_201():
             logger.debug(f"Query to fetch Txn_id and rrn_expired from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             new_txn_id = result['id'].values[0]
+            logger.debug(f"Fetching new_txn_id from DB result: {new_txn_id}")
             new_txn_customer_name = result['customer_name'].values[0]
+            logger.debug(f"Fetching new_txn_customer_name from DB result: {new_txn_customer_name}")
             new_txn_payer_name = result['payer_name'].values[0]
+            logger.debug(f"Fetching new_txn_payer_name from DB result: {new_txn_payer_name}")
             new_txn_type = result['txn_type'].values[0]
+            logger.debug(f"Fetching new_txn_type from DB result: {new_txn_type}")
             new_external_ref = result['external_ref'].values[0]
+            logger.debug(f"Fetching new_external_ref from DB result: {new_external_ref}")
             created_time_app = result['created_time'].values[0]
+            logger.debug(f"Fetching created_time_app from DB result: {created_time_app}")
             created_time = result['created_time'].values[0]
+            logger.debug(f"Fetching created_time from DB result: {created_time}")
             rrn_db = result['rr_number'].values[0]
-            logger.debug(f"rrn_db from db : {rrn_db}")
+            logger.debug(f"Fetching rrn_db from DB result: {rrn_db}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -421,16 +388,27 @@ def test_common_100_103_201():
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
+                logger.debug(f"Fetching status_api: {status_api}")
                 amount_api = int(response["amount"])
+                logger.debug(f"Fetching amount_api: {amount_api}")
                 payment_mode_api = response["paymentMode"]
+                logger.debug(f"Fetching payment_mode_api: {payment_mode_api}")
                 state_api = response["states"][0]
+                logger.debug(f"Fetching state_api: {state_api}")
                 settlement_status_api = response["settlementStatus"]
+                logger.debug(f"Fetching settlement_status_api: {settlement_status_api}")
                 issuer_code_api = response["issuerCode"]
+                logger.debug(f"Fetching issuer_code_api: {issuer_code_api}")
                 acquirer_code_api = response["acquirerCode"]
+                logger.debug(f"Fetching acquirer_code_api: {acquirer_code_api}")
                 org_code_api = response["orgCode"]
+                logger.debug(f"Fetching org_code_api: {org_code_api}")
                 mid_api = response["mid"]
+                logger.debug(f"Fetching mid_api: {mid_api}")
                 tid_api = response["tid"]
+                logger.debug(f"Fetching tid_api: {tid_api}")
                 txn_type_api = response["txnType"]
+                logger.debug(f"Fetching txn_type_api: {txn_type_api}")
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
@@ -441,17 +419,29 @@ def test_common_100_103_201():
                 response = [x for x in response["txns"] if x["txnId"] == new_txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
                 new_txn_status_api = response["status"]
+                logger.debug(f"Fetching new_txn_status_api: {new_txn_status_api}")
                 new_txn_amount_api = int(response["amount"])
+                logger.debug(f"Fetching new_txn_amount_api: {new_txn_amount_api}")
                 new_payment_mode_api = response["paymentMode"]
+                logger.debug(f"Fetching new_payment_mode_api: {new_payment_mode_api}")
                 new_txn_state_api = response["states"][0]
+                logger.debug(f"Fetching new_txn_state_api: {new_txn_state_api}")
                 new_txn_settlement_status_api = response["settlementStatus"]
+                logger.debug(f"Fetching new_txn_settlement_status_api: {new_txn_settlement_status_api}")
                 new_txn_issuer_code_api = response["issuerCode"]
+                logger.debug(f"Fetching new_txn_issuer_code_api: {new_txn_issuer_code_api}")
                 new_txn_acquirer_code_api = response["acquirerCode"]
+                logger.debug(f"Fetching new_txn_acquirer_code_api: {new_txn_acquirer_code_api}")
                 new_txn_org_code_api = response["orgCode"]
+                logger.debug(f"Fetching new_txn_org_code_api: {new_txn_org_code_api}")
                 new_txn_mid_api = response["mid"]
+                logger.debug(f"Fetching new_txn_mid_api: {new_txn_mid_api}")
                 new_txn_tid_api = response["tid"]
+                logger.debug(f"Fetching new_txn_tid_api: {new_txn_tid_api}")
                 new_txn_txn_type_api = response["txnType"]
+                logger.debug(f"Fetching new_txn_txn_type_api: {new_txn_txn_type_api}")
                 date_api = response["postingDate"]
+                logger.debug(f"Fetching date_api: {date_api}")
 
                 actual_api_values = {
                                      "date": date_time_converter.from_api_to_datetime_format(date_api),
@@ -521,45 +511,68 @@ def test_common_100_103_201():
                 query = f"select * from txn where id='{txn_id}'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result from txn table: {result}")
                 status_db = result["status"].iloc[0]
+                logger.debug(f"Fetching status_db from txn table: {status_db}")
                 payment_mode_db = result["payment_mode"].iloc[0]
+                logger.debug(f"Fetching payment_mode_db from txn table: {payment_mode_db}")
                 amount_db = int(result["amount"].iloc[0])
+                logger.debug(f"Fetching amount_db from txn table: {amount_db}")
                 state_db = result["state"].iloc[0]
+                logger.debug(f"Fetching state_db from txn table: {state_db}")
                 acquirer_code_db = result["acquirer_code"].iloc[0]
+                logger.debug(f"Fetching acquirer_code_db from txn table: {acquirer_code_db}")
                 bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"Fetching bank_code_db from txn table: {bank_code_db}")
                 settlement_status_db = result["settlement_status"].iloc[0]
+                logger.debug(f"Fetching settlement_status_db from txn table: {settlement_status_db}")
 
                 query = f"select * from upi_txn where txn_id='{txn_id}'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result from upi_txn table: {result}")
                 upi_status_db = result["status"].iloc[0]
+                logger.debug(f"Fetching upi_status_db from upi_txn table: {upi_status_db}")
                 upi_txn_type_db = result["txn_type"].iloc[0]
+                logger.debug(f"Fetching upi_txn_type_db from upi_txn table: {upi_txn_type_db}")
                 upi_bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"Fetching upi_bank_code_db from upi_txn table: {upi_bank_code_db}")
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
+                logger.debug(f"Fetching upi_mc_id_db from upi_txn table: {upi_mc_id_db}")
 
                 query = f"select * from txn where id='{new_txn_id}'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result from txn table: {result}")
                 new_txn_status_db = result["status"].iloc[0]
+                logger.debug(f"Fetching new_txn_status_db from txn table: {new_txn_status_db}")
                 new_txn_payment_mode_db = result["payment_mode"].iloc[0]
+                logger.debug(f"Fetching new_txn_payment_mode_db from txn table: {new_txn_payment_mode_db}")
                 new_txn_amount_db = int(result["amount"].iloc[0])
+                logger.debug(f"Fetching new_txn_amount_db from txn table: {new_txn_amount_db}")
                 new_txn_state_db = result["state"].iloc[0]
+                logger.debug(f"Fetching new_txn_state_db from txn table: {new_txn_state_db}")
                 new_txn_payment_gateway_db = result["payment_gateway"].iloc[0]
+                logger.debug(f"Fetching new_txn_payment_gateway_db from txn table: {new_txn_payment_gateway_db}")
                 new_txn_acquirer_code_db = result["acquirer_code"].iloc[0]
+                logger.debug(f"Fetching new_txn_acquirer_code_db from txn table: {new_txn_acquirer_code_db}")
                 new_txn_bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"Fetching new_txn_bank_code_db from txn table: {new_txn_bank_code_db}")
                 new_txn_settlement_status_db = result["settlement_status"].iloc[0]
+                logger.debug(f"Fetching new_txn_settlement_status_db from txn table: {new_txn_settlement_status_db}")
 
                 query = f"select * from upi_txn where txn_id='{new_txn_id}'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result from upi_txn table: {result}")
                 new_txn_upi_status_db = result["status"].iloc[0]
+                logger.debug(f"Fetching new_txn_upi_status_db from upi_txn table: {new_txn_upi_status_db}")
                 new_txn_upi_txn_type_db = result["txn_type"].iloc[0]
+                logger.debug(f"Fetching new_txn_upi_txn_type_db from upi_txn table: {new_txn_upi_txn_type_db}")
                 new_txn_upi_bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"Fetching new_txn_upi_bank_code_db from upi_txn table: {new_txn_upi_bank_code_db}")
                 new_txn_upi_mc_id_db = result["upi_mc_id"].iloc[0]
+                logger.debug(f"Fetching new_txn_upi_mc_id_db from upi_txn table: {new_txn_upi_mc_id_db}")
 
                 actual_db_values = {
                     "pmt_status": status_db,
@@ -622,20 +635,34 @@ def test_common_100_103_201():
 
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time = transaction_details[0]['Date & Time']
+                logger.debug(f"Fetching date_time from Portal: {date_time}")
                 transaction_id = transaction_details[0]['Transaction ID']
+                logger.debug(f"Fetching transaction_id from Portal: {transaction_id}")
                 total_amount = transaction_details[0]['Total Amount'].split()
+                logger.debug(f"Fetching total_amount from Portal: {total_amount}")
                 rr_number = transaction_details[0]['RR Number']
+                logger.debug(f"Fetching rr_number from Portal: {rr_number}")
                 transaction_type = transaction_details[0]['Type']
+                logger.debug(f"Fetching transaction_type from Portal: {transaction_type}")
                 status = transaction_details[0]['Status']
+                logger.debug(f"Fetching status from Portal: {status}")
                 username = transaction_details[0]['Username']
+                logger.debug(f"Fetching username from Portal: {username}")
 
                 date_time_original = transaction_details[1]['Date & Time']
+                logger.debug(f"Fetching date_time_original from Portal: {date_time_original}")
                 transaction_id_original = transaction_details[1]['Transaction ID']
+                logger.debug(f"Fetching transaction_id_original from Portal: {transaction_id_original}")
                 total_amount_original = transaction_details[1]['Total Amount'].split()
+                logger.debug(f"Fetching total_amount_original from Portal: {total_amount_original}")
                 rr_number_original = transaction_details[1]['RR Number']
+                logger.debug(f"Fetching rr_number_original from Portal: {rr_number_original}")
                 transaction_type_original = transaction_details[1]['Type']
+                logger.debug(f"Fetching transaction_type_original from Portal: {transaction_type_original}")
                 status_original = transaction_details[1]['Status']
+                logger.debug(f"Fetching status_original from Portal: {status_original}")
                 username_original = transaction_details[1]['Username']
+                logger.debug(f"Fetching username_original from Portal: {username_original}")
 
                 actual_portal_values = {
                     "date_time": date_time_original,
@@ -729,9 +756,9 @@ def test_common_100_103_202():
         result = DBProcessor.getValueFromDB(query)
         pg_merchant_id = result['pgMerchantId'].values[0]
         vpa = result['vpa'].values[0]
-        upi_mc_id = result['id'].values[0]
+        logger.debug(f"Query result, vpa : {vpa} ")
         upi_account_id = result['pgMerchantId'].values[0]
-        logger.debug(f"Query result, vpa : {vpa} and pgMerchantId : {pg_merchant_id}")
+        logger.debug(f"Query result, pgMerchantId : {pg_merchant_id}")
 
         TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
         GlobalVariables.setupCompletedSuccessfully = True
@@ -748,8 +775,10 @@ def test_common_100_103_202():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             amount = random.randint(620, 690)
+            logger.info(f"amount isd: {amount}")
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
+
             api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
@@ -810,6 +839,7 @@ def test_common_100_103_202():
             logger.debug(f"Query to fetch Txn_id and rrn_expired from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id = result['id'].values[0]
+            logger.debug(f"Query result txn_id : {txn_id}")
 
             query = f"select * from txn where id='{txn_id}'"
             logger.debug(f"Query to fetch data from txn table : {query}")
@@ -828,87 +858,54 @@ def test_common_100_103_202():
             original_settlement_status = result['settlement_status'].values[0]
             logger.debug(f"settle status from db : {original_settlement_status}")
             orig_txn_type = result['txn_type'].values[0]
+            logger.debug(f"orig_txn_types from db : {orig_txn_type}")
             orig_posting_date = result['posting_date'].values[0]
+            logger.debug(f"orig_posting_date from db : {orig_posting_date}")
             orig_created_time = result['created_time'].values[0]
+            logger.debug(f"orig_created_times from db : {orig_created_time}")
             mid = result['mid'].values[0]
+            logger.debug(f"mid from db : {mid}")
             tid = result['tid'].values[0]
+            logger.debug(f"tid from db : {tid}")
 
             query = f"select * from payment_intent where org_code = '{org_code}' AND external_ref = '{order_id}' and " \
                     f"payment_mode='UPI';"
-            logger.debug(f"Query to fetch payment_intent_id from the DB : {query}")
+            logger.debug(f"Query to fetch payment_intent_id from the DB: {query}")
             result = DBProcessor.getValueFromDB(query)
             payment_intent_id = result['id'].values[0]
-            logger.info(f"generated random rrn number is : {payment_intent_id}")
+            logger.info(f"Generated random rrn number is: {payment_intent_id}")
             intent_status = result['status'].values[0]
             logger.info(f"Payment intent status for UPI is: {intent_status}")
 
             query = f"select * from upi_txn where txn_id='{txn_id}'"
-            logger.debug(f"Query to fetch data from upi_txn table : {query}")
+            logger.debug(f"Query to fetch data from upi_txn table: {query}")
             result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Query result : {result}")
+            logger.debug(f"Query result: {result}")
             txn_ref = result['txn_ref'].values[0]
+            logger.info(f"Transaction reference for UPI is: {txn_ref}")
             txn_ref_3 = result['txn_ref3'].values[0]
+            logger.info(f"Transaction reference 3 for UPI is: {txn_ref_3}")
 
             callback_1_rrn = random.randint(1111110, 9999999)
-            api_details = DBProcessor.get_api_details('razorpay_callback_generator_HMAC', request_body={
-                                                                              "entity": "event",
-                                                                              "account_id": upi_account_id,
-                                                                              "event": "payment.captured",
-                                                                              "contains": [
-                                                                                "payment"
-                                                                              ],
-                                                                              "payload": {
-                                                                                "payment": {
-                                                                                  "entity": {
-                                                                                    "id": txn_ref,
-                                                                                    "entity": "payment",
-                                                                                    "amount": amount * 100,
-                                                                                    "currency": "INR",
-                                                                                    "base_amount": amount * 100,
-                                                                                    "status": "captured",
-                                                                                    "order_id": txn_ref_3,
-                                                                                    "invoice_id": None,
-                                                                                    "international": None,
-                                                                                    "method": "upi",
-                                                                                    "amount_refunded": 0,
-                                                                                    "amount_transferred": 0,
-                                                                                    "refund_status": None,
-                                                                                    "captured": True,
-                                                                                    "description": None,
-                                                                                    "card_id": None,
-                                                                                    "bank": None,
-                                                                                    "wallet": None,
-                                                                                    "vpa": "gaurav.kumar@upi",
-                                                                                    "email": "gaurav.kumar@example.com",
-                                                                                    "contact": "+919876543210",
-                                                                                    "notes": {
-                                                                                        "receiver_type":"offline"
-                                                                                    },
-                                                                                    "fee": 2,
-                                                                                    "tax": 0,
-                                                                                    "error_code": None,
-                                                                                    "error_description": None,
-                                                                                    "error_source": None,
-                                                                                    "error_step": None,
-                                                                                    "error_reason": None,
-                                                                                    "acquirer_data": {
-                                                                                      "rrn": callback_1_rrn
-                                                                                    },
-                                                                                    "created_at": 1567675356
-                                                                                  }}},
-                                                                              "created_at": 1567675356
-                                                                            })
-            response = APIProcessor.send_request(api_details)
+            logger.info(f"generated rrn value is: {callback_1_rrn}")
+
+            api_details_hmac = DBProcessor.get_api_details('remote_pay_razorpay_callback_generator_HMAC_success')
+            api_details_hmac['RequestBody']['account_id'] = upi_account_id
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['id'] = txn_ref
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['amount'] = amount * 100
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['base_amount'] = amount * 100
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['order_id'] = txn_ref_3
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['acquirer_data']['rrn'] = callback_1_rrn
+            response = APIProcessor.send_request(api_details_hmac)
             logger.debug(f"Response received for razorpay_callback_generator_HMAC api is : {response}")
             razorpay_signature = response['razorpay_signature']
             logger.debug(f"razorpay_signature received for razorpay_callback_generator_HMAC api is : "
                          f"{razorpay_signature}")
+
+            # calling confirm razorpay callback
             logger.debug(f"performing upi callback for razorpay")
-
-            # calling 1st confirm razorpay callback
-            api_details = DBProcessor.get_api_details('confirm_upi_callback_razorpay',
-                                                      request_body=api_details['RequestBody'])
-
+            api_details = DBProcessor.get_api_details('upi_confirm_razorpay',
+                                                      request_body=api_details_hmac['RequestBody'])
             api_details['Header'] = {'x-razorpay-signature': razorpay_signature,
                                      'Content-Type': 'application/json'}
             logger.debug(f"api details for upi_confirm_razorpay : {api_details}")
@@ -925,64 +922,25 @@ def test_common_100_103_202():
             logger.debug(f"generated random original_posting_date is : {original_posting_date}")
 
             callback_2_rrn = random.randint(1111110, 9999999)
-            api_details = DBProcessor.get_api_details('razorpay_callback_generator_HMAC', request_body={
-                                                                              "entity": "event",
-                                                                              "account_id": upi_account_id,
-                                                                              "event": "payment.captured",
-                                                                              "contains": [
-                                                                                "payment"
-                                                                              ],
-                                                                              "payload": {
-                                                                                "payment": {
-                                                                                  "entity": {
-                                                                                    "id": txn_ref,
-                                                                                    "entity": "payment",
-                                                                                    "amount": amount * 100,
-                                                                                    "currency": "INR",
-                                                                                    "base_amount": amount * 100,
-                                                                                    "status": "captured",
-                                                                                    "order_id": txn_ref_3,
-                                                                                    "invoice_id": None,
-                                                                                    "international": None,
-                                                                                    "method": "upi",
-                                                                                    "amount_refunded": 0,
-                                                                                    "amount_transferred": 0,
-                                                                                    "refund_status": None,
-                                                                                    "captured": True,
-                                                                                    "description": None,
-                                                                                    "card_id": None,
-                                                                                    "bank": None,
-                                                                                    "wallet": None,
-                                                                                    "vpa": "gaurav.kumar@upi",
-                                                                                    "email": "gaurav.kumar@example.com",
-                                                                                    "contact": "+919876543210",
-                                                                                    "notes": {
-                                                                                        "receiver_type":"offline"
-                                                                                    },
-                                                                                    "fee": 2,
-                                                                                    "tax": 0,
-                                                                                    "error_code": None,
-                                                                                    "error_description": None,
-                                                                                    "error_source": None,
-                                                                                    "error_step": None,
-                                                                                    "error_reason": None,
-                                                                                    "acquirer_data": {
-                                                                                      "rrn": callback_2_rrn
-                                                                                    },
-                                                                                    "created_at": 1567675356
-                                                                                  }}},
-                                                                              "created_at": 1567675356
-                                                                            })
-            response = APIProcessor.send_request(api_details)
+            logger.info(f"generated rrn value for 2nd callback is: {callback_2_rrn}")
+
+            api_details_hmac = DBProcessor.get_api_details('remote_pay_razorpay_callback_generator_HMAC_success')
+            api_details_hmac['RequestBody']['account_id'] = upi_account_id
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['id'] = txn_ref
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['amount'] = amount * 100
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['base_amount'] = amount * 100
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['order_id'] = txn_ref_3
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['acquirer_data']['rrn'] = callback_2_rrn
+            response = APIProcessor.send_request(api_details_hmac)
             logger.debug(f"Response received for razorpay_callback_generator_HMAC api is : {response}")
             razorpay_signature = response['razorpay_signature']
             logger.debug(f"razorpay_signature received for razorpay_callback_generator_HMAC api is : "
                          f"{razorpay_signature}")
+
+            # calling confirm razorpay callback
             logger.debug(f"performing upi callback for razorpay")
-
-            api_details = DBProcessor.get_api_details('confirm_upi_callback_razorpay',
-                                                      request_body=api_details['RequestBody'])
-
+            api_details = DBProcessor.get_api_details('upi_confirm_razorpay',
+                                                      request_body=api_details_hmac['RequestBody'])
             api_details['Header'] = {'x-razorpay-signature': razorpay_signature,
                                      'Content-Type': 'application/json'}
             logger.debug(f"api details for upi_confirm_razorpay : {api_details}")
@@ -990,14 +948,20 @@ def test_common_100_103_202():
             logger.debug(f"Response received for upi_confirm_razorpay api is : {response}")
 
             query = f"select * from txn where id = '{new_txn_id_1}';"
-            logger.debug(f"Query to fetch transaction id from database : {query}")
+            logger.debug(f"Query to fetch transaction id from database: {query}")
             result = DBProcessor.getValueFromDB(query)
             new_txn_customer_name_1 = result['customer_name'].values[0]
+            logger.info(f"Fetched Customer name from txn table: {new_txn_customer_name_1}")
             new_txn_payer_name_1 = result['payer_name'].values[0]
+            logger.info(f"Fetched Payer name from txn table: {new_txn_payer_name_1}")
             new_txn_type_1 = result['txn_type'].values[0]
+            logger.info(f"Fetched Transaction type from txn table: {new_txn_type_1}")
             new_txn_posting_date_1 = result['created_time'].values[0]
+            logger.info(f"Fetched Posting date from txn table: {new_txn_posting_date_1}")
             mid_1 = result['mid'].values[0]
+            logger.info(f"Fetched Mid from txn table: {mid_1}")
             tid_1 = result['tid'].values[0]
+            logger.info(f"Fetched Tid from txn table: {tid_1}")
 
             query = f"select * from txn where org_code = '{org_code}' AND external_ref = '{order_id}' " \
                     f"order by created_time desc limit 1"
@@ -1007,21 +971,29 @@ def test_common_100_103_202():
             logger.debug(f"Query result new_txn_id_2 : {new_txn_id_2}")
 
             query = f"select * from txn where id = '{new_txn_id_2}';"
-            logger.debug(f"Query to fetch transaction id from database : {query}")
+            logger.debug(f"Query to fetch transaction id from database: {query}")
             result = DBProcessor.getValueFromDB(query)
             new_txn_customer_name_2 = result['customer_name'].values[0]
+            logger.info(f"Fetched Customer name from txn table: {new_txn_customer_name_2}")
             new_txn_payer_name_2 = result['payer_name'].values[0]
+            logger.info(f"Fetched Payer name from txn table: {new_txn_payer_name_2}")
             new_txn_type_2 = result['txn_type'].values[0]
+            logger.info(f"Fetched Transaction type from txn table: {new_txn_type_2}")
             new_txn_posting_date_2 = result['created_time'].values[0]
+            logger.info(f"Fetched Posting date from txn table: {new_txn_posting_date_2}")
             new_txn_posting_date_api = result['posting_date'].values[0]
+            logger.info(f"Fetched Posting date API from txn table: {new_txn_posting_date_api}")
             mid_2 = result['mid'].values[0]
+            logger.info(f"Fetched Mid from txn table: {mid_2}")
             tid_2 = result['tid'].values[0]
+            logger.info(f"Fetched Tid from txn table: {tid_2}")
 
             query = f"select * from upi_merchant_config where org_code ='{org_code}' AND status = 'ACTIVE' AND " \
                     f"bank_code = 'RAZORPAY_PSP'"
             logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
             upi_mc_id = result['id'].values[0]
+            logger.info(f"Fetched upi_mc_id from upi_merchant_config table: {upi_mc_id}")
 
             logger.info(f"Execution is completed for the test case : {testcase_id}")
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -1270,17 +1242,29 @@ def test_common_100_103_202():
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
+                logger.debug(f"Fetching status_api: {status_api}")
                 amount_api = int(response["amount"])
+                logger.debug(f"Fetching amount_api: {amount_api}")
                 payment_mode_api = response["paymentMode"]
+                logger.debug(f"Fetching payment_mode_api: {payment_mode_api}")
                 state_api = response["states"][0]
+                logger.debug(f"Fetching state_api: {state_api}")
                 settlement_status_api = response["settlementStatus"]
+                logger.debug(f"Fetching settlement_status_api: {settlement_status_api}")
                 issuer_code_api = response["issuerCode"]
+                logger.debug(f"Fetching issuer_code_api: {issuer_code_api}")
                 acquirer_code_api = response["acquirerCode"]
+                logger.debug(f"Fetching acquirer_code_api: {acquirer_code_api}")
                 org_code_api = response["orgCode"]
+                logger.debug(f"Fetching org_code_api: {org_code_api}")
                 mid_api = response["mid"]
+                logger.debug(f"Fetching mid_api: {mid_api}")
                 tid_api = response["tid"]
+                logger.debug(f"Fetching tid_api: {tid_api}")
                 txn_type_api = response["txnType"]
+                logger.debug(f"Fetching txn_type_api: {txn_type_api}")
                 date_api = response["postingDate"]
+                logger.debug(f"Fetching date_api: {date_api}")
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
@@ -1291,17 +1275,29 @@ def test_common_100_103_202():
                 response = [x for x in response["txns"] if x["txnId"] == new_txn_id_1][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
                 new_txn_status_api_1 = response["status"]
+                logger.debug(f"Fetching new_txn_status_api_1: {new_txn_status_api_1}")
                 new_txn_amount_api_1 = int(response["amount"])
+                logger.debug(f"Fetching new_txn_amount_api_1: {new_txn_amount_api_1}")
                 new_payment_mode_api_1 = response["paymentMode"]
+                logger.debug(f"Fetching new_payment_mode_api_1: {new_payment_mode_api_1}")
                 new_txn_state_api_1 = response["states"][0]
+                logger.debug(f"Fetching new_txn_state_api_1: {new_txn_state_api_1}")
                 new_txn_settlement_status_api_1 = response["settlementStatus"]
+                logger.debug(f"Fetching new_txn_settlement_status_api_1: {new_txn_settlement_status_api_1}")
                 new_txn_issuer_code_api_1 = response["issuerCode"]
+                logger.debug(f"Fetching new_txn_issuer_code_api_1: {new_txn_issuer_code_api_1}")
                 new_txn_acquirer_code_api_1 = response["acquirerCode"]
+                logger.debug(f"Fetching new_txn_acquirer_code_api_1: {new_txn_acquirer_code_api_1}")
                 new_txn_org_code_api_1 = response["orgCode"]
+                logger.debug(f"Fetching new_txn_org_code_api_1: {new_txn_org_code_api_1}")
                 new_txn_mid_api_1 = response["mid"]
+                logger.debug(f"Fetching new_txn_mid_api_1: {new_txn_mid_api_1}")
                 new_txn_tid_api_1 = response["tid"]
+                logger.debug(f"Fetching new_txn_tid_api_1: {new_txn_tid_api_1}")
                 new_txn_txn_type_api_1 = response["txnType"]
+                logger.debug(f"Fetching new_txn_txn_type_api_1: {new_txn_txn_type_api_1}")
                 new_txn_date_api_1 = response["createdTime"]
+                logger.debug(f"Fetching new_txn_date_api_1: {new_txn_date_api_1}")
 
                 api_details = DBProcessor.get_api_details('txnlist',
                                                           request_body={"username": app_username,
@@ -1311,18 +1307,31 @@ def test_common_100_103_202():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == new_txn_id_2][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
+
                 new_txn_status_api_2 = response["status"]
+                logger.debug(f"Fetching new_txn_status_api_2: {new_txn_status_api_2}")
                 new_txn_amount_api_2 = int(response["amount"])
+                logger.debug(f"Fetching new_txn_amount_api_2: {new_txn_amount_api_2}")
                 new_payment_mode_api_2 = response["paymentMode"]
+                logger.debug(f"Fetching new_payment_mode_api_2: {new_payment_mode_api_2}")
                 new_txn_state_api_2 = response["states"][0]
+                logger.debug(f"Fetching new_txn_state_api_2: {new_txn_state_api_2}")
                 new_txn_settlement_status_api_2 = response["settlementStatus"]
+                logger.debug(f"Fetching new_txn_settlement_status_api_2: {new_txn_settlement_status_api_2}")
                 new_txn_issuer_code_api_2 = response["issuerCode"]
+                logger.debug(f"Fetching new_txn_issuer_code_api_2: {new_txn_issuer_code_api_2}")
                 new_txn_acquirer_code_api_2 = response["acquirerCode"]
+                logger.debug(f"Fetching new_txn_acquirer_code_api_2: {new_txn_acquirer_code_api_2}")
                 new_txn_org_code_api_2 = response["orgCode"]
+                logger.debug(f"Fetching new_txn_org_code_api_2: {new_txn_org_code_api_2}")
                 new_txn_mid_api_2 = response["mid"]
+                logger.debug(f"Fetching new_txn_mid_api_2: {new_txn_mid_api_2}")
                 new_txn_tid_api_2 = response["tid"]
+                logger.debug(f"Fetching new_txn_tid_api_2: {new_txn_tid_api_2}")
                 new_txn_type_api_2 = response["txnType"]
+                logger.debug(f"Fetching new_txn_type_api_2: {new_txn_type_api_2}")
                 new_txn_date_api_2 = response["postingDate"]
+                logger.debug(f"Fetching new_txn_date_api_2: {new_txn_date_api_2}")
 
                 actual_api_values = {
                                      "pmt_status": status_api,
@@ -1387,7 +1396,6 @@ def test_common_100_103_202():
                                       "upi_txn_type": "REMOTE_PAY_UPI_INTENT",
                                       "upi_bank_code": "RAZORPAY_PSP",
                                       "upi_mc_id": upi_mc_id,
-
                                       "pmt_status_2": "REFUND_PENDING",
                                       "pmt_state_2": "REFUND_PENDING",
                                       "pmt_mode_2": "UPI",
@@ -1400,7 +1408,6 @@ def test_common_100_103_202():
                                       "upi_txn_type_2": "REMOTE_PAY_UPI_INTENT",
                                       "upi_bank_code_2": "RAZORPAY_PSP",
                                       "upi_mc_id_2": upi_mc_id,
-
                                       "pmt_status_3": "REFUND_PENDING",
                                       "pmt_state_3": "REFUND_PENDING",
                                       "pmt_mode_3": "UPI",
@@ -1417,69 +1424,104 @@ def test_common_100_103_202():
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
                 query = f"select * from txn where id='{txn_id}'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
+                logger.debug(f"Query to fetch data from txn table for txn_id: {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result for txn table: {result}")
                 status_db = result["status"].iloc[0]
+                logger.debug(f"Fetching status_db: {status_db}")
                 payment_mode_db = result["payment_mode"].iloc[0]
+                logger.debug(f"Fetching payment_mode_db: {payment_mode_db}")
                 amount_db = int(result["amount"].iloc[0])
+                logger.debug(f"Fetching amount_db: {amount_db}")
                 state_db = result["state"].iloc[0]
+                logger.debug(f"Fetching state_db: {state_db}")
                 acquirer_code_db = result["acquirer_code"].iloc[0]
+                logger.debug(f"Fetching acquirer_code_db: {acquirer_code_db}")
                 bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"Fetching bank_code_db: {bank_code_db}")
                 settlement_status_db = result["settlement_status"].iloc[0]
+                logger.debug(f"Fetching settlement_status_db: {settlement_status_db}")
 
                 query = f"select * from upi_txn where txn_id='{txn_id}'"
-                logger.debug(f"Query to fetch data from upi_txn table : {query}")
+                logger.debug(f"Query to fetch data from upi_txn table for txn_id: {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result for upi_txn table: {result}")
                 upi_status_db = result["status"].iloc[0]
+                logger.debug(f"Fetching upi_status_db: {upi_status_db}")
                 upi_txn_type_db = result["txn_type"].iloc[0]
+                logger.debug(f"Fetching upi_txn_type_db: {upi_txn_type_db}")
                 upi_bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"Fetching upi_bank_code_db: {upi_bank_code_db}")
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
+                logger.debug(f"Fetching upi_mc_id_db: {upi_mc_id_db}")
 
                 query = f"select * from txn where id='{new_txn_id_1}'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
+                logger.debug(f"Query to fetch data from txn table for new_txn_id_1: {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result for txn table: {result}")
                 new_txn_status_db_1 = result["status"].iloc[0]
+                logger.debug(f"Fetching new_txn_status_db_1: {new_txn_status_db_1}")
                 new_txn_payment_mode_db_1 = result["payment_mode"].iloc[0]
+                logger.debug(f"Fetching new_txn_payment_mode_db_1: {new_txn_payment_mode_db_1}")
                 new_txn_amount_db_1 = int(result["amount"].iloc[0])
+                logger.debug(f"Fetching new_txn_amount_db_1: {new_txn_amount_db_1}")
                 new_txn_state_db_1 = result["state"].iloc[0]
+                logger.debug(f"Fetching new_txn_state_db_1: {new_txn_state_db_1}")
                 new_txn_payment_gateway_db_1 = result["payment_gateway"].iloc[0]
+                logger.debug(f"Fetching new_txn_payment_gateway_db_1: {new_txn_payment_gateway_db_1}")
                 new_txn_acquirer_code_db_1 = result["acquirer_code"].iloc[0]
+                logger.debug(f"Fetching new_txn_acquirer_code_db_1: {new_txn_acquirer_code_db_1}")
                 new_txn_bank_code_db_1 = result["bank_code"].iloc[0]
+                logger.debug(f"Fetching new_txn_bank_code_db_1: {new_txn_bank_code_db_1}")
                 new_txn_settlement_status_db_1 = result["settlement_status"].iloc[0]
+                logger.debug(f"Fetching new_txn_settlement_status_db_1: {new_txn_settlement_status_db_1}")
 
                 query = f"select * from upi_txn where txn_id='{new_txn_id_1}'"
-                logger.debug(f"Query to fetch data from upi_txn table : {query}")
+                logger.debug(f"Query to fetch data from upi_txn table for new_txn_id_1: {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result for upi_txn table: {result}")
                 new_txn_upi_status_db_1 = result["status"].iloc[0]
+                logger.debug(f"Fetching new_txn_upi_status_db_1: {new_txn_upi_status_db_1}")
                 new_txn_upi_txn_type_db_1 = result["txn_type"].iloc[0]
+                logger.debug(f"Fetching new_txn_upi_txn_type_db_1: {new_txn_upi_txn_type_db_1}")
                 new_txn_upi_bank_code_db_1 = result["bank_code"].iloc[0]
+                logger.debug(f"Fetching new_txn_upi_bank_code_db_1: {new_txn_upi_bank_code_db_1}")
                 new_txn_upi_mc_id_db_1 = result["upi_mc_id"].iloc[0]
+                logger.debug(f"Fetching new_txn_upi_mc_id_db_1: {new_txn_upi_mc_id_db_1}")
 
                 query = f"select * from txn where id='{new_txn_id_2}'"
-                logger.debug(f"Query to fetch data from txn table : {query}")
+                logger.debug(f"Query to fetch data from txn table for new_txn_id_2: {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result for txn table: {result}")
                 new_txn_status_db_2 = result["status"].iloc[0]
+                logger.debug(f"Fetching new_txn_status_db_2: {new_txn_status_db_2}")
                 new_txn_payment_mode_db_2 = result["payment_mode"].iloc[0]
+                logger.debug(f"Fetching new_txn_payment_mode_db_2: {new_txn_payment_mode_db_2}")
                 new_txn_amount_db_2 = int(result["amount"].iloc[0])
+                logger.debug(f"Fetching new_txn_amount_db_2: {new_txn_amount_db_2}")
                 new_txn_state_db_2 = result["state"].iloc[0]
+                logger.debug(f"Fetching new_txn_state_db_2: {new_txn_state_db_2}")
                 new_txn_payment_gateway_db_2 = result["payment_gateway"].iloc[0]
+                logger.debug(f"Fetching new_txn_payment_gateway_db_2: {new_txn_payment_gateway_db_2}")
                 new_txn_acquirer_code_db_2 = result["acquirer_code"].iloc[0]
+                logger.debug(f"Fetching new_txn_acquirer_code_db_2: {new_txn_acquirer_code_db_2}")
                 new_txn_bank_code_db_2 = result["bank_code"].iloc[0]
+                logger.debug(f"Fetching new_txn_bank_code_db_2: {new_txn_bank_code_db_2}")
                 new_txn_settlement_status_db_2 = result["settlement_status"].iloc[0]
+                logger.debug(f"Fetching new_txn_settlement_status_db_2: {new_txn_settlement_status_db_2}")
 
                 query = f"select * from upi_txn where txn_id='{new_txn_id_2}'"
-                logger.debug(f"Query to fetch data from upi_txn table : {query}")
+                logger.debug(f"Query to fetch data from upi_txn table for new_txn_id_2: {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result for upi_txn table: {result}")
                 new_txn_upi_status_db_2 = result["status"].iloc[0]
+                logger.debug(f"Fetching new_txn_upi_status_db_2: {new_txn_upi_status_db_2}")
                 new_txn_upi_txn_type_db_2 = result["txn_type"].iloc[0]
+                logger.debug(f"Fetching new_txn_upi_txn_type_db_2: {new_txn_upi_txn_type_db_2}")
                 new_txn_upi_bank_code_db_2 = result["bank_code"].iloc[0]
+                logger.debug(f"Fetching new_txn_upi_bank_code_db_2: {new_txn_upi_bank_code_db_2}")
                 new_txn_upi_mc_id_db_2 = result["upi_mc_id"].iloc[0]
+                logger.debug(f"Fetching new_txn_upi_mc_id_db_2: {new_txn_upi_mc_id_db_2}")
 
                 actual_db_values = {
                     "pmt_status": status_db,
@@ -1493,7 +1535,6 @@ def test_common_100_103_202():
                     "upi_txn_type": upi_txn_type_db,
                     "upi_bank_code": upi_bank_code_db,
                     "upi_mc_id": upi_mc_id_db,
-
                     "pmt_status_2": new_txn_status_db_1,
                     "pmt_state_2": new_txn_state_db_1,
                     "pmt_mode_2": new_txn_payment_mode_db_1,
@@ -1506,7 +1547,6 @@ def test_common_100_103_202():
                     "upi_txn_type_2": new_txn_upi_txn_type_db_1,
                     "upi_bank_code_2": new_txn_upi_bank_code_db_1,
                     "upi_mc_id_2": new_txn_upi_mc_id_db_1,
-
                     "pmt_status_3": new_txn_status_db_2,
                     "pmt_state_3": new_txn_state_db_2,
                     "pmt_mode_3": new_txn_payment_mode_db_2,
@@ -1544,7 +1584,6 @@ def test_common_100_103_202():
                     "txn_id": txn_id,
                     "rrn": str(original_rrn),
                     "date_time": date_and_time_portal,
-
                     "pmt_state_2": "REFUND_PENDING",
                     "pmt_type_2": "UPI",
                     "txn_amt_2": str(amount) + ".00",
@@ -1552,7 +1591,6 @@ def test_common_100_103_202():
                     "txn_id_2": new_txn_id_1,
                     "rrn_2": str(callback_1_rrn),
                     "date_time_2": date_and_time_portal_new_1,
-
                     "pmt_state_3": "REFUND_PENDING",
                     "pmt_type_3": "UPI",
                     "txn_amt_3": str(amount) + ".00",
@@ -1565,28 +1603,49 @@ def test_common_100_103_202():
 
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time_3 = transaction_details[0]['Date & Time']
+                logger.debug(f"Fetching date_time_3 from portal: {date_time_3}")
                 transaction_id_3 = transaction_details[0]['Transaction ID']
+                logger.debug(f"Fetching transaction_id_3 from portal: {transaction_id_3}")
                 total_amount_3 = transaction_details[0]['Total Amount'].split()
+                logger.debug(f"Fetching total_amount_3 from portal: {total_amount_3}")
                 rr_number_3 = transaction_details[0]['RR Number']
+                logger.debug(f"Fetching rr_number_3 from portal: {rr_number_3}")
                 transaction_type_3 = transaction_details[0]['Type']
+                logger.debug(f"Fetching transaction_type_3 from portal: {transaction_type_3}")
                 status_3 = transaction_details[0]['Status']
+                logger.debug(f"Fetching status_3 from portal: {status_3}")
                 username_3 = transaction_details[0]['Username']
+                logger.debug(f"Fetching username_3 from portal: {username_3}")
 
                 date_time_2 = transaction_details[1]['Date & Time']
+                logger.debug(f"Fetching date_time_2 from portal: {date_time_2}")
                 transaction_id_2 = transaction_details[1]['Transaction ID']
+                logger.debug(f"Fetching transaction_id_2 from portal: {transaction_id_2}")
                 total_amount_2 = transaction_details[1]['Total Amount'].split()
+                logger.debug(f"Fetching total_amount_2 from portal: {total_amount_2}")
                 rr_number_2 = transaction_details[1]['RR Number']
+                logger.debug(f"Fetching rr_number_2 from portal: {rr_number_2}")
                 transaction_type_2 = transaction_details[1]['Type']
+                logger.debug(f"Fetching transaction_type_2 from portal: {transaction_type_2}")
                 status_2 = transaction_details[1]['Status']
+                logger.debug(f"Fetching status_2 from portal: {status_2}")
                 username_2 = transaction_details[1]['Username']
+                logger.debug(f"Fetching username_2 from portal: {username_2}")
 
                 date_time_original = transaction_details[2]['Date & Time']
+                logger.debug(f"Fetching date_time_original from portal: {date_time_original}")
                 transaction_id_original = transaction_details[2]['Transaction ID']
+                logger.debug(f"Fetching transaction_id_original from portal: {transaction_id_original}")
                 total_amount_original = transaction_details[2]['Total Amount'].split()
+                logger.debug(f"Fetching total_amount_original from portal: {total_amount_original}")
                 rr_number_original = transaction_details[2]['RR Number']
+                logger.debug(f"Fetching rr_number_original from portal: {rr_number_original}")
                 transaction_type_original = transaction_details[2]['Type']
+                logger.debug(f"Fetching transaction_type_original from portal: {transaction_type_original}")
                 status_original = transaction_details[2]['Status']
+                logger.debug(f"Fetching status_original from portal: {status_original}")
                 username_original = transaction_details[2]['Username']
+                logger.debug(f"Fetching username_original from portal: {username_original}")
 
                 actual_portal_values = {
                     "pmt_state": str(status_original),
@@ -1596,7 +1655,6 @@ def test_common_100_103_202():
                     "txn_id": transaction_id_original,
                     "rrn": rr_number_original,
                     "date_time": date_time_original,
-
                     "pmt_state_2": str(status_2),
                     "pmt_type_2": transaction_type_2,
                     "txn_amt_2": total_amount_2[1],
@@ -1604,7 +1662,6 @@ def test_common_100_103_202():
                     "txn_id_2": transaction_id_2,
                     "rrn_2": rr_number_2,
                     "date_time_2": date_time_2,
-
                     "pmt_state_3": str(status_3),
                     "pmt_type_3": transaction_type_3,
                     "txn_amt_3": total_amount_3[1],
@@ -1651,14 +1708,17 @@ def test_common_100_103_207():
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
         app_password = app_cred['Password']
+
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
+
         query = f"select org_code from org_employee where username='{app_username}';"
         logger.debug(f"Query to fetch org_code from the DB : {query}")
         result = DBProcessor.getValueFromDB(query)
@@ -1685,11 +1745,12 @@ def test_common_100_103_207():
                 f"org_code = '{org_code}' and card_terminal_acquirer_code = 'NONE';"
         logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
         result = DBProcessor.getValueFromDB(query)
-        pg_merchant_id = result['pgMerchantId'].values[0]
-        vpa = result['vpa'].values[0]
         upi_mc_id = result['id'].values[0]
+        logger.debug(f"Query result, upi_mc_id : {upi_mc_id}")
+        vpa = result['vpa'].values[0]
+        logger.debug(f"Query result, vpa : {vpa} ")
         upi_account_id = result['pgMerchantId'].values[0]
-        logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and mc_id: {upi_mc_id}")
+        logger.debug(f"Query result, upi_account_id : {upi_account_id}")
 
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
@@ -1705,10 +1766,12 @@ def test_common_100_103_207():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+
             amount = random.randint(620, 699)
+            logger.info(f"Entered amount is: {amount}")
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"Entered order id is: {order_id}")
-            logger.info(f"Entered amount is: {amount}")
+
             api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
@@ -1741,66 +1804,27 @@ def test_common_100_103_207():
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result : {result}")
             txn_ref = result['txn_ref'].values[0]
+            logger.debug(f"Fetching txn_ref from portal : {txn_ref}")
             txn_ref_3 = result['txn_ref3'].values[0]
+            logger.debug(f"Fetching txn_ref_3 from portal : {txn_ref_3}")
 
-            api_details = DBProcessor.get_api_details('razorpay_callback_generator_HMAC', request_body={
-                                                                              "entity": "event",
-                                                                              "account_id": upi_account_id,
-                                                                              "event": "payment.captured",
-                                                                              "contains": [
-                                                                                "payment"
-                                                                              ],
-                                                                              "payload": {
-                                                                                "payment": {
-                                                                                  "entity": {
-                                                                                    "id": txn_ref,
-                                                                                    "entity": "payment",
-                                                                                    "amount": amount * 100,
-                                                                                    "currency": "INR",
-                                                                                    "base_amount": amount * 100,
-                                                                                    "status": "captured",
-                                                                                    "order_id": txn_ref_3,
-                                                                                    "invoice_id": None,
-                                                                                    "international": None,
-                                                                                    "method": "upi",
-                                                                                    "amount_refunded": 0,
-                                                                                    "amount_transferred": 0,
-                                                                                    "refund_status": None,
-                                                                                    "captured": True,
-                                                                                    "description": None,
-                                                                                    "card_id": None,
-                                                                                    "bank": None,
-                                                                                    "wallet": None,
-                                                                                    "vpa": "gaurav.kumar@upi",
-                                                                                    "email": "gaurav.kumar@example.com",
-                                                                                    "contact": "+919876543210",
-                                                                                    "notes": {
-                                                                                        "receiver_type":"offline"
-                                                                                    },
-                                                                                    "fee": 2,
-                                                                                    "tax": 0,
-                                                                                    "error_code": None,
-                                                                                    "error_description": None,
-                                                                                    "error_source": None,
-                                                                                    "error_step": None,
-                                                                                    "error_reason": None,
-                                                                                    "acquirer_data": {
-                                                                                      "rrn": order_id
-                                                                                    },
-                                                                                    "created_at": 1567675356
-                                                                                  }}},
-                                                                              "created_at": 1567675356
-                                                                            })
-            response = APIProcessor.send_request(api_details)
+            api_details_hmac = DBProcessor.get_api_details('remote_pay_razorpay_callback_generator_HMAC_success')
+            api_details_hmac['RequestBody']['account_id'] = upi_account_id
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['id'] = txn_ref
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['amount'] = amount * 100
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['base_amount'] = amount * 100
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['order_id'] = txn_ref_3
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['acquirer_data']['rrn'] = order_id
+            response = APIProcessor.send_request(api_details_hmac)
             logger.debug(f"Response received for razorpay_callback_generator_HMAC api is : {response}")
             razorpay_signature = response['razorpay_signature']
             logger.debug(f"razorpay_signature received for razorpay_callback_generator_HMAC api is : "
                          f"{razorpay_signature}")
+
+            # calling confirm razorpay callback
             logger.debug(f"performing upi callback for razorpay")
-
-            api_details = DBProcessor.get_api_details('confirm_upi_callback_razorpay',
-                                                      request_body=api_details['RequestBody'])
-
+            api_details = DBProcessor.get_api_details('upi_confirm_razorpay',
+                                                      request_body=api_details_hmac['RequestBody'])
             api_details['Header'] = {'x-razorpay-signature': razorpay_signature,
                                      'Content-Type': 'application/json'}
             logger.debug(f"api details for upi_confirm_razorpay : {api_details}")
@@ -1966,18 +1990,31 @@ def test_common_100_103_207():
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
+                logger.debug(f"Fetching status_api: {status_api}")
                 amount_api = int(response["amount"])
+                logger.debug(f"Fetching amount_api: {amount_api}")
                 payment_mode_api = response["paymentMode"]
+                logger.debug(f"Fetching payment_mode_api: {payment_mode_api}")
                 state_api = response["states"][0]
+                logger.debug(f"Fetching state_api: {state_api}")
                 rrn_api = response["rrNumber"]
+                logger.debug(f"Fetching rrn_api: {rrn_api}")
                 settlement_status_api = response["settlementStatus"]
+                logger.debug(f"Fetching settlement_status_api: {settlement_status_api}")
                 issuer_code_api = response["issuerCode"]
+                logger.debug(f"Fetching issuer_code_api: {issuer_code_api}")
                 acquirer_code_api = response["acquirerCode"]
+                logger.debug(f"Fetching acquirer_code_api: {acquirer_code_api}")
                 org_code_api = response["orgCode"]
+                logger.debug(f"Fetching org_code_api: {org_code_api}")
                 mid_api = response["mid"]
+                logger.debug(f"Fetching mid_api: {mid_api}")
                 tid_api = response["tid"]
+                logger.debug(f"Fetching tid_api: {tid_api}")
                 txn_type_api = response["txnType"]
+                logger.debug(f"Fetching txn_type_api: {txn_type_api}")
                 date_api = response["postingDate"]
+                logger.debug(f"Fetching date_api: {date_api}")
 
                 actual_api_values = {
                                      "pmt_status": status_api,
@@ -2027,28 +2064,42 @@ def test_common_100_103_207():
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 status_db = result["status"].iloc[0]
+                logger.debug(f"Fetching status_db from txn table: {status_db}")
                 payment_mode_db = result["payment_mode"].iloc[0]
+                logger.debug(f"Fetching payment_mode_db from txn table: {payment_mode_db}")
                 amount_db = int(result["amount"].iloc[0])
+                logger.debug(f"Fetching amount_db from txn table: {amount_db}")
                 state_db = result["state"].iloc[0]
+                logger.debug(f"Fetching state_db from txn table: {state_db}")
                 acquirer_code_db = result["acquirer_code"].iloc[0]
+                logger.debug(f"Fetching acquirer_code_db from txn table: {acquirer_code_db}")
                 bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"Fetching bank_code_db from txn table: {bank_code_db}")
                 settlement_status_db = result["settlement_status"].iloc[0]
+                logger.debug(f"Fetching settlement_status_db from txn table: {settlement_status_db}")
                 tid_db = result['tid'].values[0]
+                logger.debug(f"Fetching tid_db from txn table: {tid_db}")
                 mid_db = result['mid'].values[0]
+                logger.debug(f"Fetching mid_db from txn table: {mid_db}")
 
                 query = f"select * from upi_txn where txn_id='{txn_id}'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 upi_status_db = result["status"].iloc[0]
+                logger.debug(f"Fetching upi_status_db from upi_txn table: {upi_status_db}")
                 upi_txn_type_db = result["txn_type"].iloc[0]
+                logger.debug(f"Fetching upi_txn_type_db from upi_txn table: {upi_txn_type_db}")
                 upi_bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"Fetching upi_bank_code_db from upi_txn table: {upi_bank_code_db}")
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
+                logger.debug(f"Fetching upi_mc_id_db from upi_txn table: {upi_mc_id_db}")
 
                 query = f"select * from payment_intent where id='{payment_intent_id}'"
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result : {result}")
                 payment_intent_status = result["status"].iloc[0]
+                logger.debug(f"Fetching payment_intent_status from payment_intent table: {payment_intent_status}")
 
                 actual_db_values = {
                     "pmt_status": status_db,
@@ -2091,13 +2142,21 @@ def test_common_100_103_207():
 
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time = transaction_details[0]['Date & Time']
+                logger.debug(f"Fetching date_time from portal: {date_time}")
                 transaction_id = transaction_details[0]['Transaction ID']
+                logger.debug(f"Fetching transaction_id from portal: {transaction_id}")
                 total_amount = transaction_details[0]['Total Amount'].split()
+                logger.debug(f"Fetching total_amount from portal: {total_amount}")
                 auth_code_portal = transaction_details[0]['Auth Code']
+                logger.debug(f"Fetching auth_code_portal from portal: {auth_code_portal}")
                 rr_number = transaction_details[0]['RR Number']
+                logger.debug(f"Fetching rr_number from portal: {rr_number}")
                 transaction_type = transaction_details[0]['Type']
+                logger.debug(f"Fetching transaction_type from portal: {transaction_type}")
                 status = transaction_details[0]['Status']
+                logger.debug(f"Fetching status from portal: {status}")
                 username = transaction_details[0]['Username']
+                logger.debug(f"Fetching username from portal: {username}")
 
                 actual_portal_values = {
                     "date_time": date_time,
@@ -2162,6 +2221,7 @@ def test_common_100_103_209():
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -2204,11 +2264,10 @@ def test_common_100_103_209():
                 f"org_code = '{org_code}'; "
         logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
         result = DBProcessor.getValueFromDB(query)
-        pg_merchant_id = result['pgMerchantId'].values[0]
-        vpa = result['vpa'].values[0]
-        upi_mc_id = result['id'].values[0]
         upi_account_id = result['pgMerchantId'].values[0]
-        logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and upiMerchantid : {upi_mc_id}")
+        vpa = result['vpa'].values[0]
+        logger.debug(f"Query result, vpa : {vpa} ")
+        logger.debug(f"Query result, upi_account_id : {upi_account_id}")
 
         TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
         GlobalVariables.setupCompletedSuccessfully = True
@@ -2225,8 +2284,10 @@ def test_common_100_103_209():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             amount = random.randint(650, 700)
+            logger.info(f"amount is: {amount}")
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"You order id is: {order_id}")
+
             api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
@@ -2299,68 +2360,29 @@ def test_common_100_103_209():
             query = f"select * from upi_txn where txn_id='{txn_id}'"
             logger.debug(f"Query to fetch data from upi_txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Query result : {result}")
+            logger.debug(f"Query result from upi_txn table: {result}")
             txn_ref = result['txn_ref'].values[0]
+            logger.debug(f"Fetching txn_ref from upi_txn table: {txn_ref}")
             txn_ref_3 = result['txn_ref3'].values[0]
+            logger.debug(f"Fetching txn_ref_3 from upi_txn table: {txn_ref_3}")
 
-            api_details = DBProcessor.get_api_details('razorpay_callback_generator_HMAC', request_body={
-                                                                              "entity": "event",
-                                                                              "account_id": upi_account_id,
-                                                                              "event": "payment.captured",
-                                                                              "contains": [
-                                                                                "payment"
-                                                                              ],
-                                                                              "payload": {
-                                                                                "payment": {
-                                                                                  "entity": {
-                                                                                    "id": txn_ref,
-                                                                                    "entity": "payment",
-                                                                                    "amount": amount * 100,
-                                                                                    "currency": "INR",
-                                                                                    "base_amount": amount * 100,
-                                                                                    "status": "failed",
-                                                                                    "order_id": txn_ref_3,
-                                                                                    "invoice_id": None,
-                                                                                    "international": None,
-                                                                                    "method": "upi",
-                                                                                    "amount_refunded": 0,
-                                                                                    "amount_transferred": 0,
-                                                                                    "refund_status": None,
-                                                                                    "captured": True,
-                                                                                    "description": None,
-                                                                                    "card_id": None,
-                                                                                    "bank": None,
-                                                                                    "wallet": None,
-                                                                                    "vpa": "gaurav.kumar@upi",
-                                                                                    "email": "gaurav.kumar@example.com",
-                                                                                    "contact": "+919876543210",
-                                                                                    "notes": {
-                                                                                        "receiver_type":"offline"
-                                                                                    },
-                                                                                    "fee": 2,
-                                                                                    "tax": 0,
-                                                                                    "error_code": None,
-                                                                                    "error_description": None,
-                                                                                    "error_source": None,
-                                                                                    "error_step": None,
-                                                                                    "error_reason": None,
-                                                                                    "acquirer_data": {
-                                                                                      "rrn": order_id
-                                                                                    },
-                                                                                    "created_at": 1567675356
-                                                                                  }}},
-                                                                              "created_at": 1567675356
-                                                                            })
-            response = APIProcessor.send_request(api_details)
+            api_details_hmac = DBProcessor.get_api_details('remote_pay_razorpay_callback_generator_HMAC_failed')
+            api_details_hmac['RequestBody']['account_id'] = upi_account_id
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['id'] = txn_ref
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['amount'] = amount * 100
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['base_amount'] = amount * 100
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['order_id'] = txn_ref_3
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['acquirer_data']['rrn'] = order_id
+
+            response = APIProcessor.send_request(api_details_hmac)
             logger.debug(f"Response received for razorpay_callback_generator_HMAC api is : {response}")
             razorpay_signature = response['razorpay_signature']
             logger.debug(f"razorpay_signature received for razorpay_callback_generator_HMAC api is : "
                          f"{razorpay_signature}")
+
             logger.debug(f"performing upi callback for razorpay")
-
-            api_details = DBProcessor.get_api_details('confirm_upi_callback_razorpay',
-                                                      request_body=api_details['RequestBody'])
-
+            api_details = DBProcessor.get_api_details('upi_confirm_razorpay',
+                                                      request_body=api_details_hmac['RequestBody'])
             api_details['Header'] = {'x-razorpay-signature': razorpay_signature,
                                      'Content-Type': 'application/json'}
             logger.debug(f"api details for upi_confirm_razorpay : {api_details}")
@@ -2486,19 +2508,33 @@ def test_common_100_103_209():
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
+                logger.debug(f"Fetching status_api: {status_api}")
                 txn_id_api = response['txnId']
+                logger.debug(f"Fetching txn_id_api: {txn_id_api}")
                 amount_api = int(response["amount"])
+                logger.debug(f"Fetching amount_api: {amount_api}")
                 payment_mode_api = response["paymentMode"]
+                logger.debug(f"Fetching payment_mode_api: {payment_mode_api}")
                 state_api = response["states"][0]
+                logger.debug(f"Fetching state_api: {state_api}")
                 rrn_api = response["rrNumber"]
+                logger.debug(f"Fetching rrn_api: {rrn_api}")
                 settlement_status_api = response["settlementStatus"]
+                logger.debug(f"Fetching settlement_status_api: {settlement_status_api}")
                 issuer_code_api = response["issuerCode"]
+                logger.debug(f"Fetching issuer_code_api: {issuer_code_api}")
                 acquirer_code_api = response["acquirerCode"]
+                logger.debug(f"Fetching acquirer_code_api: {acquirer_code_api}")
                 org_code_api = response["orgCode"]
+                logger.debug(f"Fetching org_code_api: {org_code_api}")
                 mid_api = response["mid"]
+                logger.debug(f"Fetching mid_api: {mid_api}")
                 tid_api = response["tid"]
+                logger.debug(f"Fetching tid_api: {tid_api}")
                 txn_type_api = response["txnType"]
+                logger.debug(f"Fetching txn_type_api: {txn_type_api}")
                 date_api = response["postingDate"]
+                logger.debug(f"Fetching date_api: {date_api}")
 
                 actual_api_values = {
                     "pmt_status": status_api,
@@ -2542,20 +2578,25 @@ def test_common_100_103_209():
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
-                query = f"select state,status,amount,payment_mode,external_ref from txn where id='{txn_id}'"
+                query = f"select state, status, amount, payment_mode, external_ref from txn where id='{txn_id}'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result from txn table : {result}")
                 status_db = result["status"].iloc[0]
+                logger.debug(f"Fetching status_db from txn table: {status_db}")
                 payment_mode_db = result["payment_mode"].iloc[0]
+                logger.debug(f"Fetching payment_mode_db from txn table: {payment_mode_db}")
                 amount_db = int(result["amount"].iloc[0])
+                logger.debug(f"Fetching amount_db from txn table: {amount_db}")
                 state_db = result["state"].iloc[0]
+                logger.debug(f"Fetching state_db from txn table: {state_db}")
 
                 query = f"select status from upi_txn where txn_id='{txn_id}'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result from upi_txn table : {result}")
                 upi_status_db = result["status"].iloc[0]
+                logger.debug(f"Fetching upi_status_db from upi_txn table: {upi_status_db}")
 
                 actual_db_values = {
                     "pmt_status": status_db,
@@ -2596,12 +2637,19 @@ def test_common_100_103_209():
 
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time = transaction_details[0]['Date & Time']
+                logger.debug(f"Fetching date_time from portal: {date_time}")
                 transaction_id = transaction_details[0]['Transaction ID']
+                logger.debug(f"Fetching transaction_id from portal: {transaction_id}")
                 total_amount = transaction_details[0]['Total Amount'].split()
+                logger.debug(f"Fetching total_amount from portal: {total_amount}")
                 rr_number = transaction_details[0]['RR Number']
+                logger.debug(f"Fetching rr_number from portal: {rr_number}")
                 transaction_type = transaction_details[0]['Type']
+                logger.debug(f"Fetching transaction_type from portal: {transaction_type}")
                 status = transaction_details[0]['Status']
+                logger.debug(f"Fetching status from portal: {status}")
                 username = transaction_details[0]['Username']
+                logger.debug(f"Fetching username from portal: {username}")
 
                 actual_portal_values = {
                     "date_time": date_time,
@@ -2653,6 +2701,7 @@ def test_common_100_103_212():
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
         # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
+
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
         app_username = app_cred['Username']
@@ -2689,11 +2738,12 @@ def test_common_100_103_212():
                 f"org_code = '{org_code}' and card_terminal_acquirer_code = 'NONE';"
         logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
         result = DBProcessor.getValueFromDB(query)
-        pg_merchant_id = result['pgMerchantId'].values[0]
-        vpa = result['vpa'].values[0]
         upi_mc_id = result['id'].values[0]
+        logger.debug(f"Query result, mc_id: {upi_mc_id}")
+        vpa = result['vpa'].values[0]
+        logger.debug(f"Query result, vpa : {vpa} ")
         upi_account_id = result['pgMerchantId'].values[0]
-        logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and mc_id: {upi_mc_id}")
+        logger.debug(f"Query result, upi_account_id : {upi_account_id}")
 
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
@@ -2708,10 +2758,12 @@ def test_common_100_103_212():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+
             amount = random.randint(625, 699)
+            logger.info(f"Entered amount is: {amount}")
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"Entered order id is: {order_id}")
-            logger.info(f"Entered amount is: {amount}")
+
             api_details = DBProcessor.get_api_details('Remotepay_Initiate',
                                                       request_body={"amount": amount, "externalRefNumber": order_id,
                                                                     "username": app_username, "password": app_password})
@@ -2742,68 +2794,28 @@ def test_common_100_103_212():
             query = f"select * from upi_txn where txn_id='{txn_id}'"
             logger.debug(f"Query to fetch data from upi_txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"Query result : {result}")
+            logger.debug(f"Query result from upi_txn table : {result}")
             txn_ref = result['txn_ref'].values[0]
+            logger.debug(f"Fetching txn_ref from upi_txn table: {txn_ref}")
             txn_ref_3 = result['txn_ref3'].values[0]
+            logger.debug(f"Fetching txn_ref_3 from upi_txn table: {txn_ref_3}")
 
-            api_details = DBProcessor.get_api_details('razorpay_callback_generator_HMAC', request_body={
-                                                                              "entity": "event",
-                                                                              "account_id": upi_account_id,
-                                                                              "event": "payment.captured",
-                                                                              "contains": [
-                                                                                "payment"
-                                                                              ],
-                                                                              "payload": {
-                                                                                "payment": {
-                                                                                  "entity": {
-                                                                                    "id": txn_ref,
-                                                                                    "entity": "payment",
-                                                                                    "amount": amount * 100,
-                                                                                    "currency": "INR",
-                                                                                    "base_amount": amount * 100,
-                                                                                    "status": "failed",
-                                                                                    "order_id": txn_ref_3,
-                                                                                    "invoice_id": None,
-                                                                                    "international": None,
-                                                                                    "method": "upi",
-                                                                                    "amount_refunded": 0,
-                                                                                    "amount_transferred": 0,
-                                                                                    "refund_status": None,
-                                                                                    "captured": True,
-                                                                                    "description": None,
-                                                                                    "card_id": None,
-                                                                                    "bank": None,
-                                                                                    "wallet": None,
-                                                                                    "vpa": "gaurav.kumar@upi",
-                                                                                    "email": "gaurav.kumar@example.com",
-                                                                                    "contact": "+919876543210",
-                                                                                    "notes": {
-                                                                                        "receiver_type": "offline"
-                                                                                    },
-                                                                                    "fee": 2,
-                                                                                    "tax": 0,
-                                                                                    "error_code": None,
-                                                                                    "error_description": None,
-                                                                                    "error_source": None,
-                                                                                    "error_step": None,
-                                                                                    "error_reason": None,
-                                                                                    "acquirer_data": {
-                                                                                      "rrn": order_id
-                                                                                    },
-                                                                                    "created_at": 1567675356
-                                                                                  }}},
-                                                                              "created_at": 1567675356
-                                                                            })
-            response = APIProcessor.send_request(api_details)
+            api_details_hmac = DBProcessor.get_api_details('remote_pay_razorpay_callback_generator_HMAC_failed')
+            api_details_hmac['RequestBody']['account_id'] = upi_account_id
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['id'] = txn_ref
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['amount'] = amount * 100
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['base_amount'] = amount * 100
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['order_id'] = txn_ref_3
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['acquirer_data']['rrn'] = order_id
+            response = APIProcessor.send_request(api_details_hmac)
             logger.debug(f"Response received for razorpay_callback_generator_HMAC api is : {response}")
             razorpay_signature = response['razorpay_signature']
             logger.debug(f"razorpay_signature received for razorpay_callback_generator_HMAC api is : "
                          f"{razorpay_signature}")
+
             logger.debug(f"performing upi callback for razorpay")
-
-            api_details = DBProcessor.get_api_details('confirm_upi_callback_razorpay',
-                                                      request_body=api_details['RequestBody'])
-
+            api_details = DBProcessor.get_api_details('upi_confirm_razorpay',
+                                                      request_body=api_details_hmac['RequestBody'])
             api_details['Header'] = {'x-razorpay-signature': razorpay_signature,
                                      'Content-Type': 'application/json'}
             logger.debug(f"api details for upi_confirm_razorpay : {api_details}")
@@ -2811,64 +2823,24 @@ def test_common_100_103_212():
             logger.debug(f"Response received for upi_confirm_razorpay api is : {response}")
 
             callback_2_rrn = random.randint(1111110, 9999999)
-            api_details = DBProcessor.get_api_details('razorpay_callback_generator_HMAC', request_body={
-                "entity": "event",
-                "account_id": upi_account_id,
-                "event": "payment.captured",
-                "contains": [
-                    "payment"
-                ],
-                "payload": {
-                    "payment": {
-                        "entity": {
-                            "id": txn_ref,
-                            "entity": "payment",
-                            "amount": amount * 100,
-                            "currency": "INR",
-                            "base_amount": amount * 100,
-                            "status": "failed",
-                            "order_id": txn_ref_3,
-                            "invoice_id": None,
-                            "international": None,
-                            "method": "upi",
-                            "amount_refunded": 0,
-                            "amount_transferred": 0,
-                            "refund_status": None,
-                            "captured": True,
-                            "description": None,
-                            "card_id": None,
-                            "bank": None,
-                            "wallet": None,
-                            "vpa": "gaurav.kumar@upi",
-                            "email": "gaurav.kumar@example.com",
-                            "contact": "+919876543210",
-                            "notes": {
-                                "receiver_type": "offline"
-                            },
-                            "fee": 2,
-                            "tax": 0,
-                            "error_code": None,
-                            "error_description": None,
-                            "error_source": None,
-                            "error_step": None,
-                            "error_reason": None,
-                            "acquirer_data": {
-                                "rrn": callback_2_rrn
-                            },
-                            "created_at": 1567675356
-                        }}},
-                "created_at": 1567675356
-            })
-            response = APIProcessor.send_request(api_details)
+            logger.info(f"generated rrn value for 2nd callback is: {callback_2_rrn}")
+
+            api_details_hmac = DBProcessor.get_api_details('remote_pay_razorpay_callback_generator_HMAC_failed')
+            api_details_hmac['RequestBody']['account_id'] = upi_account_id
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['id'] = txn_ref
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['amount'] = amount * 100
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['base_amount'] = amount * 100
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['order_id'] = txn_ref_3
+            api_details_hmac['RequestBody']['payload']['payment']['entity']['acquirer_data']['rrn'] = callback_2_rrn
+            response = APIProcessor.send_request(api_details_hmac)
             logger.debug(f"Response received for razorpay_callback_generator_HMAC api is : {response}")
             razorpay_signature = response['razorpay_signature']
             logger.debug(f"razorpay_signature received for razorpay_callback_generator_HMAC api is : "
                          f"{razorpay_signature}")
+
             logger.debug(f"performing upi callback for razorpay")
-
-            api_details = DBProcessor.get_api_details('confirm_upi_callback_razorpay',
-                                                      request_body=api_details['RequestBody'])
-
+            api_details = DBProcessor.get_api_details('upi_confirm_razorpay',
+                                                      request_body=api_details_hmac['RequestBody'])
             api_details['Header'] = {'x-razorpay-signature': razorpay_signature,
                                      'Content-Type': 'application/json'}
             logger.debug(f"api details for upi_confirm_razorpay : {api_details}")
@@ -3033,18 +3005,31 @@ def test_common_100_103_212():
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
                 status_api = response["status"]
+                logger.debug(f"Fetching status_api: {status_api}")
                 amount_api = int(response["amount"])
+                logger.debug(f"Fetching amount_api: {amount_api}")
                 payment_mode_api = response["paymentMode"]
+                logger.debug(f"Fetching payment_mode_api: {payment_mode_api}")
                 state_api = response["states"][0]
+                logger.debug(f"Fetching state_api: {state_api}")
                 rrn_api = response["rrNumber"]
+                logger.debug(f"Fetching rrn_api: {rrn_api}")
                 settlement_status_api = response["settlementStatus"]
+                logger.debug(f"Fetching settlement_status_api: {settlement_status_api}")
                 issuer_code_api = response["issuerCode"]
+                logger.debug(f"Fetching issuer_code_api: {issuer_code_api}")
                 acquirer_code_api = response["acquirerCode"]
+                logger.debug(f"Fetching acquirer_code_api: {acquirer_code_api}")
                 org_code_api = response["orgCode"]
+                logger.debug(f"Fetching org_code_api: {org_code_api}")
                 mid_api = response["mid"]
+                logger.debug(f"Fetching mid_api: {mid_api}")
                 tid_api = response["tid"]
+                logger.debug(f"Fetching tid_api: {tid_api}")
                 txn_type_api = response["txnType"]
+                logger.debug(f"Fetching txn_type_api: {txn_type_api}")
                 date_api = response["postingDate"]
+                logger.debug(f"Fetching date_api: {date_api}")
 
                 actual_api_values = {
                                      "pmt_status": status_api,
@@ -3092,30 +3077,44 @@ def test_common_100_103_212():
                 query = f"select * from txn where id='{txn_id}'"
                 logger.debug(f"Query to fetch data from txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result from txn table : {result}")
                 status_db = result["status"].iloc[0]
+                logger.debug(f"Fetching status_db from txn table: {status_db}")
                 payment_mode_db = result["payment_mode"].iloc[0]
+                logger.debug(f"Fetching payment_mode_db from txn table: {payment_mode_db}")
                 amount_db = int(result["amount"].iloc[0])
+                logger.debug(f"Fetching amount_db from txn table: {amount_db}")
                 state_db = result["state"].iloc[0]
+                logger.debug(f"Fetching state_db from txn table: {state_db}")
                 acquirer_code_db = result["acquirer_code"].iloc[0]
+                logger.debug(f"Fetching acquirer_code_db from txn table: {acquirer_code_db}")
                 bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"Fetching bank_code_db from txn table: {bank_code_db}")
                 settlement_status_db = result["settlement_status"].iloc[0]
+                logger.debug(f"Fetching settlement_status_db from txn table: {settlement_status_db}")
                 tid_db = result['tid'].values[0]
+                logger.debug(f"Fetching tid_db from txn table: {tid_db}")
                 mid_db = result['mid'].values[0]
+                logger.debug(f"Fetching mid_db from txn table: {mid_db}")
 
                 query = f"select * from upi_txn where txn_id='{txn_id}'"
                 logger.debug(f"Query to fetch data from upi_txn table : {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result from upi_txn table : {result}")
                 upi_status_db = result["status"].iloc[0]
+                logger.debug(f"Fetching upi_status_db from upi_txn table: {upi_status_db}")
                 upi_txn_type_db = result["txn_type"].iloc[0]
+                logger.debug(f"Fetching upi_txn_type_db from upi_txn table: {upi_txn_type_db}")
                 upi_bank_code_db = result["bank_code"].iloc[0]
+                logger.debug(f"Fetching upi_bank_code_db from upi_txn table: {upi_bank_code_db}")
                 upi_mc_id_db = result["upi_mc_id"].iloc[0]
+                logger.debug(f"Fetching upi_mc_id_db from upi_txn table: {upi_mc_id_db}")
 
                 query = f"select * from payment_intent where id='{payment_intent_id}'"
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result : {result}")
+                logger.debug(f"Query result from payment_intent table : {result}")
                 payment_intent_status = result["status"].iloc[0]
+                logger.debug(f"Fetching payment_intent_status from payment_intent table: {payment_intent_status}")
 
                 actual_db_values = {
                     "pmt_status": status_db,
@@ -3158,13 +3157,21 @@ def test_common_100_103_212():
 
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time = transaction_details[0]['Date & Time']
+                logger.debug(f"Fetching date_time: {date_time}")
                 transaction_id = transaction_details[0]['Transaction ID']
+                logger.debug(f"Fetching transaction_id: {transaction_id}")
                 total_amount = transaction_details[0]['Total Amount'].split()
+                logger.debug(f"Fetching total_amount: {total_amount}")
                 auth_code_portal = transaction_details[0]['Auth Code']
+                logger.debug(f"Fetching auth_code_portal: {auth_code_portal}")
                 rr_number = transaction_details[0]['RR Number']
+                logger.debug(f"Fetching rr_number: {rr_number}")
                 transaction_type = transaction_details[0]['Type']
+                logger.debug(f"Fetching transaction_type: {transaction_type}")
                 status = transaction_details[0]['Status']
+                logger.debug(f"Fetching status: {status}")
                 username = transaction_details[0]['Username']
+                logger.debug(f"Fetching username: {username}")
 
                 actual_portal_values = {
                     "date_time": date_time,

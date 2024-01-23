@@ -103,7 +103,7 @@ def send_request(api_details):
             return json_resp
 
         # For Razorpay_Callback
-        if api_details['ApiName'] == 'razorpay_callback_generator_HMAC_success' or api_details['ApiName'] == 'razorpay_callback_generator_HMAC_failed':
+        if api_details['ApiName'] == 'razorpay_callback_generator_HMAC_success' or api_details['ApiName'] == 'razorpay_callback_generator_HMAC_failed' or api_details['ApiName'] == 'remote_pay_razorpay_callback_generator_HMAC_success' or api_details['ApiName'] == 'remote_pay_razorpay_callback_generator_HMAC_failed':
             router_ip = Base_Actions.get_environment("str_exe_env_ip")
             query = "select psp_base_url from upi_psp_config where bank_code='RAZORPAY_PSP';"
             logger.debug(f"Query to fetch psp_base_url from the DB : {query}")
