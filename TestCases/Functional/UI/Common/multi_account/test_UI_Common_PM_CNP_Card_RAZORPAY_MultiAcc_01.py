@@ -65,15 +65,13 @@ def test_common_100_112_043():
                 f"where name='{account_label_name}' AND org_code ='{org_code}')"
         logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query)
-        upi_mc_id = result['id'].values[0]
-        logger.debug(f"Query result, upi_mc_id : {upi_mc_id}")
         acc_label_id = result['acc_label_id'].values[0]
         logger.debug(f"Query result, org_code : {acc_label_id}")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -83,8 +81,6 @@ def test_common_100_112_043():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            GlobalVariables.time_calc.execution.start()
-            logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             amount = random.randint(601, 700)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"Entered order id is: {order_id}")
@@ -97,7 +93,7 @@ def test_common_100_112_043():
                 "accountLabel": str(account_label_name)})
             response = APIProcessor.send_request(api_details)
             if not response['success']:
-                raise Exception("Api could not initate a cnp txn.")
+                raise Exception("Api could not initiate a cnp txn.")
             else:
                 payment_link_url = response.get('paymentLink')
                 payment_intent_id = response.get('paymentIntentId')
@@ -175,16 +171,8 @@ def test_common_100_112_043():
                 logger.debug(f"Query to fetch Txn_id from the DB : {query}")
                 result = DBProcessor.getValueFromDB(query, "cnpware")
                 logger.debug(f"Query result of cnpware_txn table is : {result}")
-                cnpware_txn_txn_type = result['txn_type'].values[0]
-                logger.debug(f"Query result, cnpware_txn_txn_type : {cnpware_txn_txn_type}")
-                cnpware_txn_card_type = result['payment_card_type'].values[0]
-                logger.debug(f"Query result, cnpware_txn_card_type : {cnpware_txn_card_type}")
-                cnpware_txn_state = result['state'].values[0]
-                logger.debug(f"Query result, cnpware_txn_state : {cnpware_txn_state}")
                 cnpware_payment_gateway = result['payment_gateway'].values[0]
                 logger.debug(f"Query result, cnpware_payment_gateway : {cnpware_payment_gateway}")
-                cnpware_payment_flow = result['payment_flow'].values[0]
-                logger.debug(f"Query result, cnpware_payment_flow : {cnpware_payment_flow}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -587,17 +575,14 @@ def test_common_100_112_049():
                         f"where name='{account_label_name}' AND org_code ='{org_code}')"
         logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query)
-        upi_mc_id = result['id'].values[0]
         acc_label_id = result['acc_label_id'].values[0]
-        logger.debug(f"Query result, upi_mc_id : {upi_mc_id}")
         logger.debug(f"Query result, org_code : {acc_label_id}")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
-
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -606,8 +591,6 @@ def test_common_100_112_049():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            GlobalVariables.time_calc.execution.start()
-            logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             amount = random.randint(601, 700)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"Entered order id is: {order_id}")
@@ -620,7 +603,7 @@ def test_common_100_112_049():
                 "accountLabel": str(account_label_name)})
             response = APIProcessor.send_request(api_details)
             if not response['success']:
-                raise Exception("Api could not initate a cnp txn.")
+                raise Exception("Api could not initiate a cnp txn.")
             else:
                 payment_link_url = response.get('paymentLink')
                 payment_intent_id = response.get('paymentIntentId')
@@ -697,16 +680,8 @@ def test_common_100_112_049():
                 logger.debug(f"Query to fetch Txn_id from the DB : {query}")
                 result = DBProcessor.getValueFromDB(query, "cnpware")
                 logger.debug(f"Query result of cnpware_txn table is : {result}")
-                cnpware_txn_txn_type = result['txn_type'].values[0]
-                logger.debug(f"Query result, cnpware_txn_txn_type : {cnpware_txn_txn_type}")
-                cnpware_txn_card_type = result['payment_card_type'].values[0]
-                logger.debug(f"Query result, cnpware_txn_card_type : {cnpware_txn_card_type}")
-                cnpware_txn_state = result['state'].values[0]
-                logger.debug(f"Query result, cnpware_txn_state : {cnpware_txn_state}")
                 cnpware_payment_gateway = result['payment_gateway'].values[0]
                 logger.debug(f"Query result, cnpware_payment_gateway : {cnpware_payment_gateway}")
-                cnpware_payment_flow = result['payment_flow'].values[0]
-                logger.debug(f"Query result, cnpware_payment_flow : {cnpware_payment_flow}")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -716,12 +691,10 @@ def test_common_100_112_049():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception -" + str(e))
         # -----------------------------------------End of Test Execution--------------------------------------
-
         # -----------------------------------------Start of Validation----------------------------------------
         logger.info(f"Starting Validation for the test case : {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
-
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
@@ -984,14 +957,23 @@ def test_common_100_112_049():
 
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time = transaction_details[0]['Date & Time']
+                logger.debug(f"date_time: {date_time}")
                 transaction_id = transaction_details[0]['Transaction ID']
+                logger.debug(f"transaction_id: {transaction_id}")
                 total_amount = transaction_details[0]['Total Amount'].split()
+                logger.debug(f"total_amount: {total_amount}")
                 auth_code = transaction_details[0]['Auth Code']
+                logger.debug(f"auth_code: {auth_code}")
                 rr_number = transaction_details[0]['RR Number']
+                logger.debug(f"rr_number: {rr_number}")
                 transaction_type = transaction_details[0]['Type']
+                logger.debug(f"transaction_type: {transaction_type}")
                 status = transaction_details[0]['Status']
+                logger.debug(f"status: {status}")
                 username = transaction_details[0]['Username']
+                logger.debug(f"username: {username}")
                 labels = transaction_details[0]['Labels']
+                logger.debug(f"labels: {labels}")
 
                 actual_portal_values = {
                     "date_time": date_time,
@@ -1095,15 +1077,13 @@ def test_common_100_112_050():
                         f"where name='{account_label_name}' AND org_code ='{org_code}')"
         logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query)
-        upi_mc_id = result['id'].values[0]
-        logger.debug(f"Query result, upi_mc_id : {upi_mc_id}")
         acc_label_id = result['acc_label_id'].values[0]
         logger.debug(f"Query result, org_code : {acc_label_id}")
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=False, middlewareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
 
         GlobalVariables.time_calc.setup.end()
@@ -1114,8 +1094,6 @@ def test_common_100_112_050():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            GlobalVariables.time_calc.execution.start()
-            logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             amount = random.randint(601, 700)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.info(f"Entered order id is: {order_id}")
@@ -1128,7 +1106,7 @@ def test_common_100_112_050():
                 "accountLabel": str(account_label_name)})
             response = APIProcessor.send_request(api_details)
             if not response['success']:
-                raise Exception("Api could not initate a cnp txn.")
+                raise Exception("Api could not initiate a cnp txn.")
             else:
                 payment_link_url = response['paymentLink']
                 ui_browser = TestSuiteSetup.initialize_ui_browser()
@@ -1208,17 +1186,8 @@ def test_common_100_112_050():
                 logger.debug(f"Query to fetch Txn_id from the DB : {query}")
                 result = DBProcessor.getValueFromDB(query, "cnpware")
                 logger.debug(f"Query result of cnpware_txn table is : {result}")
-                cnpware_txn_txn_type = result['txn_type'].values[0]
-                logger.debug(f"Query result, cnpware_txn_txn_type : {cnpware_txn_txn_type}")
-                cnpware_txn_card_type = result['payment_card_type'].values[0]
-                logger.debug(f"Query result, cnpware_txn_card_type : {cnpware_txn_card_type}")
-                cnpware_txn_state = result['state'].values[0]
-                logger.debug(f"Query result, cnpware_txn_state : {cnpware_txn_state}")
                 cnpware_payment_gateway = result['payment_gateway'].values[0]
                 logger.debug(f"Query result, cnpware_payment_gateway : {cnpware_payment_gateway}")
-                cnpware_payment_flow = result['payment_flow'].values[0]
-                logger.debug(f"Query result, cnpware_payment_flow : {cnpware_payment_flow}")
-
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
