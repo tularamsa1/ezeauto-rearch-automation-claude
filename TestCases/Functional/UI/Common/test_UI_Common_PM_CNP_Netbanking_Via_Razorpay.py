@@ -483,7 +483,7 @@ def test_common_100_103_192():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -879,7 +879,7 @@ def test_common_100_103_193():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")

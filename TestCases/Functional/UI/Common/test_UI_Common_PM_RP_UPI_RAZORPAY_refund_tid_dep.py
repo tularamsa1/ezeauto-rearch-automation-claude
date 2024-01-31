@@ -76,10 +76,6 @@ def test_common_100_103_287():
         logger.debug(f"Query to fetch data from upi_merchant_config table is : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result is : {result}")
-        pg_merchant_id = result['pgMerchantId'].values[0]
-        logger.debug(f"pg_merchant_id is : {pg_merchant_id} ")
-        upi_mc_id = result['id'].values[0]
-        logger.debug(f"upi_mc_id is : {upi_mc_id} ")
         mid_db = result['mid'].iloc[0]
         logger.debug(f"mid_db is : {mid_db} ")
         tid_db = result['tid'].iloc[0]
@@ -764,10 +760,6 @@ def test_common_100_103_288():
         logger.debug(f"Query to fetch data from upi_merchant_config table is : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result is : {result}")
-        pg_merchant_id = result['pgMerchantId'].values[0]
-        logger.debug(f"pg_merchant_id is : {pg_merchant_id} ")
-        upi_mc_id = result['id'].values[0]
-        logger.debug(f"upi_mc_id is : {upi_mc_id} ")
         mid_db = result['mid'].iloc[0]
         logger.debug(f"mid_db is : {mid_db} ")
         tid_db = result['tid'].iloc[0]
@@ -1454,10 +1446,6 @@ def test_common_100_103_289():
         logger.debug(f"Query to fetch data from upi_merchant_config table is : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result is : {result}")
-        pg_merchant_id = result['pgMerchantId'].values[0]
-        logger.debug(f"pg_merchant_id is : {pg_merchant_id} ")
-        upi_mc_id = result['id'].values[0]
-        logger.debug(f"upi_mc_id is : {upi_mc_id} ")
         mid_db = result['mid'].iloc[0]
         logger.debug(f"mid_db is : {mid_db} ")
         tid_db = result['tid'].iloc[0]
@@ -2164,10 +2152,6 @@ def test_common_100_103_290():
         logger.debug(f"Query to fetch data from upi_merchant_config table is : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result is : {result}")
-        pg_merchant_id = result['pgMerchantId'].values[0]
-        logger.debug(f"pg_merchant_id is : {pg_merchant_id} ")
-        upi_mc_id = result['id'].values[0]
-        logger.debug(f"upi_mc_id is : {upi_mc_id} ")
         mid_db = result['mid'].iloc[0]
         logger.debug(f"mid_db is : {mid_db} ")
         tid_db = result['tid'].iloc[0]

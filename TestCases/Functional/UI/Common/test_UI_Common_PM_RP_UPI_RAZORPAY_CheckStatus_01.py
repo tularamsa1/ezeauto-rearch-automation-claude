@@ -499,8 +499,6 @@ def test_common_100_103_258():
         logger.debug(
             f"Query to fetch upi_mc_id  and pgMerchantId from the upi_merchant_config for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query)
-        vpa = result['vpa'].values[0]
-        logger.debug(f"Fetching vpa from upi_merchant_config table: {vpa}")
         upi_mc_id = result['id'].values[0]
         logger.debug(f"Fetching upi_mc_id from upi_merchant_config table: {upi_mc_id}")
         upi_account_id = result['pgMerchantId'].values[0]
@@ -939,13 +937,13 @@ def test_common_100_103_260():
             f"Query to fetch upi_mc_id  and pgMerchantId from the upi_merchant_config for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query)
         pg_merchant_id = result['pgMerchantId'].values[0]
-        vpa = result['vpa'].values[0]
+        logger.debug(f"Query result pgMerchantId : {pg_merchant_id}")
         upi_mc_id = result['id'].values[0]
-        upi_account_id = result['pgMerchantId'].values[0]
+        logger.debug(f"Query result upi_mc_id: {upi_mc_id}")
         tid = result['virtual_tid'].values[0]
+        logger.debug(f"Query result tid: {tid}")
         mid = result['virtual_mid'].values[0]
-        logger.debug(f" upi account id from db : {upi_account_id}")
-        logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and upi_mc_id: {upi_mc_id}")
+        logger.debug(f"Query result mid: {mid}")
         TestSuiteSetup.launch_browser_and_context_initialize("firefox")
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1346,8 +1344,6 @@ def test_common_100_103_261():
         logger.debug(
             f"Query to fetch upi_mc_id  and pgMerchantId from the upi_merchant_config for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query)
-        vpa = result['vpa'].values[0]
-        logger.debug(f"Fetching vpa from upi_merchant_config table: {vpa}")
         upi_mc_id = result['id'].values[0]
         logger.debug(f"Fetching upi_mc_id from upi_merchant_config table: {upi_mc_id}")
         upi_account_id = result['pgMerchantId'].values[0]
@@ -1361,7 +1357,7 @@ def test_common_100_103_261():
         TestSuiteSetup.launch_browser_and_context_initialize()
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # ---------------------------------------------------------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------

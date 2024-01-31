@@ -755,8 +755,6 @@ def test_common_100_111_042():
         logger.debug(f"query result for upi_merchant_config table is : {result}")
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Value of pg_merchant_id from upi_merchant_config table: {pg_merchant_id}")
-        vpa = result['vpa'].values[0]
-        logger.debug(f"Value of vpa from upi_merchant_config table: {vpa}")
         upi_mc_id = result['id'].values[0]
         logger.debug(f"Value of upi_mc_id from upi_merchant_config table: {upi_mc_id}")
         acc_label_id = str(result['acc_label_id'].values[0])
@@ -770,7 +768,7 @@ def test_common_100_111_042():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------------------PreConditions(Completed)-----------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------

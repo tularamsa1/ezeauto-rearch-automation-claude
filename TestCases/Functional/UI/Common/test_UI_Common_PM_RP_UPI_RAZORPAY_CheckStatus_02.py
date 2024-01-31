@@ -12,7 +12,7 @@ from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_TransHistoryPage import TransHistoryPage
 from PageFactory.Portal_TransHistoryPage import get_transaction_details_for_portal
 from PageFactory.portal_remotePayPage import RemotePayTxnPage
-from Utilities import Validator, ReportProcessor, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner, \
+from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner, \
     date_time_converter
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -495,15 +495,13 @@ def test_common_100_103_218():
                 f"AND org_code = '{org_code}' and card_terminal_acquirer_code = 'NONE' order by created_time desc limit 1"
         logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
         result = DBProcessor.getValueFromDB(query)
-        pg_merchant_id = result['pgMerchantId'].values[0]
-        vpa = result['vpa'].values[0]
         upi_mc_id = result['id'].values[0]
-        logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and upi_mc_id: {upi_mc_id}")
+        logger.debug(f"Query result upi_mc_id: {upi_mc_id}")
         TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)---------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -910,16 +908,14 @@ def test_common_100_103_219():
                 f"status = 'ACTIVE' AND org_code = '{org_code}' and card_terminal_acquirer_code = 'NONE' order by created_time desc limit 1"
         logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config : {query}")
         result = DBProcessor.getValueFromDB(query)
-        pg_merchant_id = result['pgMerchantId'].values[0]
-        vpa = result['vpa'].values[0]
         upi_mc_id = result['id'].values[0]
-        logger.debug(f"Query result, vpa : {vpa}, pgMerchantId : {pg_merchant_id} and upi_mc_id: {upi_mc_id}")
+        logger.debug(f"Query result  and upi_mc_id: {upi_mc_id}")
 
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------

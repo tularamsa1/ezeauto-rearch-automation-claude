@@ -66,8 +66,6 @@ def test_common_100_112_045():
                 f"where name='{account_label_name}' AND org_code ='{org_code}')"
         logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query)
-        upi_mc_id = result['id'].values[0]
-        logger.debug(f"Query result, upi_mc_id : {upi_mc_id}")
         acc_label_id = result['acc_label_id'].values[0]
         logger.debug(f"Query result, org_code : {acc_label_id}")
         TestSuiteSetup.launch_browser_and_context_initialize()
@@ -509,8 +507,6 @@ def test_common_100_112_046():
                 f"where name='{account_label_name}' AND org_code ='{org_code}')"
         logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query)
-        upi_mc_id = result['id'].values[0]
-        logger.debug(f"Query result, upi_mc_id : {upi_mc_id}")
         acc_label_id = result['acc_label_id'].values[0]
         logger.debug(f"Query result, org_code : {acc_label_id}")
         TestSuiteSetup.launch_browser_and_context_initialize()

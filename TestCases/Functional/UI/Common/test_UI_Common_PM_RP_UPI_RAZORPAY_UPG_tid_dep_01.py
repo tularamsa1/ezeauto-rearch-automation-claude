@@ -90,14 +90,10 @@ def test_common_100_103_285():
         logger.debug(f"Query result is : {result}")
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"pg_merchant_id is : {pg_merchant_id} ")
-        upi_mc_id = result['id'].values[0]
-        logger.debug(f"upi_mc_id is : {upi_mc_id} ")
         mid_db = result['mid'].iloc[0]
         logger.debug(f"mid_db is : {mid_db} ")
         tid_db = result['tid'].iloc[0]
         logger.debug(f"tid_db is : {tid_db} ")
-        upi_account_id = result['pgMerchantId'].values[0]
-        logger.debug(f" upi account id from db : {upi_account_id}")
 
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True

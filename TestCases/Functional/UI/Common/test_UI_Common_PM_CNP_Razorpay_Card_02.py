@@ -66,7 +66,7 @@ def test_common_100_103_185():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
 
         GlobalVariables.time_calc.setup.end()
@@ -688,11 +688,10 @@ def test_common_100_103_186():
     """
     expected_success_message = "Your payment is successfully completed! You may close the browser now."
     try:
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
@@ -713,11 +712,12 @@ def test_common_100_103_186():
         testsuite_teardown.revert_cnp_payment_settings_default(org_code, bank_code='HDFC',
                                                                portal_un=portal_username, portal_pw=portal_password,
                                                                payment_gateway='RAZORPAY')
-
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------------
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
-
+        # -----------------------------PreConditions(Completed)--------------------------------------------------------
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -1120,11 +1120,10 @@ def test_common_100_103_187():
     expected_failed_message = "Your payment attempt failed, Sorry for the inconvenience. Please contact " \
                               "support@ezetap.com for further clarifications."
     try:
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
-
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
@@ -1145,14 +1144,14 @@ def test_common_100_103_187():
         testsuite_teardown.revert_cnp_payment_settings_default(org_code, bank_code='HDFC',
                                                                portal_un=portal_username, portal_pw=portal_password,
                                                                payment_gateway='RAZORPAY')
-
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
-
+        # -----------------------------PreConditions(Completed)-----------------------------
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -1504,11 +1503,10 @@ def test_common_100_103_188():
     TC naming code description: 100: Payment Method, 103: CNP, 188: TC_188
     """
     try:
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
-
+        # -------------------------------Reset Settings to default(started)--------------------------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
@@ -1528,19 +1526,21 @@ def test_common_100_103_188():
         testsuite_teardown.revert_cnp_payment_settings_default(org_code, bank_code='HDFC',
                                                                portal_un=portal_username,
                                                                portal_pw=portal_password, payment_gateway='RAZORPAY')
-
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
+        # -------------------------------Reset Settings to default(completed)-------------------------------------------
+        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         query = "update remotepay_setting set setting_value= '2' where setting_name='cnpTxnTimeoutDuration' " \
                 "and org_code='" + org_code + "';"
         logger.debug(f"Query to update remote pay settings is : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Result for remote pay setting is: {result}")
-        # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
-        print(colored("Setup Timer ended in testcase function".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")
@@ -1949,7 +1949,7 @@ def test_common_100_103_189():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False, cnpwareLog=True, middlewareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
 
         GlobalVariables.time_calc.setup.end()

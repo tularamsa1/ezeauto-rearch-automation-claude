@@ -75,8 +75,6 @@ def test_common_100_111_037():
         result = DBProcessor.getValueFromDB(query)
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Query result, pg_merchant_id : {pg_merchant_id}")
-        vpa = result['vpa'].values[0]
-        logger.debug(f"Query result, vpa : {vpa}")
         upi_mc_id = result['id'].values[0]
         logger.debug(f"Query result, upi_mc_id : {upi_mc_id}")
         acc_label_id = result['acc_label_id'].values[0]
@@ -149,7 +147,7 @@ def test_common_100_111_037():
             logger.info(f"Query result,txn_ref : {txn_ref} AND txn_ref_3 : {txn_ref_3}")
 
             logger.debug(
-                f"replacing the Intent ID with {payment_intent_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn} in the curl_data")
+                f"replacing the Intent ID with {payment_intent_id}, amount with {amount}.00 and rrn with {rrn} in the curl_data")
             api_details_hmac = DBProcessor.get_api_details('remote_pay_razorpay_callback_generator_HMAC_success')
             api_details_hmac['RequestBody']['account_id'] = pg_merchant_id
             api_details_hmac['RequestBody']['payload']['payment']['entity']['id'] = txn_ref
@@ -594,8 +592,6 @@ def test_common_100_111_038():
         result = DBProcessor.getValueFromDB(query)
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Query result, pg_merchant_id : {pg_merchant_id}")
-        vpa = result['vpa'].values[0]
-        logger.debug(f"Query result, vpa : {vpa}")
         upi_mc_id = result['id'].values[0]
         logger.debug(f"Query result, upi_mc_id : {upi_mc_id}")
         acc_label_id = result['acc_label_id'].values[0]
@@ -682,7 +678,7 @@ def test_common_100_111_038():
             logger.info(f"Query result,txn_ref : {txn_ref} AND txn_ref_3 : {txn_ref_3}")
 
             logger.debug(
-                f"replacing the Intent ID with {payment_intent_id}, amount with {amount}.00, vpa with {vpa} and rrn with {rrn} in the curl_data")
+                f"replacing the Intent ID with {payment_intent_id}, amount with {amount}.00 and rrn with {rrn} in the curl_data")
             api_details_hmac = DBProcessor.get_api_details('remote_pay_razorpay_callback_generator_HMAC_failed')
             api_details_hmac['RequestBody']['account_id'] = pg_merchant_id
             api_details_hmac['RequestBody']['payload']['payment']['entity']['id'] = txn_ref

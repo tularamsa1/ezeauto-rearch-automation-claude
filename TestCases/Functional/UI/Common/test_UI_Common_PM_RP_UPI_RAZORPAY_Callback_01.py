@@ -76,8 +76,6 @@ def test_common_100_103_204():
         result = DBProcessor.getValueFromDB(query)
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f" pg_merchant_id from db : {pg_merchant_id}")
-        vpa = result['vpa'].values[0]
-        logger.debug(f" vpa from db : {vpa}")
         upi_mc_id = result['id'].values[0]
         logger.debug(f" upi_mc_id from db : {upi_mc_id}")
         tid = result['virtual_tid'].values[0]
@@ -89,8 +87,7 @@ def test_common_100_103_204():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------------------PreConditions(Completed)-----------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
-        msg = ''
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -655,7 +652,7 @@ def test_common_100_103_204():
                 date_and_time_portal = date_time_converter.to_portal_format(created_time_original)
                 date_and_time_portal_new = date_time_converter.to_portal_format(orig_created_date_time)
 
-                expectedPortalValues = {
+                expected_portal_values = {
                     "pmt_state": "AUTHORIZED",
                     "pmt_type": "UPI",
                     "txn_amt": str(amount) + ".00",
@@ -671,7 +668,7 @@ def test_common_100_103_204():
                     "rrn_2": str(callback_2_rrn),
                     "date_time_2": date_and_time_portal_new
                 }
-                logger.debug(f"expectedPortalValues : {expectedPortalValues}")
+                logger.debug(f"expectedPortalValues : {expected_portal_values}")
 
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id)
                 date_time_2 = transaction_details[0]['Date & Time']
@@ -704,7 +701,7 @@ def test_common_100_103_204():
                 username_original = transaction_details[1]['Username']
                 logger.debug(f"Fetching username_original from portal: {username_original}")
 
-                actualPortalValues = {
+                actual_portal_values = {
                     "pmt_state": str(status_original),
                     "pmt_type": transaction_type_original,
                     "txn_amt": total_amount_original[1],
@@ -721,17 +718,14 @@ def test_common_100_103_204():
                     "date_time_2": date_time_2
                 }
 
-                logger.debug(f"actualPortalValues : {actualPortalValues}")
-                Validator.validateAgainstPortal(expectedPortal=expectedPortalValues, actualPortal=actualPortalValues)
+                logger.debug(f"actualPortalValues : {actual_portal_values}")
+                # ---------------------------------------------------------------------------------------------
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
-                ReportProcessor.capture_ss_when_exe_failed()
-                print("Portal Validation failed due to exception - " + str(e))
-                logger.exception(f"Portal Validation failed due to exception : {e}")
-                msg = msg + "Portal Validation did not complete due to exception.\n"
-                GlobalVariables.bool_val_exe = False
-                GlobalVariables.str_portal_val_result = 'Fail'
-            logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
-        # -----------------------------------------End of Portal Validation---------------------------------------
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
+            # -----------------------------------------End of Portal Validation---------------------------------------
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function : {testcase_id}")
         logger.info(f"Completed Validation for the test case : {testcase_id}")
@@ -798,20 +792,18 @@ def test_common_100_103_205():
         result = DBProcessor.getValueFromDB(query)
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Fetching pg_merchant_id from upi_merchant_config : {pg_merchant_id}")
-        vpa = result['vpa'].values[0]
-        logger.debug(f"Fetching vpa from upi_merchant_config : {vpa}")
         upi_mc_id = result['id'].values[0]
-        logger.debug(f"Fetching upi_mc_id from upi_merchant_config : {vpa}")
+        logger.debug(f"Fetching upi_mc_id from upi_merchant_config : {upi_mc_id}")
         tid = result['virtual_tid'].values[0]
-        logger.debug(f"Fetching tid from upi_merchant_config : {vpa}")
+        logger.debug(f"Fetching tid from upi_merchant_config : {tid}")
         mid = result['virtual_mid'].values[0]
-        logger.debug(f"Fetching mid from upi_merchant_config : {vpa}")
+        logger.debug(f"Fetching mid from upi_merchant_config : {mid}")
 
         TestSuiteSetup.launch_browser_and_context_initialize(browser_type='firefox')
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------------------PreConditions(Completed)-----------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         msg = ''
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -1541,8 +1533,6 @@ def test_common_100_103_210():
         result = DBProcessor.getValueFromDB(query)
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Fetching pg_merchant_id from db: {pg_merchant_id}")
-        vpa = result['vpa'].values[0]
-        logger.debug(f"Fetching vpa from db: {vpa}")
         upi_mc_id = result['id'].values[0]
         logger.debug(f"Fetching upi_mc_id from db: {upi_mc_id}")
         tid = result['virtual_tid'].values[0]
@@ -1554,7 +1544,7 @@ def test_common_100_103_210():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -2052,8 +2042,6 @@ def test_common_100_103_211():
         logger.debug(f"Query result from upi_merchant_config: {result}")
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Fetching pg_merchant_id from upi_merchant_config: {pg_merchant_id}")
-        vpa = result['vpa'].values[0]
-        logger.debug(f"Fetching vpa from upi_merchant_config: {vpa}")
         upi_mc_id = result['id'].values[0]
         logger.debug(f"Fetching upi_mc_id from upi_merchant_config: {upi_mc_id}")
         tid = result['virtual_tid'].values[0]
@@ -2065,7 +2053,7 @@ def test_common_100_103_211():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------------------PreConditions(Completed)-----------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -2535,8 +2523,6 @@ def test_common_100_103_213():
         logger.debug(f"Query to fetch pgMerchantId and vpa from upi_merchant_config: {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result from upi_merchant_config: {result}")
-        vpa = result['vpa'].values[0]
-        logger.debug(f"Fetching vpa from upi_merchant_config: {vpa}")
         upi_mc_id = result['id'].values[0]
         logger.debug(f"Fetching upi_mc_id from upi_merchant_config: {upi_mc_id}")
         upi_account_id = result['pgMerchantId'].values[0]
@@ -2546,7 +2532,7 @@ def test_common_100_103_213():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=False, portalLog=False, cnpwareLog=False, middlewareLog=False,
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")

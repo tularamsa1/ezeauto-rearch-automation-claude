@@ -79,8 +79,6 @@ def test_common_100_103_242():
         logger.debug(f"Query result is : {result}")
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Query result, pgMerchantId : {pg_merchant_id}")
-        vpa = result['vpa'].values[0]
-        logger.debug(f"Query result, vpa : {vpa}")
         upi_mc_id = result['id'].values[0]
         logger.debug(f"Query result, upi_mc_id: {upi_mc_id}")
         upi_account_id = result['pgMerchantId'].values[0]
@@ -94,7 +92,7 @@ def test_common_100_103_242():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -579,12 +577,8 @@ def test_common_100_103_243():
         result = DBProcessor.getValueFromDB(query)
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Query result, pgMerchantId : {pg_merchant_id}")
-        vpa = result['vpa'].values[0]
-        logger.debug(f"Query result, vpa : {vpa}")
         upi_mc_id = result['id'].values[0]
         logger.debug(f"Query result, upi_mc_id: {upi_mc_id}")
-        upi_account_id = result['pgMerchantId'].values[0]
-        logger.debug(f"upi account id from db : {upi_account_id}")
         tid = result['virtual_tid'].values[0]
         logger.debug(f"Query result, tid: {tid}")
         mid = result['virtual_mid'].values[0]
@@ -594,7 +588,7 @@ def test_common_100_103_243():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -1072,12 +1066,8 @@ def test_common_100_103_244():
         result = DBProcessor.getValueFromDB(query)
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Query result, pgMerchantId : {pg_merchant_id}")
-        vpa = result['vpa'].values[0]
-        logger.debug(f"Query result, vpa : {vpa}")
         upi_mc_id = result['id'].values[0]
         logger.debug(f"Query result, upi_mc_id: {upi_mc_id}")
-        upi_account_id = result['pgMerchantId'].values[0]
-        logger.debug(f"upi account id from db : {upi_account_id}")
         tid = result['virtual_tid'].values[0]
         logger.debug(f"Query result, tid: {tid}")
         mid = result['virtual_mid'].values[0]
@@ -1087,7 +1077,7 @@ def test_common_100_103_244():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -2116,8 +2106,7 @@ def test_common_100_103_245():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
 
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -3106,12 +3095,8 @@ def test_common_100_103_246():
         result = DBProcessor.getValueFromDB(query)
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Query result, pgMerchantId : {pg_merchant_id}")
-        vpa = result['vpa'].values[0]
-        logger.debug(f"Query result, vpa : {vpa}")
         upi_mc_id = result['id'].values[0]
         logger.debug(f"Query result, upi_mc_id: {upi_mc_id}")
-        upi_account_id = result['pgMerchantId'].values[0]
-        logger.debug(f"upi account id from db : {upi_account_id}")
         tid = result['virtual_tid'].values[0]
         logger.debug(f"Query result, tid: {tid}")
         mid = result['virtual_mid'].values[0]
@@ -3121,6 +3106,11 @@ def test_common_100_103_246():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------------------------
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
+
+        GlobalVariables.time_calc.setup.end()
+        logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
+
         # -----------------------------------------Start of Test Execution-------------------------------------
         try:
             logger.info(f"Starting execution for the test case : {testcase_id}")

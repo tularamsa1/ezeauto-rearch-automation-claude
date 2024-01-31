@@ -78,13 +78,11 @@ def test_common_100_103_228():
         logger.debug(f"Query result, pgMerchantId : {pg_merchant_id}")
         upi_mc_id = result['id'].values[0]
         logger.debug(f"upi_mc_id from upi_merchant_config table is : {upi_mc_id}")
-        vpa = result['vpa'].values[0]
-        logger.debug(f"Query result, vpa : {vpa}")
 
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
-
+        # -----------------------------PreConditions(Completed)-----------------------------
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
         GlobalVariables.time_calc.setup.end()
@@ -501,10 +499,7 @@ def test_common_100_103_229():
     """
     Sub Feature Code: UI_Common_PM_RP_UPI_UPG_FAILED_VIA_Razorpay_when_UPGRefund_&_UPGAutoRefund_Disabled
     Sub Feature Description: Performing a upg txn using failed callback when upg refund and upg auto refund are disabled
-    TC naming code description:
-    100: Payment Method
-    103: RemotePay
-    229: TC229
+    TC naming code description:100: Payment Method, 103: RemotePay, 229: TC229
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -553,14 +548,13 @@ def test_common_100_103_229():
         logger.debug(f"upi_mc_id from upi_merchant_config table is : {upi_mc_id}")
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Query result, pgMerchantId : {pg_merchant_id}")
-        vpa = result['vpa'].values[0]
-        logger.debug(f"fetching vpa from db: {vpa}")
 
         testsuite_teardown.delete_staticqr_intent_table_entry_by_org_code(portal_username, portal_password, org_code)
 
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
@@ -1024,13 +1018,11 @@ def test_common_100_103_230():
         result = DBProcessor.getValueFromDB(query)
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Query result, pgMerchantId : {pg_merchant_id}")
-        vpa = result['vpa'].values[0]
-        logger.debug(f"Query result, vpa : {vpa}")
 
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
-
+        # -----------------------------PreConditions(Completed)-----------------------------
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
         GlobalVariables.time_calc.setup.end()
@@ -1530,14 +1522,13 @@ def test_common_100_103_231():
         result = DBProcessor.getValueFromDB(query)
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Query result, pgMerchantId : {pg_merchant_id}")
-        vpa = result['vpa'].values[0]
-        logger.debug(f"Query result, vpa : {vpa}")
         upi_mc_id = result['id'].values[0]
         logger.debug(f"Query result, upi_mc_id : {upi_mc_id}")
 
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False,
                                                    config_log=False)
@@ -1977,18 +1968,15 @@ def test_common_100_103_232():
         result = DBProcessor.getValueFromDB(query)
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Query result, pgMerchantId : {pg_merchant_id}")
-        vpa = result['vpa'].values[0]
-        logger.debug(f"Query result, vpa : {vpa}")
         upi_mc_id = result['id'].values[0]
         logger.debug(f"upi_mc_id from upi_merchant_config table is : {upi_mc_id}")
-        upi_account_id = result['pgMerchantId'].values[0]
-        logger.debug(f" upi account id from db : {upi_account_id}")
 
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)-----------------------------
 
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------

@@ -68,12 +68,8 @@ def test_common_100_103_266():
         result = DBProcessor.getValueFromDB(query)
         pg_merchant_id = result['pgMerchantId'].values[0]
         logger.debug(f"Query result, pgMerchantId : {pg_merchant_id}")
-        vpa = result['vpa'].values[0]
-        logger.debug(f"Query result, vpa : {vpa}")
         upi_mc_id = result['id'].values[0]
         logger.debug(f"Query result, upi_mc_id: {upi_mc_id}")
-        upi_account_id = result['pgMerchantId'].values[0]
-        logger.debug(f"upi account id from db is : {upi_account_id}")
         tid = result['virtual_tid'].values[0]
         logger.debug(f"Query result, tid: {tid}")
         mid = result['virtual_mid'].values[0]
@@ -84,7 +80,7 @@ def test_common_100_103_266():
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
         # ---------------------------------------------------------------------------------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -907,8 +903,7 @@ def test_common_100_103_221():
     """
     Sub Feature Code: UI_Common_PM_RP_UPI_Refund_By_API_Razorpay
     Sub Feature Description: Verification of a Remote Pay refund using api for Razorpay
-    TC naming code description:
-    100: Payment Method, 103: RemotePay, 221: TC221
+    TC naming code description:100: Payment Method, 103: RemotePay, 221: TC221
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -954,7 +949,7 @@ def test_common_100_103_221():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -1623,9 +1618,8 @@ def test_common_100_103_222():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
 
-        msg = ''
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -2317,9 +2311,7 @@ def test_common_100_103_223():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
-
-        msg = ''
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -2916,16 +2908,12 @@ def test_common_100_103_223():
                 }
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
 
+            # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
                                                 actualPortal=actual_portal_values)
             except Exception as e:
-                ReportProcessor.capture_ss_when_exe_failed()
-                print("Portal Validation failed due to exception - " + str(e))
-                logger.exception(f"Portal Validation failed due to exception : {e}")
-                msg = msg + "Portal Validation did not complete due to exception.\n"
-                GlobalVariables.bool_val_exe = False
-                GlobalVariables.str_portal_val_result = 'Fail'
-            logger.info(f"Completed PORTAL validation for the test case : {testcase_id}")
+                Configuration.perform_portal_val_exception(testcase_id, e)
+            logger.info(f"Completed Portal validation for the test case : {testcase_id}")
         # -----------------------------------------End of Portal Validation---------------------------------------
         # -----------------------------------------Start of ChargeSlip Validation---------------------------------
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
@@ -3013,7 +3001,7 @@ def test_common_100_103_224():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=False, middlewareLog=False)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
