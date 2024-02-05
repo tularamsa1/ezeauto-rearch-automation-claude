@@ -174,14 +174,10 @@ def test_common_100_103_266():
             result = DBProcessor.getValueFromDB(query)
             fully_refunded_txn_id = result["id"].iloc[0]
             logger.debug(f"Fetching fully_refunded_txn_id from db query : {fully_refunded_txn_id} ")
-            fully_refunded_auth_code = result['auth_code'].values[0]
-            logger.debug(f"Fetching fully_refunded_auth_code from db query : {fully_refunded_auth_code} ")
             fully_refunded_txn_type = result['txn_type'].values[0]
             logger.debug(f"Fetching fully_refunded_txn_type from db query : {fully_refunded_txn_type} ")
             fully_refunded_rrn = result['rr_number'].iloc[0]
             logger.debug(f"Fetching fully_refunded_rrn from db query : {fully_refunded_rrn} ")
-            fully_refunded_posting_date = result['posting_date'].values[0]
-            logger.debug(f"Fetching fully_refunded_posting_date from db query: {fully_refunded_posting_date} ")
             created_time_fully_refunded = result['created_time'].values[0]
             logger.debug(f"Fetching created_time_fully_refunded from db query: {created_time_fully_refunded} ")
 
@@ -992,40 +988,18 @@ def test_common_100_103_221():
             logger.debug(f"Query result : {result}")
             created_time = result['created_time'].values[0]
             logger.debug(f"created time from db : {created_time}")
-            acquirer_code_db = result["acquirer_code"].iloc[0]
-            logger.debug(f"acquirer_code_db from db : {acquirer_code_db}")
-            amount_db = int(result["amount"].iloc[0])
-            logger.debug(f"amount_db from db : {amount_db}")
-            bank_code_db = result["bank_code"].iloc[0]
-            logger.debug(f"bank_code_db from db : {bank_code_db}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"customer_name from db : {customer_name}")
             payer_name = result['payer_name'].values[0]
             logger.debug(f"payer_name from db : {payer_name}")
-            external_ref_db = result['external_ref'].values[0]
-            logger.debug(f"external_ref_db from db : {external_ref_db}")
-            issuer_code_db = result['issuer_code'].values[0]
-            logger.debug(f"issuer_code from db : {issuer_code_db}")
             mid = result['mid'].values[0]
             logger.debug(f"mid from db : {mid}")
             tid = result['tid'].values[0]
             logger.debug(f"tid from db : {tid}")
-            org_code_db = result['org_code'].values[0]
-            logger.debug(f"org_code_txn from db : {org_code_db}")
-            payment_gateway_db = result['payment_gateway'].values[0]
-            logger.debug(f"payment_gateway_db from db : {payment_gateway_db}")
-            payment_mode_db = result["payment_mode"].iloc[0]
-            logger.debug(f"payment_mode_db from db : {payment_mode_db}")
             rrn_db = result['rr_number'].values[0]
             logger.debug(f"rrn_db from db : {rrn_db}")
-            settlement_status_db = result["settlement_status"].iloc[0]
-            logger.debug(f"settlement_status_db from db : {settlement_status_db}")
-            status_db = result["status"].iloc[0]
-            logger.debug(f"status_db from db : {status_db}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"txn_type from db : {txn_type}")
-            state_db = result["state"].iloc[0]
-            logger.debug(f"state_db from db : {state_db}")
             txn_auth_code = result['auth_code'].values[0]
             logger.debug(f"txn_auth_code from db : {txn_auth_code}")
 
@@ -1693,40 +1667,18 @@ def test_common_100_103_222():
             logger.debug(f"Query result : {result}")
             created_time = result['created_time'].values[0]
             logger.debug(f"created time from db : {created_time}")
-            acquirer_code_db = result["acquirer_code"].iloc[0]
-            logger.debug(f"acquirer_code_db from db : {acquirer_code_db}")
-            amount_db = int(result["amount"].iloc[0])
-            logger.debug(f"amount_db from db : {amount_db}")
-            bank_code_db = result["bank_code"].iloc[0]
-            logger.debug(f"bank_code_db from db : {bank_code_db}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"customer_name from db : {customer_name}")
             payer_name = result['payer_name'].values[0]
             logger.debug(f"payer_name from db : {payer_name}")
-            external_ref_db = result['external_ref'].values[0]
-            logger.debug(f"external_ref_db from db : {external_ref_db}")
-            issuer_code_db = result['issuer_code'].values[0]
-            logger.debug(f"issuer_code from db : {issuer_code_db}")
             mid = result['mid'].values[0]
             logger.debug(f"mid from db : {mid}")
             tid = result['tid'].values[0]
             logger.debug(f"tid from db : {tid}")
-            org_code_db = result['org_code'].values[0]
-            logger.debug(f"org_code_txn from db : {org_code_db}")
-            payment_gateway_db = result['payment_gateway'].values[0]
-            logger.debug(f"payment_gateway_db from db : {payment_gateway_db}")
-            payment_mode_db = result["payment_mode"].iloc[0]
-            logger.debug(f"payment_mode_db from db : {payment_mode_db}")
             rrn_db = result['rr_number'].values[0]
             logger.debug(f"rrn_db from db : {rrn_db}")
-            settlement_status_db = result["settlement_status"].iloc[0]
-            logger.debug(f"settlement_status_db from db : {settlement_status_db}")
-            status_db = result["status"].iloc[0]
-            logger.debug(f"status_db from db : {status_db}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"txn_type from db : {txn_type}")
-            state_db = result["state"].iloc[0]
-            logger.debug(f"state_db from db : {state_db}")
             txn_auth_code = result['auth_code'].values[0]
             logger.debug(f"txn_auth_code from db : {txn_auth_code}")
 
@@ -2385,40 +2337,18 @@ def test_common_100_103_223():
             logger.debug(f"Query result : {result}")
             created_time = result['created_time'].values[0]
             logger.debug(f"created time from db : {created_time}")
-            acquirer_code_db = result["acquirer_code"].iloc[0]
-            logger.debug(f"acquirer_code_db from db : {acquirer_code_db}")
-            amount_db = int(result["amount"].iloc[0])
-            logger.debug(f"amount_db from db : {amount_db}")
-            bank_code_db = result["bank_code"].iloc[0]
-            logger.debug(f"bank_code_db from db : {bank_code_db}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"customer_name from db : {customer_name}")
             payer_name = result['payer_name'].values[0]
             logger.debug(f"payer_name from db : {payer_name}")
-            external_ref_db = result['external_ref'].values[0]
-            logger.debug(f"external_ref_db from db : {external_ref_db}")
-            issuer_code_db = result['issuer_code'].values[0]
-            logger.debug(f"issuer_code from db : {issuer_code_db}")
             mid = result['mid'].values[0]
             logger.debug(f"mid from db : {mid}")
             tid = result['tid'].values[0]
             logger.debug(f"tid from db : {tid}")
-            org_code_db = result['org_code'].values[0]
-            logger.debug(f"org_code_txn from db : {org_code_db}")
-            payment_gateway_db = result['payment_gateway'].values[0]
-            logger.debug(f"payment_gateway_db from db : {payment_gateway_db}")
-            payment_mode_db = result["payment_mode"].iloc[0]
-            logger.debug(f"payment_mode_db from db : {payment_mode_db}")
             rrn_db = result['rr_number'].values[0]
             logger.debug(f"rrn_db from db : {rrn_db}")
-            settlement_status_db = result["settlement_status"].iloc[0]
-            logger.debug(f"settlement_status_db from db : {settlement_status_db}")
-            status_db = result["status"].iloc[0]
-            logger.debug(f"status_db from db : {status_db}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"txn_type from db : {txn_type}")
-            state_db = result["state"].iloc[0]
-            logger.debug(f"state_db from db : {state_db}")
             txn_auth_code = result['auth_code'].values[0]
             logger.debug(f"txn_auth_code from db : {txn_auth_code}")
 
@@ -3051,40 +2981,18 @@ def test_common_100_103_224():
             logger.debug(f"Query result : {result}")
             created_time = result['created_time'].values[0]
             logger.debug(f"created time from db : {created_time}")
-            acquirer_code_db = result["acquirer_code"].iloc[0]
-            logger.debug(f"acquirer_code_db from db : {acquirer_code_db}")
-            amount_db = int(result["amount"].iloc[0])
-            logger.debug(f"amount_db from db : {amount_db}")
-            bank_code_db = result["bank_code"].iloc[0]
-            logger.debug(f"bank_code_db from db : {bank_code_db}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"customer_name from db : {customer_name}")
             payer_name = result['payer_name'].values[0]
             logger.debug(f"payer_name from db : {payer_name}")
-            external_ref_db = result['external_ref'].values[0]
-            logger.debug(f"external_ref_db from db : {external_ref_db}")
-            issuer_code_db = result['issuer_code'].values[0]
-            logger.debug(f"issuer_code from db : {issuer_code_db}")
             mid = result['mid'].values[0]
             logger.debug(f"mid from db : {mid}")
             tid = result['tid'].values[0]
             logger.debug(f"tid from db : {tid}")
-            org_code_db = result['org_code'].values[0]
-            logger.debug(f"org_code_txn from db : {org_code_db}")
-            payment_gateway_db = result['payment_gateway'].values[0]
-            logger.debug(f"payment_gateway_db from db : {payment_gateway_db}")
-            payment_mode_db = result["payment_mode"].iloc[0]
-            logger.debug(f"payment_mode_db from db : {payment_mode_db}")
             rrn_db = result['rr_number'].values[0]
             logger.debug(f"rrn_db from db : {rrn_db}")
-            settlement_status_db = result["settlement_status"].iloc[0]
-            logger.debug(f"settlement_status_db from db : {settlement_status_db}")
-            status_db = result["status"].iloc[0]
-            logger.debug(f"status_db from db : {status_db}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"txn_type from db : {txn_type}")
-            state_db = result["state"].iloc[0]
-            logger.debug(f"state_db from db : {state_db}")
             txn_auth_code = result['auth_code'].values[0]
             logger.debug(f"txn_auth_code from db : {txn_auth_code}")
 

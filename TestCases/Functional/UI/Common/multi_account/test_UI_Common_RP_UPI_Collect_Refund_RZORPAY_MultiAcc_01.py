@@ -856,10 +856,6 @@ def test_common_100_111_042():
             logger.debug(f"Query to fetch data from the txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Results from txn query is: {result}")
-            auth_code = result['auth_code'].values[0]
-            logger.info(f"Fetching auth code from txn table : {auth_code}")
-            posting_date = result['posting_date'].values[0]
-            logger.info(f"Fetching posting date info from txn table : {posting_date}")
             created_time = result['created_time'].values[0]
             logger.info(f"Fetching created time from txn table : {created_time}")
             customer_name = result['customer_name'].values[0]
@@ -901,8 +897,6 @@ def test_common_100_111_042():
                     f"external_ref = '{str(order_id)}' and payment_mode='UPI'"
             logger.debug(f"Query to fetch data from the payment_intent table : {query}")
             result = DBProcessor.getValueFromDB(query)
-            payment_intent_id = result['id'].values[0]
-            logger.info(f"Fetching payment intent id is : {payment_intent_id}")
             intent_status = result['status'].values[0]
             logger.info(f"Fetching payment intent status is: {intent_status}")
 
@@ -931,8 +925,6 @@ def test_common_100_111_042():
             logger.info(f"Fetching refunded txn auth code from txn table: {auth_code_refund}")
             created_time_refund = result['created_time'].values[0]
             logger.debug(f"Fetching created_time from txn table is : {created_time_refund}")
-            posting_date_refund = result['posting_date'].values[0]
-            logger.info(f"Fetching refunded txn posting date from txn table: {posting_date_refund}")
             rrn_db_refund = result['rr_number'].iloc[0]
             logger.info(f"Fetching refunded txn rrn from txn table: {rrn_db_refund}")
             status_db_refund = result["status"].iloc[0]
@@ -947,18 +939,10 @@ def test_common_100_111_042():
             logger.info(f"Fetching payment gateway from txn table: {payment_gateway_db_refund}")
             acquirer_code_db_refund = result["acquirer_code"].iloc[0]
             logger.info(f"Fetching acquirer code from txn table: {acquirer_code_db_refund}")
-            bank_code_db_refund = result["bank_code"].iloc[0]
-            logger.info(f"Fetching bank code from txn table: {bank_code_db_refund}")
-            bank_name_db_refund = result["bank_name"].iloc[0]
-            logger.info(f"Fetching bank name from txn table: {bank_name_db_refund}")
-            customer_name_db_refund = result["customer_name"].iloc[0]
-            logger.info(f"Fetching customer name from txn table: {customer_name_db_refund}")
             payer_name_db_refund = result["payer_name"].iloc[0]
             logger.info(f"Fetching payer name from txn table: {payer_name_db_refund}")
             settlement_status_db_refund = result["settlement_status"].iloc[0]
             logger.info(f"Fetching refund settlement status from txn table: {settlement_status_db_refund}")
-            org_code_refund_db = result['org_code'].iloc[0]
-            logger.info(f"Fetching refunded txn org code from txn table: {org_code_refund_db}")
             txn_type_db_refund = result['txn_type'].iloc[0]
             logger.info(f"Fetching refunded txn type from txn table: {txn_type_db_refund}")
             label_ids_refund = str(result['label_ids'].iloc[0]).strip(',')
@@ -1444,8 +1428,6 @@ def test_common_100_111_042():
                 logger.info(f"Fetching txn id from portal : {txn_id_portal}")
                 txn_amount_portal = transaction_details[1]['Total Amount'].split()
                 logger.info(f"Fetching txn amount from portal : {txn_amount_portal}")
-                auth_code_portal = transaction_details[1]['Auth Code']
-                logger.info(f"Fetching auth code from portal : {auth_code_portal}")
                 rrn_portal = transaction_details[1]['RR Number']
                 logger.info(f"Fetching rrn from portal : {rrn_portal}")
                 txn_type_portal = transaction_details[1]['Type']
@@ -1463,8 +1445,6 @@ def test_common_100_111_042():
                 logger.info(f"Fetching refund txn id from portal : {txn_id_portal_refund}")
                 txn_amount_portal_refund = transaction_details[0]['Total Amount'].split()
                 logger.info(f"Fetching refund txn amount from portal : {txn_amount_portal_refund}")
-                auth_code_portal_refund = transaction_details[0]['Auth Code']
-                logger.info(f"Fetching refund txn auth code from portal : {auth_code_portal_refund}")
                 rrn_portal_refund = transaction_details[0]['RR Number']
                 logger.info(f"Fetching refund txn rrn from portal : {rrn_portal_refund}")
                 txn_type_portal_refund = transaction_details[0]['Type']

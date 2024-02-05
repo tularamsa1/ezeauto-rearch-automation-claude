@@ -179,8 +179,6 @@ def test_common_100_103_204():
             logger.debug(f"generated random customer_name is : {original_customer_name}")
             original_payer_name = result['payer_name'].values[0]
             logger.debug(f"generated random payer_name is : {original_payer_name}")
-            original_status = result['status'].values[0]
-            logger.debug(f"generated random status is : {original_status}")
             original_posting_date = result['posting_date'].values[0]
             logger.debug(f"generated random original_posting_date is : {original_posting_date}")
             created_time_original = result['created_time'].values[0]
@@ -889,12 +887,8 @@ def test_common_100_103_205():
             logger.debug(f"generated random customer_name is : {original_customer_name}")
             original_payer_name = result['payer_name'].values[0]
             logger.debug(f"generated random payer_name is : {original_payer_name}")
-            original_status = result['status'].values[0]
-            logger.debug(f"generated random status is : {original_status}")
             original_posting_date = result['posting_date'].values[0]
             logger.debug(f"generated random original_posting_date is : {original_posting_date}")
-            original_auth_code = result['auth_code'].values[0]
-            logger.debug(f"generated auth code is : {original_auth_code}")
             created_time_original = result['created_time'].values[0]
             logger.debug(f"generated created_time_original is : {created_time_original}")
 
@@ -1617,26 +1611,16 @@ def test_common_100_103_210():
             result = DBProcessor.getValueFromDB(query)
             original_txn_id = result['id'].values[0]
             logger.debug(f"Query result, txn_id : {original_txn_id}")
-            original_rrn = result['rr_number'].values[0]
-            logger.debug(f"Query result, Txn_id_expired and rrn_expired : {original_txn_id} and {original_rrn}")
             original_customer_name = result['customer_name'].values[0]
             logger.debug(f"generated random customer_name is : {original_customer_name}")
             original_payer_name = result['payer_name'].values[0]
             logger.debug(f"generated random payer_name is : {original_payer_name}")
-            original_status = result['status'].values[0]
-            logger.debug(f"generated random status is : {original_status}")
             original_posting_date = result['posting_date'].values[0]
             logger.debug(f"generated random original_posting_date is : {original_posting_date}")
-            original_settlement_status = result['settlement_status'].values[0]
-            logger.debug(f"generated random original_settlement_status is : {original_settlement_status}")
             original_mid = result['mid'].values[0]
             logger.debug(f"generated random original_mid is : {original_mid}")
             original_tid = result['tid'].values[0]
             logger.debug(f"generated random original_tid is : {original_tid}")
-            original_acquirer_code = result['acquirer_code'].values[0]
-            logger.debug(f"generated random original_acquirer_code is : {original_acquirer_code}")
-            original_issuer_code = result['issuer_code'].values[0]
-            logger.debug(f"generated random original_issuer_code is : {original_issuer_code}")
             original_org_code = result['org_code'].values[0]
             logger.debug(f"generated random original_org_code is : {original_org_code}")
             original_txn_type = result['txn_type'].values[0]
@@ -2167,30 +2151,16 @@ def test_common_100_103_211():
             result = DBProcessor.getValueFromDB(query)
             new_txn_id = result['id'].values[0]
             logger.debug(f"Query result new_txn_id : {new_txn_id}")
-            original_rrn = result['rr_number'].values[0]
-            logger.debug(f"Query result, original_txn_id and original_rrn : {original_txn_id} and {original_rrn}")
             original_customer_name = result['customer_name'].values[0]
             logger.debug(f"generated random customer_name is : {original_customer_name}")
             original_payer_name = result['payer_name'].values[0]
             logger.debug(f"generated random payer_name is : {original_payer_name}")
-            original_status = result['status'].values[0]
-            logger.debug(f"generated random status is : {original_status}")
             original_posting_date = result['posting_date'].values[0]
             logger.debug(f"generated random original_posting_date is : {original_posting_date}")
             original_mid = result['mid'].values[0]
             logger.debug(f"MID is : {original_mid}")
             original_tid = result['tid'].values[0]
             logger.debug(f"TID is : {original_tid}")
-            original_bank_code = result['bank_code'].values[0]
-            logger.debug(f"bank code from txn is : {original_bank_code}")
-            original_state = result['state'].values[0]
-            logger.debug(f"State of txn is : {original_state}")
-            original_payment_mode = result['payment_mode'].values[0]
-            logger.debug(f"Payment mode from txn is : {original_payment_mode}")
-            original_settlement_status = result['settlement_status'].values[0]
-            logger.debug(f"Settlement status from txn is : {original_settlement_status}")
-            original_acquirer_code = result['acquirer_code'].values[0]
-            logger.debug(f"Settlement status from txn is : {original_acquirer_code}")
             original_posting_date = result['posting_date'].values[0]
             logger.debug(f"Posting date from txn is : {original_posting_date}")
             original_created_time = result['created_time'].values[0]
@@ -2636,40 +2606,20 @@ def test_common_100_103_213():
             result = DBProcessor.getValueFromDB(query)
             created_time = result['created_time'].values[0]
             logger.debug(f"created time from db : {created_time}")
-            acquirer_code_db = result["acquirer_code"].iloc[0]
-            logger.debug(f"acquirer_code_db from db : {acquirer_code_db}")
-            amount_db = int(result["amount"].iloc[0])
-            logger.debug(f"amount_db from db : {amount_db}")
-            bank_code_db = result["bank_code"].iloc[0]
-            logger.debug(f"bank_code_db from db : {bank_code_db}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"customer_name from db : {customer_name}")
             payer_name = result['payer_name'].values[0]
             logger.debug(f"payer_name from db : {payer_name}")
-            external_ref_db = result['external_ref'].values[0]
-            logger.debug(f"external_ref_db from db : {external_ref_db}")
-            issuer_code_db = result['issuer_code'].values[0]
-            logger.debug(f"issuer_code from db : {issuer_code_db}")
             mid = result['mid'].values[0]
             logger.debug(f"mid from db : {mid}")
             tid = result['tid'].values[0]
             logger.debug(f"tid from db : {tid}")
             org_code_db = result['org_code'].values[0]
             logger.debug(f"org_code_txn from db : {org_code_db}")
-            payment_gateway_db = result['payment_gateway'].values[0]
-            logger.debug(f"payment_gateway_db from db : {payment_gateway_db}")
-            payment_mode_db = result["payment_mode"].iloc[0]
-            logger.debug(f"payment_mode_db from db : {payment_mode_db}")
             rrn_db = result['rr_number'].values[0]
             logger.debug(f"rrn_db from db : {rrn_db}")
-            settlement_status_db = result["settlement_status"].iloc[0]
-            logger.debug(f"settlement_status_db from db : {settlement_status_db}")
-            status_db = result["status"].iloc[0]
-            logger.debug(f"status_db from db : {status_db}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"txn_type from db : {txn_type}")
-            state_db = result["state"].iloc[0]
-            logger.debug(f"state_db from db : {state_db}")
             txn_auth_code = result['auth_code'].values[0]
             logger.debug(f"txn_auth_code from db : {txn_auth_code}")
 

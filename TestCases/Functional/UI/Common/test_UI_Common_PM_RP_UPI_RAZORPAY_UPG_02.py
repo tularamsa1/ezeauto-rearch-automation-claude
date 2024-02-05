@@ -146,14 +146,6 @@ def test_common_100_103_220():
             query = f"select * from txn where id='{original_txn_id}'"
             logger.debug(f"Query to fetch data from txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
-            new_txn_id = result['id'].values[0]
-            logger.debug(f"Query result new_txn_id : {new_txn_id}")
-            original_rrn = result['rr_number'].values[0]
-            logger.debug(f"Query result, original_txn_id and original_rrn : {original_txn_id} and {original_rrn}")
-            original_customer_name = result['customer_name'].values[0]
-            logger.debug(f"generated random customer_name is : {original_customer_name}")
-            original_payer_name = result['payer_name'].values[0]
-            logger.debug(f"generated random payer_name is : {original_payer_name}")
             original_status = result['status'].values[0]
             logger.debug(f"generated random status is : {original_status}")
             original_posting_date = result['posting_date'].values[0]
@@ -162,16 +154,12 @@ def test_common_100_103_220():
             logger.debug(f"MID is : {original_mid}")
             original_tid = result['tid'].values[0]
             logger.debug(f"TID is : {original_tid}")
-            original_bank_code = result['bank_code'].values[0]
-            logger.debug(f"bank code from txn is : {original_bank_code}")
             original_state = result['state'].values[0]
             logger.debug(f"State of txn is : {original_state}")
             original_payment_mode = result['payment_mode'].values[0]
             logger.debug(f"Payment mode from txn is : {original_payment_mode}")
             original_settlement_status = result['settlement_status'].values[0]
             logger.debug(f"Settlement status from txn is : {original_settlement_status}")
-            original_acquirer_code = result['acquirer_code'].values[0]
-            logger.debug(f"Settlement status from txn is : {original_acquirer_code}")
             original_posting_date = result['posting_date'].values[0]
             logger.debug(f"Posting date from txn is : {original_posting_date}")
             created_time = result['created_time'].values[0]
@@ -182,8 +170,6 @@ def test_common_100_103_220():
             query = f"select * from payment_intent where org_code = '{str(org_code)}' AND external_ref = '{str(order_id)}' and payment_mode='UPI';"
             logger.debug(f"Query to fetch payment_intent_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            payment_intent_id = result['id'].values[0]
-            logger.info(f"generated random rrn number is : {payment_intent_id}")
             intent_status = result['status'].values[0]
             logger.info(f"Payment intent status for UPI is: {intent_status}")
 
@@ -603,14 +589,6 @@ def test_common_100_103_233():
             query = f"select * from txn where id='{original_txn_id}'"
             logger.debug(f"Query to fetch data from txn table : {query}")
             result = DBProcessor.getValueFromDB(query)
-            new_txn_id = result['id'].values[0]
-            logger.debug(f"Query result new_txn_id : {new_txn_id}")
-            original_rrn = result['rr_number'].values[0]
-            logger.debug(f"Query result, original_txn_id and original_rrn : {original_txn_id} and {original_rrn}")
-            original_customer_name = result['customer_name'].values[0]
-            logger.debug(f"generated random customer_name is : {original_customer_name}")
-            original_payer_name = result['payer_name'].values[0]
-            logger.debug(f"generated random payer_name is : {original_payer_name}")
             original_status = result['status'].values[0]
             logger.debug(f"generated random status is : {original_status}")
             original_posting_date = result['posting_date'].values[0]
@@ -639,8 +617,6 @@ def test_common_100_103_233():
             query = f"select * from payment_intent where org_code = '{org_code}' AND external_ref = '{order_id}' and payment_mode='UPI';"
             logger.debug(f"Query to fetch payment_intent_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            payment_intent_id = result['id'].values[0]
-            logger.info(f"generated random rrn number is : {payment_intent_id}")
             intent_status = result['status'].values[0]
             logger.info(f"Payment intent status for UPI is: {intent_status}")
 

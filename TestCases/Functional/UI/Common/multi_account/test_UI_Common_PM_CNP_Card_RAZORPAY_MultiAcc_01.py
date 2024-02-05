@@ -120,29 +120,17 @@ def test_common_100_112_043():
                 query = f"select * from txn where org_code = '{org_code}' AND external_ref = '{order_id}';"
                 logger.debug(f"Query to fetch Txn_id from the DB : {query}")
                 result = DBProcessor.getValueFromDB(query)
-                Txn_id = result['id'].values[0]
-                logger.debug(f"Query result, Txn_id : {Txn_id}")
                 auth_code = result['auth_code'].values[0]
                 logger.debug(f"Query result, auth_code : {auth_code}")
                 rrn = result['rr_number'].values[0]
                 logger.debug(f"Query result, rrn : {rrn}")
                 txn_id = result['id'].values[0]
-                status = result['status'].values[0]
-                logger.debug(f"Query result, status : {status}")
                 customer_name = result['customer_name'].values[0]
                 logger.debug(f"Query result, customer_name : {customer_name}")
-                payer_name = result['payer_name'].values[0]
-                logger.debug(f"Query result, payer_name : {payer_name}")
                 mid = result['mid'].values[0]
                 logger.debug(f"Query result, mid : {mid}")
                 tid = result['tid'].values[0]
                 logger.debug(f"Query result, tid : {tid}")
-                posting_date = result['created_time'].values[0]
-                logger.debug(f"Query result, posting_date : {posting_date}")
-                org_code_txn = result['org_code'].values[0]
-                logger.debug(f"Query result, org_code_txn : {org_code_txn}")
-                txn_type = result['txn_type'].values[0]
-                logger.debug(f"Query result, txn_type : {txn_type}")
                 label_ids = str(result['label_ids'].values[0]).strip(',')
                 logger.debug(f"Query result, label_ids : {label_ids}")
                 settle_status = result['settlement_status'].values[0]
@@ -153,13 +141,6 @@ def test_common_100_112_043():
                 query = f"select * from cnp_txn where txn_id='{txn_id}';"
                 logger.debug(f"Query to fetch Txn_id from the DB : {query}")
                 result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result of cnp_txn table is : {result}")
-                cnp_txn_rrn = result['rr_number'].values[0]
-                logger.debug(f"Query result, cnp_txn_rrn : {cnp_txn_rrn}")
-                cnp_txn_state = result['state'].values[0]
-                logger.debug(f"Query result, cnp_txn_state : {cnp_txn_state}")
-                cnp_txn_acquirer_code = result['acquirer_code'].values[0]
-                logger.debug(f"Query result, cnp_txn_acquirer_code : {cnp_txn_acquirer_code}")
                 cnp_txn_auth_code = result['auth_code'].values[0]
                 logger.debug(f"Query result, cnp_txn_auth_code : {cnp_txn_auth_code}")
                 cnp_payment_gateway = result['payment_gateway'].values[0]
@@ -398,8 +379,9 @@ def test_common_100_112_043():
                 payment_gateway_db = result["payment_gateway"].iloc[0]
                 logger.debug(f"Fetching payment_gateway_db from txn table : {payment_gateway_db} ")
                 tid_db = result['tid'].values[0]
+                logger.debug(f"Query result, tid : {tid_db}")
                 mid_db = result['mid'].values[0]
-                logger.debug(f"Query result, tid : {tid_db} and mid : {mid_db}")
+                logger.debug(f"Query result mid : {mid_db}")
 
                 query = f"select * from payment_intent where id='{payment_intent_id}';"
                 logger.debug(f"Query to fetch payment_intent table : {query} ")
@@ -632,43 +614,27 @@ def test_common_100_112_049():
                 Txn_id = result['id'].values[0]
                 logger.debug(f"Query result, Txn_id : {Txn_id}")
                 auth_code = result['auth_code'].values[0]
+                logger.debug(f"Query result, auth_code : {auth_code}")
                 rrn = result['rr_number'].values[0]
+                logger.debug(f"Query result, rrn : {rrn}")
                 txn_id = result['id'].values[0]
-                status = result['status'].values[0]
                 customer_name = result['customer_name'].values[0]
-                payer_name = result['payer_name'].values[0]
+                logger.debug(f"Query result, customer_name : {customer_name}")
                 mid = result['mid'].values[0]
+                logger.debug(f"Query result, mid : {mid}")
                 tid = result['tid'].values[0]
-                posting_date = result['created_time'].values[0]
-                org_code_txn = result['org_code'].values[0]
-                txn_type = result['txn_type'].values[0]
+                logger.debug(f"Query result, tid : {tid}")
                 label_ids = str(result['label_ids'].values[0]).strip(',')
+                logger.debug(f"Query result, label_ids : {label_ids}")
                 settle_status = result['settlement_status'].values[0]
+                logger.debug(f"Query result, txn_settle_status : {settle_status}")
                 created_time = result['created_time'].values[0]
                 logger.debug(f"Query result, created_time from db : {created_time}")
-                logger.debug(f"Query result, txn_settle_status : {settle_status}")
-                logger.debug(f"Query result, auth_code : {auth_code}")
-                logger.debug(f"Query result, status : {status}")
-                logger.debug(f"Query result, posting_date : {posting_date}")
-                logger.debug(f"Query result, rrn : {rrn}")
-                logger.debug(f"Query result, mid : {mid}")
-                logger.debug(f"Query result, tid : {tid}")
-                logger.debug(f"Query result, customer_name : {customer_name}")
-                logger.debug(f"Query result, payer_name : {payer_name}")
-                logger.debug(f"Query result, org_code_txn : {org_code_txn}")
-                logger.debug(f"Query result, txn_type : {txn_type}")
-                logger.debug(f"Query result, label_ids : {label_ids}")
 
                 query = f"select * from cnp_txn where txn_id='{txn_id}';"
                 logger.debug(f"Query to fetch Txn_id from the DB : {query}")
                 result = DBProcessor.getValueFromDB(query)
                 logger.debug(f"Query result of cnp_txn table is : {result}")
-                cnp_txn_rrn = result['rr_number'].values[0]
-                logger.debug(f"Query result, cnp_txn_rrn : {cnp_txn_rrn}")
-                cnp_txn_state = result['state'].values[0]
-                logger.debug(f"Query result, cnp_txn_state : {cnp_txn_state}")
-                cnp_txn_acquirer_code = result['acquirer_code'].values[0]
-                logger.debug(f"Query result, cnp_txn_acquirer_code : {cnp_txn_acquirer_code}")
                 cnp_txn_auth_code = result['auth_code'].values[0]
                 logger.debug(f"Query result, cnp_txn_auth_code : {cnp_txn_auth_code}")
                 cnp_payment_gateway = result['payment_gateway'].values[0]

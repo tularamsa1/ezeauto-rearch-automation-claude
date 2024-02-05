@@ -262,7 +262,7 @@ def test_common_100_111_037():
                 logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
 
                 actual_app_values = {
-                    "pmt_mode": "UPI",
+                    "pmt_mode": app_payment_mode,
                     "pmt_status": app_payment_status,
                     "txn_amt": app_amount.split(' ')[1],
                     "settle_status": app_settlement_status,
@@ -646,19 +646,12 @@ def test_common_100_111_038():
             logger.debug(f"Query result, txn_id : {txn_id}")
             rrn = random.randint(1111110, 9999999)
             logger.debug(f"generated random rrn number is : {rrn}")
-            ref_id = '211115084892E01' + str(rrn)
-            logger.debug(f"Query result, ref_id : {ref_id}")
             status = result['status'].values[0]
             logger.debug(f"Query result, status : {status}")
             posting_date = result['posting_date'].values[0]
             logger.debug(f"Query result, posting_date : {posting_date}")
             created_time = result['created_time'].values[0]
-            settlement_status = result['settlement_status'].values[0]
-            logger.debug(f"Query result, settlement_status : {settlement_status}")
-            acquirer_code = result['acquirer_code'].values[0]
-            logger.debug(f"Query result, acquirer_code : {acquirer_code}")
-            issuer_code = result['issuer_code'].values[0]
-            logger.debug(f"Query result, issuer_code : {issuer_code}")
+            logger.debug(f"Query result, created_time : {created_time}")
             org_code_txn = result['org_code'].values[0]
             logger.debug(f"Query result, org_code_txn : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
@@ -779,6 +772,7 @@ def test_common_100_111_038():
                 app_payer_name = txnHistoryPage.fetch_payer_name_text()
                 logger.info(f"Fetching txn payer name from txn history for the txn : {txn_id}, {app_payer_name}")
                 app_payment_status = app_payment_status.split(':')[1]
+                logger.info(f"Fetching txn app_payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_order_id = txnHistoryPage.fetch_order_id_text()
                 logger.info(f"Fetching txn order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_payment_msg = txnHistoryPage.fetch_txn_payment_msg_text()
@@ -787,7 +781,7 @@ def test_common_100_111_038():
                 logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
 
                 actual_app_values = {
-                    "pmt_mode": "UPI",
+                    "pmt_mode": app_payment_mode,
                     "pmt_status": app_payment_status,
                     "txn_amt": app_amount.split(' ')[1],
                     "settle_status": app_settlement_status,
@@ -1012,7 +1006,7 @@ def test_common_100_111_038():
                 rr_number = transaction_details[0]['RR Number']
                 logger.debug(f"rr_number: {rr_number}")
                 transaction_type = transaction_details[0]['Type']
-                logger.debug(f"status: {status}")
+                logger.debug(f"transaction_type: {transaction_type}")
                 status = transaction_details[0]['Status']
                 logger.debug(f"status: {status}")
                 username = transaction_details[0]['Username']

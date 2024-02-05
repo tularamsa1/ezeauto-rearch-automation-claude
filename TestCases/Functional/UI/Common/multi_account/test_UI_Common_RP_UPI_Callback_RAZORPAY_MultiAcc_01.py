@@ -117,8 +117,8 @@ def test_common_100_111_031():
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id = result['id'].values[0]
-            rrn = random.randint(1111110, 9999999)
             logger.debug(f"Query result, txn_id : {txn_id}")
+            rrn = random.randint(1111110, 9999999)
             logger.debug(f"generated random rrn number is : {rrn}")
 
             query = f"select * from payment_intent where org_code = '{str(org_code)}' AND external_ref = '{str(order_id)}' order by created_time desc limit 1;"
@@ -131,8 +131,9 @@ def test_common_100_111_031():
             logger.debug(f"Query to fetch txn_ref from the upi_txn for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_ref = result['txn_ref'].values[0]
+            logger.info(f"Query result,txn_ref : {txn_ref}")
             txn_ref_3 = result['txn_ref3'].values[0]
-            logger.info(f"Query result,txn_ref : {txn_ref} AND txn_ref_3 : {txn_ref_3}")
+            logger.info(f"Query result txn_ref_3 : {txn_ref_3}")
 
             logger.debug(
                 f"replacing the Intent ID with {payment_intent_id}, amount with {amount}.00 and rrn with {rrn} in the curl_data")
@@ -168,6 +169,7 @@ def test_common_100_111_031():
             org_code_txn = result['org_code'].values[0]
             logger.info(f"Query result,org_code_txn : {org_code_txn}")
             created_time = result['created_time'].values[0]
+            logger.info(f"Query result,created_time : {created_time}")
             txn_type = result['txn_type'].values[0]
             logger.info(f"Query result,txn_type : {txn_type}")
             customer_name = result['customer_name'].values[0]
@@ -179,7 +181,6 @@ def test_common_100_111_031():
             label_ids = str(result['label_ids'].values[0]).strip(',')
             logger.debug(f"fetched label_ids from txn table is : {label_ids}")
             # -------------------------------------------------------------------------------------------------------
-
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
@@ -247,7 +248,7 @@ def test_common_100_111_031():
                 logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
 
                 actual_app_values = {
-                    "pmt_mode": "UPI",
+                    "pmt_mode":app_payment_mode,
                     "pmt_status": app_payment_status,
                     "txn_amt": app_amount.split(' ')[1],
                     "settle_status": app_settlement_status,
@@ -612,19 +613,10 @@ def test_common_100_111_032():
             logger.debug(f"Query result, txn_id : {txn_id}")
             rrn = random.randint(1111110, 9999999)
             logger.debug(f"generated random rrn number is : {rrn}")
-            ref_id = '211115084892E01' + str(rrn)
-            logger.debug(f"Query result, ref_id : {ref_id}")
-            status = result['status'].values[0]
-            logger.debug(f"Query result, status : {status}")
             posting_date = result['posting_date'].values[0]
             logger.debug(f"Query result, posting_date : {posting_date}")
             created_time = result['created_time'].values[0]
-            settlement_status = result['settlement_status'].values[0]
-            logger.debug(f"Query result, settlement_status : {settlement_status}")
-            acquirer_code = result['acquirer_code'].values[0]
-            logger.debug(f"Query result, acquirer_code : {acquirer_code}")
-            issuer_code = result['issuer_code'].values[0]
-            logger.debug(f"Query result, issuer_code : {issuer_code}")
+            logger.debug(f"Query result, created_time : {created_time}")
             org_code_txn = result['org_code'].values[0]
             logger.debug(f"Query result, org_code_txn : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
@@ -640,8 +632,8 @@ def test_common_100_111_032():
             logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_ref = result['txn_ref'].values[0]
-            txn_ref_3 = result['txn_ref3'].values[0]
             logger.debug(f"Query result, txn_ref : {txn_ref}")
+            txn_ref_3 = result['txn_ref3'].values[0]
             logger.debug(f"replacing the Intent ID with {payment_intent_id}, amount with {amount}.00 and rrn with {rrn} in the curl_data")
 
             api_details_hmac = DBProcessor.get_api_details('remote_pay_razorpay_callback_generator_HMAC_failed')
@@ -671,8 +663,6 @@ def test_common_100_111_032():
             query = f"select * from txn where id = '{txn_id}';"
             logger.debug(f"Query to fetch transaction details from database : {query}")
             result = DBProcessor.getValueFromDB(query)
-            status = result['status'].values[0]
-            logger.debug(f"Query result, status : {status}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"Query result, customer_name : {customer_name}")
             payer_name = result['payer_name'].values[0]
@@ -751,7 +741,7 @@ def test_common_100_111_032():
                 logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
 
                 actual_app_values = {
-                    "pmt_mode": "UPI",
+                    "pmt_mode": app_payment_mode,
                     "pmt_status": app_payment_status,
                     "txn_amt": app_amount.split(' ')[1],
                     "settle_status": app_settlement_status,

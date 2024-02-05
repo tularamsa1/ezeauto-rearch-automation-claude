@@ -759,13 +759,17 @@ def test_common_100_103_229():
                 logger.debug(f"date from api response is: {date_api}")
 
                 actual_api_values = {
-                    "pmt_status": status_api, "txn_amt": amount_api,
+                    "pmt_status": status_api,
+                    "txn_amt": amount_api,
                     "pmt_mode": payment_mode_api,
-                    "pmt_state": state_api, "rrn": str(rrn_api),
+                    "pmt_state": state_api,
+                    "rrn": str(rrn_api),
                     "settle_status": settlement_status_api,
                     "acquirer_code": acquirer_code_api,
                     "issuer_code": issuer_code_api,
-                    "txn_type": txn_type_api, "mid": mid_api, "tid": tid_api,
+                    "txn_type": txn_type_api,
+                    "mid": mid_api,
+                    "tid": tid_api,
                     "org_code": org_code_api,
                     "date": date_time_converter.from_api_to_datetime_format(date_api)
                 }

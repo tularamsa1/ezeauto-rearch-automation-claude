@@ -131,8 +131,6 @@ def test_common_100_111_039():
             logger.debug(f"Query result, rrn : {rrn}")
             txn_id = result['id'].values[0]
             logger.debug(f"Query result, txn_id : {txn_id}")
-            status = result['status'].values[0]
-            logger.debug(f"Query result, status : {status}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"Query result, customer_name : {customer_name}")
             payer_name = result['payer_name'].values[0]
@@ -583,16 +581,8 @@ def test_common_100_111_040():
             result = DBProcessor.getValueFromDB(query)
             txn_id = result['id'].values[0]
             logger.debug(f"Query result, txn_id : {txn_id}")
-            rrn = result['rr_number'].values[0]
-            logger.debug(f"Query result, rrn : {rrn}")
             created_time = result['created_time'].values[0]
             logger.debug(f"Query result, created_time : {created_time}")
-            status = result['status'].values[0]
-            logger.debug(f"Query result, status : {status}")
-            customer_name = result['customer_name'].values[0]
-            logger.debug(f"Query result, customer_name : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"Query result, payer_name : {payer_name}")
             org_code_txn = result['org_code'].values[0]
             logger.debug(f"Query result, org_code_txn : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
@@ -1012,8 +1002,6 @@ def test_common_100_111_047():
             logger.debug(f"Query result, auth_code : {auth_code}")
             rrn = result['rr_number'].values[0]
             logger.debug(f"Query result, rrn : {rrn}")
-            status = result['status'].values[0]
-            logger.debug(f"Query result, status : {status}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"Query result, customer_name : {customer_name}")
             payer_name = result['payer_name'].values[0]

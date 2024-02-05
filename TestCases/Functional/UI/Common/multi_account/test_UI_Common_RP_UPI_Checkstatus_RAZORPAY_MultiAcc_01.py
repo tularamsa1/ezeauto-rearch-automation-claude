@@ -108,17 +108,9 @@ def test_common_100_111_033():
             auth_code = result['auth_code'].values[0]
             txn_id = result['id'].values[0]
             logger.debug(f"Query result, txn_id : {txn_id}")
-            status = result['status'].values[0]
-            logger.debug(f"Query result, status : {status}")
             customer_name = result['customer_name'].values[0]
             payer_name = result['payer_name'].values[0]
             logger.debug(f"Query result, payer_name : {payer_name}")
-            settlement_status = result['settlement_status'].values[0]
-            logger.debug(f"Query result, settlement_status : {settlement_status}")
-            acquirer_code = result['acquirer_code'].values[0]
-            logger.debug(f"Query result, acquirer_code : {acquirer_code}")
-            issuer_code = result['issuer_code'].values[0]
-            logger.debug(f"Query result, issuer_code : {issuer_code}")
             org_code_txn = result['org_code'].values[0]
             logger.debug(f"Query result, org_code_txn : {org_code_txn}")
             txn_type = result['txn_type'].values[0]
@@ -244,7 +236,6 @@ def test_common_100_111_033():
                 logger.debug(f"Response received for transaction list api is : {response}")
                 response = [x for x in response["txns"] if x["txnId"] == txn_id][0]
                 logger.debug(f"Response after filtering data of current txn is : {response}")
-
                 status_api = response["status"]
                 logger.debug(f"status_api: {status_api}")
                 amount_api = int(response["amount"])
@@ -565,8 +556,6 @@ def test_common_100_111_034():
             logger.debug(f"Query result, txn_id : {txn_id}")
             created_time = result['created_time'].values[0]
             logger.debug(f"Query result, created_time : {created_time}")
-            status = result['status'].values[0]
-            logger.debug(f"Query result, status : {status}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"Query result, customer_name : {customer_name}")
             payer_name = result['payer_name'].values[0]
@@ -976,18 +965,10 @@ def test_common_100_111_048():
             logger.debug(f"Query result, rrn : {rrn}")
             txn_id = result['id'].values[0]
             logger.debug(f"Query result, txn_id : {txn_id}")
-            status = result['status'].values[0]
-            logger.debug(f"Query result, status : {status}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"customer_name : {customer_name}")
             payer_name = result['payer_name'].values[0]
             logger.debug(f"Query result, payer_name : {payer_name}")
-            settlement_status = result['settlement_status'].values[0]
-            logger.debug(f"Query result, settlement_status : {settlement_status}")
-            acquirer_code = result['acquirer_code'].values[0]
-            logger.debug(f"Query result, acquirer_code : {acquirer_code}")
-            issuer_code = result['issuer_code'].values[0]
-            logger.debug(f"Query result, issuer_code : {issuer_code}")
             org_code_txn = result['org_code'].values[0]
             logger.debug(f"Query result, org_code_txn : {org_code_txn}")
             txn_type = result['txn_type'].values[0]

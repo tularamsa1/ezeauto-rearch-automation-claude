@@ -114,25 +114,14 @@ def test_common_100_112_045():
             query = f"select * from txn where org_code = '{org_code}' AND external_ref = '{order_id}';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            Txn_id = result['id'].values[0]
-            logger.debug(f"Query result, Txn_id : {Txn_id}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"Query result, auth_code : {auth_code}")
-            rrn = result['rr_number'].values[0]
-            logger.debug(f"Query result, rrn : {rrn}")
             txn_id = result['id'].values[0]
-            status = result['status'].values[0]
-            logger.debug(f"Query result, status : {status}")
+            logger.debug(f"Query result, txn_id : {txn_id}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"Query result, customer_name : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"Query result, payer_name : {payer_name}")
             posting_date = result['created_time'].values[0]
             logger.debug(f"Query result, posting_date : {posting_date}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code_txn : {org_code_txn}")
-            txn_type = result['txn_type'].values[0]
-            logger.debug(f"Query result, txn_type : {txn_type}")
             label_ids = str(result['label_ids'].values[0]).strip(',')
             logger.debug(f"Query result, label_ids : {label_ids}")
             settle_status = result['settlement_status'].values[0]
@@ -555,29 +544,16 @@ def test_common_100_112_046():
             query = f"select * from txn where org_code = '{org_code}' AND external_ref = '{order_id}';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            Txn_id = result['id'].values[0]
-            logger.debug(f"Query result, Txn_id : {Txn_id}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"Query result, auth_code : {auth_code}")
-            rrn = result['rr_number'].values[0]
-            logger.debug(f"Query result, rrn : {rrn}")
             txn_id = result['id'].values[0]
-            status = result['status'].values[0]
-            logger.debug(f"Query result, status : {status}")
+            logger.debug(f"Query result, txn_id : {txn_id}")
             customer_name = result['customer_name'].values[0]
             logger.debug(f"Query result, customer_name : {customer_name}")
-            payer_name = result['payer_name'].values[0]
-            logger.debug(f"Query result, payer_name : {payer_name}")
             posting_date = result['created_time'].values[0]
             logger.debug(f"Query result, posting_date : {posting_date}")
-            org_code_txn = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code_txn : {org_code_txn}")
-            txn_type = result['txn_type'].values[0]
-            logger.debug(f"Query result, txn_type : {txn_type}")
             label_ids = str(result['label_ids'].values[0]).strip(',')
             logger.debug(f"Query result, label_ids : {label_ids}")
-            settle_status = result['settlement_status'].values[0]
-            logger.debug(f"Query result, txn_settle_status : {settle_status}")
             created_time = result['created_time'].values[0]
             logger.debug(f"Query result, created_time from db : {created_time}")
 

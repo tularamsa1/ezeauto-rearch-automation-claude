@@ -106,8 +106,6 @@ def test_common_100_103_280():
             logger.debug(f"Query to fetch id from the terminal info table : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result of terminal_info table is : {result}")
-            terminal_info_id = result['id'].values[0]
-            logger.debug(f"Query result, terminal_info_id from db : {terminal_info_id}")
             mid_db = result['mid'].values[0]
             logger.debug(f"Query result, mid from db : {mid_db}")
             device_serial_db = result['device_serial'].values[0]
@@ -151,8 +149,6 @@ def test_common_100_103_280():
             logger.debug(f"Query result, txn_txn_id : {txn_id}")
             txn_customer_name = result['customer_name'].values[0]
             logger.debug(f"Query result, txn_customer_name : {txn_customer_name}")
-            txn_payer_name = result['payer_name'].values[0]
-            logger.debug(f"Query result, txn_payer_name : {txn_payer_name}")
             txn_settle_status = result['settlement_status'].values[0]
             logger.debug(f"Query result, txn_settle_status : {txn_settle_status}")
             txn_auth_code = result['auth_code'].values[0]
@@ -167,10 +163,6 @@ def test_common_100_103_280():
             logger.debug(f"Query result, tid from db : {txn_tid}")
             txn_device_serial = result['device_serial'].values[0]
             logger.debug(f"Query result, device_serial from db : {txn_device_serial}")
-            txn_state = result['state'].values[0]
-            logger.debug(f"Query result, db txn_state from db : {txn_state}")
-            rrn_number = result['rr_number'].values[0]
-            logger.debug(f"Query result, db rrn_number from db : {rrn_number}")
 
             query = f"select * from cnp_txn where txn_id='{txn_id}';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -205,7 +197,6 @@ def test_common_100_103_280():
             logger.debug(f"Query result, cnpware_payment_flow : {cnpware_payment_flow}")
             cnpware_payment_option_value_1 = result['payment_option_value1'].values[0]
             logger.debug(f"Query result, cnpware_payment_option_value_1 : {cnpware_payment_option_value_1}")
-
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -670,8 +661,6 @@ def test_common_100_103_281():
             logger.debug(f"Query result, txn_txn_id : {txn_id}")
             txn_customer_name = result['customer_name'].values[0]
             logger.debug(f"Query result, txn_customer_name : {txn_customer_name}")
-            txn_payer_name = result['payer_name'].values[0]
-            logger.debug(f"Query result, txn_payer_name : {txn_payer_name}")
             txn_settle_status = result['settlement_status'].values[0]
             logger.debug(f"Query result, txn_settle_status : {txn_settle_status}")
             txn_auth_code = result['auth_code'].values[0]
@@ -686,10 +675,6 @@ def test_common_100_103_281():
             logger.debug(f"Query result, tid from db : {txn_tid}")
             txn_device_serial = result['device_serial'].values[0]
             logger.debug(f"Query result, device_serial from db : {txn_device_serial}")
-            txn_state = result['state'].values[0]
-            logger.debug(f"Query result, db txn_state from db : {txn_state}")
-            rrn_number = result['rr_number'].values[0]
-            logger.debug(f"Query result, db rrn_number from db : {rrn_number}")
 
             query = f"select * from cnp_txn where txn_id='{txn_id}';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -1180,8 +1165,6 @@ def test_common_100_103_282():
             logger.debug(f"Query result, txn_txn_id : {txn_id}")
             txn_customer_name = result['customer_name'].values[0]
             logger.debug(f"Query result, txn_customer_name : {txn_customer_name}")
-            txn_payer_name = result['payer_name'].values[0]
-            logger.debug(f"Query result, txn_payer_name : {txn_payer_name}")
             txn_settle_status = result['settlement_status'].values[0]
             logger.debug(f"Query result, txn_settle_status : {txn_settle_status}")
             txn_auth_code = result['auth_code'].values[0]
@@ -1214,8 +1197,6 @@ def test_common_100_103_282():
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query, "cnpware")
             logger.debug(f"Query result is : {result}")
-            cnpware_txn_txn_type = result['txn_type'].values[0]
-            logger.debug(f"Query result, cnpware_txn_txn_type : {cnpware_txn_txn_type}")
             cnpware_txn_payment_mode = result['payment_mode'].values[0]
             logger.debug(f"Query result, cnpware_txn_payment_mode : {cnpware_txn_payment_mode}")
             cnpware_txn_state = result['state'].values[0]

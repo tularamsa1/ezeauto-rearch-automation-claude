@@ -222,15 +222,6 @@ def test_common_100_103_285():
                 logger.debug(f"posting_date is : {posting_date}")
                 created_time = result['created_time'].values[0]
                 logger.debug(f"created_time is : {created_time}")
-
-                query = f"select * from payment_intent where org_code = '{str(org_code)}' AND external_ref = '{str(order_id)}' and payment_mode='UPI';"
-                logger.debug(f"Query to fetch payment_intent_id from the DB : {query}")
-                result = DBProcessor.getValueFromDB(query)
-                logger.debug(f"Query result is : {result}")
-                payment_intent_id = result['id'].values[0]
-                logger.info(f"payment_intent_id is : {payment_intent_id}")
-                intent_status = result['status'].values[0]
-                logger.info(f"Payment intent status for UPI is: {intent_status}")
                 # ------------------------------------------------------------------------------------------------
                 GlobalVariables.EXCEL_TC_Execution = "Pass"
                 GlobalVariables.time_calc.execution.pause()

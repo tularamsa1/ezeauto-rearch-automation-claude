@@ -185,8 +185,6 @@ def test_common_100_103_247():
             logger.debug(f"generated random customer_name is : {original_customer_name}")
             original_payer_name = result['payer_name'].values[0]
             logger.debug(f"generated random payer_name is : {original_payer_name}")
-            original_status = result['status'].values[0]
-            logger.debug(f"generated random status is : {original_status}")
             original_created_time = result['created_time'].values[0]
             logger.debug(f"generated random original_posting_date is : {original_created_time}")
 

@@ -115,10 +115,6 @@ def test_common_100_103_190():
             logger.debug(f"Query result, txn_customer_name : {txn_customer_name}")
             txn_settle_status = result['settlement_status'].values[0]
             logger.debug(f"Query result, txn_settle_status : {txn_settle_status}")
-            txn_auth_code = result['auth_code'].values[0]
-            logger.debug(f"Query result, txn_auth_code : {txn_auth_code}")
-            posting_date = result['posting_date'].values[0]
-            logger.debug(f"Query result, db date from db : {posting_date}")
             created_time = result['created_time'].values[0]
             logger.debug(f"fetched created_time from txn table is : {created_time}")
             auth_code = result['auth_code'].values[0]
@@ -127,8 +123,6 @@ def test_common_100_103_190():
             logger.debug(f"fetched customer_name from txn table is : {customer_name}")
             payer_name = result['payer_name'].values[0]
             logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            rrn = result['rr_number'].values[0]
-            logger.debug(f"fetched rrn from txn table is : {rrn}")
             txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched txn_type from txn table is : {txn_type}")
             org_code_txn = result['org_code'].values[0]
@@ -146,8 +140,6 @@ def test_common_100_103_190():
             query = f"select * from cnp_txn where txn_id='{original_txn_id}';"
             logger.debug(f"Query to fetch rrn number from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            original_rrn_cnp_txn = result['rr_number'].values[0]
-            logger.debug(f"Query result, original_rrn_cnp_txn : {original_rrn_cnp_txn}")
             state_cnp_txn_original = result['state'].values[0]
             logger.debug(f"Query result, state_cnp_txn_original : {state_cnp_txn_original}")
             txn_card_type = result['payment_option'].values[0]
@@ -170,48 +162,32 @@ def test_common_100_103_190():
             logger.debug(f"txn id from txn table after refund : {txn_id_after_refund}")
             amount_after_refund = result['amount'].values[0]
             logger.debug(f"amount from txn table after refund: {amount_after_refund}")
-            payment_mode_after_refund = result['payment_mode'].values[0]
-            logger.debug(f"paymentMode from txn table after refund: {payment_mode_after_refund}")
             state_after_refund = result['state'].values[0]
             logger.debug(f"state from txn table after refund: {state_after_refund}")
             status_after_refund = result['status'].values[0]
             logger.debug(f"status from txn table after refund: {status_after_refund}")
-            acquirer_code_after_refund = result['acquirer_code'].values[0]
-            logger.debug(f"acquirer_code from txn table after refund: {acquirer_code_after_refund}")
             payment_gateway_after_refund = result['payment_gateway'].values[0]
             logger.debug(f"payment_gateway from txn table after refund: {payment_gateway_after_refund}")
             settlement_status_after_refund = result['settlement_status'].values[0]
             logger.debug(f"settlement_status from txn table after refund: {settlement_status_after_refund}")
-            created_datetime_after_refund = result['created_time'].values[0]
-            logger.debug(f"posting_date from txn table after refund: {created_datetime_after_refund}")
             refund_created_time = result['created_time'].values[0]
             logger.debug(f"fetched refund_created_time from txn table is : {refund_created_time}")
             customer_name_2 = result['customer_name'].values[0]
             logger.debug(f"fetched customer_name from txn table is : {customer_name}")
             payer_name_2 = result['payer_name'].values[0]
             logger.debug(f"fetched payer_name from txn table is : {payer_name}")
-            refund_rrn = result['rr_number'].iloc[0]
-            logger.debug(f"fetched refund_rrn from txn table is : {refund_rrn}")
             refund_txn_type = result['txn_type'].values[0]
             logger.debug(f"fetched refund_txn_type from txn table is : {refund_txn_type}")
             order_id_after_refund = result['external_ref'].values[0]
             logger.debug(f"Order Id after refund : {refund_txn_type}")
-            bank_code_after_refund = result['bank_code'].values[0]
-            logger.debug(f"bank_code_after_refund is : {bank_code_after_refund}")
 
             query = f"select * from cnpware_txn where txn_id='{txn_id_after_refund}';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
             result = DBProcessor.getValueFromDB(query, "cnpware")
-            txn_id_after_refund_cnpware = result['txn_id'].values[0]
-            logger.debug(f"txn id from cnpware_txn table : {txn_id_after_refund_cnpware}")
             amount_after_refund = result['amount'].values[0]
             logger.debug(f"amount from cnpware_txn table : {amount_after_refund}")
-            payment_mode_after_refund = result['payment_mode'].values[0]
-            logger.debug(f"paymentMode from cnpware_txn table : {payment_mode_after_refund}")
             state_after_refund = result['state'].values[0]
             logger.debug(f"state from cnpware_txn table : {state_after_refund}")
-            acquirer_code_after_refund = result['acquirer_code'].values[0]
-            logger.debug(f"acquirer_code from cnpware_txn table : {acquirer_code_after_refund}")
             payment_gateway_after_refund = result['payment_gateway'].values[0]
             logger.debug(f"payment_gateway from cnpware_txn table : {payment_gateway_after_refund}")
             payment_flow_after_refund = result['payment_flow'].values[0]
@@ -222,24 +198,12 @@ def test_common_100_103_190():
             query = f"select * from cnp_txn where txn_id='{txn_id_after_refund}';"
             logger.debug(f"Query to fetch rrn number from the DB : {query}")
             result = DBProcessor.getValueFromDB(query)
-            rrn_cnp_txn = result['rr_number'].values[0]
-            logger.debug(f"Query result, rrn_cnp_txn : {rrn_cnp_txn}")
             acquirer_code_cnp_txn = result['acquirer_code'].values[0]
             logger.debug(f"Query result, acquirer_code_cnp_txn : {acquirer_code_cnp_txn}")
             state_cnp_txn = result['state'].values[0]
             logger.debug(f"Query result, state_cnp_txn : {state_cnp_txn}")
-            payment_flow_cnp_txn = result['payment_flow'].values[0]
-            logger.debug(f"Query result, payment_flow_cnp_txn : {payment_flow_cnp_txn}")
-            txn_type_cnp_txn = result['txn_type'].values[0]
-            logger.debug(f"Query result, txn_type_cnp_txn : {txn_type_cnp_txn}")
             payment_mode_cnp_txn = result['payment_mode'].values[0]
             logger.debug(f"Query result, payment_mode_cnp_txn : {payment_mode_cnp_txn}")
-            payment_gateway_cnp_txn = result['payment_gateway'].values[0]
-            logger.debug(f"Query result, payment_gateway_cnp_txn : {payment_gateway_cnp_txn}")
-            org_code_cnp_txn = result['org_code'].values[0]
-            logger.debug(f"Query result, org_code_cnp_txn : {org_code_cnp_txn}")
-            cnpware_payment_gateway = result['payment_gateway'].values[0]
-            logger.debug(f"Query result, cnpware_payment_gateway : {cnpware_payment_gateway}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -540,10 +504,6 @@ def test_common_100_103_190():
                 logger.debug(f"payment_gateway from txn table : {payment_gateway_db}")
                 settlement_status_db = result['settlement_status'].values[0]
                 logger.debug(f"settlement_status from txn table : {settlement_status_db}")
-                txn_type_db = result['txn_type'].values[0]
-                logger.debug(f"txn type from txn table : {txn_type_db}")
-                org_code_db = result['org_code'].values[0]
-                logger.debug(f"Org code from txn table : {org_code_db}")
 
                 actual_db_values = {"pmt_status": status_db,
                                     "pmt_state": state_db,
