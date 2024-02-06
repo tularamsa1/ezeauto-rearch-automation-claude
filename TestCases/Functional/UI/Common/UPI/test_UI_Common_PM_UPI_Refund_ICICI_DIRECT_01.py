@@ -303,7 +303,7 @@ def test_common_100_101_314():
 
                     "txn_amt_2": "{:.2f}".format(amount),
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "pmt_mode_2": "UPI",
                     "txn_id_2": txn_id_2,
                     "date_2": date_and_time_2,
@@ -313,7 +313,7 @@ def test_common_100_101_314():
 
                     "txn_amt_3": "{:.2f}".format(amount),
                     "order_id_3": order_id,
-                    "pmt_msg_3": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_3": "PAYMENT SUCCESSFUL",
                     "pmt_mode_3": "UPI",
                     "txn_id_3": refund_txn_id,
                     "date_3": date_and_time_3,

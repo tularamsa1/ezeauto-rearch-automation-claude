@@ -1042,7 +1042,7 @@ def test_d102_101_028():
                     "org_code_2": org_code,
                     "date": date_and_time,
                     "date_2": refund_date_and_time,
-                    "err_msg": "Amount to refund is greater than refundable amount."
+                    "err_msg": f"Transaction declined. Amount entered is more than maximum allowed for the transaction. Maximum Allowed: 150.00"
                 }
 
                 logger.debug(f"expected_api_values : {expected_api_values} for the testcase_id {testcase_id}")

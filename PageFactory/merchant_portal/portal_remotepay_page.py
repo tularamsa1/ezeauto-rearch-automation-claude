@@ -66,6 +66,14 @@ class RemotePayTxnPage(BasePage):
     btn_nine_months_emi_plan = '//p[normalize-space(text()="9 EMI")]'
     btn_twelve_months_emi_plan = '//p[normalize-space(text()="12 EMI")]'
 
+    txt_otp_field = "//input[@placeholder='OTP']"
+    btn_submit_otp = "//button[@type='submit']"
+    btn_failure = "//button[text()='Failure']"
+    btn_success = "//button[text()='Success']"
+    txt_failure_msg = "//*[@id='page-wrapper']/div/div/div/div/h3/text()"
+    lbl_input_debit_card_num = "//input[@placeholder='Card number']"
+    btn_select_netbanking_Rzp = "AU Small Finance Bank"
+
     def __init__(self, page):
         super().__init__(page)
 
@@ -221,3 +229,32 @@ class RemotePayTxnPage(BasePage):
             self.perform_click(self.btn_twelve_months_emi_plan)
         else:
             raise Exception("Preferred emi plan is invalid")
+
+    def enter_otp(self, otp):
+        self.wait_for_element(self.txt_otp_field)
+        self.perform_fill(self.txt_otp_field, otp)
+
+    def submit_otp(self):
+        self.wait_for_element(self.btn_submit_otp)
+        self.perform_click_cnp(self.btn_submit_otp)
+
+    def click_failure_pmt_btn(self):
+        self.wait_for_element(self.btn_failure)
+        self.perform_click(self.btn_failure)
+
+    def fetch_failure_message(self):
+        self.wait_for_element(self.txt_failure_msg)
+        self.fetch_text(self.txt_failure_msg)
+
+    def click_success_pmt_btn(self):
+        self.wait_for_element(self.btn_success)
+        self.perform_click(self.btn_success)
+
+    def remote_pay_select_netbanking_Rzp(self):
+        self.select_from_drop_down_combobox(self.btn_select_netbanking_Rzp)
+
+    def enter_debit_card_number(self, value):
+        self.perform_fill(self.lbl_input_debit_card_num, value)
+
+    def enter_debit_card_cvv(self, value):
+        self.perform_fill(self.lbl_cardCvv, value)

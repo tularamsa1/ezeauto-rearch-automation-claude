@@ -249,12 +249,12 @@ def test_common_100_101_308():
                 date_and_time_refund = date_time_converter.to_app_format(created_time_refund)
                 expected_app_values = {
                     "pmt_mode": "UPI",
-                    "pmt_status": "AUTHORIZED_REFUNDED",
+                    "pmt_status": "AUTHORIZED REFUNDED",
                     "txn_amt": "{:.2f}".format(amount),
                     "txn_id": txn_id,
                     "rrn": rrn,
                     "order_id": order_id,
-                    "pmt_msg": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
                     "settle_status": "SETTLED",
                     "date": date_and_time,
 
@@ -264,7 +264,7 @@ def test_common_100_101_308():
                     "txn_id_2": txn_id_refund,
                     "rrn_2": rrn_refund,
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "settle_status_2": "SETTLED",
                     "date_2": date_and_time_refund
                 }

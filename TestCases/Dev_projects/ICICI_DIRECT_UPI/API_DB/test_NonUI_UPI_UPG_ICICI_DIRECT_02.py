@@ -68,6 +68,22 @@ def test_d102_101_037():
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True)
 
+        query = "select * from upi_merchant_config where org_code ='" + str(
+            org_code) + "' AND status = 'ACTIVE' AND bank_code = 'ICICI_DIRECT'"
+        logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"query result for upi_merchant_config table is : {result}")
+        upi_mc_id = result['id'].values[0]
+        logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
+        virtual_tid = result['virtual_tid'].values[0]
+        logger.debug(f"fetched virtual_tid : {virtual_tid}")
+        virtual_mid = result['virtual_mid'].values[0]
+        logger.debug(f"fetched virtual_mid : {virtual_mid}")
+        vpa = result['vpa'].values[0]
+        logger.debug(f"fetched vpa : {vpa}")
+
+        testsuite_teardown.delete_staticqr_intent_table_entry_by_vpa(portal_username, portal_password, vpa)
+
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
@@ -76,20 +92,6 @@ def test_d102_101_037():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
-
-            query = "select * from upi_merchant_config where org_code ='" + str(
-                org_code) + "' AND status = 'ACTIVE' AND bank_code = 'ICICI_DIRECT'"
-            logger.debug(f"Query to fetch upi_mc_id from the upi_merchant_config for the {org_code} : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            logger.debug(f"query result for upi_merchant_config table is : {result}")
-            upi_mc_id = result['id'].values[0]
-            logger.debug(f"fetched upi_mc_id : {upi_mc_id}")
-            virtual_tid = result['virtual_tid'].values[0]
-            logger.debug(f"fetched virtual_tid : {virtual_tid}")
-            virtual_mid = result['virtual_mid'].values[0]
-            logger.debug(f"fetched virtual_mid : {virtual_mid}")
-            vpa = result['vpa'].values[0]
-            logger.debug(f"fetched vpa : {vpa}")
 
             amount = random.randint(1, 100)
             order_id = datetime.now().strftime('%m%d%H%M%S')
