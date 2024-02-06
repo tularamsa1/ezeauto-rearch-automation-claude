@@ -65,6 +65,9 @@ class RemotePayTxnPage(BasePage):
     btn_six_months_emi_plan = '//p[normalize-space(text()="6 EMI")]'
     btn_nine_months_emi_plan = '//p[normalize-space(text()="9 EMI")]'
     btn_twelve_months_emi_plan = '//p[normalize-space(text()="12 EMI")]'
+    txt_warning_msg = "//h3[@class='message-title']"
+    iframe_cybsource = "css=[id^='cardinal-stepUpIframe-']"
+    btn_cyberSourceSubmitButton = "//input[@value='SUBMIT']"
 
     txt_otp_field = "//input[@placeholder='OTP']"
     btn_submit_otp = "//button[@type='submit']"
@@ -258,3 +261,53 @@ class RemotePayTxnPage(BasePage):
 
     def enter_debit_card_cvv(self, value):
         self.perform_fill(self.lbl_cardCvv, value)
+
+    def switch_to_iframe(self):
+        """Below method is used to pass the iframe locator path to switch the context to iframe"""
+        iframe_element = self.page.frame_locator(self.iframe_cybsource)
+        iframe_element.get_by_placeholder(" Enter Code Here").fill("1234")
+        iframe_element.locator(self.btn_cyberSourceSubmitButton).click()
+
+    def fetch_credit_card_payment_mode_text(self) -> str:
+        """
+        This method is used to fetch credit card text from browser.
+        return: Credit Card: str
+        """
+        return self.fetch_text(self.btn_creditCardClickAndExpand)
+
+    def fetch_debit_card_payment_mode_text(self) -> str:
+        """
+        This method is used to fetch debit card text from browser.
+        return: Debit Card: str
+        """
+        return self.fetch_text(self.btn_debitClickAndExpand)
+
+    def fetch_upi_payment_mode_text(self) -> str:
+        """
+        This method is used to fetch upi text from browser.
+        return: UPI: str
+        """
+        return self.fetch_text(self.btn_remotePayUpi)
+
+    def fetch_net_banking_payment_mode_text(self) -> str:
+        """
+        This method is used to fetch net banking text from browser.
+        return: Net Banking: str
+        """
+        return self.fetch_text(self.btn_netbanking)
+
+    def fetch_warning_msg_txt(self) -> str:
+        """
+        This method is used to fetch warning msg text from browser.
+        return: warning msg : str
+        """
+        return self.fetch_text(self.txt_warning_msg)
+
+    def is_credit_debit_netbanking_and_upi_visible(self, loc) -> str:
+        """
+        This method is used to check invisiblity of credit, debit, netbanking & UPI payment mode from browser.
+        return: Credit: str
+        """
+        locator = "//mat-panel-title[contains(text(),'Credit Card')]"
+        return self.wait_for_element_invisible(locator)
+
