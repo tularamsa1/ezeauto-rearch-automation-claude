@@ -92,6 +92,11 @@ class PaymentPage(BasePage):
     ok_error_btn = (By.ID, "com.ezetap.service.demo:id/rightButton")
     razorpay_emi_discount = (By.XPATH, f"//*[contains(@text,'Razorpay EMI Discount')]")
     bo_element = (By.XPATH, '//*[@text="Instant Discount(Offer)"]/following-sibling::android.widget.TextView[2]')
+    txt_customer_mobile_number = (By.ID, 'com.ezetap.service.demo:id/tvSubtitle')
+    txt_agent_mobile_number = (By.ID, 'com.ezetap.service.demo:id/tvSubtitleAgent')
+    bin_remote_pay = (By.XPATH, "//*[@text='Pay Link']")
+    btn_send_link = (By.ID, 'com.ezetap.service.demo:id/btnSendLink')
+    err_msg_mobile_number_remote_pay = (By.ID, 'com.ezetap.service.demo:id/tvPhoneNoHelper')
     lbl_upi_err_msg = (By.XPATH, '//*[contains(@text,"Valid UPI configuration not found for merchant")]')
 
 
@@ -775,3 +780,47 @@ class PaymentPage(BasePage):
         This method is used to check the visibility of brand EMI payment option
         """
         self.wait_for_invisibility_of_elements(self.btn_brand_emi)
+
+    def check_customer_mobile_number_field_visible(self):
+        """
+        This method is used to check whether customer mobile number field is visible or not for remote pay
+        return: bool
+        """
+        try:
+            self.visibility_of_elements(self.txt_customer_mobile_number)
+            return True
+        except Exception as e:
+            logger.exception(f"customer mobile number field is not visible due to : {e}")
+            return False
+
+    def check_agent_mobile_number_field_visible(self):
+        """
+        This method is used to check whether agent mobile number field is visible or not for remote pay
+        return: bool
+        """
+        try:
+            self.visibility_of_elements(self.txt_agent_mobile_number)
+            return True
+        except Exception as e:
+            logger.exception(f"agent mobile number field is not visible due to : {e}")
+            return False
+
+    def click_on_remote_pay_payment_mode(self):
+        """
+        This method is used to click on remote pay payment mode
+        """
+        self.scroll_to_text("Pay Link")
+        self.perform_click(self.btn_remote_pay)
+
+    def clink_on_send_link_btn(self):
+        """
+        This method is used to click on send link button for remote pay
+        """
+        self.perform_click(self.btn_send_link)
+
+    def fetch_mobile_number_error_msg_for_remote_pay(self):
+        """
+        This method is used to fetch mobile number error msg for remote pay
+        return: str
+        """
+        return self.fetch_text(self.err_msg_mobile_number_remote_pay)
