@@ -408,7 +408,8 @@ def test_common_100_103_307():
 def test_common_100_103_308():
     """
      Sub Feature Code: UI_Common_PM_RP_Payment_Modes_Enabled_After_Link_Generation
-     Sub Feature Description: Enable all the payment modes after link creation, when user clicks on link, only the payment mode which was enabled before link creation should be viewed
+     Sub Feature Description: Enable CC, DC and UPI payment modes after link creation, when user clicks on link, All the
+     payment mode which was enabled before link creation and after link creation should be viewed
      TC naming code description: 100: Payment Method, 103: RemotePay, 308: TC308
     """
     try:
@@ -443,6 +444,11 @@ def test_common_100_103_308():
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        query = f"update merchant_pg_config set status = 'ACTIVE' where org_code='{org_code}'"
+        logger.debug(f"Query to update merchant_pg_config table: {query}")
+        result = DBProcessor.setValueToDB(query=query)
+        logger.debug(f"query result : {result}")
 
         query = f"select * from remotepay_setting where org_code='{org_code}' and setting_name='nbEnabledInCnp'"
         logger.debug(f"Query to fetch data from remotepay_setting table: {query}")

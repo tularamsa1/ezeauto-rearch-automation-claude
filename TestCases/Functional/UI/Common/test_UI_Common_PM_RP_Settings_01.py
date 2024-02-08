@@ -257,13 +257,11 @@ def test_common_100_103_315():
             else:
                 payment_link_generate = False
 
-            try:
-                if len(short_payment_link) > 0:
-                    short_payment_link_generate = True
-            except Exception as e:
-                logger.exception(f"payment link generation failed due to exception : {e}")
+            if short_payment_link is None:
                 short_payment_link_generate = False
-                # ------------------------------------------------------------------------------------------------
+            else:
+                short_payment_link_generate = True
+            # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")

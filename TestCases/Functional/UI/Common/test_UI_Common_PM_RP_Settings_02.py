@@ -27,7 +27,7 @@ logger = EzeAutoLogger(__name__)
 def test_common_100_103_316():
     """
     Sub Feature Code: UI_Common_PM_RP_Settings_Confirmation_URL_Valid
-    Sub Feature Description: Posting of transaction details to "Confirmation URL"  when URL is set to valid value
+    Sub Feature Description: Posting of transaction details to "Confirmation URL" and merchantSecretKey is set to valid value
     TC naming code description: 100: Payment Method, 103: RemotePay, 316: TC316
     """
     try:
@@ -56,6 +56,10 @@ def test_common_100_103_316():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='CNP')
+
+        testsuite_teardown.revert_cnp_payment_settings_default(org_code, bank_code='CYBERSOURCE',
+                                                               portal_un=portal_username,
+                                                               portal_pw=portal_password, payment_gateway='CYBERSOURCE')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -97,16 +101,6 @@ def test_common_100_103_316():
             result = DBProcessor.setValueToDB(query=query)
             logger.debug(f"query result : {result}")
 
-        query = f"update merchant_pg_config set status = 'INACTIVE' where org_code='{org_code}'"
-        logger.debug(f"Query to update merchant_pg_config table: {query}")
-        result = DBProcessor.setValueToDB(query=query)
-        logger.debug(f"query result : {result}")
-
-        query = f"update merchant_pg_config set status = 'ACTIVE' where org_code='{org_code}' and payment_gateway='CYBERSOURCE' and bank_code='HDFC'"
-        logger.debug(f"Query to update merchant_pg_config table: {query}")
-        result = DBProcessor.setValueToDB(query=query)
-        logger.debug(f"query result : {result}")
-
         refresh_db()
         logger.debug(f"Refreshing the db after setting the precondition")
 
@@ -114,7 +108,7 @@ def test_common_100_103_316():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------------------PreConditions(Completed)-----------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=True)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
@@ -640,11 +634,6 @@ def test_common_100_103_316():
             result = DBProcessor.setValueToDB(query=query)
             logger.debug(f"query result : {result}")
 
-            query = f"update merchant_pg_config set status = 'ACTIVE' where org_code='{org_code}'"
-            logger.debug(f"Query to update merchant_pg_config table: {query}")
-            result = DBProcessor.setValueToDB(query=query)
-            logger.debug(f"query result : {result}")
-
             refresh_db()
             logger.debug(f"Database Refreshed")
 
@@ -792,7 +781,7 @@ def test_common_100_103_317():
 def test_common_100_103_318():
     """
      Sub Feature Code: UI_Common_PM_RP_Settings_Confirmation_URL_Invalid
-     Sub Feature Description: Posting of transaction details to "Confirmation URL"  when URL is set to invalid value
+     Sub Feature Description: Posting of transaction details to "Confirmation URL"  when URL is set to invalid value and merchantSecretKey = "NA"
      TC naming code description: 100: Payment Method, 103: RemotePay, 318: TC318
     """
     expected_message = "Your payment attempt failed, Sorry for the inconvenience. Please contact pos-support@razorpay.com for further clarifications."
@@ -822,6 +811,10 @@ def test_common_100_103_318():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='CNP')
+
+        testsuite_teardown.revert_cnp_payment_settings_default(org_code, bank_code='CYBERSOURCE',
+                                                               portal_un=portal_username,
+                                                               portal_pw=portal_password, payment_gateway='CYBERSOURCE')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------

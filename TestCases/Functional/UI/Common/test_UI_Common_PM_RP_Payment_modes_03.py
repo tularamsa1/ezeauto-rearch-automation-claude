@@ -554,24 +554,14 @@ def test_common_100_103_312():
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='CNP')
 
+        testsuite_teardown.revert_cnp_payment_settings_default(org_code, bank_code='CYBERSOURCE', portal_un=portal_username,
+                                                               portal_pw=portal_password, payment_gateway='CYBERSOURCE')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
-        query = f"update merchant_pg_config set status = 'INACTIVE' where org_code='{org_code}'"
-        logger.debug(f"Query to update merchant_pg_config table: {query}")
-        result = DBProcessor.setValueToDB(query=query)
-        logger.debug(f"query result : {result}")
-
-        query = f"update merchant_pg_config set status = 'ACTIVE' where org_code='{org_code}' and payment_gateway='CYBERSOURCE' and bank_code='HDFC'"
-        logger.debug(f"Query to update merchant_pg_config table: {query}")
-        result = DBProcessor.setValueToDB(query=query)
-        logger.debug(f"query result : {result}")
-
-        refresh_db()
-        logger.debug(f"Refreshing the db after setting the precondition")
 
         query = f"select * from upi_merchant_config where org_code = '{org_code}' AND status = 'ACTIVE' AND bank_code = 'HDFC'"
         logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
@@ -584,7 +574,7 @@ def test_common_100_103_312():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------------------PreConditions(Completed)-----------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=True)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
@@ -1366,15 +1356,6 @@ def test_common_100_103_312():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
-        try:
-            query = f"update merchant_pg_config set status = 'ACTIVE' where org_code='{org_code}'"
-            logger.debug(f"Query to update merchant_pg_config table: {query}")
-            result = DBProcessor.setValueToDB(query=query)
-            logger.debug(f"query result : {result}")
-            refresh_db()
-            logger.debug(f"Database refreshed")
-        except Exception as e:
-            logger.exception(f"Query updation failed due to exception : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -1912,24 +1893,15 @@ def test_common_100_103_338():
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='CNP')
 
+        testsuite_teardown.revert_cnp_payment_settings_default(org_code, bank_code='CYBERSOURCE',
+                                                               portal_un=portal_username,
+                                                               portal_pw=portal_password, payment_gateway='CYBERSOURCE')
+
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
-
-        query = f"update merchant_pg_config set status = 'INACTIVE' where org_code='{org_code}'"
-        logger.debug(f"Query to update merchant_pg_config table: {query}")
-        result = DBProcessor.setValueToDB(query=query)
-        logger.debug(f"query result : {result}")
-
-        query = f"update merchant_pg_config set status = 'ACTIVE' where org_code='{org_code}' and payment_gateway='CYBERSOURCE' and bank_code='HDFC'"
-        logger.debug(f"Query to update merchant_pg_config table: {query}")
-        result = DBProcessor.setValueToDB(query=query)
-        logger.debug(f"query result : {result}")
-
-        refresh_db()
-        logger.debug(f"Refreshing the db after setting the precondition")
 
         query = f"select * from upi_merchant_config where org_code = '{org_code}' AND status = 'ACTIVE' AND bank_code = 'AXIS_DIRECT'"
         logger.debug(f"Query to fetch data from the upi_merchant_config for the {org_code} : {query}")
@@ -1942,7 +1914,7 @@ def test_common_100_103_338():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------------------PreConditions(Completed)-----------------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=True)
+        Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True, cnpwareLog=True, middlewareLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
 
@@ -2711,13 +2683,4 @@ def test_common_100_103_338():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
-        try:
-            query = f"update merchant_pg_config set status = 'ACTIVE' where org_code='{org_code}'"
-            logger.debug(f"Query to update merchant_pg_config table: {query}")
-            result = DBProcessor.setValueToDB(query=query)
-            logger.debug(f"query result : {result}")
-            refresh_db()
-            logger.debug(f"Database refreshed")
-        except Exception as e:
-            logger.exception(f"Query updation failed due to exception : {e}")
         Configuration.executeFinallyBlock(testcase_id)

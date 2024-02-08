@@ -407,6 +407,9 @@ def test_common_100_103_303():
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='HDFC', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='CNP')
 
+        testsuite_teardown.revert_cnp_payment_settings_default(org_code, bank_code='CYBERSOURCE',
+                                                               portal_un=portal_username,
+                                                               portal_pw=portal_password, payment_gateway='CYBERSOURCE')
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
@@ -476,11 +479,6 @@ def test_common_100_103_303():
 
         query = f"update remotepay_setting set setting_value='false' where org_code='{org_code}' and setting_name='upiCollectEnableOnNonAndroidDevices';"
         logger.debug(f"Query to update remotepay_setting table: {query}")
-        result = DBProcessor.setValueToDB(query=query)
-        logger.debug(f"query result : {result}")
-
-        query = f"update merchant_pg_config set status='INACTIVE' where org_code='{org_code}' and payment_gateway='TPSL';"
-        logger.debug(f"Query to update merchant_pg_config table: {query}")
         result = DBProcessor.setValueToDB(query=query)
         logger.debug(f"query result : {result}")
 
@@ -557,11 +555,6 @@ def test_common_100_103_303():
             result = DBProcessor.setValueToDB(query=query)
             logger.debug(f"query result : {result}")
 
-            query = f"update merchant_pg_config set status='ACTIVE' where org_code='{org_code}' and payment_gateway='TPSL';"
-            logger.debug(f"Query to update merchant_pg_config table: {query}")
-            result = DBProcessor.setValueToDB(query=query)
-            logger.debug(f"query result : {result}")
-
             refresh_db()
             logger.debug(f"Refreshing the db after reverting back the remotepay settings")
 
@@ -605,6 +598,10 @@ def test_common_100_103_304():
 
         testsuite_teardown.revert_payment_settings_default(org_code, bank_code='AXIS_DIRECT', portal_un=portal_username,
                                                            portal_pw=portal_password, payment_mode='CNP')
+
+        testsuite_teardown.revert_cnp_payment_settings_default(org_code, bank_code='CYBERSOURCE',
+                                                               portal_un=portal_username,
+                                                               portal_pw=portal_password, payment_gateway='CYBERSOURCE')
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
