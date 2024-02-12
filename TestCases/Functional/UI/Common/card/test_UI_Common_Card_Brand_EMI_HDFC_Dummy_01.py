@@ -449,7 +449,6 @@ def test_common_100_115_07_001():
                 app_scheme = txn_history_page.fetch_scheme_text()
                 logger.debug(f"Fetching scheme from txn history for the txn : {txn_id}, {app_scheme}")
 
-                # txn_history_page.scroll_to_card_element()
                 app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
@@ -1394,7 +1393,6 @@ def test_common_100_115_07_003():
                 app_scheme = txn_history_page.fetch_scheme_text()
                 logger.debug(f"Fetching scheme from txn history for the txn : {txn_id}, {app_scheme}")
 
-                # txn_history_page.scroll_to_card_element()
                 app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
@@ -2320,7 +2318,6 @@ def test_common_100_115_07_005():
                 app_scheme = txn_history_page.fetch_scheme_text()
                 logger.debug(f"Fetching scheme from txn history for the txn : {txn_id}, {app_scheme}")
 
-                # txn_history_page.scroll_to_card_element()
                 # app_payment_status = txn_history_page.fetch_txn_status_text()
                 app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
@@ -3247,7 +3244,6 @@ def test_common_100_115_07_007():
                 app_scheme = txn_history_page.fetch_scheme_text()
                 logger.debug(f"Fetching scheme from txn history for the txn : {txn_id}, {app_scheme}")
 
-                # txn_history_page.scroll_to_card_element()
                 app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
@@ -4172,7 +4168,6 @@ def test_common_100_115_07_009():
                 app_scheme = txn_history_page.fetch_scheme_text()
                 logger.debug(f"Fetching scheme from txn history for the txn : {txn_id}, {app_scheme}")
 
-                # txn_history_page.scroll_to_card_element()
                 app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
