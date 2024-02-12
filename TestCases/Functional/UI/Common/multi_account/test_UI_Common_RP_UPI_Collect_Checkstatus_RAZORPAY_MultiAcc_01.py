@@ -575,6 +575,9 @@ def test_common_100_111_040():
             remotePayUpiCollectTxn.clickOnRemotePayUpiCollectDropDown("okicici")
             remotePayUpiCollectTxn.clickOnRemotePayUpiCollectVpaValidation()
             remotePayUpiCollectTxn.clickOnRemotePayUpiCollectProceed()
+            remotePayUpiCollectTxn.clickOnRemotePayCancelUPI()
+            remotePayUpiCollectTxn.clickOnRemotePayProceed()
+            logger.info("UPI Collect txn is completed.")
 
             query = f"select * from txn where org_code = '{str(org_code)}' AND external_ref = '{str(order_id)}';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
