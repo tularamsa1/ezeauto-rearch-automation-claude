@@ -1179,7 +1179,7 @@ def test_common_100_103_238():
                     "pmt_status": "AUTHORIZED",
                     "txn_amt": "{:.2f}".format(amount),
                     "settle_status": "SETTLED",
-                    "txn_id": txn_id,
+                    "txn_id": upi_txn_id,
                     "customer_name": customer_name,
                     "payer_name": payer_name,
                     "order_id": order_id,
