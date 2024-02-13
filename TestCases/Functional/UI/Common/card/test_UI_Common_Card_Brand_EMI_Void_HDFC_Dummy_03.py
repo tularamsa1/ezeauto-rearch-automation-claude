@@ -136,7 +136,7 @@ def test_common_100_115_07_022():
         logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
 
         # From brand_sku_Details picking the first product_name
-        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}';"
+        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the brand_sku_details table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for brand_sku_details table : {result}")
@@ -147,7 +147,7 @@ def test_common_100_115_07_022():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
-        query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='{org_code}' and card_type= 'DEBIT' and bank='HDFC' order by created_time desc limit 1;"
+        query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='{org_code}' and card_type= 'DEBIT' and bank='HDFC' and eze_emi_enabled=b'0' order by created_time desc limit 1;"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result for subvention_plan table : {result}")
@@ -449,8 +449,7 @@ def test_common_100_115_07_022():
                 app_scheme = txn_history_page.fetch_scheme_text()
                 logger.debug(f"Fetching scheme from txn history for the txn : {txn_id}, {app_scheme}")
 
-                txn_history_page.scroll_to_card_element()
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -1100,7 +1099,7 @@ def test_common_100_115_07_024():
         logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
 
         # From brand_sku_Details picking the first product_name
-        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}';"
+        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the brand_sku_details table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for brand_sku_details table : {result}")
@@ -1111,7 +1110,7 @@ def test_common_100_115_07_024():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
-        query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='{org_code}' and card_type= 'DEBIT' and bank='HDFC' order by created_time desc limit 1;"
+        query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='{org_code}' and card_type= 'DEBIT' and bank='HDFC' and eze_emi_enabled=b'0' order by created_time desc limit 1;"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result for subvention_plan table : {result}")
@@ -1413,8 +1412,7 @@ def test_common_100_115_07_024():
                 app_scheme = txn_history_page.fetch_scheme_text()
                 logger.debug(f"Fetching scheme from txn history for the txn : {txn_id}, {app_scheme}")
 
-                txn_history_page.scroll_to_card_element()
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -2044,6 +2042,8 @@ def test_common_100_115_07_026():
         brand = result['brand'].values[0]
         logger.debug(f"Fetching brand from the emi table : {brand}")
 
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand)
+
         query = f"select * from brand where id='{brand}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
@@ -2054,7 +2054,7 @@ def test_common_100_115_07_026():
         logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
 
         # From brand_sku_Details picking the first product_name
-        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}';"
+        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the brand_sku_details table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for brand table : {result}")
@@ -2065,7 +2065,7 @@ def test_common_100_115_07_026():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
-        query = f"select * from subvention_plan where brand_id='{brand}' and org_code='{org_code}' and card_type= 'CREDIT' ;"
+        query = f"select * from subvention_plan where brand_id='{brand}' and org_code='{org_code}' and card_type= 'CREDIT' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result for subvention_plan table : {result}")
@@ -2380,8 +2380,7 @@ def test_common_100_115_07_026():
                 app_product = txn_history_page.fetch_product_text()
                 logger.debug(f"Fetching product from txn history for the txn : {txn_id}, {app_product}")
 
-                txn_history_page.scroll_to_card_element()
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -2982,6 +2981,8 @@ def test_common_100_115_07_028():
         brand = result['brand'].values[0]
         logger.debug(f"Fetching brand from the emi table : {brand}")
 
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand)
+
         query = f"select * from brand where id='{brand}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
@@ -2992,7 +2993,7 @@ def test_common_100_115_07_028():
         logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
 
         # From brand_sku_Details picking the first product_name
-        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}';"
+        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the brand_sku_details table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for brand table : {result}")
@@ -3003,7 +3004,7 @@ def test_common_100_115_07_028():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
-        query = f"select * from subvention_plan where brand_id='{brand}' and org_code='{org_code}' and card_type= 'CREDIT' ;"
+        query = f"select * from subvention_plan where brand_id='{brand}' and org_code='{org_code}' and card_type= 'CREDIT' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result for subvention_plan table : {result}")
@@ -3318,8 +3319,7 @@ def test_common_100_115_07_028():
                 app_product = txn_history_page.fetch_product_text()
                 logger.debug(f"Fetching product from txn history for the txn : {txn_id}, {app_product}")
 
-                txn_history_page.scroll_to_card_element()
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")
@@ -3920,6 +3920,8 @@ def test_common_100_115_07_030():
         brand = result['brand'].values[0]
         logger.debug(f"Fetching brand from the emi table : {brand}")
 
+        testsuite_teardown.update_brand_for_emi_plus(eze_emi_enabled=0, brand_id=brand)
+
         query = f"select * from brand where id='{brand}'"
         logger.debug(f"Query to fetch data from the brand table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
@@ -3930,7 +3932,7 @@ def test_common_100_115_07_030():
         logger.debug(f"Fetching brand_name value from the brand table : {brand_name}")
 
         # From brand_sku_Details picking the first product_name
-        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}';"
+        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the brand_sku_details table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for brand table : {result}")
@@ -3941,7 +3943,7 @@ def test_common_100_115_07_030():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
-        query = f"select * from subvention_plan where brand_id='{brand}' and org_code='{org_code}' and card_type= 'CREDIT' ;"
+        query = f"select * from subvention_plan where brand_id='{brand}' and org_code='{org_code}' and card_type= 'CREDIT' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result for subvention_plan table : {result}")
@@ -4256,8 +4258,7 @@ def test_common_100_115_07_030():
                 app_product = txn_history_page.fetch_product_text()
                 logger.debug(f"Fetching product from txn history for the txn : {txn_id}, {app_product}")
 
-                txn_history_page.scroll_to_card_element()
-                app_payment_status = txn_history_page.fetch_txn_status_text()
+                app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
                 logger.info(f"Fetching txn_id from txn history for the txn : {txn_id}, {app_txn_id}")

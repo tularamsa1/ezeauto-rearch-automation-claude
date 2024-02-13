@@ -1711,7 +1711,14 @@ def test_common_100_115_05_092():
             logger.debug(f"Selected emi plan is {emi_plan_in_months} month")
             payment_page.click_on_proceed_homepage()
 
-            query = f"update config_data set param_value='http://139.162.27.215/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation_UnBlock' where id='87' and param_key='HDFC_ORDER_CONFIRMATION_URL' and entity_id='14';"
+            query = f"select * from emi_issuer_config where issuer_code='HDFC' and card_type='DEBIT';"
+            logger.debug(f"Query to fetch data from the emi_issuer_config table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Query result for emi_issuer_config table : {result}")
+            entity_id = result['id'].values[0]
+            logger.debug(f"Fetching id from emi_issuer_config table : {entity_id}")
+
+            query = f"update config_data set param_value='http://139.162.27.215/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation_UnBlock' where param_key='HDFC_ORDER_CONFIRMATION_URL' and entity_id='{entity_id}' and entity_type='EMI_ISSUER_CONFIG';"
             logger.debug(f"Query to update config_data table : {query}")
             result = DBProcessor.setValueToDB(query)
             logger.debug(f"Fetching result from query :{result}")
@@ -2376,7 +2383,7 @@ def test_common_100_115_05_092():
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
         try:
-            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation' where id='87' and param_key='HDFC_ORDER_CONFIRMATION_URL' and entity_id='14';"
+            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation' where param_key='HDFC_ORDER_CONFIRMATION_URL' and entity_id='{entity_id}' and entity_type='EMI_ISSUER_CONFIG';"
             logger.debug(f"Query to update config_data table to revert set up : {query}")
             result = DBProcessor.setValueToDB(query)
             logger.debug(f"Fetching result from query :{result}")
@@ -2469,7 +2476,14 @@ def test_common_100_115_05_093():
         testsuite_teardown.update_emi_status_for_org(org_code=org_code, card_type='DEBIT', status='ACTIVE')
         logger.debug(f"updated emi settings for {org_code} as active for debit card")
 
-        query = f"update config_data set param_value='http://139.162.27.215/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation_UnBlock' where id='87' and param_key='HDFC_ORDER_CONFIRMATION_URL' and entity_id='14';"
+        query = f"select * from emi_issuer_config where issuer_code='HDFC' and card_type='DEBIT';"
+        logger.debug(f"Query to fetch data from the emi_issuer_config table : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result for emi_issuer_config table : {result}")
+        entity_id = result['id'].values[0]
+        logger.debug(f"Fetching id from emi_issuer_config table : {entity_id}")
+
+        query = f"update config_data set param_value='http://139.162.27.215/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation_UnBlock' where param_key='HDFC_ORDER_CONFIRMATION_URL' and entity_id='{entity_id}' and entity_type='EMI_ISSUER_CONFIG';"
         logger.debug(f"Query to update config_data table : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Fetching result from query :{result}")
@@ -3175,7 +3189,7 @@ def test_common_100_115_05_093():
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
         try:
-            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation' where id='87' and param_key='HDFC_ORDER_CONFIRMATION_URL' and entity_id='14';"
+            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/UN5UK5/application/p7DjXU/DCEMI_POSOrderConfirmation' where param_key='HDFC_ORDER_CONFIRMATION_URL' and entity_id='{entity_id}' and entity_type='EMI_ISSUER_CONFIG';"
             logger.debug(f"Query to update config_data table to revert set up : {query}")
             result = DBProcessor.setValueToDB(query)
             logger.debug(f"Fetching result from query :{result}")

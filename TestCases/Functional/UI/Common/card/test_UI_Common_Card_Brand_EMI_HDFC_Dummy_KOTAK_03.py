@@ -1133,7 +1133,14 @@ def test_common_100_115_07_145():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
 
-        query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakBlockApi' where id='523';"
+        query = f"select * from emi_issuer_config where issuer_code='KOTAK' and card_type='DEBIT';"
+        logger.debug(f"Query to fetch data from the emi_issuer_config table : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result for emi_issuer_config table : {result}")
+        entity_id = result['id'].values[0]
+        logger.debug(f"Fetching id from emi_issuer_config table : {entity_id}")
+
+        query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakBlockApi' where entity_id='{entity_id}' and param_key='KOTAK_UNBLOCK_API_URL' and entity_type='EMI_ISSUER_CONFIG';"
         logger.debug(f"Query to update config_data table : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Fetching result from query :{result}")
@@ -1209,7 +1216,7 @@ def test_common_100_115_07_145():
             logger.debug(f"Fetching tenure from subvention_plan_details table : {subvention_tenure}")
 
             #Calculating the emi's using formula
-            cal_additional_payback = (amount * (subvention_value / 100))
+            cal_additional_payback = amount * (subvention_value / 100)
             logger.debug(f"cal_additional_payback is : {cal_additional_payback}")
             monthly_interest_rate = interest_rate / (12 * 100)
             logger.debug(f"monthly_interest_rate is : {monthly_interest_rate}")
@@ -1436,7 +1443,6 @@ def test_common_100_115_07_145():
                 app_product = txn_history_page.fetch_product_text()
                 logger.debug(f"Fetching product from txn history for the txn : {txn_id}, {app_product}")
 
-                txn_history_page.scroll_to_card_element()
                 app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
@@ -1541,7 +1547,7 @@ def test_common_100_115_07_145():
                     "emi_term": f"{emi_plan_in_months} month",
                     "emi_status": "VOIDED",
                     "interest_rate": interest_rate,
-                    "loan_amt": float(amount - cal_additional_payback),
+                    "loan_amt": round((amount - cal_additional_payback), 2),
                     "monthly_emi": monthly_emi,
                     "interest_amt": total_interest,
                     "total_emi_amt": total_emi,
@@ -1753,7 +1759,7 @@ def test_common_100_115_07_145():
                      "emi_total_amount": api_total_emi_amt,
                      "emi_cashback_type": 'PAYBACK',
                      "emi_interest_rate": interest_rate,
-                     "loan_amt": float(amount - cal_additional_payback),
+                     "loan_amt": round((amount - cal_additional_payback), 2),
                      "brand_name": api_manufacturer,
                      "brand_sku": api_sku_code,
                      "brand_sku_code": api_sku_code,
@@ -1924,7 +1930,7 @@ def test_common_100_115_07_145():
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
         try:
-            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakUnBlockApi' where id='523';"
+            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakUnBlockApi' where entity_id='{entity_id}' and param_key='KOTAK_UNBLOCK_API_URL' and entity_type='EMI_ISSUER_CONFIG';"
             logger.debug(f"Query to update config_data table to revert set up : {query}")
             result = DBProcessor.setValueToDB(query)
             logger.debug(f"Fetching result from query :{result}")
@@ -2390,7 +2396,6 @@ def test_common_100_115_07_146():
                 app_product = txn_history_page.fetch_product_text()
                 logger.debug(f"Fetching product from txn history for the txn : {txn_id}, {app_product}")
 
-                txn_history_page.scroll_to_card_element()
                 app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
@@ -2495,7 +2500,7 @@ def test_common_100_115_07_146():
                     "emi_term": f"{emi_plan_in_months} month",
                     "emi_status": "VOIDED",
                     "interest_rate": interest_rate,
-                    "loan_amt": float(amount - cal_additional_payback),
+                    "loan_amt": round((amount - cal_additional_payback), 2),
                     "monthly_emi": monthly_emi,
                     "interest_amt": total_interest,
                     "total_emi_amt": total_emi,
@@ -2707,7 +2712,7 @@ def test_common_100_115_07_146():
                     "emi_total_amount": api_total_emi_amt,
                     "emi_cashback_type": 'PAYBACK',
                     "emi_interest_rate": interest_rate,
-                    "loan_amt": float(amount - cal_additional_payback),
+                    "loan_amt": round((amount - cal_additional_payback), 2),
                     "brand_name": api_manufacturer,
                     "brand_sku": api_sku_code,
                     "brand_sku_code": api_sku_code,
@@ -3048,7 +3053,14 @@ def test_common_100_115_07_147():
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
 
-        query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakUnBlockApi' where id='521';"
+        query = f"select * from emi_issuer_config where issuer_code='KOTAK' and card_type='DEBIT';"
+        logger.debug(f"Query to fetch data from the emi_issuer_config table : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result for emi_issuer_config table : {result}")
+        entity_id = result['id'].values[0]
+        logger.debug(f"Fetching id from emi_issuer_config table : {entity_id}")
+
+        query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakUnBlockApi' where entity_id='{entity_id}' and param_key='KOTAK_BLOCK_API_URL' and entity_type='EMI_ISSUER_CONFIG';"
         logger.debug(f"Query to update config_data table : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Fetching result from query :{result}")
@@ -3852,7 +3864,7 @@ def test_common_100_115_07_147():
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
         try:
-            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakBlockApi' where id='521';"
+            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakBlockApi' where entity_id='{entity_id}' and param_key='KOTAK_BLOCK_API_URL' and entity_type='EMI_ISSUER_CONFIG';"
             logger.debug(f"Query to update config_data table to revert set up : {query}")
             result = DBProcessor.setValueToDB(query)
             logger.debug(f"Fetching result from query :{result}")

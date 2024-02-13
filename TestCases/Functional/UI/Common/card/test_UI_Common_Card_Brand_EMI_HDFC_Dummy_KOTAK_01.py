@@ -464,7 +464,6 @@ def test_common_100_115_07_132():
                 logger.debug(f"Fetching scheme from txn history for the txn : {txn_id}, {app_scheme}")
                 app_product = txn_history_page.fetch_product_text()
                 logger.debug(f"Fetching product from txn history for the txn : {txn_id}, {app_product}")
-                txn_history_page.scroll_to_card_element()
                 app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
@@ -1419,7 +1418,6 @@ def test_common_100_115_07_133():
                 logger.debug(f"Fetching scheme from txn history for the txn : {txn_id}, {app_scheme}")
                 app_product = txn_history_page.fetch_product_text()
                 logger.debug(f"Fetching product from txn history for the txn : {txn_id}, {app_product}")
-                txn_history_page.scroll_to_card_element()
                 app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
@@ -3528,7 +3526,7 @@ def test_common_100_115_07_138():
                     "emi_term": f"{emi_plan_in_months} month",
                     "emi_status": "PENDING",
                     "interest_rate": interest_rate,
-                    "loan_amt": float(amount - cal_additional_payback - total_discount_value),
+                    "loan_amt": round((amount - cal_additional_payback - total_discount_value), 2),
                     "monthly_emi": monthly_emi,
                     "interest_amt": total_interest,
                     "total_emi_amt": total_emi,
@@ -3769,7 +3767,7 @@ def test_common_100_115_07_138():
                     "emi_total_amount": api_total_emi_amt,
                     "emi_cashback_type": 'PAYBACK',
                     "emi_interest_rate": interest_rate,
-                    "loan_amt": float(amount - cal_additional_payback - total_discount_value),
+                    "loan_amt": round((amount - cal_additional_payback - total_discount_value), 2),
                     "brand_name": api_manufacturer,
                     "brand_sku": api_sku_code,
                     "brand_sku_code": api_sku_code,
@@ -4417,7 +4415,6 @@ def test_common_100_115_07_142():
                 logger.debug(f"Fetching scheme from txn history for the txn : {txn_id}, {app_scheme}")
                 app_product = txn_history_page.fetch_product_text()
                 logger.debug(f"Fetching product from txn history for the txn : {txn_id}, {app_product}")
-                txn_history_page.scroll_to_card_element()
                 app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()

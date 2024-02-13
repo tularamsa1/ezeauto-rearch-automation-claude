@@ -114,7 +114,7 @@ def test_common_100_115_07_081():
         logger.debug(f"Fetching brand_id value from the brand table : {brand_id}")
 
         # From brand_sku_Details picking the first product_name
-        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}';"
+        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the brand_sku_details table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for brand table : {result}")
@@ -318,7 +318,7 @@ def test_common_100_115_07_082():
         logger.debug(f"Fetching brand_id value from the brand table : {brand_id}")
 
         # From brand_sku_Details picking the first product_name
-        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}';"
+        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the brand_sku_details table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for brand table : {result}")
@@ -518,7 +518,7 @@ def test_common_100_115_07_083():
         logger.debug(f"Fetching brand_id value from the brand table : {brand_id}")
 
         # From brand_sku_Details picking the first product_name
-        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}';"
+        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the brand_sku_details table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for brand table : {result}")
@@ -724,7 +724,7 @@ def test_common_100_115_07_084():
         logger.debug(f"Fetching brand_id value from the brand table : {brand_id}")
 
         # From brand_sku_Details picking the first product_name
-        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}';"
+        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the brand_sku_details table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for brand table : {result}")
@@ -919,7 +919,7 @@ def test_common_100_115_07_085():
         logger.debug(f"Fetching brand_id value from the brand table : {brand_id}")
 
         # From brand_sku_Details picking the first product_name
-        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}';"
+        query = f"select * from brand_sku_details where brand_id='{str(brand_id)}' and eze_emi_enabled=b'0';"
         logger.debug(f"Query to fetch data from the brand_sku_details table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for brand table : {result}")

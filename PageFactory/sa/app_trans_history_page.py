@@ -403,6 +403,7 @@ class TransHistoryPage(BasePage):
         This method is used to fetch scheme text from transaction history page.
         return: scheme: str
         """
+        self.scroll_to_text("SCHEME")
         return self.fetch_text(self.txt_scheme)
 
     def fetch_product_text(self) -> str:
@@ -537,5 +538,6 @@ class TransHistoryPage(BasePage):
         This method is used to fetch txn_status text from txn history page for EMI flow.
         return: txn_status: str
         """
+        txn_status = str(self.fetch_text(self.txa_finalStatusField))
         self.scroll_to_text("STATUS")
-        return str(self.fetch_text(self.txa_finalStatusField))
+        return txn_status

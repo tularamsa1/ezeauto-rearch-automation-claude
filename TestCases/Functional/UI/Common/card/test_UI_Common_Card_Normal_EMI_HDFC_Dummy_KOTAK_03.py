@@ -1,5 +1,6 @@
 import random
 import sys
+import time
 from datetime import datetime
 import pytest
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
@@ -100,7 +101,14 @@ def test_common_100_115_05_105():
         response = APIProcessor.send_request(api_details=api_details)
         logger.debug(f"Response received for setting preconditions for normal emi setup to be enabled:  {response}")
 
-        query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakBlockApi' where id='523';"
+        query = f"select * from emi_issuer_config where issuer_code='KOTAK' and card_type='DEBIT';"
+        logger.debug(f"Query to fetch data from the emi_issuer_config table : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result for emi_issuer_config table : {result}")
+        entity_id = result['id'].values[0]
+        logger.debug(f"Fetching id from emi_issuer_config table : {entity_id}")
+
+        query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakBlockApi' where entity_id='{entity_id}' and param_key='KOTAK_UNBLOCK_API_URL' and entity_type='EMI_ISSUER_CONFIG';"
         logger.debug(f"Query to update config_data table : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Fetching result from query :{result}")
@@ -809,7 +817,7 @@ def test_common_100_115_05_105():
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
         try:
-            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakUnBlockApi' where id='523';"
+            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakUnBlockApi' where entity_id='{entity_id}' and param_key='KOTAK_UNBLOCK_API_URL' and entity_type='EMI_ISSUER_CONFIG';"
             logger.debug(f"Query to update config_data table to revert set up : {query}")
             result = DBProcessor.setValueToDB(query)
             logger.debug(f"Fetching result from query :{result}")
@@ -826,12 +834,12 @@ def test_common_100_115_05_105():
 @pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_115_05_106():
+def test_common_100_115_05_096():
     """
     Sub Feature Code: UI_Common_Card_Normal_EMI_Block_Failed_Txn_For_An_Org_HDFC_Dummy_KOTAK_EMV_VISA_DebitCard_With_Pin_428090_For_3_Months_Tenure
     Sub Feature Description: Performing the normal EMI Block failed transaction for an org (not ezetap) via HDFC Dummy
     PG for KOTAK issuer using EMV VISA Debit card with pin for 3 months tenure (bin: 428090)
-    TC naming code description: 100: Payment Method, 115: CARD_UI, 05: NORMAL_EMI, 106: TC106
+    TC naming code description: 100: Payment Method, 115: CARD_UI, 05: NORMAL_EMI, 096: TC096
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -905,7 +913,14 @@ def test_common_100_115_05_106():
         testsuite_teardown.update_emi_status_for_org(org_code=org_code, card_type='DEBIT', status='ACTIVE')
         logger.debug(f"updated emi settings for {org_code} as active for debit card")
 
-        query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakUnBlockApi' where id='521';"
+        query = f"select * from emi_issuer_config where issuer_code='KOTAK' and card_type='DEBIT';"
+        logger.debug(f"Query to fetch data from the emi_issuer_config table : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result for emi_issuer_config table : {result}")
+        entity_id = result['id'].values[0]
+        logger.debug(f"Fetching id from emi_issuer_config table : {entity_id}")
+
+        query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakUnBlockApi' where entity_id='{entity_id}' and param_key='KOTAK_BLOCK_API_URL' and entity_type='EMI_ISSUER_CONFIG';"
         logger.debug(f"Query to update config_data table : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Fetching result from query :{result}")
@@ -1609,7 +1624,7 @@ def test_common_100_115_05_106():
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
         try:
-            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakBlockApi' where id='521';"
+            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakBlockApi' where entity_id='{entity_id}' and param_key='KOTAK_BLOCK_API_URL' and entity_type='EMI_ISSUER_CONFIG';"
             logger.debug(f"Query to update config_data table to revert set up : {query}")
             result = DBProcessor.setValueToDB(query)
             logger.debug(f"Fetching result from query :{result}")
@@ -1698,7 +1713,14 @@ def test_common_100_115_05_078():
         response = APIProcessor.send_request(api_details=api_details)
         logger.debug(f"Response received for setting preconditions for normal emi setup to be enabled:  {response}")
 
-        query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakDCEMI' where id='508';"
+        query = f"select * from emi_issuer_config where issuer_code='KOTAK' and card_type='DEBIT';"
+        logger.debug(f"Query to fetch data from the emi_issuer_config table : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Query result for emi_issuer_config table : {result}")
+        entity_id = result['id'].values[0]
+        logger.debug(f"Fetching id from emi_issuer_config table : {entity_id}")
+
+        query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakDCEMI' where entity_id='{entity_id}' and param_key='KOTAK_CHECKELIGIBITY_URL' and entity_type='EMI_ISSUER_CONFIG';"
         logger.debug(f"Query to update config_data table : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Fetching result from query :{result}")
@@ -1749,6 +1771,7 @@ def test_common_100_115_05_078():
             logger.debug(f"Selected the card type as : EMV_WITH_PIN_VISA_DEBIT_428090")
             payment_page.select_emi_plan(emi_plan_in_months=emi_plan_in_months)
             logger.debug(f"Selected emi plan is {emi_plan_in_months} month")
+            time.sleep(10)
 
             query = f"select * from debit_emi_txn_request where org_code='{org_code}' order by id desc limit 1;"
             logger.debug(f"Query to fetch data from debit_emi_txn_request table : {query}")
@@ -1797,7 +1820,7 @@ def test_common_100_115_05_078():
         # -----------------------------------------End of DB Validation---------------------------------------
     finally:
         try:
-            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakDCEMIcheckEligibility' where id='508';"
+            query = f"update config_data set param_value='http://139.162.27.215:80/castlemock/mock/rest/project/c0QsDv/application/o5PkkS/KotakDCEMIcheckEligibility' where entity_id='{entity_id}' and param_key='KOTAK_CHECKELIGIBITY_URL' and entity_type='EMI_ISSUER_CONFIG';"
             logger.debug(f"Query to update config_data table to revert back setup : {query}")
             result = DBProcessor.setValueToDB(query)
             logger.debug(f"Fetching result from query :{result}")

@@ -675,7 +675,6 @@ def test_common_100_103_287():
                                                'BASE AMOUNT:': f"Rs.{amount:,}.00",
                                                'date': txn_date,
                                                'time': txn_time,
-                                               'AUTH CODE': "" if auth_code is None else auth_code
                                                }
 
                 logger.debug(

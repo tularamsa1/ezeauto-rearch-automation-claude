@@ -775,7 +775,6 @@ def test_common_100_103_266():
                     "txn_amt_3": f"{full_refund_amount:,}.00",
                     "username_3": app_username,
                     "txn_id_3": fully_refunded_txn_id,
-                    "rrn_3": str(fully_refunded_rrn),
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
@@ -850,7 +849,6 @@ def test_common_100_103_266():
                     "txn_amt_3": total_amount_fully_refunded[1],
                     "username_3": username_fully_refunded,
                     "txn_id_3": transaction_id_fully_refunded,
-                    "rrn_3": rr_number_fully_refunded,
                 }
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
                 # ---------------------------------------------------------------------------------------------

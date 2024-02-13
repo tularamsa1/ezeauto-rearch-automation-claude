@@ -1634,7 +1634,7 @@ def test_common_100_115_11_036():
 @pytest.mark.appVal
 def test_common_100_115_11_037():
     """
-    Sub Feature Code: UI_Common_Card_Brand_EMI_BO_Cashback_Discount_Subvented_by_Ezetap_Percentage_Success_Txn_with_less_amount_than_rule_For_An_Org_HDFC_Dummy_ICICI_EMV_VISA_CreditCard_With_Pin_417666_For_6_Months_Tenure
+    Sub Feature Code: UI_Common_Card_Brand_EMI_BO_Cashback_Discount_Subvented_by_Ezetap_Percentage_Success_Txn_with_less_amount_than_rule_For_An_Org_HDFC_Dummy_EMV_VISA_CreditCard_With_Pin_417666_For_6_Months_Tenure
     Sub Feature Description: Performing the brand EMI BO Cashback Discount subvented by ezetap percentage success transaction with less amount than rule for an org (not ezetap)
     via HDFC Dummy PG using EMV VISA Credit card with pin for 6 months tenure (bin: 417666)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 11: EZEEMI, 037: TC037
@@ -1962,7 +1962,7 @@ def test_common_100_115_11_037():
 @pytest.mark.appVal
 def test_common_100_115_11_038():
     """
-    Sub Feature Code: UI_Common_Card_Brand_EMI_BO_Cashback_Discount_Payback_by_Brand_Percentage_Success_Txn_with_expired_rule_For_An_Org_HDFC_Dummy_ICICI_EMV_VISA_CreditCard_With_Pin_417666_For_6_Months_Tenure
+    Sub Feature Code: UI_Common_Card_Brand_EMI_BO_Cashback_Discount_Payback_by_Brand_Percentage_Success_Txn_with_expired_rule_For_An_Org_HDFC_Dummy_EMV_VISA_CreditCard_With_Pin_417666_For_6_Months_Tenure
     Sub Feature Description: Performing the brand EMI BO Cashback Discount payback by brand percentage success transaction with expired rule for an org (not ezetap)
     via HDFC Dummy PG using EMV VISA Credit card with pin for 6 months tenure (bin: 417666)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 11: EZEEMI, 038: TC038
