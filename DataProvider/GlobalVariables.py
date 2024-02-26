@@ -129,3 +129,5 @@ tot_app_val = 0
 tot_api_val = 0
 tot_db_val = 0
 tot_chargeslip_val = 0
+
+num = 0

@@ -226,6 +226,7 @@ def revert_global_variables_to_default():
     GlobalVariables.tot_api_val = 0
     GlobalVariables.tot_db_val = 0
     GlobalVariables.tot_chargeslip_val = 0
+    GlobalVariables.num = 0
 
 
 def setStylesForExcel():

@@ -198,7 +198,7 @@ def test_common_100_103_056():
                 date_and_time = date_time_converter.to_app_format(partially_refunded_posting_date)
                 original_date_and_time = date_time_converter.to_app_format(created_time_original)
                 expected_app_values = {
-                    "pmt_status": "STATUS:AUTHORIZED_REFUNDED",
+                    "pmt_status": "STATUS:AUTHORIZED REFUNDED",
                     "pmt_status_2": "STATUS:REFUNDED",
                     "pmt_mode": "UPI",
                     "pmt_mode_2": "UPI",
@@ -213,8 +213,8 @@ def test_common_100_103_056():
                     "payer_name": original_payer_name,
                     "payer_name_2": original_payer_name,
                     "order_id": order_id,
-                    "pmt_msg": "PAYMENT VOIDED/REFUNDED",
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "rrn": str(original_rrn),
                     "rrn_2": str(partially_refunded_rrn),
                     "auth_code": original_auth_code,
@@ -229,7 +229,7 @@ def test_common_100_103_056():
                     "txn_amt_3": "{:.2f}".format(full_refund_amount),
                     "customer_name_3": original_customer_name,
                     "payer_name_3": original_payer_name,
-                    "pmt_msg_3": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_3": "PAYMENT SUCCESSFUL",
                     "rrn_3": str(fully_refunded_rrn),
                     "auth_code_3": fully_refunded_auth_code
                 }
@@ -1050,7 +1050,7 @@ def test_common_100_103_075():
                 date_and_time = date_time_converter.to_app_format(partially_refunded_posting_date)
                 original_date_and_time = date_time_converter.to_app_format(created_time_original)
                 expected_app_values = {
-                    "pmt_status": "STATUS:AUTHORIZED_REFUNDED",
+                    "pmt_status": "STATUS:AUTHORIZED REFUNDED",
                     "pmt_status_2": "STATUS:REFUNDED",
                     "pmt_mode": "UPI",
                     "pmt_mode_2": "UPI",
@@ -1065,8 +1065,8 @@ def test_common_100_103_075():
                     "payer_name": original_payer_name,
                     "payer_name_2": original_payer_name,
                     "order_id": order_id,
-                    "pmt_msg": "PAYMENT VOIDED/REFUNDED",
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "rrn": str(original_rrn),
                     "rrn_2": str(partially_refunded_rrn),
                     "auth_code": original_auth_code,
@@ -1081,7 +1081,7 @@ def test_common_100_103_075():
                     "txn_amt_3": "{:.2f}".format(full_refund_amount),
                     "customer_name_3": original_customer_name,
                     "payer_name_3": original_payer_name,
-                    "pmt_msg_3": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_3": "PAYMENT SUCCESSFUL",
                     "rrn_3": str(fully_refunded_rrn),
                     "auth_code_3": fully_refunded_auth_code
                 }

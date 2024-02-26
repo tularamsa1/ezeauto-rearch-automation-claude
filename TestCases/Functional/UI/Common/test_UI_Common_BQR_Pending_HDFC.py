@@ -120,19 +120,7 @@ def test_common_100_102_018():
             txn_id = result["id"].iloc[0]
             logger.debug(f"Fetching Txn_id from data base : Txn_id : {txn_id}")
             logger.info(f"Waiting for QR code to get Expired.. Please wait")
-            logger.info(f"Logining in to app again with username : {app_username}")
-            login_page.perform_login(app_username, app_password)
-            homePage = HomePage(app_driver)
-            homePage.wait_for_navigation_to_load()
-            homePage.check_home_page_logo()
-            logger.info(f"App homepage loaded successfully")
-            homePage.enter_amount_and_order_number(amount, order_id)
-            homePage.perform_check_status()
-            app_payment_status = payment_page.fetch_payment_status()
-            logger.info(f"Fetching status of payment from payment screen: {app_payment_status} ")
-            payment_page.click_on_proceed_homepage()
-            homePage.click_on_skip_button()
-            homePage.click_on_back_btn_enter_amt_page()
+
             query = "select * from txn where id = '" + txn_id + "';"
             logger.debug(f"Query to auth code from database : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -174,11 +162,15 @@ def test_common_100_102_018():
                 expected_app_values = {"pmt_mode": "BHARAT QR", "pmt_status": "PENDING","txn_amt": "{:.2f}".format(amount),
                                        "settle_status": "PENDING","txn_id": txn_id,
                                        "order_id": order_id,"pmt_msg": "PAYMENT PENDING","date": date_and_time}
-                logger.debug(f"expectedAppValues: {expected_app_values}")
 
+                logger.debug(f"expectedAppValues: {expected_app_values}")
+                logger.info(f"Logining in to app again with username : {app_username}")
+                login_page.perform_login(app_username, app_password)
+                home_page = HomePage(app_driver)
                 home_page.check_home_page_logo()
                 home_page.wait_for_home_page_load()
-                logger.debug("Homepage of MPOSX app loaded successfully")
+                home_page.wait_for_navigation_to_load()
+                logger.info(f"App homepage loaded successfully")
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_order_id(order_id)

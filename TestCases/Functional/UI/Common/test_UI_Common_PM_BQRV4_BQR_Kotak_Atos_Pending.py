@@ -103,22 +103,6 @@ def test_common_100_102_245():
             logger.info("Payment QR generated and displayed successfully")
             app_driver.reset()
 
-            logger.info(f"Logging in the MPOSX application using username : {app_username}")
-            login_page.perform_login(app_username, app_password)
-            home_page = HomePage(app_driver)
-            home_page.wait_for_navigation_to_load()
-            home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
-            logger.info(f"App homepage loaded successfully")
-            home_page.enter_amount_and_order_number(amount, order_id)
-            home_page.perform_check_status()
-            app_payment_status = payment_page.fetch_payment_status()
-            logger.info(f"Fetching status of payment from payment screen: {app_payment_status} ")
-            payment_page.click_on_proceed_homepage()
-            home_page.click_on_skip_button()
-            home_page.click_on_back_btn_enter_amt_page()
-            logger.info(f"Execution is completed for the test case : {testcase_id}")
-
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
@@ -197,12 +181,15 @@ def test_common_100_102_245():
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                home_page.wait_for_navigation_to_load()
-                home_page.wait_for_home_page_load()
+                logger.info(f"Logining in to app again with username : {app_username}")
+                login_page.perform_login(app_username, app_password)
+                home_page = HomePage(app_driver)
                 home_page.check_home_page_logo()
+                home_page.wait_for_home_page_load()
+                logger.info(f"App homepage loaded successfully")
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-                txn_history_page.click_on_transaction_by_txn_id(txn_id)
+                txn_history_page.click_on_transaction_by_order_id(order_id)
                 payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()

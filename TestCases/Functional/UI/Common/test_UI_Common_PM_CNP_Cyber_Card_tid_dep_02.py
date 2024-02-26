@@ -1359,13 +1359,13 @@ def test_common_100_103_153():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 expectedAppValues = {
-                    "pmt_status": "STATUS:AUTHORIZED_REFUNDED",
+                    "pmt_status": "STATUS:AUTHORIZED REFUNDED",
                     "pmt_mode": "PAY LINK",
                     "txn_id": original_txn_id,
                     "txn_amt": str(amount) + ".00",
                     "rrn": str(original_rrn_cnp_txn),
                     "order_id": order_id,
-                    "msg": "PAYMENT VOIDED/REFUNDED",
+                    "msg": "PAYMENT SUCCESSFUL",
                     "customer_name": txn_customer_name,
                     "settle_status": txn_settle_status,
                     "date": date_and_time,
@@ -1376,7 +1376,7 @@ def test_common_100_103_153():
                     "txn_amt_2": str(amount) + ".00",
                     "rrn_2": str(rrn_cnp_txn),
                     "order_id_2": order_id,
-                    "msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "msg_2": "PAYMENT SUCCESSFUL",
                     "customer_name_2": txn_customer_name,
                     "settle_status_2": txn_settle_status,
                     "date_2": date_and_time

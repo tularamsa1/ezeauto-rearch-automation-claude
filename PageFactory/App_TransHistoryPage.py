@@ -2,6 +2,8 @@ from time import sleep
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
+
+from DataProvider import GlobalVariables
 from PageFactory.App_BasePage import BasePage
 
 
@@ -45,6 +47,16 @@ class TransHistoryPage(BasePage):
     # txt_customer_name = (By.XPATH, "//*[@text='Customer Name']/following-sibling::android.widget.TextView")
     # txt_payer_name = (By.XPATH, "//*[@text='Payer Name']/following-sibling::android.widget.TextView")
     # txt_settlement_status = (By.XPATH, "//*[@text='Settlement Status']/following-sibling::android.widget.TextView")
+    search_field = (By.ID, "com.ezetap.service.demo:id/searchField")
+    search_button = (By.ID, "com.ezetap.service.demo:id/search_button")
+    click_txn = (By.ID, "com.ezetap.service.demo:id/clTxnView")
+    search_category = (By.ID, 'com.ezetap.service.demo:id/search_category_selection_dropdown')
+    category_type_by_txn = (By.XPATH, f"//*[@resource-id = 'com.ezetap.service.demo:id/categoryName']/.."
+                                      f"//*[@text = 'Transaction ID']")
+
+    category_type_by_reference = (By.XPATH, "//*[@resource-id = 'com.ezetap.service.demo:id/categoryName']/.."
+                                            "//*[@text = 'Reference ID']")
+    btn_apply = (By.CLASS_NAME, "android.widget.Button")
 
     txt_payment_msg_field = (By.ID, "com.ezetap.service.demo:id/tv_PaymentStatus")
 
@@ -69,11 +81,20 @@ class TransHistoryPage(BasePage):
         self.perform_click(locator)
 
     def click_on_transaction_by_txn_id(self, txn_id):
-        locator = (By.ID, 'com.ezetap.service.demo:id/searchView')
-        self.perform_click(locator)
-        self.perform_sendkeys(locator, txn_id)
-        locator = (By.ID, 'com.ezetap.service.demo:id/clTxnView')
-        self.perform_click(locator)
+        locator = (By.ID, 'com.ezetap.service.demo:id/ivSearch')
+        if GlobalVariables.num == 0:
+            self.perform_click(locator)
+            self.wait_for_element(self.search_category)
+            self.perform_click(self.search_category)
+            self.wait_for_element(self.category_type_by_txn)
+            self.perform_click(self.category_type_by_txn)
+            self.wait_for_element(self.btn_apply)
+            self.perform_click(self.btn_apply)
+            GlobalVariables.num += 1
+        self.perform_sendkeys(self.search_field, txn_id)
+        self.perform_click(self.search_button)
+        self.wait_for_element(self.click_txn)
+        self.perform_click(self.click_txn)
 
     def click_on_second_transaction_by_order_id(self, order_id):
         locator = (By.XPATH, '(//*[@resource-id="com.ezetap.service.demo:id/tvTxnId" and @text="'+order_id+'"]/../..)[2]' )

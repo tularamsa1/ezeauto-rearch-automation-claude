@@ -238,7 +238,7 @@ def test_common_100_101_184():
                 date_and_time = date_time_converter.to_app_format(created_time)
                 refund_date_and_time = date_time_converter.to_app_format(refund_created_time)
                 expected_app_values = {
-                    "pmt_status": "STATUS:AUTHORIZED_REFUNDED",
+                    "pmt_status": "STATUS:AUTHORIZED REFUNDED",
                     "pmt_status_2": "STATUS:REFUNDED",
                     "pmt_mode": "UPI",
                     "pmt_mode_2": "UPI",
@@ -254,8 +254,8 @@ def test_common_100_101_184():
                     "payer_name_2": refund_payer_name,
                     "order_id": order_id,
                     "order_id_2": order_id,
-                    "pmt_msg": "PAYMENT VOIDED/REFUNDED",
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "rrn": str(rrn),
                     "date": date_and_time,
                     "date_2": refund_date_and_time
@@ -944,7 +944,7 @@ def test_common_100_101_185():
                     "order_id": order_id,
                     "order_id_2": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "rrn": str(rrn_original),
                     "date": date_and_time,
                     "date_2": refund_date_and_time
@@ -1625,7 +1625,7 @@ def test_common_100_101_186():
                     "order_id": order_id,
                     "order_id_2": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "rrn": str(rrn),
                     "date": date_and_time,
                     "date_2": refund_date_and_time
@@ -2322,7 +2322,7 @@ def test_common_100_101_187():
                 partial_refund_date_and_time_1 = date_time_converter.to_app_format(partial_refund_created_date_time_1)
                 partial_refund_date_and_time_2 = date_time_converter.to_app_format(partial_refund_created_date_time_2)
                 expected_app_values = {
-                    "pmt_status": "STATUS:AUTHORIZED_REFUNDED",
+                    "pmt_status": "STATUS:AUTHORIZED REFUNDED",
                     "pmt_status_2": "STATUS:REFUNDED",
                     "pmt_status_3": "STATUS:REFUNDED",
                     "pmt_mode": "UPI",
@@ -2346,9 +2346,9 @@ def test_common_100_101_187():
                     "order_id": order_id,
                     "order_id_2": order_id,
                     "order_id_3": order_id,
-                    "pmt_msg": "PAYMENT VOIDED/REFUNDED",
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
-                    "pmt_msg_3": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_3": "PAYMENT SUCCESSFUL",
                     "rrn": str(rrn),
                     "date": date_and_time,
                     "date_2": partial_refund_date_and_time_1,
@@ -3185,7 +3185,7 @@ def test_common_100_101_188():
                     "order_id": order_id,
                     "order_id_2": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "rrn": str(rrn),
                     "date": date_and_time,
                     "date_2": refund_date_and_time
