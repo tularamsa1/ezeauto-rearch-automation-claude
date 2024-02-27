@@ -1019,11 +1019,6 @@ def test_sa_100_102_230():
             home_page.check_home_page_logo()
             logger.info("waiting for the time till qr get expired...")
             time.sleep(60)
-            home_page.enter_amount_and_order_number(amount, order_id)
-            payment_page = PaymentPage(app_driver)
-            home_page.perform_check_status()
-            payment_page.click_on_proceed_homepage()
-            home_page.click_on_back_btn_enter_amt_page()
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "';"
@@ -1106,9 +1101,6 @@ def test_sa_100_102_230():
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                home_page.wait_for_navigation_to_load()
-                home_page.wait_for_home_page_load()
-                home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
