@@ -78,7 +78,7 @@ class TransHistoryPage(BasePage):
 
     def click_on_transaction_by_txn_id(self, txn_id):
         locator = (By.ID, 'com.ezetap.service.demo:id/ivSearch')
-        if not GlobalVariables.bool_value_to_validate_txns:
+        if not GlobalVariables.bool_validate_multiple_txns:
             self.perform_click(locator)
             self.wait_for_element(self.search_category)
             self.perform_click(self.search_category)
@@ -86,7 +86,7 @@ class TransHistoryPage(BasePage):
             self.perform_click(self.category_type_by_txn)
             self.wait_for_element(self.btn_apply)
             self.perform_click(self.btn_apply)
-            GlobalVariables.bool_value_to_validate_txns = True
+            GlobalVariables.bool_validate_multiple_txns = True
         self.perform_sendkeys(self.search_field, txn_id)
         self.perform_click(self.search_button)
         self.wait_for_element(self.click_txn)
