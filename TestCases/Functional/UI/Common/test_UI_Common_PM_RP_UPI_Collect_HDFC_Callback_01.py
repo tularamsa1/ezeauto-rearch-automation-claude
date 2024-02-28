@@ -1325,7 +1325,7 @@ def test_common_100_103_016():
                 logger.debug(
                     f"Fetching Transaction amount from transaction history of MPOS app: Txn Amt = {app_payment_amt}")
                 transactions_history_page.click_back_Btn_transaction_details()
-                transactions_history_page.click_on_second_transaction_by_order_id(order_id)
+                transactions_history_page.click_on_transaction_by_txn_id(original_txn_id)
                 app_payment_status_original = transactions_history_page.fetch_txn_status_text()
                 logger.debug(
                     f"Fetching Transaction status of original txn from transaction history of MPOS app: Txn status = {app_payment_status_original}")

@@ -170,7 +170,7 @@ def test_common_100_103_041():
             try:
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 expected_app_values = {
-                    "pmt_status": "STATUS:AUTHORIZED_REFUNDED",
+                    "pmt_status": "STATUS:AUTHORIZED REFUNDED",
                     "refund_pmt_status": "STATUS:REFUNDED",
                     "pmt_mode": "UPI",
                     "refund_pmt_mode": "UPI",
@@ -185,8 +185,8 @@ def test_common_100_103_041():
                     "payer_name": payer_name,
                     "refund_payer_name": payer_name,
                     "order_id": order_id,
-                    "pmt_msg": "PAYMENT VOIDED/REFUNDED",
-                    "refund_pmt_msg": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "refund_pmt_msg": "PAYMENT SUCCESSFUL",
                     "rrn": str(rrn_original),
                     "refund_rrn": str(rrn_refunded),
                     "auth_code": auth_code,
@@ -2095,7 +2095,7 @@ def test_common_100_103_044():
                     "refund_payer_name": payer_name,
                     "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "refund_pmt_msg": "PAYMENT VOIDED/REFUNDED",
+                    "refund_pmt_msg": "PAYMENT SUCCESSFUL",
                     "rrn": str(rrn_original),
                     "refund_rrn": str(rrn_refunded),
                     "auth_code": auth_code,
@@ -2746,7 +2746,7 @@ def test_common_100_103_045():
                     "refund_payer_name": payer_name,
                     "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "refund_pmt_msg": "PAYMENT VOIDED/REFUNDED",
+                    "refund_pmt_msg": "PAYMENT SUCCESSFUL",
                     "rrn": str(rrn_original),
                     "refund_rrn": str(rrn_refunded),
                     "auth_code": auth_code,

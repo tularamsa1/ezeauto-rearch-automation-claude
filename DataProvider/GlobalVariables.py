@@ -129,3 +129,6 @@ tot_app_val = 0
 tot_api_val = 0
 tot_db_val = 0
 tot_chargeslip_val = 0
+
+# to skip navigation flow lines of code while fetching 2nd/3rd app txn details, we are initializing as False
+bool_validate_multiple_txns = False

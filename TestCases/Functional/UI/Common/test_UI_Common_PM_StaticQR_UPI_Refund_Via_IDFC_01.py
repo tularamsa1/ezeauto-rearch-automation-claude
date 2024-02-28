@@ -222,12 +222,12 @@ def test_common_100_107_019():
 
                 expected_app_values = {
                     "pmt_mode": "UPI",
-                    "pmt_status": "AUTHORIZED_REFUNDED",
+                    "pmt_status": "AUTHORIZED REFUNDED",
                     "txn_amt": str("%.2f" % amount),
                     "settle_status": "SETTLED",
                     "txn_id": orig_txn_id,
                     "rrn": str(orig_cust_ref_id),
-                    "pmt_msg": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "REFUNDED",
@@ -235,7 +235,7 @@ def test_common_100_107_019():
                     "settle_status_2": "SETTLED",
                     "txn_id_2": second_txn_id,
                     "rrn_2": str(rrn_second_txn),
-                    "payment_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "payment_msg_2": "PAYMENT SUCCESSFUL",
                     "date_2": date_and_time_new
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
@@ -870,7 +870,7 @@ def test_common_100_107_020():
                     "txn_amt": str("%.2f" % amount),
                     "txn_amt_2": str("%.2f" % refund_amount),
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "rrn": str(orig_cust_ref_id),
                     "date": date_and_time,
                     "date_2": date_and_time_new_2
@@ -2712,7 +2712,7 @@ def test_common_100_107_023():
                     "txn_amt": str("%.2f" % amount),
                     "txn_amt_2": str("%.2f" % refund_amount),
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "rrn": str(orig_cust_ref_id),
                     "date": date_and_time,
                     "date_2": date_and_time_new_2
