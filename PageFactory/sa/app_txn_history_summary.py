@@ -1,16 +1,27 @@
-import re
 from selenium.webdriver.common.by import By
+from appium.webdriver.common.appiumby import AppiumBy
 from PageFactory.App_BasePage import BasePage
+from Utilities.execution_log_processor import EzeAutoLogger
+
+logger = EzeAutoLogger(__name__)
 
 
 class TxnSummary(BasePage):
-    btn_txn_summary = (By.ID, 'com.ezetap.service.demo:id/cl_Summary')
-    txt_sales_volume = (By.ID, 'com.ezetap.service.demo:id/tv_SalesVolume')
-    txt_total_sales_count = (By.ID, 'com.ezetap.service.demo:id/tv_SalesCount')
-    txt_pmt_mode_1st_highest_amt = (By.ID, 'com.ezetap.service.demo:id/tv_Card')
-    txt_pmt_mode_2nd_highest_amt = (By.ID, 'com.ezetap.service.demo:id/tv_Upi')
-    txt_pmt_mode_3rd_highest_amt = (By.ID, 'com.ezetap.service.demo:id/tv_BrandEmi')
-    txt_others = (By.ID, "com.ezetap.service.demo:id/tv_Others")
+    btn_txn_summary = (By.ID, 'com.ezetap.service.demo:id/btnPrint')
+    txt_pmt_mode = (AppiumBy.XPATH, '//*[@text="Payment -UPI"]')
+    txt_pmt_mode_1 = (AppiumBy.XPATH, '//*[@text="Payment -BHARATQR"]')
+    txt_pmt_mode_2 = (AppiumBy.XPATH, '//*[@text="Payment -CASH"]')
+    txt_pmt_mode_3 = (AppiumBy.XPATH, '//*[@text="Payment -CHEQUE"]')
+    txt_pmt_mode_4 = (AppiumBy.XPATH, '//*[@text="Payment -CNP"]')
+    txt_pmt_mode_5 = (AppiumBy.XPATH, '//*[@text="Payment -CARD"]')
+    txt_amt = (AppiumBy.XPATH, '//*[@text="Payment -UPI"]/..//*[@resource-id="com.ezetap.service.demo:id/tvTotalAmount"]')
+    txn_amt_1 = (AppiumBy.XPATH, '//*[@text="Payment -BHARATQR"]/..//*[@resource-id="com.ezetap.service.demo:id/tvTotalAmount"]')
+    txn_amt_2 = (AppiumBy.XPATH, '//*[@text="Payment -CASH"]/..//*[@resource-id="com.ezetap.service.demo:id/tvTotalAmount"]')
+    txn_amt_3 = (AppiumBy.XPATH, '//*[@text="Payment -CHEQUE"]/..//*[@resource-id="com.ezetap.service.demo:id/tvTotalAmount"]')
+    txn_amt_4 = (AppiumBy.XPATH, '//*[@text="Payment -CNP"]/..//*[@resource-id="com.ezetap.service.demo:id/tvTotalAmount"]')
+    txn_amt_5 = (AppiumBy.XPATH, '//*[@text="Payment -CARD"]/..//*[@resource-id="com.ezetap.service.demo:id/tvTotalAmount"]')
+    txt_sales_volume = (AppiumBy.XPATH, '//*[@resource-id="com.ezetap.service.demo:id/clFooterView"]/..//*[@resource-id="com.ezetap.service.demo:id/tvGrandTotalAmount"]')
+    txt_total_sales_count = (AppiumBy.XPATH, '//*[@resource-id="com.ezetap.service.demo:id/clFooterView"]/..//*[@resource-id="com.ezetap.service.demo:id/tvGrandTotalCount"]')
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -20,42 +31,87 @@ class TxnSummary(BasePage):
         fetches the volume(total amount of txn) from the txn summary page
         return: str
         """
-        return self.fetch_text(self.txt_sales_volume)
+        self.scroll_to_text("Grand Total")
+        grand_total = self.fetch_text(self.txt_sales_volume)
+        grand_total = ''.join(filter(str.isdigit, grand_total.split('.')[0]))
+        return grand_total
 
     def fetch_total_sales(self):
         """
         fetches the total count of sales done for today from txn summary
         return: str
         """
+        self.scroll_to_text("Grand Total")
         return self.fetch_text(self.txt_total_sales_count)
 
     def fetch_first_highest_payment_mode_and_amount(self):
         """
-        fetches the first highest amount and respective  payment mode
+        Fetches the transaction amount and payment mode for UPI transactions
         return: str
         """
-        return self.fetch_text(self.txt_pmt_mode_1st_highest_amt)
+        self.scroll_to_text("Payment -UPI")
+        txn_amt = self.fetch_text(self.txt_amt)
+        txn_amt = ''.join(filter(str.isdigit, txn_amt.split('.')[0]))
+        pmt_mode = self.fetch_text(self.txt_pmt_mode)
+        pmt_mode = pmt_mode[len("Payment -"):]
+        return txn_amt, pmt_mode
 
     def fetch_second_highest_payment_mode_and_amount(self):
         """
-         fetches the second highest amount and respective  payment mode
+         Fetches the transaction amount and payment mode for BHARATQR transactions
          return: str
          """
-        return self.fetch_text(self.txt_pmt_mode_2nd_highest_amt)
+        txn_amt = self.fetch_text(self.txn_amt_1)
+        txn_amt = ''.join(filter(str.isdigit, txn_amt.split('.')[0]))
+        pmt_mode = self.fetch_text(self.txt_pmt_mode_1)
+        pmt_mode = pmt_mode[len("Payment -"):]
+        return txn_amt, pmt_mode
 
     def fetch_third_highest_payment_mode_and_amount(self):
         """
-         fetches the third highest amount and respective  payment mode
-         return: str
+        Fetches the transaction amount and payment mode for CHEQUE transactions
+        return: str
          """
-        return self.fetch_text(self.txt_pmt_mode_3rd_highest_amt)
+        txn_amt = self.fetch_text(self.txn_amt_3)
+        txn_amt = ''.join(filter(str.isdigit, txn_amt.split('.')[0]))
+        pmt_mode = self.fetch_text(self.txt_pmt_mode_3)
+        pmt_mode = pmt_mode[len("Payment -"):]
+        return txn_amt, pmt_mode
 
-    def fetch_other_payment_mode_and_amount(self):
+    def fetch_fourth_highest_payment_mode_and_amount(self):
         """
-         fetches the other amount and respective  payment mode
+         Fetches the transaction amount and payment mode for CASH transactions
          return: str
          """
-        return self.fetch_text(self.txt_others)
+        txn_amt = self.fetch_text(self.txn_amt_2)
+        txn_amt = ''.join(filter(str.isdigit, txn_amt.split('.')[0]))
+        pmt_mode = self.fetch_text(self.txt_pmt_mode_2)
+        pmt_mode = pmt_mode[len("Payment -"):]
+        return txn_amt, pmt_mode
+
+    def fetch_cnp_payment_mode_and_amount(self):
+        """
+         Fetches the transaction amount and payment mode for CNP transactions
+         return: str
+         """
+        self.scroll_to_text("Payment -CNP")
+        txn_amt = self.fetch_text(self.txn_amt_4)
+        txn_amt = ''.join(filter(str.isdigit, txn_amt.split('.')[0]))
+        pmt_mode = self.fetch_text(self.txt_pmt_mode_4)
+        pmt_mode = pmt_mode[len("Payment -"):]
+        return txn_amt, pmt_mode
+
+    def fetch_card_payment_mode_and_amount(self):
+        """
+         Fetches the transaction amount and payment mode for card transactions
+         return: str
+         """
+        self.scroll_to_text("Payment -CARD")
+        txn_amt = self.fetch_text(self.txn_amt_5)
+        txn_amt = ''.join(filter(str.isdigit, txn_amt.split('.')[0]))
+        pmt_mode = self.fetch_text(self.txt_pmt_mode_5)
+        pmt_mode = pmt_mode[len("Payment -"):]
+        return txn_amt, pmt_mode
 
     def click_on_txn_summary(self):
         """
@@ -63,16 +119,3 @@ class TxnSummary(BasePage):
         """
         self.perform_click(self.btn_txn_summary)
 
-    def extract_data(self, input_str: str):
-        """
-        Use regular expressions to extract text and numeric values
-        param: input : str
-        return: str or None
-        """
-        match = re.search(r'([\w\s]+)\n.*?([\d,.]+)', input_str)
-        if match:
-            primary_text = match.group(1).strip()
-            numeric_value = match.group(2)
-            return [primary_text, numeric_value]
-        else:
-            return None

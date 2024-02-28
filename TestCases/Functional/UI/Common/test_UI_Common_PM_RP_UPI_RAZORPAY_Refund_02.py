@@ -199,7 +199,7 @@ def test_common_100_103_266():
             try:
                 date_and_time = date_time_converter.to_app_format(partially_refunded_posting_date)
                 expected_app_values = {
-                    "pmt_status": "STATUS:AUTHORIZED_REFUNDED",
+                    "pmt_status": "STATUS:AUTHORIZED REFUNDED",
                     "refund_pmt_status": "STATUS:REFUNDED",
                     "pmt_mode": "UPI",
                     "refund_pmt_mode": "UPI",
@@ -214,8 +214,8 @@ def test_common_100_103_266():
                     "payer_name": original_payer_name,
                     "refund_payer_name": original_payer_name,
                     "order_id": order_id,
-                    "pmt_msg": "PAYMENT VOIDED/REFUNDED",
-                    "refund_pmt_msg": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "refund_pmt_msg": "PAYMENT SUCCESSFUL",
                     "rrn": str(original_rrn),
                     "refund_rrn": str(partially_refunded_rrn),
                     "date": date_and_time,
@@ -226,7 +226,7 @@ def test_common_100_103_266():
                     "txn_amt_3": str(full_refund_amount),
                     "full_refund_customer_name": original_customer_name,
                     "full_refund_payer_name": original_payer_name,
-                    "full_refund_pmt_msg": "PAYMENT VOIDED/REFUNDED",
+                    "full_refund_pmt_msg": "PAYMENT SUCCESSFUL",
                     "full_refund_rrn": str(fully_refunded_rrn),
                 }
 
@@ -775,6 +775,7 @@ def test_common_100_103_266():
                     "txn_amt_3": f"{full_refund_amount:,}.00",
                     "username_3": app_username,
                     "txn_id_3": fully_refunded_txn_id,
+                    "rrn_3": str(fully_refunded_rrn),
                 }
                 logger.debug(f"expected_portal_values : {expected_portal_values}")
 
@@ -849,6 +850,7 @@ def test_common_100_103_266():
                     "txn_amt_3": total_amount_fully_refunded[1],
                     "username_3": username_fully_refunded,
                     "txn_id_3": transaction_id_fully_refunded,
+                    "rrn_3": rr_number_fully_refunded,
                 }
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
                 # ---------------------------------------------------------------------------------------------
@@ -1044,7 +1046,7 @@ def test_common_100_103_221():
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 original_date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {
-                    "pmt_status": "STATUS:AUTHORIZED_REFUNDED",
+                    "pmt_status": "STATUS:AUTHORIZED REFUNDED",
                     "pmt_mode": "UPI",
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
@@ -1052,7 +1054,7 @@ def test_common_100_103_221():
                     "customer_name": customer_name,
                     "payer_name": payer_name,
                     "order_id": order_id,
-                    "pmt_msg": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
                     "rrn": str(rrn_db),
                     "date": original_date_and_time,
                     "pmt_status_2": "STATUS:REFUNDED",
@@ -1062,7 +1064,7 @@ def test_common_100_103_221():
                     "txn_amt_2": "{:,.2f}".format(amount),
                     "customer_name_2": customer_name,
                     "payer_name_2": payer_name,
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "rrn_2": str(rrn_refunded),
                     "date_2": date_and_time,
                 }
@@ -3054,7 +3056,7 @@ def test_common_100_103_224():
                     "txn_amt_2": "{:,.2f}".format(refund_amount),
                     "customer_name_2": customer_name,
                     "payer_name_2": payer_name,
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "rrn_2": str(rrn_refunded),
                     "date_2": date_and_time,
                 }
