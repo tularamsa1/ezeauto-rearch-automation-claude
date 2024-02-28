@@ -95,6 +95,7 @@ def test_common_400_409_001():
             payment_page.click_on_confirm()
             payment_page.click_on_proceed_homepage()
             logger.debug(f"completed cash txn")
+
             logger.debug(f"started performing upi txn ")
             amount_upi = random.randint(201, 300)
             upi_order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -108,6 +109,7 @@ def test_common_400_409_001():
             payment_page.click_on_transaction_cancel_yes()
             payment_page.click_on_proceed_homepage()
             logger.debug(f"completed upi txn")
+
             logger.debug(f"started performing BQRV4 txn")
             amount_bqr = random.randint(401, 500)
             bqr_order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -121,15 +123,42 @@ def test_common_400_409_001():
             payment_page.click_on_transaction_cancel_yes()
             payment_page.click_on_proceed_homepage()
             logger.debug(f"completed BQR txn")
-            query = """SELECT sum(amount) FROM txn WHERE org_code = '{org_code}'AND created_time LIKE '{today}%'AND 
+
+            home_page.check_home_page_logo()
+            home_page.wait_for_navigation_to_load()
+            logger.debug(f"started performing cheque txn")
+            amount_cheque = random.randint(401, 430)
+            order_id = datetime.now().strftime('%m%d%H%M%S')
+            home_page.enter_amount_and_order_number(amount_cheque, order_id)
+            logger.debug(f"Entered amount is : {amount_cheque}")
+            logger.debug(f"Entered order_id is : {order_id}")
+            payment_page = PaymentPage(app_driver)
+            payment_page.is_payment_page_displayed(amount_cheque, order_id)
+            payment_page.click_on_cheque()
+            logger.info("Selected payment mode is cheque")
+            payment_page.fill_cheque_number(123456)
+            payment_page.fill_bank_name("Allahabad Bank")
+            x, y = payment_page.get_relative_coordinate_for_bank()
+            payment_page.perform_click_to_bank(x, y)
+            today_date = datetime.today().date().strftime("%d %B %Y")
+            logger.debug(f"Generating today's date: {today_date}")
+            payment_page.click_on_date(today_date)
+            payment_page.fill_ifsc_code("ALLA0210329")
+            x1, y1 = payment_page.get_relative_coordinate_for_ifsc_code()
+            payment_page.perform_touch_action_on_cheque_home_page(x1, y1)
+            payment_page.click_on_cheque_submit()
+            payment_page.click_on_proceed_homepage()
+            logger.debug(f"completed cheque txn")
+
+            query = """SELECT sum(amount) FROM txn WHERE org_code = '{org_code}'AND created_time LIKE '{today}%'AND
                                                 payment_mode = 'CASH';""".format(org_code=org_code, today=date.today())
             logger.debug(f"Query to fetch total amount of cash txn from database : {query}")
             cash_result = DBProcessor.getValueFromDB(query)
             total_cash_amount = cash_result['sum(amount)'].values[0]
             cash_result_int = int(total_cash_amount) if total_cash_amount is not None else 0
-            logger.debug(f"total_cash_amount : {total_cash_amount}")
+            logger.debug(f"total_cash_amount : {cash_result_int}")
 
-            query = """SELECT sum(amount) FROM txn WHERE org_code = '{org_code}'AND payment_mode = 'UPI' 
+            query = """SELECT sum(amount) FROM txn WHERE org_code = '{org_code}'AND payment_mode = 'UPI'
             AND settlement_status='SETTLED' AND status='AUTHORIZED' AND created_time LIKE '{today}%';""".format(
                 org_code=org_code,
                 today=date.today())
@@ -137,9 +166,9 @@ def test_common_400_409_001():
             result_upi = DBProcessor.getValueFromDB(query)
             total_upi_amount = result_upi['sum(amount)'].values[0]
             upi_result_int = int(total_upi_amount) if total_upi_amount is not None else 0
-            logger.debug(f"total_upi_amount : {total_upi_amount}")
+            logger.debug(f"total_upi_amount is: {upi_result_int}")
 
-            query = """SELECT sum(amount) FROM txn WHERE org_code = '{org_code}'AND payment_mode = 'BHARATQR' 
+            query = """SELECT sum(amount) FROM txn WHERE org_code = '{org_code}'AND payment_mode = 'BHARATQR'
             AND settlement_status='SETTLED' AND status='AUTHORIZED' AND created_time LIKE '{today}%';""".format(
                 org_code=org_code,
                 today=date.today())
@@ -147,9 +176,9 @@ def test_common_400_409_001():
             result_bqr = DBProcessor.getValueFromDB(query)
             total_bqr_amount = result_bqr['sum(amount)'].values[0]
             bqr_result_int = int(total_bqr_amount) if total_bqr_amount is not None else 0
-            logger.debug(f"total_bqr_amount : {total_bqr_amount}")
+            logger.debug(f"total_bqr_amount is: {bqr_result_int}")
 
-            query = """SELECT sum(amount) FROM txn WHERE org_code = '{org_code}'AND payment_mode = 'CARD' 
+            query = """SELECT sum(amount) FROM txn WHERE org_code = '{org_code}'AND payment_mode = 'CARD'
                        AND settlement_status='SETTLED' AND status='AUTHORIZED' AND created_time LIKE '{today}%';""".format(
                 org_code=org_code,
                 today=date.today())
@@ -157,10 +186,10 @@ def test_common_400_409_001():
             result_card = DBProcessor.getValueFromDB(query)
             total_amount_card = result_card['sum(amount)'].values[0]
             logger.debug(f"total_amount_card : {total_amount_card}")
-            total_amount_card_1 = [0 if total_amount_card == None else total_amount_card]
+            total_amount_card_1 = [0 if total_amount_card is None else total_amount_card]
             logger.debug(f"total_amount_card after if condition : {total_amount_card_1[0]}")
 
-            query = """SELECT sum(amount) FROM txn WHERE org_code = '{org_code}'AND payment_mode = 'remotepay' 
+            query = """SELECT sum(amount) FROM txn WHERE org_code = '{org_code}'AND payment_mode = 'remotepay'
                        AND settlement_status='SETTLED' AND status='AUTHORIZED' AND created_time LIKE '{today}%';""".format(
                 org_code=org_code,
                 today=date.today())
@@ -168,10 +197,10 @@ def test_common_400_409_001():
             result_cnp = DBProcessor.getValueFromDB(query)
             total_amount_cnp = result_cnp['sum(amount)'].values[0]
             logger.debug(f"total_amount_cnp : {total_amount_cnp}")
-            total_amount_cnp_1 = [0 if total_amount_cnp == None else total_amount_cnp]
+            total_amount_cnp_1 = [0 if total_amount_cnp is None else total_amount_cnp]
             logger.debug(f"total_amount_cnp after if condition : {total_amount_cnp_1[0]}")
 
-            query = """SELECT sum(amount) FROM txn WHERE org_code = '{org_code}'AND payment_mode = 'CHEQUE' 
+            query = """SELECT sum(amount) FROM txn WHERE org_code = '{org_code}'AND payment_mode = 'CHEQUE'
                        AND settlement_status='POSTED' AND status='AUTHORIZED' AND created_time LIKE '{today}%';""".format(
                 org_code=org_code,
                 today=date.today())
@@ -179,7 +208,7 @@ def test_common_400_409_001():
             result_cheque = DBProcessor.getValueFromDB(query)
             total_amount_cheque = result_cheque['sum(amount)'].values[0]
             logger.debug(f"total_amount_cheque : {result_cheque}")
-            total_amount_cheque_1 = [0 if total_amount_cheque == None else total_amount_cheque]
+            total_amount_cheque_1 = [0 if total_amount_cheque is None else total_amount_cheque]
             logger.debug(f"total_amount_cheque after if condition : {total_amount_cheque_1[0]}")
 
             total_amount = total_cash_amount + total_upi_amount + total_bqr_amount + total_amount_card_1[0] \
@@ -192,25 +221,6 @@ def test_common_400_409_001():
             result_sales_count = DBProcessor.getValueFromDB(query)
             total_sales = result_sales_count['count(*)'].values[0]
             logger.debug(f"total sales count : {total_sales}")
-            data = [
-                {'id': 'CASH', 'amount': cash_result_int},
-                {'id': 'UPI', 'amount': upi_result_int},
-                {'id': 'BHARAT QR', 'amount': bqr_result_int},
-                {'id': 'CARD', 'amount': total_amount_card_1[0]},
-                {'id': 'PAY LINK', 'amount': total_amount_cnp_1[0]},
-                {'id': 'CHEQUE', 'amount': total_amount_cheque_1[0]}
-            ]
-            sorted_data = sorted(data, key=lambda x: x['amount'], reverse=True)
-            top_3 = sorted_data[:3]
-            remaining = sorted_data[3:]
-            cumulative_amount_others = sum(entry['amount'] for entry in remaining)
-            top_3_ids = [entry['id'] for entry in sorted_data[:3]]
-            top_payment_mode_1 = top_3_ids[0]
-            top_payment_mode_2 = top_3_ids[1]
-            top_payment_mode_3 = top_3_ids[2]
-            top_amount_1 = top_3[0]['amount']
-            top_amount_2 = top_3[1]['amount']
-            top_amount_3 = top_3[2]['amount']
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -233,46 +243,63 @@ def test_common_400_409_001():
                 expected_app_values = {
                     "sales_volume": str(total_amount).rstrip("0").rstrip("."),
                     "total_sales": str(total_sales),
-                    "pmt_mode": str(top_payment_mode_1),
-                    "pmt_mode_2": str(top_payment_mode_2),
-                    "pmt_mode_3": str(top_payment_mode_3),
-                    "other_mode": str(None) if cumulative_amount_others == 0 else "OTHERS",
-                    "amt": str(top_amount_1).rstrip("0").rstrip("."),
-                    "amt_2": str(top_amount_2).rstrip("0").rstrip("."),
-                    "amt_3": str(top_amount_3).rstrip("0").rstrip("."),
-                    "other_amount": str(0) if cumulative_amount_others == 0 else str(cumulative_amount_others).rstrip("0").rstrip(".")
+                    "pmt_mode": "CHEQUE",
+                    "pmt_mode_2": "CASH",
+                    "pmt_mode_3": "UPI",
+                    "pmt_mode_4": "BHARATQR",
+                    "pmt_mode_5": "None" if total_amount_cnp_1 == [0] else "CNP",
+                    "pmt_mode_6": "None" if total_amount_card_1 == [0] else "CARD",
+                    "amt": str(total_amount_cheque_1[0]).rstrip("0").rstrip("."),
+                    "amt_2": str(total_cash_amount).rstrip("0").rstrip("."),
+                    "amt_3": str(upi_result_int).rstrip("0").rstrip("."),
+                    "amt_4":  str(bqr_result_int).rstrip("0").rstrip("."),
+                    "amt_5": "0" if total_amount_cnp_1 == [0] else str(total_amount_cnp_1[0]).rstrip("0").rstrip("."),
+                    "amt_6": "0" if total_amount_card_1 == [0] else str(total_amount_card_1[0]).rstrip("0").rstrip(".")
                 }
                 logger.debug(f"expected values : {expected_app_values}")
                 home_page.click_on_history()
                 trans_summary = TxnSummary(app_driver)
                 trans_summary.click_on_txn_summary()
-                total_volume_amount = trans_summary.fetch_total_volume().split(" ")[1]
+                total_volume_amount = trans_summary.fetch_total_volume()
+                logger.debug(f"total_volume_amount is {total_volume_amount}")
                 total_sales_count = trans_summary.fetch_total_sales()
-                payment_mode_and_amount_1 = trans_summary.fetch_first_highest_payment_mode_and_amount()
-                primary_payment_mode_1, primary_amount_1 = trans_summary.extract_data(
-                    input_str=payment_mode_and_amount_1)
-                payment_mode_and_amount_2 = trans_summary.fetch_second_highest_payment_mode_and_amount()
-                payment_mode_2, amount_2 = trans_summary.extract_data(input_str=payment_mode_and_amount_2)
-                payment_mode_and_amount_3 = trans_summary.fetch_third_highest_payment_mode_and_amount()
-                payment_mode_3, amount_3 = trans_summary.extract_data(input_str=payment_mode_and_amount_3)
+                logger.debug(f"total_sales_count is {total_sales_count} ")
+                bqr_amt, brq_pmt = trans_summary.fetch_second_highest_payment_mode_and_amount()
+                logger.debug(f"txn_amt_1 and pmt_amt_1 for BHARATQR is {bqr_amt}, {brq_pmt}")
+                cash_amt, cash_pmt = trans_summary.fetch_fourth_highest_payment_mode_and_amount()
+                logger.debug(f"txn_amt_2 and pmt_amt_2  for CASH is {cash_amt}, {cash_pmt}")
+                cheque_amt, cheque_pmt = trans_summary.fetch_third_highest_payment_mode_and_amount()
+                logger.debug(f"txn_amt_2 and pmt_amt_2  for CHEQUE is {cheque_amt}, {cheque_pmt}")
+                upi_amt, upi_pmt = trans_summary.fetch_first_highest_payment_mode_and_amount()
+                logger.debug(f"txn_amt and pmt_mode for UPI is {upi_amt}, {upi_pmt}")
                 try:
-                    others_entity = trans_summary.fetch_other_payment_mode_and_amount()
-                    others_mode, others_amount = trans_summary.extract_data(input_str=others_entity)
+                    cnp_amt, cnp_pmt = trans_summary.fetch_cnp_payment_mode_and_amount()
+                    logger.debug(f"txn_amt and pmt_mode for CNP is {cnp_amt}, {cnp_pmt}")
                 except:
-                    others_mode = None
-                    others_amount = "0"
+                    cnp_pmt = "None"
+                    cnp_amt = "0"
+                try:
+                    card_amt, card_pmt = trans_summary.fetch_card_payment_mode_and_amount()
+                    logger.debug(f"txn_amt and pmt_mode for CARD is {card_amt}, {card_pmt}")
+                except:
+                    card_pmt = "None"
+                    card_amt = "0"
 
                 actual_app_values = {
-                    "sales_volume": str(total_volume_amount).replace(",", "").rstrip("0").rstrip("."),
-                    "total_sales": str(total_sales_count),
-                    "pmt_mode": str(primary_payment_mode_1).strip(),
-                    "pmt_mode_2": str(payment_mode_2).strip(),
-                    "pmt_mode_3": str(payment_mode_3).strip(),
-                    "other_mode": str(others_mode).strip(),
-                    "amt": primary_amount_1.replace(",", "").rstrip("0").rstrip("."),
-                    "amt_2": amount_2.replace(",", "").rstrip("0").rstrip("."),
-                    "amt_3": amount_3.replace(",", "").rstrip("0").rstrip("."),
-                    "other_amount": "0" if others_amount == "0" else others_amount.replace(",", "").rstrip("0").rstrip(".")
+                    "sales_volume": total_volume_amount,
+                    "total_sales": total_sales_count,
+                    "pmt_mode": cheque_pmt,
+                    "pmt_mode_2": cash_pmt,
+                    "pmt_mode_3": upi_pmt,
+                    "pmt_mode_4": brq_pmt,
+                    "pmt_mode_5": cnp_pmt,
+                    "pmt_mode_6": card_pmt,
+                    "amt": cheque_amt,
+                    "amt_2": cash_amt,
+                    "amt_3": upi_amt,
+                    "amt_4": bqr_amt,
+                    "amt_5": cnp_amt,
+                    "amt_6": card_amt
                 }
                 logger.debug(f"actual app values: {actual_app_values}")
                 # ---------------------------------------------------------------------------------------------
@@ -394,7 +421,6 @@ def test_common_400_409_002():
             logger.debug(f"performing filter on the txn history")
             transactions_history_page.click_filter()
             filter_page = FiltersPage(app_driver)
-            filter_page.click_on_today()
             filter_page.click_on_payment_method_cash()
             filter_page.click_on_txn_status_success()
             filter_page.click_on_apply_filter()

@@ -199,7 +199,7 @@ def test_common_100_103_287():
                 date_and_time = date_time_converter.to_app_format(created_time)
                 original_date_and_time = date_time_converter.to_app_format(created_time_original)
                 expected_app_values = {
-                    "pmt_status": "STATUS:AUTHORIZED_REFUNDED",
+                    "pmt_status": "STATUS:AUTHORIZED REFUNDED",
                     "pmt_status_2": "STATUS:REFUNDED",
                     "pmt_mode": "UPI",
                     "pmt_mode_2": "UPI",
@@ -214,8 +214,8 @@ def test_common_100_103_287():
                     "payer_name": payer_name,
                     "payer_name_2": payer_name,
                     "order_id": order_id,
-                    "pmt_msg": "PAYMENT VOIDED/REFUNDED",
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "rrn": str(rrn_original),
                     "date_2": date_and_time,
                     "date": original_date_and_time
@@ -675,6 +675,7 @@ def test_common_100_103_287():
                                                'BASE AMOUNT:': f"Rs.{amount:,}.00",
                                                'date': txn_date,
                                                'time': txn_time,
+                                               'AUTH CODE': "" if auth_code is None else auth_code
                                                }
 
                 logger.debug(
@@ -1594,7 +1595,7 @@ def test_common_100_103_289():
                     "payer_name_2": payer_name,
                     "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "rrn": str(rrn_original),
                     "date_2": date_and_time,
                     "date": original_date_and_time
@@ -2317,7 +2318,7 @@ def test_common_100_103_290():
                     "payer_name_2": payer_name,
                     "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "rrn": str(rrn_original),
                     "date_2": date_and_time,
                     "date": original_date_and_time

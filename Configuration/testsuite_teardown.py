@@ -231,6 +231,7 @@ def revert_org_settings_default(org_code, portal_un, portal_pw):
     orgsettings_apidetails["RequestBody"]["settings"]["emiEnabled"] = "false"
     # disabling paylater
     orgsettings_apidetails["RequestBody"]["settings"]["paylaterEnabled"] = "false"
+    orgsettings_apidetails["RequestBody"]["settings"]["selectedPayLaterBank"] = ""
     # disabling collectMobileEmailUpfront
     orgsettings_apidetails["RequestBody"]["settings"]["collectMobileEmailUpfront"] = "false"
     #disabling MultilingualForApp
