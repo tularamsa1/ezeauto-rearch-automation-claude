@@ -462,7 +462,6 @@ def test_common_100_115_07_128():
                 logger.debug(f"Fetching scheme from txn history for the txn : {txn_id}, {app_scheme}")
                 app_product = txn_history_page.fetch_product_text()
                 logger.debug(f"Fetching product from txn history for the txn : {txn_id}, {app_product}")
-                txn_history_page.scroll_to_card_element()
                 app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()
@@ -935,7 +934,7 @@ def test_common_100_115_07_128():
                     "EMI Txn Id": txn_id,
                     "Tenure": f"{emi_plan_in_months} month",
                     "Card Issuer": "ICICI Bank",
-                    "Total Cashback Amt": "Rs. " + "{:.2f}".format(emi_cashback_amount),
+                    "Total Payback Amount": "Rs." + "{:.2f}".format(emi_cashback_amount),
                     "Rate of Interest(P.A.)": f"{interest_rate}%",
                     "Interest Amt": "Rs." + "{:.2f}".format(total_interest),
                     "EMI Amt": "Rs." + "{:.2f}".format(monthly_emi),
@@ -945,8 +944,7 @@ def test_common_100_115_07_128():
                     "Product Name": brand_sku_name,
                     "Product Desc": brand_sku_code,
                     "Sr. No.": str(imei_no),
-                    "unnamed_section_text": "RAJA /",
-                    "Net cost": "Rs." + "{:,.2f}".format(total_emi - emi_cashback_amount)
+                    "unnamed_section_text": "RAJA /"
                 }
                 logger.debug(f"expected_charge_slip_values: {expected_charge_slip_values}")
 

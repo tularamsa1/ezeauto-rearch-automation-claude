@@ -1002,7 +1002,7 @@ def test_common_100_115_07_071():
                     "Tenure": f"{emi_plan_in_months} month",
                     "Card Issuer": "Canara Bank",
                     "Cashback": "Rs " + "{:.2f}".format(emi_cashback_fixed),
-                    "Total Cashback Amt": "Rs. " + "{:.2f}".format(emi_cashback_amount),
+                    "Total Cashback Amt": "Rs. " + "{:.2f}".format(emi_cashback_amount + total_discount_value),
                     "Rate of Interest(P.A.)": f"{interest_rate}%",
                     "Interest Amt": "Rs." + "{:.2f}".format(total_interest),
                     "EMI Amt": "Rs." + "{:.2f}".format(monthly_emi),
@@ -1013,7 +1013,7 @@ def test_common_100_115_07_071():
                     "Product Desc": brand_sku_code,
                     "Sr. No.": str(imei_no),
                     "unnamed_section_text": f"{customer_name_db} I agree to pay as per the card issuer agreement.",
-                    "Net cost": "Rs." + "{:,.2f}".format(total_emi - emi_cashback_amount)
+                    "Net cost": "Rs." + "{:,.2f}".format(total_emi - emi_cashback_amount - total_discount_value)
                 }
                 logger.debug(f"expected_charge_slip_values: {expected_charge_slip_values}")
 

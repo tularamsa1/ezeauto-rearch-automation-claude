@@ -877,15 +877,7 @@ def test_sa_100_101_075():
             time.sleep(60)
             login_page = LoginPage(app_driver)
             login_page.perform_login(app_username, app_password)
-            # home_page.wait_for_navigation_to_load()
-            # home_page.wait_for_home_page_load()
-            # home_page.check_home_page_logo()
             logger.info(f"After reseting the app logging in again in the MPOSX application using username : {app_username} and password : {app_password}")
-            # home_page.enter_amount_and_order_number(amount, order_id)
-            # payment_page = PaymentPage(app_driver)
-            # home_page.perform_check_status()
-            # payment_page.click_on_proceed_homepage()
-            # home_page.click_on_back_btn_enter_amt_page()
 
             query = "select * from txn where org_code='" + org_code + "' and external_ref='" + order_id + "' order by created_time desc limit 1"
             logger.debug(f"Query to fetch txn data from txn table : {query}")

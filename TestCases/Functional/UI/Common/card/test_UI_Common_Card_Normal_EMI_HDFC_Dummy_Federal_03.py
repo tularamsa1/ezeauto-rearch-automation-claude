@@ -78,6 +78,9 @@ def test_common_100_115_05_077():
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
 
+        # Below function to update bank_code, bank for the bin: 417666
+        testsuite_teardown.update_bin_info(bin_number='417666', bank_code='FEDERAL', bank='FEDERAL')
+
         query = f"select bank_code from bin_info where bin='417666'"
         logger.debug(f"Query to fetch bank_code from the bin_info table : {query}")
         result = DBProcessor.getValueFromDB(query=query)
@@ -99,9 +102,6 @@ def test_common_100_115_05_077():
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details=api_details)
         logger.debug(f"Response received for setting preconditions for normal emi setup to be enabled:  {response}")
-
-        # Below function to update bank_code, bank for the bin: 417666
-        testsuite_teardown.update_bin_info(bin_number='417666', bank_code='FEDERAL', bank='FEDERAL')
 
         testsuite_teardown.update_rule_status(org_code=org_code, credit_type='INSTANT', status='ACTIVE')
         logger.debug(f"updated rule status activated INSTANT BO")

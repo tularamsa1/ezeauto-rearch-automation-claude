@@ -54,6 +54,7 @@ def test_mpos_400_416_006():
         api_details["RequestBody"]["settings"]["paylaterEnabled"] = "true"
         api_details["RequestBody"]["settings"]["brandEmiEnabled"] = "false"
         api_details["RequestBody"]["settings"]["emiEnabledForClient"] = "true"
+        api_details["RequestBody"]["settings"]["selectedPayLaterBank"] = "HDFC"
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
@@ -174,6 +175,7 @@ def test_mpos_400_416_007():
         api_details["RequestBody"]["settings"]["paylaterEnabled"] = "true"
         api_details["RequestBody"]["settings"]["brandEmiEnabled"] = "false"
         api_details["RequestBody"]["settings"]["emiEnabledForClient"] = "true"
+        api_details["RequestBody"]["settings"]["selectedPayLaterBank"] = "HDFC"
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
@@ -302,6 +304,7 @@ def test_mpos_400_416_008():
         api_details["RequestBody"]["settings"]["paylaterEnabled"] = "true"
         api_details["RequestBody"]["settings"]["brandEmiEnabled"] = "false"
         api_details["RequestBody"]["settings"]["emiEnabledForClient"] = "true"
+        api_details["RequestBody"]["settings"]["selectedPayLaterBank"] = "HDFC"
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")

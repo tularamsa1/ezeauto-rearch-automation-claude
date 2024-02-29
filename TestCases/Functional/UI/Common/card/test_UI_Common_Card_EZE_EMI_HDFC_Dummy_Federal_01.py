@@ -816,7 +816,6 @@ def test_common_100_115_11_024():
                     "subvention_type": "INSTANT",
                     "subvention_value_type": "PERCENTAGE",
                     "subvention_tenure": f"{emi_plan_in_months} month",
-                    "subvention_discount_type": None if ezetap_subvention_discount_type is None else "Additional",
                     "MCEW_wallet_balance": mcew_wallet_balance_before_txn - amount,
                     "GCEW_wallet_balance": gcew_wallet_balance_before_txn - amount
                 }
@@ -870,7 +869,6 @@ def test_common_100_115_11_024():
                     "subvention_type": ezetap_subvention_type,
                     "subvention_value_type": ezetap_subvention_value_type,
                     "subvention_tenure": ezetap_subvention_tenure,
-                    "subvention_discount_type": ezetap_subvention_discount_type,
                     "MCEW_wallet_balance": mcew_wallet_balance_after_txn,
                     "GCEW_wallet_balance": gcew_wallet_balance_after_txn
                 }

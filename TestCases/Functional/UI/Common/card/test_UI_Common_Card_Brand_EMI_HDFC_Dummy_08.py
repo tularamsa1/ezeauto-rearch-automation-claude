@@ -4065,7 +4065,7 @@ def test_common_100_115_07_112():
         brand_sku_code = result['sku_code'].values[0]
         logger.debug(f"Fetching sku_code value from the brand_sku_details table : {brand_sku_code}")
 
-        query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='{org_code}' and card_type= 'DEBIT' and bank='HDFC' order by created_time desc limit 1;"
+        query = f"select * from subvention_plan where brand_id='{brand_id}' and org_code='{org_code}' and card_type= 'DEBIT' and bank='HDFC' and eze_emi_enabled=b'0' order by created_time desc limit 1;"
         logger.debug(f"Query to fetch data from the subvention_plan table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result for subvention_plan table : {result}")
@@ -4184,7 +4184,7 @@ def test_common_100_115_07_112():
             logger.debug(f"Started calculating emi part")
             final_amount = amount - total_discount_value
             logger.debug(f"final amount after deducting discount amount: {final_amount}")
-            cal_additional_payback = (final_amount * (subvention_value / 100))
+            cal_additional_payback = final_amount * (subvention_value / 100)
             logger.debug(f"cal_additional_payback is : {cal_additional_payback}")
             monthly_interest_rate = interest_rate / (12 * 100)
             logger.debug(f"monthly_interest_rate is : {monthly_interest_rate}")
@@ -4525,7 +4525,7 @@ def test_common_100_115_07_112():
                     "emi_term": f"{emi_plan_in_months} month",
                     "emi_status": "PENDING",
                     "interest_rate": interest_rate,
-                    "loan_amt": float(final_amount - cal_additional_payback),
+                    "loan_amt": round((final_amount - cal_additional_payback), 2),
                     "monthly_emi": monthly_emi,
                     "interest_amt": total_interest,
                     "total_emi_amt": total_emi,
@@ -4766,7 +4766,7 @@ def test_common_100_115_07_112():
                     "emi_total_amount": api_total_emi_amt,
                     "emi_cashback_type": 'PAYBACK',
                     "emi_interest_rate": interest_rate,
-                    "loan_amt": float(final_amount - cal_additional_payback),
+                    "loan_amt": round((final_amount - cal_additional_payback), 2),
                     "brand_name": api_manufacturer,
                     "brand_sku": api_sku_code,
                     "brand_sku_code": api_sku_code,
@@ -4903,7 +4903,7 @@ def test_common_100_115_07_112():
         if (ConfigReader.read_config("Validations", "charge_slip_validation")) == "True":
             logger.info(f"Started ChargeSlip validation for the test case : {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=txn_created_time)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 expected_charge_slip_values = {
                     "merchant_ref_no": "Ref # " + str(order_id),
                     "date": txn_date,

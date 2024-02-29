@@ -573,7 +573,7 @@ class PaymentPage(BasePage):
         This method is used to enter imei no or serial no for brand EMI payment mode and click on proceed button
         :param imei: int
         """
-        self.scroll_to_text("IMEI No/ Serial No")
+        self.scroll_to_text("Enter number or Scan")
         self.perform_click(self.serial_no)
         self.perform_sendkeys(self.serial_no, imei)
         self.perform_click(self.btn_proceed)

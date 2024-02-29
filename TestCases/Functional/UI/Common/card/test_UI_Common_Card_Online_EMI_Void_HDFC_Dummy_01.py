@@ -56,7 +56,7 @@ def test_common_100_115_08_007():
         logger.debug(f"Fetching org_code from the org_employee table : {org_code}")
 
         query = f"select * from terminal_info where emi_id=(select id from emi where org_code='{org_code}' " \
-                f"and issuer_code='HDFC' and term='3 month' and card_type='CREDIT')"
+                f"and issuer_code='HDFC' and term='3 month' and card_type='CREDIT' and emi_type='NORMAL')"
         logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Fetching result for terminal_info table : {result}")
@@ -843,7 +843,7 @@ def test_common_100_115_08_008():
         logger.debug(f"Fetching org_code from the org_employee table : {org_code}")
 
         query = f"select * from terminal_info where emi_id=(select id from emi where org_code='{org_code}' " \
-                f"and issuer_code='HDFC' and term='6 month' and card_type='CREDIT')"
+                f"and issuer_code='HDFC' and term='6 month' and card_type='CREDIT' and emi_type='NORMAL')"
         logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Fetching result for terminal_info table : {result}")
@@ -1629,7 +1629,7 @@ def test_common_100_115_08_009():
         logger.debug(f"Fetching org_code from the org_employee table : {org_code}")
 
         query = f"select * from terminal_info where emi_id=(select id from emi where org_code='{org_code}' " \
-                f"and issuer_code='HDFC' and term='9 month' and card_type='CREDIT')"
+                f"and issuer_code='HDFC' and term='9 month' and card_type='CREDIT' and emi_type='NORMAL')"
         logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Fetching result for terminal_info table : {result}")
@@ -2422,7 +2422,7 @@ def test_common_100_115_08_010():
         logger.debug(f"Fetching org_code from the org_employee table : {org_code}")
 
         query = f"select * from terminal_info where emi_id=(select id from emi where org_code='{root_org_code}' and " \
-                f"issuer_code='HDFC' and term='3 month' and card_type='CREDIT' and tid_type='CIB') and org_code='{org_code}'"
+                f"issuer_code='HDFC' and term='3 month' and card_type='CREDIT' and tid_type='CIB' and emi_type='NORMAL') and org_code='{org_code}'"
         logger.debug(f"Query to fetch data from the terminal_info for the {org_code} where emi_id for {root_org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Fetching result for terminal_info table : {result}")
@@ -3217,7 +3217,7 @@ def test_common_100_115_08_011():
         logger.debug(f"Fetching org_code from the org_employee table : {org_code}")
 
         query = f"select * from terminal_info where emi_id=(select id from emi where org_code='{root_org_code}' and " \
-                f"issuer_code='HDFC' and term='6 month' and card_type='CREDIT' and tid_type='CIB') and org_code='{org_code}'"
+                f"issuer_code='HDFC' and term='6 month' and card_type='CREDIT' and tid_type='CIB' and emi_type='NORMAL') and org_code='{org_code}'"
         logger.debug(f"Query to fetch data from the terminal_info for the {org_code} where emi_id for {root_org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Fetching result for terminal_info table : {result}")

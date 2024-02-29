@@ -158,7 +158,7 @@ def test_common_100_115_11_014():
         subvention_scheme_name = result['scheme_name'].values[0]
         logger.debug(f"Fetching scheme_name from subvention_plan table : {subvention_scheme_name}")
 
-        query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity ='EZETAP' and tenure='{emi_plan_in_months} month' ;"
+        query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity ='EZETAP' and subvention_value_type= 'PERCENTAGE' and subvention_type='INSTANT' and tenure='{emi_plan_in_months} month' ;"
         logger.debug(f"Query to fetch data from the subvention_plan_details table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result for subvention_plan_details table : {result}")
@@ -178,7 +178,7 @@ def test_common_100_115_11_014():
         # updating the status as inactive in subvention_plan_details table
         testsuite_teardown.update_subvention_plan_details(subvention_plan_id)
 
-        query = f"update subvention_plan_details set status = 1 where subvention_plan_id ='{subvention_plan_id}' and subventing_entity='EZETAP' and tenure='{emi_plan_in_months} month'"
+        query = f"update subvention_plan_details set status = 1 where subvention_plan_id ='{subvention_plan_id}' and subventing_entity='EZETAP' and subvention_value_type= 'PERCENTAGE' and subvention_type='INSTANT' and tenure='{emi_plan_in_months} month'"
         logger.debug(f"Query to update subvention_plan_details with status as ACTIVE : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
@@ -203,7 +203,7 @@ def test_common_100_115_11_014():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            query = f"select * from ezeemi_club_wallet_account where org_code = 'TANUAPPSEP12' and brand_id='{brand_id}';"
+            query = f"select * from ezeemi_club_wallet_account where org_code = '{org_code}' and brand_id='{brand_id}';"
             logger.debug(f"Query to fetch data from the ezeemi_club_wallet_account table for MCEW : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result for ezeemi_club_wallet_account table : {result}")
@@ -254,7 +254,7 @@ def test_common_100_115_11_014():
             payment_page.click_on_proceed_homepage()
 
             logger.debug(f"Started calculating emi part")
-            cal_subvention_value = round((amount * (subvention_value / 100)), 2)
+            cal_subvention_value = (amount * (subvention_value / 100))
             monthly_interest_rate = interest_rate / (12 * 100)
             logger.debug(f"monthly_interest_rate is : {monthly_interest_rate}")
             cal_monthly_emi_amt = (amount - cal_subvention_value) * monthly_interest_rate * (
@@ -370,7 +370,7 @@ def test_common_100_115_11_014():
             emi_cashback_type = result['emi_cashback_type'].values[0]
             logger.debug(f"Fetching emi cashback type from txn_emi table : {emi_cashback_type}")
 
-            query = f"select * from ezeemi_club_wallet_account where org_code = 'TANUAPPSEP12' and brand_id='{brand_id}';"
+            query = f"select * from ezeemi_club_wallet_account where org_code = '{org_code}' and brand_id='{brand_id}';"
             logger.debug(f"Query to fetch data from the ezeemi_club_wallet_account table for MCEW : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result for ezeemi_club_wallet_account table : {result}")
@@ -597,7 +597,7 @@ def test_common_100_115_11_014():
                     "sku_code": brand_sku_code,
                     "entity": "EZETAP",
                     "subvention_type": "INSTANT",
-                    "subvention_amount": cal_subvention_value,
+                    "subvention_amount": round(cal_subvention_value, 2),
                     "emi_interest_rate": interest_rate,
                     "total_amount_with_int": total_emi,
                     "product_serial": str(imei_no),
@@ -802,7 +802,7 @@ def test_common_100_115_11_014():
                     "monthly_emi": monthly_emi,
                     "total_emi_amt": total_emi,
                     "scheme_code": scheme_code,
-                    "emi_txn_amt": float(amount - cal_subvention_value),
+                    "emi_txn_amt": round((amount - cal_subvention_value), 2),
                     "emi_original_amt": float(amount),
                     "emi_status": "PENDING",
                     "emi_term": (f"{emi_plan_in_months} month"),
@@ -822,7 +822,6 @@ def test_common_100_115_11_014():
                     "subvention_type": "INSTANT",
                     "subvention_value_type": "PERCENTAGE",
                     "subvention_tenure": f"{emi_plan_in_months} month",
-                    "subvention_discount_type": None if subvention_discount_type is None else "Additional",
                     "MCEW_wallet_balance_after_txn": MCEW_wallet_balance_before_txn - amount,
                     "GCEW_wallet_balance_after_txn": GCEW_wallet_balance_before_txn - amount
                 }
@@ -875,7 +874,6 @@ def test_common_100_115_11_014():
                     "subvention_type": subvention_type,
                     "subvention_value_type": subvention_value_type,
                     "subvention_tenure": subvention_tenure,
-                    "subvention_discount_type": subvention_discount_type,
                     "MCEW_wallet_balance_after_txn": MCEW_wallet_balance_after_txn,
                     "GCEW_wallet_balance_after_txn": GCEW_wallet_balance_after_txn
                 }
@@ -1344,7 +1342,7 @@ def test_common_100_115_11_016():
         subvention_scheme_name = result['scheme_name'].values[0]
         logger.debug(f"Fetching scheme_name from subvention_plan table : {subvention_scheme_name}")
 
-        query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity ='EZETAP' and tenure='{emi_plan_in_months} month' ;"
+        query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity ='EZETAP' and subvention_value_type= 'PERCENTAGE' and subvention_type='INSTANT' and tenure='{emi_plan_in_months} month' ;"
         logger.debug(f"Query to fetch data from the subvention_plan_details table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Query result for subvention_plan_details table : {result}")
@@ -1364,7 +1362,7 @@ def test_common_100_115_11_016():
         # updating the status as inactive in subvention_plan_details table
         testsuite_teardown.update_subvention_plan_details(subvention_plan_id)
 
-        query = f"update subvention_plan_details set status = 1 where subvention_plan_id ='{subvention_plan_id}' and subventing_entity='EZETAP' and tenure='{emi_plan_in_months} month'"
+        query = f"update subvention_plan_details set status = 1 where subvention_plan_id ='{subvention_plan_id}' and subventing_entity='EZETAP' and subvention_value_type= 'PERCENTAGE' and subvention_type='INSTANT' and tenure='{emi_plan_in_months} month'"
         logger.debug(f"Query to update subvention_plan_details with status as ACTIVE : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
@@ -1389,7 +1387,7 @@ def test_common_100_115_11_016():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
-            query = f"select * from ezeemi_club_wallet_account where org_code = 'TANUAPPSEP12' and brand_id='{brand_id}';"
+            query = f"select * from ezeemi_club_wallet_account where org_code = '{org_code}' and brand_id='{brand_id}';"
             logger.debug(f"Query to fetch data from the ezeemi_club_wallet_account table for MCEW : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result for ezeemi_club_wallet_account table : {result}")
@@ -1554,7 +1552,7 @@ def test_common_100_115_11_016():
             emi_cashback_type = result['emi_cashback_type'].values[0]
             logger.debug(f"Fetching emi cashback type from txn_emi table : {emi_cashback_type}")
 
-            query = f"select * from ezeemi_club_wallet_account where org_code = 'TANUAPPSEP12' and brand_id='{brand_id}';"
+            query = f"select * from ezeemi_club_wallet_account where org_code = '{org_code}' and brand_id='{brand_id}';"
             logger.debug(f"Query to fetch data from the ezeemi_club_wallet_account table for MCEW : {query}")
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"Query result for ezeemi_club_wallet_account table : {result}")
@@ -2006,7 +2004,6 @@ def test_common_100_115_11_016():
                     "subvention_type": "INSTANT",
                     "subvention_value_type": "PERCENTAGE",
                     "subvention_tenure": f"{emi_plan_in_months} month",
-                    "subvention_discount_type": None if subvention_discount_type is None else "Additional",
                     "MCEW_wallet_balance_after_txn": MCEW_wallet_balance_before_txn - amount,
                     "GCEW_wallet_balance_after_txn": GCEW_wallet_balance_before_txn - amount
                 }
@@ -2059,7 +2056,6 @@ def test_common_100_115_11_016():
                     "subvention_type": subvention_type,
                     "subvention_value_type": subvention_value_type,
                     "subvention_tenure": subvention_tenure,
-                    "subvention_discount_type": subvention_discount_type,
                     "MCEW_wallet_balance_after_txn": MCEW_wallet_balance_after_txn,
                     "GCEW_wallet_balance_after_txn": GCEW_wallet_balance_after_txn
                 }
@@ -2136,7 +2132,7 @@ def test_common_100_115_11_016():
                     "EMI Txn Id": txn_id,
                     "Tenure": f"{emi_plan_in_months} month",
                     "Card Issuer": f"{issuer_code} Bank",
-                    "Loan Amount": f"Rs.{round(amount - cal_subvention_value, 2)}",
+                    "Loan Amount": "Rs." + "{:.2f}".format(round(amount - cal_subvention_value, 2)),
                     "Applicable Intt Rate(P.A.)": f"{interest_rate}%",
                     "Interest Amt": "Rs." + "{:.2f}".format(total_interest),
                     "EMI Amt": "Rs." + "{:.2f}".format(monthly_emi),

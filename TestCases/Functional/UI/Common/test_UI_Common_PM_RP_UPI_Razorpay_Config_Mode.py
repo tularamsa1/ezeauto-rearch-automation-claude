@@ -73,7 +73,7 @@ def test_common_100_103_300():
         result = DBProcessor.setValueToDB(query)
         logger.debug("RESULT of updating DB setting active", result)
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where bank_code = 'RAZORPAY_PSP' AND status = 'ACTIVE' AND org_code = " \
@@ -496,7 +496,7 @@ def test_common_100_103_301():
         result = DBProcessor.setValueToDB(query)
         logger.debug("RESULT of updating DB setting active", result)
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         TestSuiteSetup.launch_browser_and_context_initialize("firefox")
@@ -629,7 +629,7 @@ def test_common_100_103_302():
         result = DBProcessor.setValueToDB(query)
         logger.debug("RESULT of updating DB setting active", result)
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where bank_code = 'RAZORPAY_PSP' AND status = 'ACTIVE' AND org_code = " \
@@ -1068,7 +1068,7 @@ def test_common_100_103_303():
         result = DBProcessor.setValueToDB(query)
         logger.debug("RESULT of updating DB setting active for HDFC ONLINE", result)
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where bank_code = 'RAZORPAY_PSP' AND status = 'ACTIVE' AND org_code = " \
@@ -1510,7 +1510,7 @@ def test_common_100_103_304():
         result = DBProcessor.setValueToDB(query)
         logger.debug("RESULT of updating DB setting active for HDFC ONLINE", result)
 
-        refresh_db
+        refresh_db()
         logger.info(f"DB refreshed ")
 
         query = f"select * from upi_merchant_config where bank_code = 'HDFC' AND status = 'ACTIVE' AND org_code = " \

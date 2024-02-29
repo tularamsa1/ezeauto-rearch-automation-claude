@@ -182,10 +182,13 @@ def test_common_100_103_07_001():
                 page = TestSuiteSetup.initialize_ui_browser()
                 page.goto(payment_link_url)
                 remote_pay_txn = RemotePayTxnPage(page)
-                remote_pay_txn.enter_card_details_emi(card_number='4000 0000 0000 0119', expiry_month='12', expiry_year='24', cvv='123', name_on_card=customer_name)
+                # remote_pay_txn.enter_card_details_emi(card_number='4000 0000 0000 0119', expiry_month='12', expiry_year='24', cvv='123', name_on_card=customer_name)
+                remote_pay_txn.enter_card_details_emi(card_number='4000 0000 0000 1091', expiry_month='12',
+                                                      expiry_year='24', cvv='123', name_on_card=customer_name)
                 remote_pay_txn.click_on_proceed()
                 remote_pay_txn.select_emi_plan(emi_plan_in_months)
                 remote_pay_txn.click_on_proceed()
+                remote_pay_txn.switch_to_iframe()
                 success_message = str(remote_pay_txn.succcessScreenMessage())
                 logger.info(f"Your expected success message is:  {success_message}")
                 logger.info(f"Your expected message is:  {expected_message}")
@@ -353,7 +356,7 @@ def test_common_100_103_07_001():
                     "auth_code": auth_code,
                     "date": date_time,
                     "device_serial": device_serial,
-                    "card_type_desc": "*0119",
+                    "card_type_desc": "*1091",
                     "customer_name": customer_name,
                     "card_type": "VISA",
                     "customer": customer_name,
@@ -504,12 +507,12 @@ def test_common_100_103_07_001():
                     "date": date_time,
                     "device_serial": device_serial,
                     "auth_code": auth_code,
-                    "card_last_four_digit": "0119",
+                    "card_last_four_digit": "1091",
                     "ext_ref_number": order_id,
                     "merchant_name": merchant_name,
                     "pmt_card_bin": "400000",
                     "card_type": "VISA",
-                    "display_pan": "0119",
+                    "display_pan": "1091",
                     "customer_name": customer_name,
                     "payer_name": customer_name,
                     "name_on_card": customer_name,
@@ -694,7 +697,7 @@ def test_common_100_103_07_001():
                     "order_id": order_id,
                     "org_code": org_code,
                     "pmt_card_bin": "400000",
-                    "card_last_four_digit": "0119",
+                    "card_last_four_digit": "1091",
                     "customer_name": customer_name,
                     "customer_mobile": customer_mobile,
                     "pmt_option": "CNP_EMI_CC",
@@ -719,7 +722,7 @@ def test_common_100_103_07_001():
                     "cnp_pmt_card_type": "CREDIT",
                     "cnp_acquirer_code": "HDFC",
                     "cnp_issuer_code": issuer_code,
-                    "cnp_card_last_four_digit": "0119",
+                    "cnp_card_last_four_digit": "1091",
                     "cnp_org_code": org_code,
                     "cnp_device_serial": device_serial
                 }
@@ -861,7 +864,7 @@ def test_common_100_103_07_001():
                     "Interest Amt": "Rs." + "{:.2f}".format(total_interest),
                     "EMI Amt": "Rs." + "{:.2f}".format(monthly_emi),
                     "Total Amt with Interest": "Rs." + "{:.2f}".format(total_emi),
-                    "CARD": f"XXXX-XXXX-XXXX-0119",
+                    "CARD": f"XXXX-XXXX-XXXX-1091",
                     "unnamed_section_text": customer_name,
                     "Manufacturer Name": brand_name,
                     "Product Name": brand_sku_name,
@@ -886,4 +889,8 @@ def test_common_100_103_07_001():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
+        try:
+            testsuite_teardown.update_bin_info(bin_number='400000', bank_code='HDFC', bank='HDFC')
+        except Exception as e:
+            logger.exception(f"Query updation failed due to expection : {e}")
         Configuration.executeFinallyBlock(testcase_id)

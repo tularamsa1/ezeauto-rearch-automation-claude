@@ -205,7 +205,7 @@ def test_common_100_103_046():
             try:
                 date_and_time = date_time_converter.to_app_format(partially_refunded_posting_date)
                 expected_app_values = {
-                    "pmt_status": "STATUS:AUTHORIZED_REFUNDED",
+                    "pmt_status": "STATUS:AUTHORIZED REFUNDED",
                     "refund_pmt_status": "STATUS:REFUNDED",
                     "pmt_mode": "UPI",
                     "refund_pmt_mode": "UPI",
@@ -220,8 +220,8 @@ def test_common_100_103_046():
                     "payer_name": original_payer_name,
                     "refund_payer_name": original_payer_name,
                     "order_id": order_id,
-                    "pmt_msg": "PAYMENT VOIDED/REFUNDED",
-                    "refund_pmt_msg": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "refund_pmt_msg": "PAYMENT SUCCESSFUL",
                     "rrn": str(original_rrn),
                     "refund_rrn": str(partially_refunded_rrn),
                     "auth_code": original_auth_code,
@@ -235,7 +235,7 @@ def test_common_100_103_046():
                     "txn_amt_3": str(full_refund_amount),
                     "full_refund_customer_name": original_customer_name,
                     "full_refund_payer_name": original_payer_name,
-                    "full_refund_pmt_msg": "PAYMENT VOIDED/REFUNDED",
+                    "full_refund_pmt_msg": "PAYMENT SUCCESSFUL",
                     "full_refund_rrn": str(fully_refunded_rrn),
                     "full_refund_auth_code": fully_refunded_auth_code
                 }

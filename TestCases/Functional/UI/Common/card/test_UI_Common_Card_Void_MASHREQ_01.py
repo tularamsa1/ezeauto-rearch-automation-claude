@@ -1,5 +1,6 @@
 import random
 import sys
+import time
 from datetime import datetime
 
 import pytest
@@ -138,6 +139,9 @@ def test_common_100_115_243():
             txn_history_page = TransHistoryPage(app_driver)
             txn_history_page.click_on_transaction_by_order_id(order_id)
             txn_history_page.click_on_void_card_txn()
+
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where org_code ='{str(org_code)}' AND payment_mode = 'CARD' AND device_serial" \
                     f"='{device_serial}' AND external_ref='{order_id}' order by created_time desc limit 1;"
@@ -632,6 +636,9 @@ def test_common_100_115_244():
             txn_history_page.click_on_transaction_by_order_id(order_id)
             txn_history_page.click_on_void_card_txn()
 
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
+
             query = f"select * from txn where org_code ='{str(org_code)}' AND payment_mode = 'CARD' AND device_serial" \
                     f"='{device_serial}' AND external_ref='{order_id}' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch data from the txn table for the {org_code} : {query}")
@@ -695,7 +702,7 @@ def test_common_100_115_244():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-            date_and_time = date_time_converter.to_app_format(txn_posting_date)
+            date_and_time = date_time_converter.to_app_format(txn_created_time)
             try:
                 expected_app_values = {
                     "pmt_mode": "CARD",
@@ -1125,6 +1132,9 @@ def test_common_100_115_245():
             txn_history_page.click_on_transaction_by_order_id(order_id)
             txn_history_page.click_on_void_card_txn()
 
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
+
             query = f"select * from txn where org_code ='{str(org_code)}' AND payment_mode = 'CARD' AND device_serial" \
                     f"='{device_serial}' AND external_ref='{order_id}' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch txn data from the txn for the {org_code} : {query}")
@@ -1188,7 +1198,7 @@ def test_common_100_115_245():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-            date_and_time = date_time_converter.to_app_format(txn_posting_date)
+            date_and_time = date_time_converter.to_app_format(txn_created_time)
             try:
                 expected_app_values = {
                     "pmt_mode": "CARD",
@@ -1281,7 +1291,7 @@ def test_common_100_115_245():
                     "device_serial": device_serial,
                     "ext_ref_number": order_id,
                     "merchant_name": merchant_name,
-                    "payer_name": "RAJA",
+                    "payer_name": "RAJA                     /",
                     "pmt_card_bin": "428090",
                     "pmt_card_brand": "VISA",
                     "pmt_card_type": "DEBIT",
@@ -1626,6 +1636,9 @@ def test_common_100_115_246():
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
 
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
+
             query = f"select * from txn where id ='{str(txn_id)}';"
             logger.debug(f"Query to fetch txn data from the txn for the {org_code} : {query}")
             result = DBProcessor.getValueFromDB(query)
@@ -1688,7 +1701,7 @@ def test_common_100_115_246():
         # -----------------------------------------Start of App Validation---------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-            date_and_time = date_time_converter.to_app_format(txn_posting_date)
+            date_and_time = date_time_converter.to_app_format(txn_created_time)
             try:
                 expected_app_values = {
                     "pmt_mode": "CARD",
@@ -2124,6 +2137,9 @@ def test_common_100_115_247():
             txn_history_page = TransHistoryPage(app_driver)
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
+
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where id ='{str(txn_id)}';"
             logger.debug(f"Query to fetch txn data from the txn for the {org_code} : {query}")
