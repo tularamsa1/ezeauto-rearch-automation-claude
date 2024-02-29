@@ -122,20 +122,6 @@ def test_common_100_102_354():
             txn_id = result["id"].values[0]
             logger.debug(f"Fetched Txn_id from data base : Txn_id : {txn_id}")
 
-            # logger.info(f"Logining in to app again with username : {app_username}")
-            # login_page.perform_login(app_username, app_password)
-            # homePage = HomePage(app_driver)
-            # homePage.wait_for_navigation_to_load()
-            # homePage.check_home_page_logo()
-            # logger.info(f"App homepage loaded successfully")
-            # homePage.enter_amount_and_order_number(amount, order_id)
-            # homePage.perform_check_status()
-            # app_payment_status = payment_page.fetch_payment_status()
-            # logger.info(f"Fetching status of payment from payment screen: {app_payment_status} ")
-            # payment_page.click_on_proceed_homepage()
-            # homePage.click_on_skip_button()
-            # homePage.click_on_back_btn_enter_amt_page()
-
             query = f"select * from txn where id = '{txn_id}';"
             logger.debug(f"Query to fetch txn details from database : {query}")
             result = DBProcessor.getValueFromDB(query)
