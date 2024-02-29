@@ -531,18 +531,6 @@ def test_common_100_101_219():
             app_driver.reset()
             logger.info("waiting for the time till qr get expired...")
             time.sleep(75)
-            login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
-            home_page.wait_for_navigation_to_load()
-            home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
-            logger.info(f"After resetting the app logging in again in the MPOSX application using username : {app_username} and "
-                f"password : {app_password}")
-            home_page.enter_amount_and_order_number(amount, order_id)
-            payment_page = PaymentPage(app_driver)
-            home_page.perform_check_status()
-            payment_page.click_on_proceed_homepage()
-            home_page.click_on_back_btn_enter_amt_page()
 
             query = f"select * from txn where org_code = '{org_code}' AND external_ref = '{order_id}';"
             logger.debug(f"Query to fetch txn_id from the DB : {query}")
@@ -599,6 +587,11 @@ def test_common_100_101_219():
                 }
                 logger.debug(f"expected_app_values : {expected_app_values}")
 
+                logger.info(
+                    f"After resetting the app logging in again in the MPOSX application using username : {app_username} and "
+                    f"password : {app_password}")
+                login_page = LoginPage(app_driver)
+                login_page.perform_login(app_username, app_password)
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 home_page.check_home_page_logo()
@@ -968,22 +961,6 @@ def test_common_100_101_235():
             auth_code = result['auth_code'].values[0]
             logger.debug(f"fetched auth_code from txn table is : {auth_code}")
 
-            logger.info(f"Logging in the MPOSX application using username : {app_username}")
-            loginPage.perform_login(app_username, app_password)
-            home_page = HomePage(app_driver)
-            home_page.wait_for_navigation_to_load()
-            home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
-            logger.info(f"App homepage loaded successfully")
-            home_page.enter_amount_and_order_number(amount, order_id)
-            home_page.perform_check_status()
-            app_payment_status = paymentPage.fetch_payment_status()
-            logger.info(f"Fetching status of payment from payment screen: {app_payment_status} ")
-            paymentPage.click_on_proceed_homepage()
-            home_page.click_on_skip_button()
-            home_page.click_on_back_btn_enter_amt_page()
-            logger.info(f"Execution is completed for the test case : {testcase_id}")
-
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function : {testcase_id}")
@@ -1016,8 +993,13 @@ def test_common_100_101_235():
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
+                logger.info(f"Logging in the MPOSX application using username : {app_username}")
+                loginPage.perform_login(app_username, app_password)
+                home_page = HomePage(app_driver)
                 home_page.wait_for_navigation_to_load()
+                home_page.wait_for_home_page_load()
                 home_page.check_home_page_logo()
+                logger.info(f"App homepage loaded successfully")
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)

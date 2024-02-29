@@ -232,7 +232,7 @@ def prepareAtTheEndRerunExcel():
     print(df)
     writer = pd.ExcelWriter(xl_RerunCountPath, engine='xlsxwriter')
     df.to_excel(writer, sheet_name='Rerun At The End', index=False)
-    writer.save()
+    writer.close()
 
 
 def getRerunCount(testCaseID):

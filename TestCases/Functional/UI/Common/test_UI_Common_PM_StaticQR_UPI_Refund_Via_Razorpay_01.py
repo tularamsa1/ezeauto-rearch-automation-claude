@@ -222,14 +222,14 @@ def test_common_100_107_048():
                 refund_date_and_time = date_time_converter.to_app_format(refund_created_time)
                 expected_app_values = {
                     "pmt_mode": "UPI",
-                    "pmt_status": "AUTHORIZED_REFUNDED",
+                    "pmt_status": "AUTHORIZED REFUNDED",
                     "txn_amt": "{:,.2f}".format(amount),
                     "settle_status": "SETTLED",
                     "txn_id": txn_id,
                     "rrn": str(rrn),
                     "customer_name": customer_name,
                     "payer_name": payer_name,
-                    "pmt_msg": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
                     "pmt_status_2": "REFUNDED",
@@ -238,7 +238,7 @@ def test_common_100_107_048():
                     "txn_id_2": refund_txn_id,
                     "customer_name_2": refund_customer_name,
                     "payer_name_2": refund_payer_name,
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "date_2": refund_date_and_time,
                 }
 
@@ -907,7 +907,7 @@ def test_common_100_107_049():
                     "txn_id_2": refund_txn_id,
                     "customer_name_2": refund_customer_name,
                     "payer_name_2": refund_payer_name,
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "date_2": refund_date_and_time,
                 }
 
@@ -2890,7 +2890,7 @@ def test_common_100_107_052():
                     "txn_id_2": refund_txn_id,
                     "customer_name_2": refund_customer_name,
                     "payer_name_2": refund_payer_name,
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "date_2": refund_date_and_time,
                 }
 
