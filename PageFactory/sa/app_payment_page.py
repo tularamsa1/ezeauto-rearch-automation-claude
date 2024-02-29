@@ -94,7 +94,7 @@ class PaymentPage(BasePage):
     bo_element = (By.XPATH, '//*[@text="Instant Discount(Offer)"]/following-sibling::android.widget.TextView[2]')
     txt_customer_mobile_number = (By.ID, 'com.ezetap.service.demo:id/tvSubtitle')
     txt_agent_mobile_number = (By.ID, 'com.ezetap.service.demo:id/tvSubtitleAgent')
-    bin_remote_pay = (By.XPATH, "//*[@text='Pay Link']")
+    btn_remote_pay = (By.XPATH, "//*[@text='Pay Link']")
     btn_send_link = (By.ID, 'com.ezetap.service.demo:id/btnSendLink')
     err_msg_mobile_number_remote_pay = (By.ID, 'com.ezetap.service.demo:id/tvPhoneNoHelper')
     lbl_upi_err_msg = (By.XPATH, '//*[contains(@text,"Valid UPI configuration not found for merchant")]')

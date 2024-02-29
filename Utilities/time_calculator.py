@@ -298,7 +298,7 @@ def generate_excel_report(remove_temp_dir_after_generating_report=True):
     writer = pd.ExcelWriter(RUNTIME_EXCEL_FILE_URL, engine='xlsxwriter')
     xl.to_excel(writer, sheet_name='reduced_report', index=False)
     df.to_excel(writer, sheet_name="detailed_report", index=False)
-    writer.save()
+    writer.close()
 
     # clearing the temporary files from RUNTIME DIR
     if remove_temp_dir_after_generating_report:
