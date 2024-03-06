@@ -133,9 +133,18 @@ def test_common_100_115_02_005():
             card_page.select_cardtype("CTLS_VISA_DEBIT_476173")
             logger.debug(f"Selected card type as : CTLS_VISA_DEBIT_476173")
             payment_page.click_on_proceed_homepage()
+
+            query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
+                    f"desc limit 1 "
+            logger.debug(f"Query to fetch data from txn for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query=query)
+            logger.debug(f"Fetching result for the txn table : {result}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"Fetching txn_id from the txn table : {txn_id}")
+
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_card_txn()
             time.sleep(3)
             logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
@@ -750,9 +759,18 @@ def test_common_100_115_02_006():
             card_page.select_cardtype("CTLS_VISA_CREDIT_417666")
             logger.debug(f"Selected card type as : CTLS_VISA_CREDIT_417666")
             payment_page.click_on_proceed_homepage()
+
+            query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
+                    f"desc limit 1 "
+            logger.debug(f"Query to fetch data from txn for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query=query)
+            logger.debug(f"Fetching result for the txn table : {result}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"Fetching txn_id from the txn table : {txn_id}")
+
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_card_txn()
             time.sleep(3)
             logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")

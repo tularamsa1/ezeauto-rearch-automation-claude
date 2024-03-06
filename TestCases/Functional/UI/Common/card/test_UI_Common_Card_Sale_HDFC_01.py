@@ -216,7 +216,7 @@ def test_common_100_115_001():
 
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-                txn_history_page.click_on_transaction_by_order_id(order_id)
+                txn_history_page.click_on_transaction_by_txn_id(txn_id)
 
                 payment_status = txn_history_page.fetch_txn_status_text()
                 payment_mode = txn_history_page.fetch_txn_type_text()
@@ -696,7 +696,7 @@ def test_common_100_115_002():
 
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-                txn_history_page.click_on_transaction_by_order_id(order_id)
+                txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
 
                 payment_status = txn_history_page.fetch_txn_status_text()
                 payment_mode = txn_history_page.fetch_txn_type_text()
@@ -1177,7 +1177,7 @@ def test_common_100_115_003():
 
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-                txn_history_page.click_on_transaction_by_order_id(order_id)
+                txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
 
                 payment_status = txn_history_page.fetch_txn_status_text()
                 payment_mode = txn_history_page.fetch_txn_type_text()
@@ -1658,7 +1658,7 @@ def test_common_100_115_004():
 
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-                txn_history_page.click_on_transaction_by_order_id(order_id)
+                txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
 
                 payment_status = txn_history_page.fetch_txn_status_text()
                 payment_mode = txn_history_page.fetch_txn_type_text()
@@ -2139,7 +2139,7 @@ def test_common_100_115_005():
 
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-                txn_history_page.click_on_transaction_by_order_id(order_id)
+                txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
 
                 payment_status = txn_history_page.fetch_txn_status_text()
                 payment_mode = txn_history_page.fetch_txn_type_text()

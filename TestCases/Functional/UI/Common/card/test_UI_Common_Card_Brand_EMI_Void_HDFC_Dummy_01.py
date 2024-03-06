@@ -216,14 +216,20 @@ def test_common_100_115_07_002():
             payment_page.select_emi_plan(emi_plan_in_months)
             logger.debug(f"Selected the emi plan in months : {emi_plan_in_months}")
             payment_page.click_on_proceed_homepage()
+
+            query = f"select id from txn where org_code = '{org_code}' And external_ref = '{order_id}'"
+            logger.debug(f"Query to fetch id from txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Fetching result from txn table :{result}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"Fetching txn_id from the txn table : {txn_id}")
+
+            home_page.wait_for_home_page_load()
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_emi_txn()
             logger.info(f"Voided the transaction")
-            time.sleep(3)
-            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
-
             txn_history_page.click_back_Btn_transaction_details()
 
             query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' and subvention_value_type= 'FIXED' and subvention_type='PAYBACK' and tenure='{emi_plan_in_months} month' ;"
@@ -1143,13 +1149,20 @@ def test_common_100_115_07_004():
             payment_page.select_emi_plan(emi_plan_in_months)
             logger.debug(f"Selected the emi plan in months : {emi_plan_in_months}")
             payment_page.click_on_proceed_homepage()
+
+            query = f"select id from txn where org_code = '{org_code}' And external_ref = '{order_id}'"
+            logger.debug(f"Query to fetch id from txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Fetching result from txn table :{result}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"Fetching txn_id from the txn table : {txn_id}")
+
+            home_page.wait_for_home_page_load()
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_emi_txn()
             logger.info(f"Voided the transaction")
-            time.sleep(3)
-            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
             txn_history_page.click_back_Btn_transaction_details()
 
             query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' and subvention_value_type= 'FIXED' and subvention_type='PAYBACK' and tenure='{emi_plan_in_months} month' ;"
@@ -2068,13 +2081,20 @@ def test_common_100_115_07_006():
             payment_page.select_emi_plan(emi_plan_in_months)
             logger.debug(f"Selected the emi plan in months : {emi_plan_in_months}")
             payment_page.click_on_proceed_homepage()
+
+            query = f"select id from txn where org_code = '{org_code}' And external_ref = '{order_id}'"
+            logger.debug(f"Query to fetch id from txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Fetching result from txn table :{result}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"Fetching txn_id from the txn table : {txn_id}")
+
+            home_page.wait_for_home_page_load()
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_emi_txn()
             logger.info(f"Voided the transaction")
-            time.sleep(3)
-            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
             txn_history_page.click_back_Btn_transaction_details()
 
             query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' and subvention_value_type= 'FIXED' and subvention_type='PAYBACK' and tenure='{emi_plan_in_months} month' ;"
@@ -2993,13 +3013,20 @@ def test_common_100_115_07_008():
             payment_page.select_emi_plan(emi_plan_in_months)
             logger.debug(f"Selected the emi plan in months : {emi_plan_in_months}")
             payment_page.click_on_proceed_homepage()
+
+            query = f"select id from txn where org_code = '{org_code}' And external_ref = '{order_id}'"
+            logger.debug(f"Query to fetch id from txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Fetching result from txn table :{result}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"Fetching txn_id from the txn table : {txn_id}")
+
+            home_page.wait_for_home_page_load()
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_emi_txn()
             logger.info(f"Voided the transaction")
-            time.sleep(3)
-            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
             txn_history_page.click_back_Btn_transaction_details()
 
             query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' and subvention_value_type= 'PERCENTAGE' and subvention_type='PAYBACK' and tenure='{emi_plan_in_months} month' ;"
@@ -3920,13 +3947,20 @@ def test_common_100_115_07_010():
             payment_page.select_emi_plan(emi_plan_in_months)
             logger.debug(f"Selected the emi plan in months : {emi_plan_in_months}")
             payment_page.click_on_proceed_homepage()
+
+            query = f"select id from txn where org_code = '{org_code}' And external_ref = '{order_id}'"
+            logger.debug(f"Query to fetch id from txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Fetching result from txn table :{result}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"Fetching txn_id from the txn table : {txn_id}")
+
+            home_page.wait_for_home_page_load()
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_emi_txn()
             logger.info(f"Voided the transaction")
-            time.sleep(3)
-            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
             txn_history_page.click_back_Btn_transaction_details()
 
             query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' and subvention_value_type= 'PERCENTAGE' and subvention_type='PAYBACK' and tenure='{emi_plan_in_months} month' ;"

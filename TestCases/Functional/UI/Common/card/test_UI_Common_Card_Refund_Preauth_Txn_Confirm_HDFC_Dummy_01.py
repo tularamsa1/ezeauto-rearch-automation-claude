@@ -8,6 +8,7 @@ from PageFactory.merchant_portal.portal_trans_history_page import get_transactio
 from PageFactory.sa.app_card_page import CardPage
 from PageFactory.mpos.app_home_page import HomePage
 from PageFactory.mpos.app_login_page import LoginPage
+from PageFactory.sa.app_payment_page import PaymentPage
 from PageFactory.sa.app_trans_history_page import TransHistoryPage
 from Utilities import Validator, ConfigReader, DBProcessor, ResourceAssigner, date_time_converter, APIProcessor, receipt_validator
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -129,7 +130,8 @@ def test_common_100_115_03_013():
             logger.debug(f"Selected the card type as : CTLS_VISA_CREDIT_417666")
             card_page.click_on_ok_error_msg()
             logger.debug(f"Clicked on txn popup for preauth")
-            app_driver.back()
+            payment_page = PaymentPage(driver=app_driver)
+            payment_page.click_on_back_btn_in_enter_amt_window()
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(app_driver)
 
@@ -388,10 +390,10 @@ def test_common_100_115_03_013():
                     "txn_amt_2": "{:,.2f}".format(amount),
                     "pmt_mode_2": "CARD",
                     "txn_id_2": txn_id,
-                    "pmt_status_2": "AUTHORIZED_REFUNDED",
+                    "pmt_status_2": "AUTHORIZED REFUNDED",
                     "rr_number_2": rrn_2,
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
                     "settle_status_2": "SETTLED",
                     "auth_code_2": auth_code_2,
                     "date_2": date_and_time_2,
@@ -406,7 +408,7 @@ def test_common_100_115_03_013():
                     "txn_amt_3": "{:,.2f}".format(amount),
                     "settle_status_3": "PENDING",
                     "txn_id_3": refund_txn_id,
-                    "pmt_msg_3": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_3": "REFUND SUCCESSFUL",
                     "date_3": date_and_time_3,
                     "rr_number_3": refund_rrn,
                     "auth_code_3": refund_auth_code,
@@ -423,6 +425,7 @@ def test_common_100_115_03_013():
                 logger.info(f"Killing the app and relaunching the app")
                 login_page.perform_login(username=app_username, password=app_password)
                 home_page.wait_for_home_page_load()
+                GlobalVariables.bool_validate_multiple_txns = False
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(driver=app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
@@ -1332,7 +1335,8 @@ def test_common_100_115_03_014():
             logger.debug(f"Selected the card type as : CTLS_MASTER_CREDIT_541333")
             card_page.click_on_ok_error_msg()
             logger.debug(f"Clicked on txn popup for preauth")
-            app_driver.back()
+            payment_page = PaymentPage(driver=app_driver)
+            payment_page.click_on_back_btn_in_enter_amt_window()
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(app_driver)
 
@@ -1591,10 +1595,10 @@ def test_common_100_115_03_014():
                     "txn_amt_2": "{:,.2f}".format(amount),
                     "pmt_mode_2": "CARD",
                     "txn_id_2": txn_id,
-                    "pmt_status_2": "AUTHORIZED_REFUNDED",
+                    "pmt_status_2": "AUTHORIZED REFUNDED",
                     "rr_number_2": rrn_2,
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
                     "settle_status_2": "SETTLED",
                     "auth_code_2": auth_code_2,
                     "date_2": date_and_time_2,
@@ -1609,7 +1613,7 @@ def test_common_100_115_03_014():
                     "txn_amt_3": "{:,.2f}".format(amount),
                     "settle_status_3": "PENDING",
                     "txn_id_3": refund_txn_id,
-                    "pmt_msg_3": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_3": "REFUND SUCCESSFUL",
                     "date_3": date_and_time_3,
                     "rr_number_3": refund_rrn,
                     "auth_code_3": refund_auth_code,
@@ -1626,6 +1630,7 @@ def test_common_100_115_03_014():
                 logger.info(f"Killing the app and relaunching the app")
                 login_page.perform_login(username=app_username, password=app_password)
                 home_page.wait_for_home_page_load()
+                GlobalVariables.bool_validate_multiple_txns = False
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(driver=app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)

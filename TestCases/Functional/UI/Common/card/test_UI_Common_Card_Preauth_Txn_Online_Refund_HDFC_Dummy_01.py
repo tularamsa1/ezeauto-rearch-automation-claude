@@ -396,10 +396,10 @@ def test_common_100_115_03_017():
                     "txn_amt_2": "{:,.2f}".format(amount),
                     "pmt_mode_2": "CARD",
                     "txn_id_2": cnf_preauth_txn_id,
-                    "pmt_status_2": "AUTHORIZED_REFUNDED",
+                    "pmt_status_2": "AUTHORIZED REFUNDED",
                     "rrn_2": str(cnf_preauth_rrn),
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
                     "settle_status_2": "SETTLED",
                     "auth_code_2": cnf_preauth_auth_code,
                     "date_2": cnf_date_and_time_app,
@@ -414,7 +414,7 @@ def test_common_100_115_03_017():
                     "pmt_status_3": "REFUNDED",
                     "rrn_3": refund_rrn,
                     "order_id_3": order_id,
-                    "pmt_msg_3": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_3": "REFUND SUCCESSFUL",
                     "settle_status_3": "PENDING",
                     "auth_code_3": refund_auth_code,
                     "date_3": refund_date_and_time_app,
@@ -475,6 +475,7 @@ def test_common_100_115_03_017():
                 or_amount_3 = or_amount_3.group()
 
                 home_page.wait_for_home_page_load()
+                GlobalVariables.bool_validate_multiple_txns = False
                 home_page.click_on_history()
                 txn_history_page.click_on_transaction_by_txn_id(txn_id=original_txn_id)
                 app_amount = txn_history_page.fetch_txn_amount_text()
@@ -1711,10 +1712,10 @@ def test_common_100_115_03_018():
                     "txn_amt_2": "{:,.2f}".format(amount),
                     "pmt_mode_2": "CARD",
                     "txn_id_2": cnf_preauth_txn_id,
-                    "pmt_status_2": "AUTHORIZED_REFUNDED",
+                    "pmt_status_2": "AUTHORIZED REFUNDED",
                     "rrn_2": str(cnf_preauth_rrn),
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
                     "settle_status_2": "SETTLED",
                     "auth_code_2": cnf_preauth_auth_code,
                     "date_2": cnf_date_and_time_app,
@@ -1730,7 +1731,7 @@ def test_common_100_115_03_018():
                     "pmt_status_3": "REFUNDED",
                     "rrn_3": refund_rrn,
                     "order_id_3": order_id,
-                    "pmt_msg_3": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_3": "REFUND SUCCESSFUL",
                     "settle_status_3": "PENDING",
                     "auth_code_3": refund_auth_code,
                     "date_3": refund_date_and_time_app,
@@ -1794,6 +1795,7 @@ def test_common_100_115_03_018():
                 or_amount_3 = or_amount_3.group()
 
                 home_page.wait_for_home_page_load()
+                GlobalVariables.bool_validate_multiple_txns = False
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(driver=app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id=original_txn_id)

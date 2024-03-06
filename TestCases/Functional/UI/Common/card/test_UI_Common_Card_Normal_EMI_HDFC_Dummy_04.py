@@ -1732,10 +1732,19 @@ def test_common_100_115_05_092():
             txn_id = result['id'].values[0]
             logger.debug(f"Fetching txn_id from the txn table : {txn_id}")
 
+            query = f"select id from txn where org_code = '{org_code}' And external_ref = '{order_id}'"
+            logger.debug(f"Query to fetch id from txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Fetching result from txn table :{result}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"Fetching txn_id from the txn table : {txn_id}")
+
+            home_page.wait_for_home_page_load()
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_emi_txn()
+            logger.info(f"Voided the transaction")
             txn_history_page.click_back_Btn_transaction_details()
 
             query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \

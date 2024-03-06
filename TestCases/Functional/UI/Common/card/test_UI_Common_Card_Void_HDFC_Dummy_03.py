@@ -120,10 +120,19 @@ def test_common_100_115_137():
             card_page.select_cardtype(text="EMV_VISA_DEBIT_476173")
             logger.debug(f"selected the card type as : EMV_VISA_DEBIT_476173")
             payment_page.click_on_proceed_homepage()
+
+            query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
+                    f"desc limit 1 "
+            logger.debug(f"Query to fetch data from txn for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query=query)
+            logger.debug(f"Fetching result for the txn table : {result}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"Fetching txn_id from the txn table : {txn_id}")
+
             home_page.wait_for_home_page_load()
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_card_txn()
 
             time.sleep(3)
@@ -701,10 +710,19 @@ def test_common_100_115_138():
             card_page.select_cardtype(text="EMV_WITH_PIN_VISA_DEBIT_428090")
             logger.debug(f"selected the card type as : EMV_WITH_PIN_VISA_DEBIT_428090")
             payment_page.click_on_proceed_homepage()
+
+            query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
+                    f"desc limit 1 "
+            logger.debug(f"Query to fetch data from txn for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query=query)
+            logger.debug(f"Fetching result for the txn table : {result}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"Fetching txn_id from the txn table : {txn_id}")
+
             home_page.wait_for_home_page_load()
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_card_txn()
 
             time.sleep(3)
@@ -1282,10 +1300,19 @@ def test_common_100_115_139():
             card_page.select_cardtype(text="EMV_VISA_CREDIT_417666")
             logger.debug(f"selected the card type as : EMV_VISA_CREDIT_417666")
             payment_page.click_on_proceed_homepage()
+
+            query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
+                    f"desc limit 1 "
+            logger.debug(f"Query to fetch data from txn for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query=query)
+            logger.debug(f"Fetching result for the txn table : {result}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"Fetching txn_id from the txn table : {txn_id}")
+
             home_page.wait_for_home_page_load()
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_card_txn()
 
             time.sleep(3)
@@ -1863,10 +1890,19 @@ def test_common_100_115_140():
             card_page.select_cardtype(text="EMV_WITH_PIN_VISA_CREDIT_417666")
             logger.debug(f"selected the card type as : EMV_WITH_PIN_VISA_CREDIT_417666")
             payment_page.click_on_proceed_homepage()
+
+            query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
+                    f"desc limit 1 "
+            logger.debug(f"Query to fetch data from txn for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query=query)
+            logger.debug(f"Fetching result for the txn table : {result}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"Fetching txn_id from the txn table : {txn_id}")
+
             home_page.wait_for_home_page_load()
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_card_txn()
 
             time.sleep(3)
@@ -2444,10 +2480,19 @@ def test_common_100_115_141():
             card_page.select_cardtype(text="EMV_MASTER_DEBIT_222360")
             logger.debug(f"selected the card type as : EMV_MASTER_DEBIT_222360")
             payment_page.click_on_proceed_homepage()
+
+            query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
+                    f"desc limit 1 "
+            logger.debug(f"Query to fetch data from txn for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query=query)
+            logger.debug(f"Fetching result for the txn table : {result}")
+            txn_id = result['id'].values[0]
+            logger.debug(f"Fetching txn_id from the txn table : {txn_id}")
+
             home_page.wait_for_home_page_load()
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
             txn_history_page.click_on_void_card_txn()
 
             time.sleep(3)

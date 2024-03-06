@@ -143,12 +143,6 @@ def test_common_100_115_01_007():
             payment_page.click_on_proceed_homepage()
             home_page.wait_for_home_page_load()
             home_page.click_on_history()
-            txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
-            txn_history_page.click_on_void_card_txn()
-            logger.info(f"Voided the transaction")
-            time.sleep(3)
-            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where org_code = '{org_code}' And external_ref = '{order_id}'"
             logger.debug(f"Query to fetch txn details from the txn table : {query}")
@@ -156,6 +150,18 @@ def test_common_100_115_01_007():
             logger.debug(f"Fetching result from txn table :{result}")
             txn_id = result['id'].values[0]
             logger.debug(f"Query result, txn_id : {txn_id}")
+
+            txn_history_page = TransHistoryPage(driver=app_driver)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
+            txn_history_page.click_on_void_card_txn()
+            logger.info(f"Voided the transaction")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
+
+            query = f"select * from txn where id ='{txn_id}'"
+            logger.debug(f"Query to fetch txn details from the txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Fetching result from txn table :{result}")
             created_time = result['created_time'].values[0]
             logger.debug(f"Query result, created_time : {created_time}")
             acquirer_code = result['acquirer_code'].values[0]
@@ -765,12 +771,6 @@ def test_common_100_115_01_008():
             payment_page.click_on_proceed_homepage()
             home_page.wait_for_home_page_load()
             home_page.click_on_history()
-            txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
-            txn_history_page.click_on_void_card_txn()
-            logger.info(f"Voided the transaction")
-            time.sleep(3)
-            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where org_code = '{org_code}' And external_ref = '{order_id}'"
             logger.debug(f"Query to fetch txn details from the txn table : {query}")
@@ -778,6 +778,18 @@ def test_common_100_115_01_008():
             logger.debug(f"Fetching result from txn table :{result}")
             txn_id = result['id'].values[0]
             logger.debug(f"Query result, txn_id : {txn_id}")
+
+            txn_history_page = TransHistoryPage(driver=app_driver)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
+            txn_history_page.click_on_void_card_txn()
+            logger.info(f"Voided the transaction")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
+
+            query = f"select * from txn where id ='{txn_id}'"
+            logger.debug(f"Query to fetch txn details from the txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Fetching result from txn table :{result}")
             created_time = result['created_time'].values[0]
             logger.debug(f"Query result, created_time : {created_time}")
             acquirer_code = result['acquirer_code'].values[0]
@@ -1371,12 +1383,6 @@ def test_common_100_115_01_009():
             payment_page.click_on_proceed_homepage()
             home_page.wait_for_home_page_load()
             home_page.click_on_history()
-            txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
-            txn_history_page.click_on_void_card_txn()
-            logger.info(f"Voided the transaction")
-            time.sleep(3)
-            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where org_code = '{org_code}' And external_ref = '{order_id}'"
             logger.debug(f"Query to fetch txn details from the txn table : {query}")
@@ -1384,6 +1390,18 @@ def test_common_100_115_01_009():
             logger.debug(f"Fetching result from txn table :{result}")
             txn_id = result['id'].values[0]
             logger.debug(f"Query result, txn_id : {txn_id}")
+
+            txn_history_page = TransHistoryPage(driver=app_driver)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
+            txn_history_page.click_on_void_card_txn()
+            logger.info(f"Voided the transaction")
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
+
+            query = f"select * from txn where id ='{txn_id}'"
+            logger.debug(f"Query to fetch txn details from the txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Fetching result from txn table :{result}")
             created_time = result['created_time'].values[0]
             logger.debug(f"Query result, created_time : {created_time}")
             acquirer_code = result['acquirer_code'].values[0]
