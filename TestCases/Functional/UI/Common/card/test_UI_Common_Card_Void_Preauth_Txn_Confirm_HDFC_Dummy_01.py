@@ -10,6 +10,7 @@ from PageFactory.merchant_portal.portal_trans_history_page import get_transactio
 from PageFactory.sa.app_card_page import CardPage
 from PageFactory.mpos.app_home_page import HomePage
 from PageFactory.mpos.app_login_page import LoginPage
+from PageFactory.sa.app_payment_page import PaymentPage
 from PageFactory.sa.app_trans_history_page import TransHistoryPage
 from Utilities import Validator, ConfigReader, DBProcessor, ResourceAssigner, date_time_converter, APIProcessor, receipt_validator
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -131,7 +132,8 @@ def test_common_100_115_03_008():
             logger.debug(f"Selected the card type as : CTLS_VISA_CREDIT_417666")
             card_page.click_on_ok_error_msg()
             logger.debug(f"Clicked on txn popup for preauth")
-            app_driver.back()
+            payment_page = PaymentPage(driver=app_driver)
+            payment_page.click_on_back_btn_in_enter_amt_window()
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(app_driver)
 
@@ -1016,7 +1018,8 @@ def test_common_100_115_03_010():
             logger.debug(f"Selected the card type as : CTLS_MASTER_CREDIT_541333")
             card_page.click_on_ok_error_msg()
             logger.debug(f"Clicked on txn popup for preauth")
-            app_driver.back()
+            payment_page = PaymentPage(driver=app_driver)
+            payment_page.click_on_back_btn_in_enter_amt_window()
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(app_driver)
 

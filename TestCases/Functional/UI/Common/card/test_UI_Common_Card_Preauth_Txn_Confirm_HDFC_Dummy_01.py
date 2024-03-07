@@ -9,6 +9,7 @@ from PageFactory.merchant_portal.portal_trans_history_page import get_transactio
 from PageFactory.sa.app_card_page import CardPage
 from PageFactory.mpos.app_home_page import HomePage
 from PageFactory.mpos.app_login_page import LoginPage
+from PageFactory.sa.app_payment_page import PaymentPage
 from PageFactory.sa.app_trans_history_page import TransHistoryPage
 from Utilities import Validator, ConfigReader, DBProcessor, ResourceAssigner, date_time_converter, APIProcessor, receipt_validator
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -130,10 +131,19 @@ def test_common_100_115_03_007():
             logger.debug(f"Selected the card type as : CTLS_VISA_CREDIT_417666")
             card_page.click_on_ok_error_msg()
             logger.debug(f"Clicked on txn popup for preauth")
-            app_driver.back()
+
+            query = f"select * from txn where org_code='{org_code}' and payment_mode='CARD' and device_serial='{device_serial}' and external_ref='{order_id}' order by created_time desc limit 1 ;"
+            logger.debug(f"Query to fetch data from the txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Query result for txn table : {result}")
+            preauth_txn_id = result['id'].values[0]
+            logger.debug(f"Fetching txn_id value from the txn table : {preauth_txn_id}")
+
+            payment_page = PaymentPage(driver=app_driver)
+            payment_page.click_on_back_btn_in_enter_amt_window()
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=preauth_txn_id)
             txn_history_page.click_on_confirm_pre_auth()
             logger.debug(f"Clicked on confirm pre_auth button")
 

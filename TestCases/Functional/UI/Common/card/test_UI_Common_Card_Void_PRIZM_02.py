@@ -124,12 +124,6 @@ def test_common_100_115_077():
             payment_page.click_on_proceed_homepage()
             home_page.wait_for_home_page_load()
             home_page.click_on_history()
-            txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
-            txn_history_page.click_on_void_card_txn()
-
-            time.sleep(3)
-            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
                     f"desc limit 1 "
@@ -138,6 +132,18 @@ def test_common_100_115_077():
             logger.debug(f"fetching result for txn table : {result}")
             txn_id = result["id"].iloc[0]
             logger.debug(f"Fetching Transaction id from txn table : {txn_id} ")
+
+            txn_history_page = TransHistoryPage(driver=app_driver)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
+            txn_history_page.click_on_void_card_txn()
+
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
+
+            query = f"select * from txn where id ='{txn_id}'"
+            logger.debug(f"Query to fetch txn details from the txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Fetching result from txn table :{result}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"Fetching auth code from txn table : {auth_code}")
             created_time = result['created_time'].values[0]
@@ -703,12 +709,6 @@ def test_common_100_115_078():
             payment_page.click_on_proceed_homepage()
             home_page.wait_for_home_page_load()
             home_page.click_on_history()
-            txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
-            txn_history_page.click_on_void_card_txn()
-
-            time.sleep(3)
-            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
                     f"desc limit 1 "
@@ -716,6 +716,18 @@ def test_common_100_115_078():
             result = DBProcessor.getValueFromDB(query=query)
             txn_id = result["id"].iloc[0]
             logger.debug(f"Fetching Transaction id from txn table : {txn_id} ")
+
+            txn_history_page = TransHistoryPage(driver=app_driver)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
+            txn_history_page.click_on_void_card_txn()
+
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
+
+            query = f"select * from txn where id ='{txn_id}'"
+            logger.debug(f"Query to fetch txn details from the txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Fetching result from txn table :{result}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"Fetching auth code from txn table : {auth_code}")
             created_time = result['created_time'].values[0]
@@ -1280,12 +1292,6 @@ def test_common_100_115_079():
             payment_page.click_on_proceed_homepage()
             home_page.wait_for_home_page_load()
             home_page.click_on_history()
-            txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
-            txn_history_page.click_on_void_card_txn()
-
-            time.sleep(3)
-            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
                     f"desc limit 1 "
@@ -1294,6 +1300,18 @@ def test_common_100_115_079():
             logger.debug(f"fetching result for txn table : {result}")
             txn_id = result["id"].iloc[0]
             logger.debug(f"Fetching Transaction id from txn table : {txn_id} ")
+
+            txn_history_page = TransHistoryPage(driver=app_driver)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
+            txn_history_page.click_on_void_card_txn()
+
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
+
+            query = f"select * from txn where id ='{txn_id}'"
+            logger.debug(f"Query to fetch txn details from the txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Fetching result from txn table :{result}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"Fetching auth code from txn table : {auth_code}")
             created_time = result['created_time'].values[0]
@@ -1835,12 +1853,6 @@ def test_common_100_115_080():
             payment_page.click_on_proceed_homepage()
             home_page.wait_for_home_page_load()
             home_page.click_on_history()
-            txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
-            txn_history_page.click_on_void_card_txn()
-
-            time.sleep(3)
-            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
                     f"desc limit 1 "
@@ -1848,6 +1860,18 @@ def test_common_100_115_080():
             result = DBProcessor.getValueFromDB(query=query)
             txn_id = result["id"].iloc[0]
             logger.debug(f"Fetching Transaction id from txn table : {txn_id} ")
+
+            txn_history_page = TransHistoryPage(driver=app_driver)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
+            txn_history_page.click_on_void_card_txn()
+
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
+
+            query = f"select * from txn where id ='{txn_id}'"
+            logger.debug(f"Query to fetch txn details from the txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Fetching result from txn table :{result}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"Fetching auth code from txn table : {auth_code}")
             created_time = result['created_time'].values[0]
@@ -2412,12 +2436,6 @@ def test_common_100_115_210():
             payment_page.click_on_proceed_homepage()
             home_page.wait_for_home_page_load()
             home_page.click_on_history()
-            txn_history_page = TransHistoryPage(driver=app_driver)
-            txn_history_page.click_on_transaction_by_order_id(order_id=order_id)
-            txn_history_page.click_on_void_card_txn()
-
-            time.sleep(3)
-            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time " \
                     f"desc limit 1 "
@@ -2425,6 +2443,18 @@ def test_common_100_115_210():
             result = DBProcessor.getValueFromDB(query=query)
             txn_id = result["id"].iloc[0]
             logger.debug(f"Fetching Transaction id from txn table : {txn_id} ")
+
+            txn_history_page = TransHistoryPage(driver=app_driver)
+            txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
+            txn_history_page.click_on_void_card_txn()
+
+            time.sleep(3)
+            logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
+
+            query = f"select * from txn where id ='{txn_id}'"
+            logger.debug(f"Query to fetch txn details from the txn table : {query}")
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"Fetching result from txn table :{result}")
             auth_code = result['auth_code'].values[0]
             logger.debug(f"Fetching auth code from txn table : {auth_code}")
             created_time = result['created_time'].values[0]
