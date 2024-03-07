@@ -99,6 +99,34 @@ class PaymentPage(BasePage):
     err_msg_mobile_number_remote_pay = (By.ID, 'com.ezetap.service.demo:id/tvPhoneNoHelper')
     lbl_upi_err_msg = (By.XPATH, '//*[contains(@text,"Valid UPI configuration not found for merchant")]')
 
+    btn_native_sample = (By.ID, 'com.ezeapi.sample:id/btnNative')
+    btn_initialize_sample = (By.ID, 'com.ezeapi.sample:id/btnInitialize')
+    btn_upi_txn_sample = (By.ID, 'com.ezeapi.sample:id/btnUPITxn')
+    order_id_sample = (By.ID, 'com.ezeapi.sample:id/order_number')
+    amount_sample = (By.ID, 'com.ezeapi.sample:id/payable_amount')
+    gst_amount_sample = (By.ID, 'com.ezeapi.sample:id/et_GstAmount')
+    btn_ok_sample = (By.ID, 'com.ezeapi.sample:id/confirm_button')
+    txt_customer_name = (By.XPATH, "//*[@text='Customer Name']/following-sibling::android.widget.TextView[2]")
+    txt_order_id = (By.XPATH, "//*[@text='Order Id']/following-sibling::android.widget.TextView[2]")
+    txt_date = (By.XPATH, "//*[@text='Date']/following-sibling::android.widget.TextView[2]")
+    txt_transaction_id = (By.XPATH, "//*[@text='Transaction Id']/following-sibling::android.widget.TextView[2]")
+    txt_status = (By.XPATH, "//*[@text='Status']/following-sibling::android.widget.TextView[2]")
+    txt_payer_name = (By.XPATH, "//*[@text='Payer Name']/following-sibling::android.widget.TextView[2]")
+    txt_rrn = (By.XPATH, "//*[@text='RR Number']/following-sibling::android.widget.TextView[2]")
+    txt_mid = (By.XPATH, "//*[@text='MID']/following-sibling::android.widget.TextView[2]")
+    txt_tid = (By.XPATH, "//*[@text='TID']/following-sibling::android.widget.TextView[2]")
+    payment_dialog_sample = (AppiumBy.XPATH,
+                             "/hierarchy/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TextView")
+    btn_cancel_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/cancel_button')
+    result_sample = (AppiumBy.ID, "com.ezeapi.sample:id/resultView")
+    postpaid_lob_btn = (By.XPATH, "//*[@text='Postpaid-Mobile']")
+    bill_coll_active_btn = (By.XPATH, "//*[@text='Bill Collection - Active']")
+    mobile_no_btn = (By.XPATH, "//*[@text='Mobile No.']")
+    fetch_details_btn = (By.XPATH, "//*[@text='Fetch Details']")
+    amount_field_btn = (By.XPATH, "//*[@text='1226']")
+    checkout_btn = (By.XPATH, "//*[@text='Checkout']")
+    txt_order_id_airtel = (By.ID, "com.ezetap.service.demo:id/tvOrderId")
+
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -824,3 +852,134 @@ class PaymentPage(BasePage):
         return: str
         """
         return self.fetch_text(self.err_msg_mobile_number_remote_pay)
+
+    def upi_txn_in_sample_app(self):
+        """
+        This method is used to initialize merchant and select upi payment mode
+        """
+        self.perform_click(self.btn_native_sample)
+        self.perform_click(self.btn_initialize_sample)
+        self.scroll_to_text("UPI Transaction")
+        self.perform_click(self.btn_upi_txn_sample)
+
+    def enter_order_id_and_amount(self, order_id: str, amt: float):
+        """
+        This method is used to enter order_id and amount
+        param: order_id: str
+        param: amt: float
+        """
+        self.perform_sendkeys(self.order_id_sample, order_id)
+        self.perform_sendkeys(self.amount_sample, amt)
+
+    def enter_gst_amount(self, gst_amt: float):
+        """
+        This method is used to enter gst amount
+        param: gst_amt: float
+        """
+        self.scroll_to_text("GST Amount")
+        self.perform_sendkeys(self.gst_amount_sample, gst_amt)
+
+    def confirm_upi_txn_in_sample_app(self):
+        """
+        This method is used to click on ok to confirm upi txn to generate QR
+        """
+        self.scroll_to_text("OK")
+        self.perform_click(self.btn_ok_sample)
+
+    def click_on_view_details_in_sample_app(self):
+        """
+        This method is used to click on view details after successful payment
+        """
+        self.perform_click(self.btn_viewDetails)
+
+    def fetch_customer_name_text(self) -> str:
+        """
+        This method is used to fetch customer_name from view details page
+        return: str
+        """
+        return self.fetch_text(self.txt_customer_name)
+
+    def fetch_order_id_text(self) -> str:
+        """
+        This method is used to fetch order_id from view details page
+        return: str
+        """
+        return self.fetch_text(self.txt_order_id)
+
+    def fetch_date_text(self) -> str:
+        """
+        This method is used to fetch date from view details page
+        return: str
+        """
+        return self.fetch_text(self.txt_date)
+
+    def fetch_transaction_id_text(self) -> str:
+        """
+        This method is used to fetch transaction_id from view details page
+        return: str
+        """
+        return self.fetch_text(self.txt_transaction_id)
+
+    def fetch_status_text(self) -> str:
+        """
+        This method is used to fetch status from view details page
+        return: str
+        """
+        return self.fetch_text(self.txt_status)
+
+    def fetch_payer_name_text(self) -> str:
+        """
+        This method is used to fetch payer_name from view details page
+        return: str
+        """
+        return self.fetch_text(self.txt_payer_name)
+
+    def fetch_rrn_text(self) -> str:
+        """
+        This method is used to fetch rrn from view details page
+        return: str
+        """
+        return self.fetch_text(self.txt_rrn)
+
+    def fetch_mid_text(self) -> str:
+        """
+        This method is used to fetch mid from view details page
+        return: str
+        """
+        return self.fetch_text(self.txt_mid)
+
+    def fetch_tid_text(self) -> str:
+        """
+        This method is used to fetch tid from view details page
+        return: str
+        """
+        return self.fetch_text(self.txt_tid)
+
+    def getting_result_sample(self):
+        self.wait_for_element(self.payment_dialog_sample)
+        self.scroll_to_text("Cancel")
+        self.perform_click(self.btn_cancel_sample)
+        # self.scroll_to_text("Close")
+        self.perform_swipeUp(7)
+        return self.wait_for_element(self.result_sample)
+
+    def click_on_post_paid_btn(self):
+        self.perform_click(self.postpaid_lob_btn)
+
+    def click_on_bill_coll_active_btn(self):
+        self.perform_click(self.bill_coll_active_btn)
+
+    def enter_mobile_no_and_fetch_details(self, mobile_no):
+        self.perform_click(self.mobile_no_btn)
+        self.perform_sendkeys(self.mobile_no_btn, mobile_no)
+        self.perform_click(self.fetch_details_btn)
+
+    def enter_amount_and_checkout(self, amount):
+        self.perform_click(self.amount_field_btn)
+        self.perform_sendkeys(self.amount_field_btn, amount)
+        self.driver.back()
+        self.perform_click(self.checkout_btn)
+
+    def fetch_order_id_from_success_page(self):
+        order_id = self.fetch_text(self.txt_order_id_airtel).split(' ')[-1]
+        return order_id

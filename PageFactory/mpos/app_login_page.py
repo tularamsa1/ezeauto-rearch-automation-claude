@@ -23,6 +23,13 @@ class LoginPage(BasePage):
     btn_click_on_back = (AppiumBy.XPATH, "//android.widget.ImageButton[@index='0']")
     txt_login_failed_msg = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvTitle')
 
+    btn_settings_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/btnSettings')
+    merchant_name_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/merchant_name')
+    username_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/user_name')
+    password_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/password')
+    app_mode_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/app_mode')
+    set_merchant_sample = (AppiumBy.XPATH, '//android.widget.Button[@text ="Set Merchant"]')
+
     def __init__(self, driver):
         super().__init__(driver)
 
@@ -70,3 +77,18 @@ class LoginPage(BasePage):
         """
         self.wait_for_element(self.txt_login_failed_msg)
         return self.fetch_text(self.txt_login_failed_msg)
+
+    def config_merchant_for_sample_app(self, org_code: str, username: str, password: str):
+        """
+        This method is used to add merchant details in sample app
+        param: org_code: str
+        param: username: str
+        param: password: str
+        """
+        self.perform_click(self.btn_settings_sample)
+        self.perform_sendkeys(self.merchant_name_sample, org_code)
+        self.perform_sendkeys(self.username_sample, username)
+        self.perform_sendkeys(self.password_sample, password)
+        self.scroll_to_text("Set Merchant")
+        self.perform_sendkeys(self.app_mode_sample, read_config("APIs", "env"))
+        self.perform_click(self.set_merchant_sample)

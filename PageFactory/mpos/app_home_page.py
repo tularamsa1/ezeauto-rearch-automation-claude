@@ -61,6 +61,7 @@ class HomePage(BasePage):
     txt_todays_sales = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvTodaySale')
     mnu_account_hindi = (AppiumBy.XPATH, '//android.widget.FrameLayout[@content-desc="अकाउंट"]')
     txt_yesterday_sales = (AppiumBy.XPATH, '//*[@text="Yesterday"]')
+    start_btn = (AppiumBy.ID, "com.ezetap.basicapp:id/btnStartConfig")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -369,4 +370,7 @@ class HomePage(BasePage):
             self.perform_click(i)
         self.perform_click(self.btn_pay)
         self.perform_click(self.btn_paymentProceed)
+
+    def click_on_start_btn(self):
+        self.perform_click(self.start_btn)
 
