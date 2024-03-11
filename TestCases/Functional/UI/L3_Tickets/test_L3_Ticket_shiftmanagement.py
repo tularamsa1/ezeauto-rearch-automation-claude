@@ -126,7 +126,7 @@ def test_L3_5150_409_001():
             payment_page.click_on_confirm()
             payment_page.click_on_proceed_homepage()
 
-            query = f"select * from shift_detail where username='{app_username}' and shift_no='{shift[len(shift) - 1]}' and shift_status='IN_PROGRESS';"
+            query = f"select * from shift_detail where username='{app_username}' and shift_no='{shift[len(shift) - 1]}' and shift_status='IN_PROGRESS' order by created_time desc;"
             result = DBProcessor.getValueFromDB(query)
             logger.debug(f"result:{result}")
             logger.debug(f"Query : {query}")
@@ -201,8 +201,8 @@ def test_L3_5150_409_001():
                 total_sales_count = trans_summary.fetch_total_sales()
                 logger.debug(f"total_sales_count is {total_sales_count} ")
 
-                primary_amount_1, primary_payment_mode_1 = trans_summary.fetch_third_highest_payment_mode_and_amount()
-                amount_2, payment_mode_2 = trans_summary.fetch_fourth_highest_payment_mode_and_amount()
+                primary_amount_1, primary_payment_mode_1 = trans_summary.fetch_fourth_highest_payment_mode_and_amount()
+                amount_2, payment_mode_2 = trans_summary.fetch_card_payment_mode_and_amount()
 
                 actual_app_values = {
                     "sales_volume": str(total_volume_amount),
