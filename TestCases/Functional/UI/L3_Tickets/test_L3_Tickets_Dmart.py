@@ -104,7 +104,7 @@ def test_L3_5058_101_001():
             gst_amt = (amount * 10) / 100
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"Generating unique order ID  : {order_id}")
-            app_driver = TestSuiteSetup.initialize_app_driver_for_sample_app(testcase_id)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, app_activity= '.MainActivity', app_package= 'com.ezeapi.sample')
             login_page = LoginPage(app_driver)
             login_page.config_merchant_for_sample_app(org_code=org_code, username=app_username, password=app_password)
             logger.info(f"configured merchant for sample app : {org_code}, {app_username}, {app_password}")
@@ -568,7 +568,9 @@ def test_L3_5006_101_001():
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"Generating unique order ID  : {order_id}")
 
-            app_driver = TestSuiteSetup.initialize_app_driver_for_sample_app(testcase_id)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, app_activity='.MainActivity',
+                                                              app_package='com.ezeapi.sample')
+
             login_page = LoginPage(app_driver)
             login_page.config_merchant_for_sample_app(org_code=org_code, username=app_username, password=app_password)
             logger.info(f"Configing in the Sample application using app_username, app_password : {app_username} , {app_password}")
@@ -1002,7 +1004,7 @@ def test_L3_5210_101_001():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            app_driver = TestSuiteSetup.initialize_app_driver_for_sample_app(testcase_id)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, app_activity= '.MainActivity', app_package= 'com.ezeapi.sample')
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"Order ID used : {order_id}")
             amount = random.randint(500, 550)

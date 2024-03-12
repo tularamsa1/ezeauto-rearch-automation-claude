@@ -24,11 +24,11 @@ class LoginPage(BasePage):
     txt_login_failed_msg = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvTitle')
 
     btn_settings_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/btnSettings')
-    merchant_name_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/merchant_name')
-    username_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/user_name')
-    password_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/password')
-    app_mode_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/app_mode')
-    set_merchant_sample = (AppiumBy.XPATH, '//android.widget.Button[@text ="Set Merchant"]')
+    txt_merchant_name_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/merchant_name')
+    txt_username_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/user_name')
+    txt_password_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/password')
+    txt_app_mode_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/app_mode')
+    btn_set_merchant_sample = (AppiumBy.XPATH, '//android.widget.Button[@text ="Set Merchant"]')
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -86,9 +86,9 @@ class LoginPage(BasePage):
         param: password: str
         """
         self.perform_click(self.btn_settings_sample)
-        self.perform_sendkeys(self.merchant_name_sample, org_code)
-        self.perform_sendkeys(self.username_sample, username)
-        self.perform_sendkeys(self.password_sample, password)
+        self.perform_sendkeys(self.txt_merchant_name_sample, org_code)
+        self.perform_sendkeys(self.txt_username_sample, username)
+        self.perform_sendkeys(self.txt_password_sample, password)
         self.scroll_to_text("Set Merchant")
-        self.perform_sendkeys(self.app_mode_sample, read_config("APIs", "env"))
-        self.perform_click(self.set_merchant_sample)
+        self.perform_sendkeys(self.txt_app_mode_sample, read_config("APIs", "env"))
+        self.perform_click(self.btn_set_merchant_sample)

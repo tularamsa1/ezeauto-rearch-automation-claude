@@ -102,8 +102,8 @@ class PaymentPage(BasePage):
     btn_native_sample = (By.ID, 'com.ezeapi.sample:id/btnNative')
     btn_initialize_sample = (By.ID, 'com.ezeapi.sample:id/btnInitialize')
     btn_upi_txn_sample = (By.ID, 'com.ezeapi.sample:id/btnUPITxn')
-    order_id_sample = (By.ID, 'com.ezeapi.sample:id/order_number')
-    amount_sample = (By.ID, 'com.ezeapi.sample:id/payable_amount')
+    txt_order_id_sample = (By.ID, 'com.ezeapi.sample:id/order_number')
+    txt_amount_sample = (By.ID, 'com.ezeapi.sample:id/payable_amount')
     gst_amount_sample = (By.ID, 'com.ezeapi.sample:id/et_GstAmount')
     btn_ok_sample = (By.ID, 'com.ezeapi.sample:id/confirm_button')
     txt_customer_name = (By.XPATH, "//*[@text='Customer Name']/following-sibling::android.widget.TextView[2]")
@@ -115,16 +115,16 @@ class PaymentPage(BasePage):
     txt_rrn = (By.XPATH, "//*[@text='RR Number']/following-sibling::android.widget.TextView[2]")
     txt_mid = (By.XPATH, "//*[@text='MID']/following-sibling::android.widget.TextView[2]")
     txt_tid = (By.XPATH, "//*[@text='TID']/following-sibling::android.widget.TextView[2]")
-    payment_dialog_sample = (AppiumBy.XPATH,
+    btn_payment_dialog_sample = (AppiumBy.XPATH,
                              "/hierarchy/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TextView")
     btn_cancel_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/cancel_button')
-    result_sample = (AppiumBy.ID, "com.ezeapi.sample:id/resultView")
-    postpaid_lob_btn = (By.XPATH, "//*[@text='Postpaid-Mobile']")
-    bill_coll_active_btn = (By.XPATH, "//*[@text='Bill Collection - Active']")
-    mobile_no_btn = (By.XPATH, "//*[@text='Mobile No.']")
-    fetch_details_btn = (By.XPATH, "//*[@text='Fetch Details']")
-    amount_field_btn = (By.XPATH, "//*[@text='1226']")
-    checkout_btn = (By.XPATH, "//*[@text='Checkout']")
+    btn_result_sample = (AppiumBy.ID, "com.ezeapi.sample:id/resultView")
+    btn_postpaid_lob = (By.XPATH, "//*[@text='Postpaid-Mobile']")
+    btn_bill_coll_active = (By.XPATH, "//*[@text='Bill Collection - Active']")
+    txt_mobile_no = (By.XPATH, "//*[@text='Mobile No.']")
+    btn_fetch_details = (By.XPATH, "//*[@text='Fetch Details']")
+    txt_amount_field = (By.XPATH, "//*[@text='1226']")
+    btn_checkout = (By.XPATH, "//*[@text='Checkout']")
     txt_order_id_airtel = (By.ID, "com.ezetap.service.demo:id/tvOrderId")
 
 
@@ -868,8 +868,8 @@ class PaymentPage(BasePage):
         param: order_id: str
         param: amt: float
         """
-        self.perform_sendkeys(self.order_id_sample, order_id)
-        self.perform_sendkeys(self.amount_sample, amt)
+        self.perform_sendkeys(self.txt_order_id_sample, order_id)
+        self.perform_sendkeys(self.txt_amount_sample, amt)
 
     def enter_gst_amount(self, gst_amt: float):
         """
@@ -956,29 +956,29 @@ class PaymentPage(BasePage):
         return self.fetch_text(self.txt_tid)
 
     def getting_result_sample(self):
-        self.wait_for_element(self.payment_dialog_sample)
+        self.wait_for_element(self.btn_payment_dialog_sample)
         self.scroll_to_text("Cancel")
         self.perform_click(self.btn_cancel_sample)
         # self.scroll_to_text("Close")
         self.perform_swipeUp(7)
-        return self.wait_for_element(self.result_sample)
+        return self.wait_for_element(self.btn_result_sample)
 
     def click_on_post_paid_btn(self):
-        self.perform_click(self.postpaid_lob_btn)
+        self.perform_click(self.btn_postpaid_lob)
 
     def click_on_bill_coll_active_btn(self):
-        self.perform_click(self.bill_coll_active_btn)
+        self.perform_click(self.btn_bill_coll_active)
 
     def enter_mobile_no_and_fetch_details(self, mobile_no):
-        self.perform_click(self.mobile_no_btn)
-        self.perform_sendkeys(self.mobile_no_btn, mobile_no)
-        self.perform_click(self.fetch_details_btn)
+        self.perform_click(self.txt_mobile_no)
+        self.perform_sendkeys(self.txt_mobile_no, mobile_no)
+        self.perform_click(self.btn_fetch_details)
 
     def enter_amount_and_checkout(self, amount):
-        self.perform_click(self.amount_field_btn)
-        self.perform_sendkeys(self.amount_field_btn, amount)
+        self.perform_click(self.txt_amount_field)
+        self.perform_sendkeys(self.txt_amount_field, amount)
         self.driver.back()
-        self.perform_click(self.checkout_btn)
+        self.perform_click(self.btn_checkout)
 
     def fetch_order_id_from_success_page(self):
         order_id = self.fetch_text(self.txt_order_id_airtel).split(' ')[-1]

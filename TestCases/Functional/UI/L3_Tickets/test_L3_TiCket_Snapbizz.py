@@ -90,7 +90,7 @@ def test_L3_5080_101_001():
             order_id = datetime.now().strftime('%m%d%H%M%S')
             logger.debug(f"Generating unique order ID  : {order_id}")
 
-            app_driver = TestSuiteSetup.initialize_app_driver_for_sample_app(testcase_id)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, app_activity= '.MainActivity', app_package= 'com.ezeapi.sample')
             login_page = LoginPage(app_driver)
             app_username_with_special_char = app_username + "/.*|: "
             logger.info(f"Adding special charcters with the app_username: {app_username_with_special_char}")
