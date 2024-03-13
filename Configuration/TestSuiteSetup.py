@@ -484,7 +484,7 @@ def initialize_firefox_driver():
     return GlobalVariables.portalDriver
 
 
-def initialize_app_driver(request, no_reset="false"):
+def initialize_app_driver(request, no_reset="false", app_package="com.ezetap.basicapp", app_activity="com.ezetap.mposX.activity.SplashActivity"):
     """
     This method is used for initializing the app driver for the app operations
     """
@@ -512,8 +512,8 @@ def initialize_app_driver(request, no_reset="false"):
         "deviceName": device_details['DeviceId'],
         "udid": device_details['DeviceId'],
         "otherApps": json_applications,
-        "appPackage": "com.ezetap.basicapp",
-        "appActivity": "com.ezetap.mposX.activity.SplashActivity",
+        "appPackage": app_package,
+        "appActivity": app_activity,
         "ignoreHiddenApiPolicyError": "true",
         "noReset": no_reset,
         "autoGrantPermissions": "true",
@@ -550,3 +550,4 @@ def initialize_chargeslip_browser():
 def initialize_ui_browser():
     GlobalVariables.ui_page = GlobalVariables.context.new_page()
     return GlobalVariables.ui_page
+

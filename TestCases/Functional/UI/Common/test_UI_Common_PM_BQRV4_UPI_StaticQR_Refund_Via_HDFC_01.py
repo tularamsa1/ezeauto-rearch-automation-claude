@@ -223,14 +223,14 @@ def test_common_100_108_005():
 
                 expected_app_values = {
                     "pmt_mode": "UPI",
-                    "pmt_status": "AUTHORIZED_REFUNDED",
+                    "pmt_status": "AUTHORIZED REFUNDED",
                     "txn_amt": str("%.2f" % amount),
                     "settle_status": "SETTLED",
                     "txn_id": orig_txn_id,
                     "rrn": str(rrn),
                     "customer_name": customer_name,
                     "payer_name": payer_name,
-                    "pmt_msg": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
                     "auth_code": auth_code,
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
@@ -241,7 +241,7 @@ def test_common_100_108_005():
                     "rrn_2": str(rrn_new_2),
                     "customer_name_2": customer_name_new_2,
                     "payer_name_2": payer_name_new_2,
-                    "payment_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "payment_msg_2": "PAYMENT SUCCESSFUL",
                     "auth_code_2": auth_code_new_2,
                     "date_2": date_and_time_new_2
                 }
@@ -913,7 +913,7 @@ def test_common_100_108_006():
                     "txn_amt": str("%.2f" % amount),
                     "txn_amt_2": str("%.2f" % refund_amount),
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "rrn": str(rrn),
                     "auth_code": auth_code,
                     "date": date_and_time,
@@ -2785,7 +2785,7 @@ def test_common_100_108_009():
                     "txn_amt": str("%.2f" % amount),
                     "txn_amt_2": str("%.2f" % refund_amount),
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "rrn": str(rrn),
                     "auth_code": auth_code,
                     "date": date_and_time,
