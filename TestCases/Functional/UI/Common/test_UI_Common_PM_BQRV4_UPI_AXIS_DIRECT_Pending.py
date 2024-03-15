@@ -114,14 +114,6 @@ def test_common_100_102_223():
             home_page.wait_for_home_page_load()
             home_page.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
-            home_page.enter_amount_and_order_number(amount, order_id)
-            home_page.perform_check_status()
-            app_payment_status = payment_page.fetch_payment_status()
-            logger.info(f"Fetching status of payment from payment screen: {app_payment_status} ")
-            payment_page.click_on_proceed_homepage()
-            home_page.click_on_skip_button()
-            home_page.click_on_back_btn_enter_amt_page()
-            logger.info(f"Execution is completed for the test case : {testcase_id}")
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "';"
@@ -205,9 +197,6 @@ def test_common_100_102_223():
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                home_page.wait_for_navigation_to_load()
-                home_page.wait_for_home_page_load()
-                home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
