@@ -15,7 +15,6 @@ class OTA_upgrade(BasePage):
     txt_update_tap_tittle = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvUpdateTitle')
     txt_download_tab = (AppiumBy.ID, 'android:id/alertTitle')
     btn_install_emulator = (AppiumBy.ID, "android:id/button1")
-    btn_done = (AppiumBy.XPATH, '//*[@text="Done"]')
     btn_install_pax = (AppiumBy.ID, 'com.android.packageinstaller:id/ok_button')
     btn_done_pax = (AppiumBy.ID, 'com.android.packageinstaller:id/done_button')
     btn_settings = (AppiumBy.XPATH, '//*[@text="Settings"]')
@@ -72,7 +71,13 @@ class OTA_upgrade(BasePage):
         """
         performs clicking on the done button
         """
-        self.perform_click(self.btn_done)
+        install_btn_text = self.fetch_text(self.btn_install_emulator)
+        if str(install_btn_text) == "INSTALL":
+            done_btn = "DONE"
+        else:
+            done_btn = "Done"
+        btn_done = (AppiumBy.XPATH, f'//*[@text="{done_btn}"]')
+        self.perform_click(btn_done)
 
     def click_on_install_btn_pax(self):
         """
