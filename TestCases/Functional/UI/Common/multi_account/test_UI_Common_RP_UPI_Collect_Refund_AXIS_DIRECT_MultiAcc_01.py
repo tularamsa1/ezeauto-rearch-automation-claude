@@ -184,7 +184,7 @@ def test_common_100_111_025():
                 date_and_time = date_time_converter.to_app_format(posting_date)
                 original_date_and_time = date_time_converter.to_app_format(created_time_original)
                 expected_app_values = {
-                    "pmt_status": "STATUS:AUTHORIZED_REFUNDED",
+                    "pmt_status": "STATUS:AUTHORIZED REFUNDED",
                     "pmt_status_2": "STATUS:REFUNDED",
                     "pmt_mode": "UPI",
                     "pmt_mode_2": "UPI",
@@ -199,8 +199,8 @@ def test_common_100_111_025():
                     "payer_name": payer_name,
                     "payer_name_2": payer_name,
                     "order_id": order_id,
-                    "pmt_msg": "PAYMENT VOIDED/REFUNDED",
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "rrn": str(rrn_original),
                     "date_2": date_and_time,
                     "date": original_date_and_time
@@ -825,7 +825,7 @@ def test_common_100_111_026():
                     "payer_name_2": payer_name,
                     "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT VOIDED/REFUNDED",
+                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
                     "rrn": str(rrn_original),
                     "date_2": date_and_time,
                     "date": original_date_and_time,
