@@ -482,7 +482,7 @@ def test_common_100_115_006():
                     'merchant_ref_no': 'Ref # ' + str(order_id),
                     'RRN': str(rrn), 'SALE AMOUNT:': "Rs." + str(amount) + ".00", 'date': txn_date, 'time': txn_time,
                     'AUTH CODE': str(auth_code).strip(), 'BATCH NO': str(batch_number), 'CARD TYPE': 'RUPAY',
-                    'payment_option': 'DEBIT SALE', 'TID': tid_db
+                    'payment_option': 'SALE', 'TID': tid_db
                 }
                 receipt_validator.perform_charge_slip_validations(
                     txn_id, {"username": app_username, "password": app_password}, expected_values)

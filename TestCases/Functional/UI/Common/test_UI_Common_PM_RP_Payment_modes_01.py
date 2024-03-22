@@ -14,11 +14,11 @@ logger = EzeAutoLogger(__name__)
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_common_100_103_301():
+def test_common_100_103_346():
     """
     Sub Feature Code: UI_Common_PM_RP_Payment_modes_Enabled_Org_and_PG_level
     Sub Feature Description: All payment modes (CC, DC, Net Banking) should be visible on the browser when enabled at org settings and PG settings.
-    TC naming code description: 100: Payment Method, 103: RemotePay, 301: TC301
+    TC naming code description: 100: Payment Method, 103: RemotePay, 346: TC346
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -180,11 +180,11 @@ def test_common_100_103_301():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_common_100_103_302():
+def test_common_100_103_347():
     """
     Sub Feature Code: UI_Common_PM_RP_Payment_modes_Enabled_Org_level
     Sub Feature Description: No Payment modes are visible when payment modes are enabled at org Settings and disabled at PG settings
-    TC naming code description: 100: Payment Method, 103: RemotePay, 302: TC302
+    TC naming code description: 100: Payment Method, 103: RemotePay, 347: TC347
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -374,11 +374,11 @@ def test_common_100_103_302():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_common_100_103_303():
+def test_common_100_103_348():
     """
      Sub Feature Code: UI_Common_PM_RP_Payment_mode_Cards_Enabled_PG_and_Org_level
      Sub Feature Description: All payment modes (CC, DC, Net Banking) are enabled at org settings and only cards payment mode enabled at PG settings level
-     TC naming code description: 100: Payment Method, 103: 103: RemotePay, 303: TC303
+     TC naming code description: 100: Payment Method, 103: 103: RemotePay, 348: TC348
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -565,11 +565,11 @@ def test_common_100_103_303():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-def test_common_100_103_304():
+def test_common_100_103_349():
     """
     Sub Feature Code: UI_Common_PM_RP_Payment_mode_Cards_Enabled_Link_Generation_success
     Sub Feature Description: Card Payment mode is enabled to validate the generation of the payment link
-    TC naming code description: 100: Payment Method, 103: RemotePay, 304: TC304
+    TC naming code description: 100: Payment Method, 103: RemotePay, 349: TC349
     """
     try:
         testcase_id = sys._getframe().f_code.co_name

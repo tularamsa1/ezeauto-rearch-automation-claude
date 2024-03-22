@@ -377,6 +377,9 @@ def test_common_100_115_03_017():
                 date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
                 cnf_date_and_time_app = date_time_converter.to_app_format(posting_date_db=cnf_preauth_posting_date)
                 refund_date_and_time_app = date_time_converter.to_app_format(posting_date_db=refund_posting_date)
+                date_and_time_app_2 = date_time_converter.to_online_refund_app_format(posting_date_db=posting_date)
+                cnf_date_and_time_app_2 = date_time_converter.to_online_refund_app_format(posting_date_db=cnf_preauth_posting_date)
+                refund_date_and_time_app_2 = date_time_converter.to_online_refund_app_format(posting_date_db=refund_posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -427,7 +430,7 @@ def test_common_100_115_03_017():
                     "or_device_serial": device_serial,
                     "or_amount": "{:,.2f}".format(amount),
                     "or_card_type_desc": "*0018 CTLS",
-                    "or_date_time": cnf_date_and_time_app,
+                    "or_date_time": cnf_date_and_time_app_2,
                     "or_status": "AUTHORIZED_REFUNDED",
                     "or_auth_code_name": cnf_preauth_auth_code,
                     "or_mid": cnf_preauth_mid_db,
@@ -438,7 +441,7 @@ def test_common_100_115_03_017():
                     "or_device_serial_2": device_serial,
                     "or_amount_2": "{:,.2f}".format(amount),
                     "or_card_type_desc_2": "*0018 CTLS",
-                    "or_date_time_2": refund_date_and_time_app,
+                    "or_date_time_2": refund_date_and_time_app_2,
                     "or_status_2": "REFUNDED",
                     "or_ref3_2": device_serial,
                     "or_auth_code_name_2": refund_auth_code,
@@ -450,7 +453,7 @@ def test_common_100_115_03_017():
                     "or_device_serial_3": device_serial,
                     "or_amount_3": "{:,.2f}".format(amount),
                     "or_card_type_desc_3": "*0018 CTLS",
-                    "or_date_time_3": date_and_time_app,
+                    "or_date_time_3": date_and_time_app_2,
                     "or_status_3": "CNF_PRE_AUTH",
                     "or_auth_code_name_3": auth_code,
                     "or_mid_3": mid_db,
@@ -1692,6 +1695,9 @@ def test_common_100_115_03_018():
                 date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
                 cnf_date_and_time_app = date_time_converter.to_app_format(posting_date_db=cnf_preauth_posting_date)
                 refund_date_and_time_app = date_time_converter.to_app_format(posting_date_db=refund_posting_date)
+                date_and_time_app_2 = date_time_converter.to_online_refund_app_format(posting_date_db=posting_date)
+                cnf_date_and_time_app_2 = date_time_converter.to_online_refund_app_format(posting_date_db=cnf_preauth_posting_date)
+                refund_date_and_time_app_2 = date_time_converter.to_online_refund_app_format(posting_date_db=refund_posting_date)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -1745,7 +1751,7 @@ def test_common_100_115_03_018():
                     "or_device_serial": device_serial,
                     "or_amount": "{:,.2f}".format(amount),
                     "or_card_type_desc": "*1034 CTLS",
-                    "or_date_time": cnf_date_and_time_app,
+                    "or_date_time": cnf_date_and_time_app_2,
                     "or_status": "AUTHORIZED_REFUNDED",
                     "or_auth_code_name": cnf_preauth_auth_code,
                     "or_mid": cnf_preauth_mid_db,
@@ -1757,7 +1763,7 @@ def test_common_100_115_03_018():
                     "or_device_serial_2": device_serial,
                     "or_amount_2": "{:,.2f}".format(amount),
                     "or_card_type_desc_2": "*1034 CTLS",
-                    "or_date_time_2": refund_date_and_time_app,
+                    "or_date_time_2": refund_date_and_time_app_2,
                     "or_status_2": "REFUNDED",
                     "or_ref3_2": device_serial,
                     "or_auth_code_name_2": refund_auth_code,
@@ -1770,7 +1776,7 @@ def test_common_100_115_03_018():
                     "or_device_serial_3": device_serial,
                     "or_amount_3": "{:,.2f}".format(amount),
                     "or_card_type_desc_3": "*1034 CTLS",
-                    "or_date_time_3": date_and_time_app,
+                    "or_date_time_3": date_and_time_app_2,
                     "or_status_3": "CNF_PRE_AUTH",
                     "or_auth_code_name_3": auth_code,
                     "or_mid_3": mid_db,

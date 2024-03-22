@@ -1133,7 +1133,7 @@ def test_common_100_115_149():
                     "CARD TYPE": "RUPAY",
                     "BATCH NO": batch_number,
                     "TID": tid,
-                    "payment_option": "DEBIT SALE"
+                    "payment_option": "SALE"
                 }
                 logger.debug(f"expected_charge_slip_values: {expected_charge_slip_values}")
                 receipt_validator.perform_charge_slip_validations(txn_id=txn_id, credentials={
@@ -2265,7 +2265,7 @@ def test_common_100_115_151():
                     "CARD TYPE": "RUPAY",
                     "BATCH NO": batch_number,
                     "TID": tid,
-                    "payment_option": "DEBIT SALE"
+                    "payment_option": "SALE"
                 }
                 logger.debug(f"expected_charge_slip_values: {expected_charge_slip_values}")
                 receipt_validator.perform_charge_slip_validations(txn_id=txn_id, credentials={

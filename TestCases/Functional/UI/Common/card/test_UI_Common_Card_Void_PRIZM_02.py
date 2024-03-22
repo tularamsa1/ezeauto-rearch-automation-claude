@@ -583,7 +583,7 @@ def test_common_100_115_077():
                     "AUTH CODE": auth_code.strip(),
                     "date": txn_date,
                     "time": txn_time,
-                    "payment_option": "VOID SALE",
+                    "payment_option": "VOID",
                     "BATCH NO": batch_number_db,
                     "TID": tid
                 }

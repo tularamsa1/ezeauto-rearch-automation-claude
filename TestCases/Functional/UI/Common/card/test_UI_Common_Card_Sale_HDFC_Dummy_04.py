@@ -2876,7 +2876,7 @@ def test_common_100_115_146():
                     "AUTH CODE": auth_code.strip(),
                     "date": txn_date,
                     "time": txn_time,
-                    "payment_option": "DEBIT SALE",
+                    "payment_option": "SALE",
                     "BATCH NO": batch_number_db,
                     "TID": tid
                 }

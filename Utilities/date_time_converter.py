@@ -44,6 +44,7 @@ def to_chargeslip_format(posting_date_db):
     time_from_db = now_asia.split(",")[1].lstrip()
     return date_from_db, time_from_db
 
+
 def bump_datetime(date_from_db):
     format1 = "%Y-%m-%dT%H:%M:%S.%f"
     date_format = "%H:%M:%S"
@@ -53,10 +54,27 @@ def bump_datetime(date_from_db):
     orignal_date = dt_utc.strftime(date_format)
     return orignal_date
 
+
 def to_portal_format(created_date_db):
     date_format = "%Y-%m-%dT%H:%M:%S.%f"
     app_format = "%d/%m/%Y, %I:%M %p"
     dt_str1 = datetime.strptime(str(created_date_db), '%Y-%m-%dT%H:%M:%S.%f000').strftime("%Y-%m-%dT%H:%M:%S.%f")
+    dt_utc = datetime.strptime(dt_str1, date_format)
+    utc_date = dt_utc.replace(tzinfo=pytz.UTC)
+    now_asia = utc_date.astimezone(pytz.timezone('Asia/Kolkata'))
+    datetime_in_app_format = now_asia.strftime(app_format)
+    return datetime_in_app_format
+
+
+def to_online_refund_app_format(posting_date_db) -> str:
+    """
+    This method is used to format date_time according to online_refund page txns
+    param: posting_date_db: str
+    return: str
+    """
+    date_format = "%Y-%m-%dT%H:%M:%S.%f"
+    app_format = "%d %b %Y, %H:%M"
+    dt_str1 = datetime.strptime(str(posting_date_db), '%Y-%m-%dT%H:%M:%S.%f000').strftime("%Y-%m-%dT%H:%M:%S.%f")
     dt_utc = datetime.strptime(dt_str1, date_format)
     utc_date = dt_utc.replace(tzinfo=pytz.UTC)
     now_asia = utc_date.astimezone(pytz.timezone('Asia/Kolkata'))

@@ -55,6 +55,7 @@ class TransHistoryPage(BasePage):
     btn_apply = (By.CLASS_NAME, "android.widget.Button")
 
     txt_payment_msg_field = (By.ID, "com.ezetap.service.demo:id/tv_PaymentStatus")
+    category_type_by_reference = (By.XPATH, "//*[@text = 'Reference ID']")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -73,10 +74,30 @@ class TransHistoryPage(BasePage):
         el[0].click()
 
     def click_on_transaction_by_order_id(self, order_id):
-        locator = (By.XPATH, '//*[@resource-id="com.ezetap.service.demo:id/tvTxnId" and @text="'+order_id+'"]/../..' )
-        self.perform_click(locator)
+        """
+          This method clicks on the search bar in history page and clicks on the transaction on the basis of order_id
+          param order_id: str
+        """
+        locator = (By.ID, 'com.ezetap.service.demo:id/ivSearch')
+        if not GlobalVariables.bool_validate_multiple_txns:
+            self.perform_click(locator)
+            self.wait_for_element(self.search_category)
+            self.perform_click(self.search_category)
+            self.wait_for_element(self.category_type_by_reference)
+            self.perform_click(self.category_type_by_reference)
+            self.wait_for_element(self.btn_apply)
+            self.perform_click(self.btn_apply)
+            GlobalVariables.bool_validate_multiple_txns = True
+        self.perform_sendkeys(self.search_field, order_id)
+        self.perform_click(self.search_button)
+        self.wait_for_element(self.click_txn)
+        self.perform_click(self.click_txn)
 
     def click_on_transaction_by_txn_id(self, txn_id):
+        """
+          This method clicks on the search bar in history page and clicks on the transaction on the basis of txn_id
+          param txn_id: str
+        """
         locator = (By.ID, 'com.ezetap.service.demo:id/ivSearch')
         if not GlobalVariables.bool_validate_multiple_txns:
             self.perform_click(locator)

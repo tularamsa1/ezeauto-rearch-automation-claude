@@ -181,7 +181,7 @@ def test_common_100_115_271():
             logger.debug(f"Fetching merchant_name value from the txn table : {merchant_name}")
             terminal_info_id_db = result["terminal_info_id"].iloc[0]
             logger.debug(f"Fetching  terminal_info_id value from the txn table : {terminal_info_id_db}")
-            posting_date = result["posting_date"].iloc[0]
+            posting_date = result["posting_date"].values[0]
             logger.debug(f"Fetching  posting_date value from the txn table : {posting_date}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
