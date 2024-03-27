@@ -299,6 +299,8 @@ def test_common_100_115_04_004():
                 # --------------------------------------------------------------------------------------------
                 date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
                 date_and_time_app_2 = date_time_converter.to_app_format(posting_date_db=posting_date_2)
+                date_and_time_app_3 = date_time_converter.to_online_refund_app_format(posting_date_db=posting_date)
+                date_and_time_app_4 = date_time_converter.to_online_refund_app_format(posting_date_db=posting_date_2)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -334,7 +336,7 @@ def test_common_100_115_04_004():
                     "or_device_serial": device_serial,
                     "or_amount": "{:,.2f}".format(amount),
                     "or_card_type_desc": "*0018 CTLS",
-                    "or_date_time": date_and_time_app,
+                    "or_date_time": date_and_time_app_3,
                     "or_status": "AUTHORIZED_REFUNDED",
                     "or_auth_code_name": auth_code,
                     "or_mid": mid_db,
@@ -345,7 +347,7 @@ def test_common_100_115_04_004():
                     "or_device_serial_2": device_serial,
                     "or_amount_2": "{:,.2f}".format(amount),
                     "or_card_type_desc_2": "*0018 CTLS",
-                    "or_date_time_2": date_and_time_app_2,
+                    "or_date_time_2": date_and_time_app_4,
                     "or_status_2": "REFUNDED",
                     "or_ref3_2": device_serial,
                     "or_auth_code_name_2": auth_code_2,
@@ -1231,6 +1233,8 @@ def test_common_100_115_04_005():
                 # --------------------------------------------------------------------------------------------
                 date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
                 date_and_time_app_2 = date_time_converter.to_app_format(posting_date_db=posting_date_2)
+                date_and_time_app_3 = date_time_converter.to_online_refund_app_format(posting_date_db=posting_date)
+                date_and_time_app_4 = date_time_converter.to_online_refund_app_format(posting_date_db=posting_date_2)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -1268,7 +1272,7 @@ def test_common_100_115_04_005():
                     "or_device_serial": device_serial,
                     "or_amount": "{:,.2f}".format(amount),
                     "or_card_type_desc": "*0102 EMV with PIN",
-                    "or_date_time": date_and_time_app,
+                    "or_date_time": date_and_time_app_3,
                     "or_status": "AUTHORIZED_REFUNDED",
                     "or_auth_code_name": auth_code,
                     "or_mid": mid_db,
@@ -1280,7 +1284,7 @@ def test_common_100_115_04_005():
                     "or_device_serial_2": device_serial,
                     "or_amount_2": "{:,.2f}".format(amount),
                     "or_card_type_desc_2": "*0102 EMV with PIN",
-                    "or_date_time_2": date_and_time_app_2,
+                    "or_date_time_2": date_and_time_app_4,
                     "or_status_2": "REFUNDED",
                     "or_ref3_2": device_serial,
                     "or_auth_code_name_2": auth_code_2,
@@ -2209,6 +2213,8 @@ def test_common_100_115_04_006():
                 # --------------------------------------------------------------------------------------------
                 date_and_time_app = date_time_converter.to_app_format(posting_date_db=posting_date)
                 date_and_time_app_2 = date_time_converter.to_app_format(posting_date_db=posting_date_2)
+                date_and_time_app_3 = date_time_converter.to_online_refund_app_format(posting_date_db=posting_date)
+                date_and_time_app_4 = date_time_converter.to_online_refund_app_format(posting_date_db=posting_date_2)
                 expected_app_values = {
                     "txn_amt": "{:,.2f}".format(amount),
                     "pmt_mode": "CARD",
@@ -2246,7 +2252,7 @@ def test_common_100_115_04_006():
                     "or_device_serial": device_serial,
                     "or_amount": "{:,.2f}".format(amount),
                     "or_card_type_desc": "*0017 CTLS",
-                    "or_date_time": date_and_time_app,
+                    "or_date_time": date_and_time_app_3,
                     "or_status": "AUTHORIZED_REFUNDED",
                     "or_auth_code_name": auth_code,
                     "or_mid": mid_db,
@@ -2258,7 +2264,7 @@ def test_common_100_115_04_006():
                     "or_device_serial_2": device_serial,
                     "or_amount_2": "{:,.2f}".format(amount),
                     "or_card_type_desc_2": "*0017 CTLS",
-                    "or_date_time_2": date_and_time_app_2,
+                    "or_date_time_2": date_and_time_app_4,
                     "or_status_2": "REFUNDED",
                     "or_ref3_2": device_serial,
                     "or_auth_code_name_2": auth_code_2,

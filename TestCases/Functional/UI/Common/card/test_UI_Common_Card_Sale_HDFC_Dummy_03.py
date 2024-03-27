@@ -1147,7 +1147,7 @@ def test_common_100_115_118():
                     "AUTH CODE": auth_code,
                     "date": txn_date,
                     "time": txn_time,
-                    "payment_option": "DEBIT SALE",
+                    "payment_option": "SALE",
                     "BATCH NO": batch_number_db,
                     "TID": tid
                 }
@@ -2876,7 +2876,7 @@ def test_common_100_115_121():
                     "AUTH CODE": auth_code.strip(),
                     "date": txn_date,
                     "time": txn_time,
-                    "payment_option": "DEBIT SALE",
+                    "payment_option": "SALE",
                     "BATCH NO": batch_number_db,
                     "TID": tid
                 }

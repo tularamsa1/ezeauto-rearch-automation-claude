@@ -3266,6 +3266,25 @@ def test_common_100_115_07_088():
         logger.debug(f"Query to fetch data from the emi table : {query}")
         result = DBProcessor.getValueFromDB(query)
         logger.debug(f"Fetching result from emi table :{result}")
+        original_interest_rate = result['interest_rate'].values[0]
+        logger.debug(f"Fetching interest_rate from the emi table : {original_interest_rate}")
+
+        query = f"update emi set interest_rate='15.99' where org_code='{org_code}' and " \
+                f"issuer_code='ICICI' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
+                f"and tid_type='SUBVENTION'"
+        logger.debug(f"Updating the emi setting with interest_rate : {query}")
+        result = DBProcessor.setValueToDB(query)
+        logger.debug(f"Fetching result after updating emi table with interest_rate :{result}")
+
+        refresh_db()
+        logger.debug(f"Using DB refresh method after updating the emi interest_rate and subvention_plan_details")
+
+        query = f"select * from emi where org_code='{org_code}' and status = 'ACTIVE' and " \
+                f"issuer_code='ICICI' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
+                f"and tid_type='SUBVENTION'"
+        logger.debug(f"Query to fetch data from the emi table : {query}")
+        result = DBProcessor.getValueFromDB(query)
+        logger.debug(f"Fetching result from emi table :{result}")
         interest_rate = result['interest_rate'].values[0]
         logger.debug(f"Fetching interest_rate from the emi table : {interest_rate}")
         term = result['term'].values[0]
@@ -3326,16 +3345,6 @@ def test_common_100_115_07_088():
         logger.debug(f"Query to update subvention_plan_details with status as ACTIVE : {query}")
         result = DBProcessor.setValueToDB(query)
         logger.debug(f"Query to fetch result from subvention_plan_details for status as ACTIVE : {result}")
-
-        query = f"update emi set interest_rate='15.99' where org_code='{org_code}' and " \
-                f"issuer_code='ICICI' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
-                f"and tid_type='SUBVENTION'"
-        logger.debug(f"Updating the emi setting with interest_rate : {query}")
-        result = DBProcessor.setValueToDB(query)
-        logger.debug(f"Fetching result after updating emi table with interest_rate :{result}")
-
-        refresh_db()
-        logger.debug(f"Using DB refresh method after updating the emi interest_rate and subvention_plan_details")
 
         query = f"select * from subvention_plan_details where subvention_plan_id='{subvention_plan_id}' and subventing_entity='BRAND' " \
                 f"and subvention_value_type= 'PERCENTAGE' and subvention_type='CASHBACK' and tenure='{emi_plan_in_months} month' ;"
@@ -4152,7 +4161,7 @@ def test_common_100_115_07_088():
         # -------------------------------------------End of Validation--------------------------------------------------
     finally:
         try:
-            query = f"update emi set interest_rate='{interest_rate}' where org_code='{org_code}' and " \
+            query = f"update emi set interest_rate='{original_interest_rate}' where org_code='{org_code}' and " \
                 f"issuer_code='ICICI' and card_type='CREDIT' and term = '{emi_plan_in_months} month' and emi_type='BRAND'" \
                 f"and tid_type='SUBVENTION'"
             logger.debug(f"Reverting back the  updated interest_rate in emi table : {query}")

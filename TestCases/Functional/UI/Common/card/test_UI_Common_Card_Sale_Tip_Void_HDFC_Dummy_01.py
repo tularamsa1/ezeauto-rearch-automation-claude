@@ -1866,7 +1866,7 @@ def test_common_100_115_01_009():
                     "CARD TYPE": "RUPAY",
                     "BATCH NO": batch_number,
                     "TID": tid,
-                    "payment_option": "VOID SALE"
+                    "payment_option": "VOID"
                 }
                 logger.debug(f"expected_charge_slip_values: {expected_charge_slip_values}")
                 receipt_validator.perform_charge_slip_validations(txn_id=txn_id, credentials={

@@ -90,12 +90,14 @@ class TransHistoryPage(BasePage):
     txt_ref_num_3 = (By.XPATH, "//*[@text='REFERENCE NO. 3']/following-sibling::android.widget.TextView")
     txt_card = (By.XPATH, "//*[@text='CARD']/following-sibling::android.widget.TextView")
     txt_mobile = (By.XPATH, "//*[@text='CUSTOMER MOBILE']/following-sibling::android.widget.TextView")
+
     search_field = (By.ID, "com.ezetap.service.demo:id/searchField")
     search_button = (By.ID, "com.ezetap.service.demo:id/search_button")
     click_txn = (By.ID, "com.ezetap.service.demo:id/clTxnView")
     search_category = (By.ID, 'com.ezetap.service.demo:id/search_category_selection_dropdown')
     category_type_by_txn = (By.XPATH, "//*[@text='Transaction ID']")
     btn_apply = (By.CLASS_NAME, "android.widget.Button")
+    category_type_by_reference = (By.XPATH, "//*[@text = 'Reference ID']")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -120,11 +122,20 @@ class TransHistoryPage(BasePage):
           This method clicks on the search bar in history page and clicks on the transaction on the basis of order_id
           param order_id: str
         """
-        locator = (By.ID, 'com.ezetap.service.demo:id/searchView')
-        self.perform_click(locator)
-        self.perform_sendkeys(locator, order_id)
-        locator = (By.ID, 'com.ezetap.service.demo:id/clTxnView')
-        self.perform_click(locator)
+        locator = (By.ID, 'com.ezetap.service.demo:id/ivSearch')
+        if not GlobalVariables.bool_validate_multiple_txns:
+            self.perform_click(locator)
+            self.wait_for_element(self.search_category)
+            self.perform_click(self.search_category)
+            self.wait_for_element(self.category_type_by_reference)
+            self.perform_click(self.category_type_by_reference)
+            self.wait_for_element(self.btn_apply)
+            self.perform_click(self.btn_apply)
+            GlobalVariables.bool_validate_multiple_txns = True
+        self.perform_sendkeys(self.search_field, order_id)
+        self.perform_click(self.search_button)
+        self.wait_for_element(self.click_txn)
+        self.perform_click(self.click_txn)
 
     def click_on_release_pre_auth(self):
         """
@@ -153,6 +164,10 @@ class TransHistoryPage(BasePage):
         self.perform_click(self.btn_conf_pre_auth_popup)
 
     def click_on_transaction_by_txn_id(self, txn_id):
+        """
+          This method clicks on the search bar in history page and clicks on the transaction on the basis of txn_id
+          param txn_id: str
+        """
         locator = (By.ID, 'com.ezetap.service.demo:id/ivSearch')
         if not GlobalVariables.bool_validate_multiple_txns:
             self.perform_click(locator)

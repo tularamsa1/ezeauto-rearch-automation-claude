@@ -1168,7 +1168,7 @@ def test_common_100_115_203():
                     "AUTH CODE": auth_code.strip(),
                     "date": txn_date,
                     "time": txn_time,
-                    "payment_option": "VOID SALE",
+                    "payment_option": "VOID",
                     "BATCH NO": batch_number_db,
                     "TID": tid
                 }
@@ -2928,7 +2928,7 @@ def test_common_100_115_206():
                     "AUTH CODE": auth_code.strip(),
                     "date": txn_date,
                     "time": txn_time,
-                    "payment_option": "VOID SALE",
+                    "payment_option": "VOID",
                     "BATCH NO": batch_number_db,
                     "TID": tid
                 }

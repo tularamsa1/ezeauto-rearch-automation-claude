@@ -1687,7 +1687,7 @@ def test_common_100_115_233():
                     'AUTH CODE': str(auth_code).strip(),
                     'BATCH NO': str(batch_number),
                     'CARD TYPE': 'RUPAY',
-                    'payment_option': 'VOID SALE',
+                    'payment_option': 'VOID',
                     'TID': tid
                 }
                 receipt_validator.perform_charge_slip_validations(txn_id, {"username": app_username,
@@ -2813,7 +2813,7 @@ def test_common_100_115_235():
                     'AUTH CODE': str(auth_code).strip(),
                     'BATCH NO': str(batch_number),
                     'CARD TYPE': 'RUPAY',
-                    'payment_option': 'VOID SALE',
+                    'payment_option': 'VOID',
                     'TID': tid
                 }
                 receipt_validator.perform_charge_slip_validations(txn_id, {"username": app_username,

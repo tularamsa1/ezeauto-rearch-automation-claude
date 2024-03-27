@@ -452,7 +452,7 @@ def test_common_100_115_248():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
-                date_and_time_portal = date_time_converter.to_portal_format(txn_posting_date)
+                date_and_time_portal = date_time_converter.to_portal_format(txn_created_time)
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
                     "pmt_status": "VOIDED",
@@ -712,7 +712,7 @@ def test_common_100_115_249():
         # -----------------------------------------Start of App Validation-------------------------------------
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
-            date_and_time = date_time_converter.to_app_format(txn_posting_date)
+            date_and_time = date_time_converter.to_app_format(txn_created_time)
             try:
                 expected_app_values = {
                     "pmt_mode": "CARD",
@@ -937,7 +937,7 @@ def test_common_100_115_249():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
-                date_and_time_portal = date_time_converter.to_portal_format(txn_posting_date)
+                date_and_time_portal = date_time_converter.to_portal_format(txn_created_time)
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
                     "pmt_status": "VOIDED",
@@ -1432,7 +1432,7 @@ def test_common_100_115_250():
         if (ConfigReader.read_config("Validations", "portal_validation")) == "True":
             logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
-                date_and_time_portal = date_time_converter.to_portal_format(txn_posting_date)
+                date_and_time_portal = date_time_converter.to_portal_format(txn_created_time)
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
                     "pmt_status": "VOIDED",
@@ -2498,7 +2498,7 @@ def test_common_100_115_252():
             logger.info(f"Started Portal validation for the test case : {testcase_id}")
             try:
                 # --------------------------------------------------------------------------------------------
-                date_time = date_time_converter.to_portal_format(created_date_db=txn_posting_date)
+                date_time = date_time_converter.to_portal_format(created_date_db=created_time)
                 expected_portal_values = {
                     "pmt_type": "CARD",
                     "txn_amt": "{:,.2f}".format(amount),
