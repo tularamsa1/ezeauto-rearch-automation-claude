@@ -100,8 +100,7 @@ def test_common_100_103_185():
                 remote_pay_txn.enterCreditCardExpiryYear("2050")
                 remote_pay_txn.enterCreditCardCvv("111")
                 remote_pay_txn.clickOnProceedToPay()
-                remote_pay_txn.enter_otp("1111")
-                remote_pay_txn.submit_otp()
+                remote_pay_txn.click_success_pmt_btn()
 
                 remote_pay_txn.wait_for_success_message()
                 success_message = str(remote_pay_txn.succcessScreenMessage())
@@ -702,8 +701,7 @@ def test_common_100_103_186():
                 remote_pay_txn.enterCreditCardExpiryYear("2048")
                 remote_pay_txn.enterCreditCardCvv("111")
                 remote_pay_txn.clickOnProceedToPay()
-                remote_pay_txn.enter_otp("1111")
-                remote_pay_txn.submit_otp()
+                remote_pay_txn.click_success_pmt_btn()
                 remote_pay_txn.wait_for_success_message()
                 success_message = str(remote_pay_txn.succcessScreenMessage())
                 logger.info(f"Your success message is:  {success_message}")
@@ -1507,7 +1505,6 @@ def test_common_100_103_188():
                 remote_pay_txn.enterDebitCardExpiryYear("2050")
                 remote_pay_txn.enterCreditCardCvv("111")
                 remote_pay_txn.clickOnProceedToPay()
-                remote_pay_txn.enter_otp("1111")
 
             query = "select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and org_code = '" + str(
                 org_code) + "';"
@@ -1545,7 +1542,7 @@ def test_common_100_103_188():
                 logger.info(f"Value for Ezetap org is: {org_setting_value} min.")
                 time.sleep(10 + (setting_value * 60))
 
-            remote_pay_txn.submit_otp()
+            remote_pay_txn.click_success_pmt_btn()
 
             query = f"select * from txn where org_code = '{str(org_code)}' AND external_ref = '{str(order_id)}';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -1916,8 +1913,7 @@ def test_common_100_103_189():
                 remote_pay_txn.enterDebitCardExpiryYear("2050")
                 remote_pay_txn.enter_debit_card_cvv("111")
                 remote_pay_txn.clickOnProceedToPay()
-                remote_pay_txn.enter_otp("1111")
-                remote_pay_txn.submit_otp()
+                remote_pay_txn.click_success_pmt_btn()
 
                 remote_pay_txn.wait_for_success_message()
                 success_message = str(remote_pay_txn.succcessScreenMessage())

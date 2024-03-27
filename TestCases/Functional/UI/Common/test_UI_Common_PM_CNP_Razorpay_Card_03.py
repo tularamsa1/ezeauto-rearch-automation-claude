@@ -94,8 +94,7 @@ def test_common_100_103_190():
                 remote_pay_txn.enterDebitCardExpiryYear("2050")
                 remote_pay_txn.enter_debit_card_cvv("111")
                 remote_pay_txn.clickOnProceedToPay()
-                remote_pay_txn.enter_otp("1111")
-                remote_pay_txn.submit_otp()
+                remote_pay_txn.click_success_pmt_btn()
 
                 remote_pay_txn.wait_for_success_message()
                 success_message = str(remote_pay_txn.succcessScreenMessage())

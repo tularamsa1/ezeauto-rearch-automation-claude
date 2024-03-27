@@ -96,8 +96,7 @@ def test_common_100_103_180():
                 remote_pay_txn.enterCreditCardExpiryYear("2048")
                 remote_pay_txn.enterCreditCardCvv("111")
                 remote_pay_txn.clickOnProceedToPay()
-                remote_pay_txn.enter_otp("1111")
-                remote_pay_txn.submit_otp()
+                remote_pay_txn.click_success_pmt_btn()
                 success_message = str(remote_pay_txn.succcessScreenMessage())
                 logger.info(f"Your expected success message is:  {success_message}")
                 logger.info(f"Your expected Message is:  {expected_message}")
@@ -972,7 +971,6 @@ def test_common_100_103_183():
                 remote_pay_txn.enterCreditCardExpiryYear("2050")
                 remote_pay_txn.enterCreditCardCvv("111")
                 remote_pay_txn.clickOnProceedToPay()
-                remote_pay_txn.enter_otp("1111")
 
             query = f"select * from remotepay_setting where setting_name='cnpTxnTimeoutDuration' and " \
                     f"org_code = '{str(org_code)}';"
@@ -1010,7 +1008,7 @@ def test_common_100_103_183():
                 logger.info(f"Value for Ezetap org is: {org_setting_value} min.")
                 time.sleep(10 + (setting_value * 60))
 
-            remote_pay_txn.submit_otp()
+            remote_pay_txn.click_success_pmt_btn()
 
             query = f"select * from txn where org_code = '{str(org_code)}' AND external_ref = '{str(order_id)}';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")
@@ -1432,8 +1430,7 @@ def test_common_100_103_184():
                 remote_pay_txn.enterCreditCardExpiryYear("2050")
                 remote_pay_txn.enterCreditCardCvv("111")
                 remote_pay_txn.clickOnProceedToPay()
-                remote_pay_txn.enter_otp("1111")
-                remote_pay_txn.submit_otp()
+                remote_pay_txn.click_success_pmt_btn()
 
                 remote_pay_txn.wait_for_success_message()
                 success_message = str(remote_pay_txn.succcessScreenMessage())
