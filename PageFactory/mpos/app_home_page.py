@@ -63,6 +63,35 @@ class HomePage(BasePage):
     txt_yesterday_sales = (AppiumBy.XPATH, '//*[@text="Yesterday"]')
     btn_start_btn = (AppiumBy.ID, "com.ezetap.basicapp:id/btnStartConfig")
 
+    fixed_line_LOB = (By.XPATH, "//android.widget.Button[@text='Fixed line']")
+    fixed_line_bill_collection_active = (By.XPATH, "//*[@text='Bill Collection-Active']")
+    bill_collection_active_fixed_line_no = (By.XPATH, "//*[@text='Fixed Line No.']")
+    fixed_line_no_title = (By.XPATH, "//*[@text='Fixed Line No']")
+    fetch_details_btn = (By.XPATH, "//*[@text='Fetch Details']")
+    check_out_btn = (By.XPATH, "//*[@text='Checkout']")
+    dth_LOB = (By.XPATH, "//android.widget.Button[@text='dth']")
+    search_by_dth_id = (By.XPATH, "//*[@text='Search By DTH ID']")
+    dth_id = (By.XPATH, "//*[@text='Enter DTH ID']")
+    search_details_btn = (By.XPATH, "//*[@text='Search Details']")
+    customer_mobile_no = (By.XPATH, "//*[@text='CustomerMobile No']")
+    alternative_mobile_no = (By.XPATH, "(//*[@class='android.widget.EditText'])[3]")
+    email_id = (By.XPATH, "//android.widget.EditText[@text='Email']")
+    pos_sale_LOB = (By.XPATH, "//android.widget.Button[@text='Pos Sales']")
+    pos_sale_performa_no = (By.XPATH, "//*[@text='Enter Performa No.']")
+    postpaid_mobile_LOB = (By.XPATH, "//android.widget.Button[@text='Postpaid-Mobile']")
+    postpaid_bill_collection_active = (By.XPATH, "//androidx.recyclerview.widget.RecyclerView/android.view.ViewGroup[1]")
+    enter_no_field = (By.XPATH, "//android.widget.EditText")
+    customer_details = (AppiumBy.XPATH, '//*[@text="Customer Details"]')
+    prepaid_mobile_LOB = (By.XPATH, "//android.widget.Button[@text='Pre Paid-Mobile']")
+    prepaid_recharge = (By.XPATH, '//*[@text="Prepaid Recharge"]')
+    mobile_no = (By.XPATH, '//*[@text="Mobile No."]')
+    re_enter_mobile_no = (By.XPATH, '//*[@text="Re-enter Mobile No."]')
+    amount_txt = (By.XPATH, '//android.widget.EditText[@text="Amount[INR]"]')
+    new_activation_LOB = (By.XPATH, "//android.widget.Button[@text='New Activation']")
+    new_act_butterfly = (By.XPATH, "//androidx.recyclerview.widget.RecyclerView/android.view.ViewGroup[1]")
+    caf_no = (By.XPATH, '//*[@text="CAF no."]')
+    order_no_txt = (By.XPATH, '//*[@text="Order no."]')
+
     def __init__(self, driver):
         super().__init__(driver)
 
@@ -374,3 +403,172 @@ class HomePage(BasePage):
     def click_on_start_btn(self):
         self.perform_click(self.btn_start_btn)
 
+    def fetch_all_lobs(self):
+        """
+            This method is used to fetch all the lobs text and storing it in list
+            return : list
+        """
+        list_of_lobs = []
+        for i in range(1, 7):
+            all_lobs = (By.XPATH, f"(//*[@resource-id='com.ezetap.basicapp:id/btnCustom'])[{i}]")
+            self.wait_for_element(all_lobs)
+            lobs = self.fetch_text(all_lobs)
+            list_of_lobs.append(lobs)
+        return list_of_lobs
+
+    def click_on_fixed_line_LOB(self):
+        """
+            This method is used to click on fixed_line lob
+        """
+        self.perform_click(self.fixed_line_LOB)
+
+    def click_on_fixed_line_bill_collection_active(self):
+        """
+           This method is used to click on fixed_line_bill_collection_active sub lob
+        """
+        self.wait_for_element(self.fixed_line_bill_collection_active)
+        self.perform_click(self.fixed_line_bill_collection_active)
+
+    def enter_bill_collection_active_details(self, fixed_line_no: str):
+        """
+            This method is used to send fixed line no for bill_collection_active sub lob and click on fetch details btn
+            :param fixed_line_no: str
+        """
+        self.perform_click(self.bill_collection_active_fixed_line_no)
+        self.perform_sendkeys(self.bill_collection_active_fixed_line_no, fixed_line_no)
+        self.wait_for_element(self.fetch_details_btn)
+        self.perform_click(self.fetch_details_btn)
+
+    def validate_fixed_line_no_title(self):
+        """
+            This method is used to validate the fixed line no title
+        """
+        self.wait_for_element(self.fixed_line_no_title)
+
+    def click_on_check_out_btn(self):
+        """
+            This method is used to click on check out btn
+        """
+        self.wait_for_element(self.check_out_btn)
+        self.perform_click(self.check_out_btn)
+
+    def click_on_dth_LOB(self):
+        """
+            This method is used to click on dth lob
+        """
+        self.perform_click(self.dth_LOB)
+
+    def enter_customer_details_for_search_by_id(self, dth_id_val: str, customer_mobile_number: str,
+                                                alter_no: str, email_address: str):
+        """
+            This method is used to enter the customer details for search_by_id sub lob
+            param: dth_id_val: str
+            param: customer_mobile_number: str
+            param: alter_no: str
+            param: email_address: str
+        """
+        self.perform_click(self.search_by_dth_id)
+        self.perform_sendkeys(self.dth_id, dth_id_val)
+        self.wait_for_element(self.search_details_btn)
+        self.perform_click(self.search_details_btn)
+        self.wait_for_element(self.customer_mobile_no)
+        self.perform_click(self.customer_mobile_no)
+        self.perform_sendkeys(self.customer_mobile_no, customer_mobile_number)
+        self.perform_sendkeys(self.alternative_mobile_no, alter_no)
+        self.perform_sendkeys(self.email_id, email_address)
+        self.wait_for_element(self.fetch_details_btn)
+        self.perform_click(self.fetch_details_btn)
+
+    def click_on_pos_sale_LOB(self):
+        """
+            This method is used to click on pos sale lob
+        """
+        self.perform_click(self.pos_sale_LOB)
+
+    def enter_customer_details_for_pos_sale(self, performa_no: str, email: str):
+        """
+            This method is used to enter the customer details for pos sale lob
+        """
+        self.perform_click(self.pos_sale_performa_no)
+        self.perform_sendkeys(self.pos_sale_performa_no, performa_no)
+        self.wait_for_element(self.fetch_details_btn)
+        self.perform_click(self.fetch_details_btn)
+        self.perform_click(self.email_id)
+        self.perform_sendkeys(self.email_id, email)
+
+    def click_on_postpaid_mobile_LOB(self):
+        """
+            This method is used to click on the postpaid mobile lob
+        """
+        self.perform_click(self.postpaid_mobile_LOB)
+
+    def click_on_postpaid_bill_collection_active(self, ph_no):
+        """
+            This method is used to enter the phone number on the post_paid_bill_collection_active sub lob
+        """
+        self.perform_click(self.postpaid_bill_collection_active)
+        self.perform_sendkeys(self.enter_no_field, ph_no)
+
+    def click_on_fetch_btn(self):
+        """
+            This method is used to click on the fetch button
+        """
+        self.perform_click(self.fetch_details_btn)
+
+    def fetch_customer_details_txt(self):
+        """
+            This method is used to fetch the customer details text from amount screen
+            return : str
+        """
+        return self.fetch_text(self.customer_details)
+
+    def fetch_checkout_btn_txt(self):
+        """
+            This method is used to fetch the checkout btn text from amount screen
+            return : str
+        """
+        return self.fetch_text(self.check_out_btn)
+
+
+    def click_on_prepaid_mobile_LOB(self):
+        """
+            This method is used to click on the prepaid mobile recharge lob
+        """
+        self.perform_click(self.prepaid_mobile_LOB)
+
+    def click_on_new_activation_LOB(self):
+        """
+            This method is used to click on the new activation lob
+        """
+        self.perform_click(self.new_activation_LOB)
+
+    def enter_mobile_activation_butterfly_details(self, caf_no, ph_number, order_no):
+        """
+            This method is used to enter the new activation butterfly details
+            param: caf_no
+            param: ph_number
+            param: order_no
+        """
+        self.perform_click(self.new_act_butterfly)
+        self.perform_sendkeys(self.caf_no, caf_no)
+        self.perform_sendkeys(self.mobile_no, ph_number)
+        self.perform_sendkeys(self.order_no_txt, order_no)
+
+    def enter_mobile_number(self, ph_number):
+        """
+            This method is used to enter the mobile number on the payment page
+            param: ph_number
+        """
+        self.perform_sendkeys(self.mobile_no, ph_number)
+
+    def enter_prepaid_recharge_details(self, ph_number, amount):
+        """
+            This method is used to enter prepaid recharge details
+            param: ph_number
+            param: amount
+        """
+        self.perform_click(self.prepaid_recharge)
+        self.perform_sendkeys(self.mobile_no, ph_number)
+        self.perform_sendkeys(self.re_enter_mobile_no, ph_number)
+        self.perform_sendkeys(self.amount_txt, amount)
+        self.perform_click(self.fetch_details_btn)

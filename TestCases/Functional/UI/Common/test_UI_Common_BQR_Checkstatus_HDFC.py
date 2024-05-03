@@ -1,5 +1,6 @@
 import random
 import sys
+import time
 from datetime import datetime
 from time import sleep
 import pytest
@@ -219,6 +220,8 @@ def test_common_100_102_004():
                 logger.info(f"Starting the steps for logging out")
                 account_page = AccountPage(app_driver)
                 txn_history_page.click_back_Btn_transaction_details()
+                txn_history_page.click_back_Btn()
+                time.sleep(2)
                 txn_history_page.click_back_Btn()
                 home_page.click_account_menu()
                 account_page.click_on_logout()

@@ -47,12 +47,12 @@ class PaymentPage(BasePage):
     txt_enter_cheque_number = (By.ID, "com.ezetap.service.demo:id/txtInputEntryChequeNum")
     btn_bank_name = (AppiumBy.XPATH, "//*[@resource-id ='com.ezetap.service.demo:id/txtInputEntryBankName']")
     btn_select_date = (By.XPATH, "//*[@text='OK']")
-    btn_ok =(By.XPATH, "//*[@text='Cheque Dated']")
+    btn_ok = (By.XPATH, "//*[@text='Cheque Dated']")
     btn_cheque_submit = (By.ID, "com.ezetap.service.demo:id/btnConfirmCheque")
     btn_sign_required = (By.ID, "com.ezetap.service.demo:id/rltvSignRequired")
     btn_addSignature = (By.ID, "com.ezetap.service.demo:id/btnAddSignature")
     btn_signatureSubmit = (By.ID, "com.ezetap.service.demo:id/btnSubmitSign")
-    btn_sign_submit =(By.ID, "com.ezetap.service.demo:id/btnSubmitSign")
+    btn_sign_submit = (By.ID, "com.ezetap.service.demo:id/btnSubmitSign")
     txt_signature_success_status = (By.ID, "com.ezetap.service.demo:id/tvSignSubmitted")
     btn_click_sign = (By.XPATH, "//*[@text='Click here to sign']")
     lbl_calender = (By.ID, "com.ezetap.service.demo:id/txtInputEntryChequeDate")
@@ -116,7 +116,7 @@ class PaymentPage(BasePage):
     txt_mid = (By.XPATH, "//*[@text='MID']/following-sibling::android.widget.TextView[2]")
     txt_tid = (By.XPATH, "//*[@text='TID']/following-sibling::android.widget.TextView[2]")
     btn_payment_dialog_sample = (AppiumBy.XPATH,
-                             "/hierarchy/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TextView")
+                                 "/hierarchy/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.TextView")
     btn_cancel_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/cancel_button')
     btn_result_sample = (AppiumBy.ID, "com.ezeapi.sample:id/resultView")
     btn_postpaid_lob = (By.XPATH, "//*[@text='Postpaid-Mobile']")
@@ -127,6 +127,10 @@ class PaymentPage(BasePage):
     btn_checkout = (By.XPATH, "//*[@text='Checkout']")
     txt_order_id_airtel = (By.ID, "com.ezetap.service.demo:id/tvOrderId")
 
+    mobile_no = (By.XPATH, "//*[@text='Mobile No.']")
+    email_address = (By.XPATH, "//*[@text='Email Id']")
+    cash_pmt = (By.XPATH, "//*[@text='CASH']")
+    customer_details_title = (By.XPATH, "(//*[@text='Customer Details'])[1]")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -212,9 +216,9 @@ class PaymentPage(BasePage):
         txn_id = self.fetch_text(self.txa_transactionId)
         print("Txn id APP:", txn_id)
         status = self.fetch_text(self.txa_status)
-        print("Status APP:",status)
+        print("Status APP:", status)
         self.perform_click(self.btn_closeTransactionDetails)
-        return txn_id,status
+        return txn_id, status
 
     def validate_upi_bqr_payment_screen(self):
         return self.fetch_text(self.lbl_scanQRCode)
@@ -555,7 +559,6 @@ class PaymentPage(BasePage):
         self.wait_for_element(self.txt_pan_number).clear()
         self.perform_sendkeys(self.txt_pan_number, pan_number)
         self.perform_click(self.btn_confirm)
-
 
     def select_payment_option_emi_on_card(self):
         """
@@ -983,3 +986,25 @@ class PaymentPage(BasePage):
     def fetch_order_id_from_success_page(self):
         order_id = self.fetch_text(self.txt_order_id_airtel).split(' ')[-1]
         return order_id
+
+    def enter_mobile_number_and_email(self, mobile: str, email: str):
+        """
+            This method is used to enter the mobile no and email address
+        """
+        self.wait_for_element(self.mobile_no)
+        self.perform_sendkeys(self.mobile_no, mobile)
+        self.perform_sendkeys(self.email_address, email)
+
+    def click_on_cash_payment_mode_and_confirm_btn(self):
+        """
+            This method is used to click on cash pmt mode and click on confirm btn
+        """
+        self.perform_click(self.cash_pmt)
+        self.wait_for_element(self.btn_confirmPayment)
+        self.perform_click(self.btn_confirmPayment)
+
+    def validate_customer_details_title(self):
+        """
+            This method is used to validate customer details title
+        """
+        self.wait_for_element(self.customer_details_title)
