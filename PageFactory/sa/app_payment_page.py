@@ -127,10 +127,9 @@ class PaymentPage(BasePage):
     btn_checkout = (By.XPATH, "//*[@text='Checkout']")
     txt_order_id_airtel = (By.ID, "com.ezetap.service.demo:id/tvOrderId")
 
-    mobile_no = (By.XPATH, "//*[@text='Mobile No.']")
-    email_address = (By.XPATH, "//*[@text='Email Id']")
-    cash_pmt = (By.XPATH, "//*[@text='CASH']")
-    customer_details_title = (By.XPATH, "(//*[@text='Customer Details'])[1]")
+    txt_email_address = (By.XPATH, "//*[@text='Email Id']")
+    txt_cash_pmt = (By.XPATH, "//*[@text='CASH']")
+    txt_customer_details_title = (By.XPATH, "(//*[@text='Customer Details'])[1]")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -990,16 +989,18 @@ class PaymentPage(BasePage):
     def enter_mobile_number_and_email(self, mobile: str, email: str):
         """
             This method is used to enter the mobile no and email address
+            param: mobile: str
+            param: email: str
         """
-        self.wait_for_element(self.mobile_no)
-        self.perform_sendkeys(self.mobile_no, mobile)
-        self.perform_sendkeys(self.email_address, email)
+        self.wait_for_element(self.txt_mobile_no)
+        self.perform_sendkeys(self.txt_mobile_no, mobile)
+        self.perform_sendkeys(self.txt_email_address, email)
 
     def click_on_cash_payment_mode_and_confirm_btn(self):
         """
             This method is used to click on cash pmt mode and click on confirm btn
         """
-        self.perform_click(self.cash_pmt)
+        self.perform_click(self.txt_cash_pmt)
         self.wait_for_element(self.btn_confirmPayment)
         self.perform_click(self.btn_confirmPayment)
 
@@ -1007,4 +1008,4 @@ class PaymentPage(BasePage):
         """
             This method is used to validate customer details title
         """
-        self.wait_for_element(self.customer_details_title)
+        self.wait_for_element(self.txt_customer_details_title)

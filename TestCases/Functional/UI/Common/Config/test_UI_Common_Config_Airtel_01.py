@@ -62,7 +62,6 @@ def test_common_100_300_302_014():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
 
-        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
@@ -195,7 +194,6 @@ def test_common_100_300_302_015():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
 
-        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
@@ -651,14 +649,23 @@ def test_common_100_300_302_016():
 
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id_db)
                 date_time = transaction_details[0]['Date & Time']
+                logger.info(f"Fetching date and time from portal",date_time)
                 transaction_id = transaction_details[0]['Transaction ID']
+                logger.info(f"Fetching transaction_id from portal", transaction_id)
                 total_amount = transaction_details[0]['Total Amount'].split()
+                logger.info(f"Fetching total_amount from portal", total_amount)
                 rr_number = transaction_details[0]['RR Number']
+                logger.info(f"Fetching rr_number from portal", rr_number)
                 transaction_type = transaction_details[0]['Type']
+                logger.info(f"Fetching transaction_type from portal", transaction_type)
                 status = transaction_details[0]['Status']
+                logger.info(f"Fetching status from portal", status)
                 username = transaction_details[0]['Username']
+                logger.info(f"Fetching username from portal", username)
                 auth_code_portal = transaction_details[0]['Auth Code']
+                logger.info(f"Fetching auth_code_portal from portal", auth_code_portal)
                 labels = transaction_details[0]['Labels']
+                logger.info(f"Fetching labels from portal", labels)
 
                 actual_portal_values = {
                     "date_time": date_time,
@@ -756,7 +763,6 @@ def test_common_100_300_302_017():
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
 
-        TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)--------------------------------------------------------
@@ -1214,14 +1220,23 @@ def test_common_100_300_302_018():
 
                 transaction_details = get_transaction_details_for_portal(app_username, app_password, order_id_db)
                 date_time = transaction_details[0]['Date & Time']
+                logger.info(f"Fetching date and time from portal", date_time)
                 transaction_id = transaction_details[0]['Transaction ID']
+                logger.info(f"Fetching transaction_id from portal", transaction_id)
                 total_amount = transaction_details[0]['Total Amount'].split()
+                logger.info(f"Fetching total_amount from portal", total_amount)
                 rr_number = transaction_details[0]['RR Number']
+                logger.info(f"Fetching rr_number from portal", rr_number)
                 transaction_type = transaction_details[0]['Type']
+                logger.info(f"Fetching transaction_type from portal", transaction_type)
                 status = transaction_details[0]['Status']
+                logger.info(f"Fetching status from portal", status)
                 username = transaction_details[0]['Username']
+                logger.info(f"Fetching username from portal", username)
                 auth_code_portal = transaction_details[0]['Auth Code']
+                logger.info(f"Fetching auth_code_portal from portal", auth_code_portal)
                 labels = transaction_details[0]['Labels']
+                logger.info(f"Fetching labels from portal", labels)
 
                 actual_portal_values = {
                     "date_time": date_time,
