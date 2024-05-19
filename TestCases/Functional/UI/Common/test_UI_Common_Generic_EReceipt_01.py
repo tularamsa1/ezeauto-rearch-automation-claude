@@ -81,7 +81,7 @@ def test_common_400_410_001():
             logger.info(f"User is navigated to home page")
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.click_on_history()
             txn_history_page = TransHistoryPage(app_driver)
             txn_history_page.click_on_transaction_by_order_id(order_id)

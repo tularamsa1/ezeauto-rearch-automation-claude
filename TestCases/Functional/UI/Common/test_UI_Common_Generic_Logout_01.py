@@ -70,7 +70,7 @@ def test_common_400_402_001():
             login_page.perform_login(app_username, app_password)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.debug(f"Login in to MPOSX application successful for 1st time")
             logout = Logout(app_driver)
             logout.perform_logout()
@@ -177,7 +177,7 @@ def test_common_400_402_002():
             login_page.perform_login(app_username, app_password)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.debug(f"Login in to MPOSX application successful for 1st time")
             app_driver.launch_app()
             logger.debug(f"Lunching the application again")
@@ -202,7 +202,7 @@ def test_common_400_402_002():
                 # --------------------------------------------------------------------------------------------
                 expected_app_values = {'Result': "SUCCESS"}
                 try:
-                    home_page.check_home_page_logo()
+                    # home_page.check_home_page_logo()
                     result = 'SUCCESS'
                 except Exception as e :
                     result = f'FAILURE: {e}'

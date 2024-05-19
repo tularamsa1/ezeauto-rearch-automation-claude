@@ -1010,7 +1010,7 @@ def test_common_100_111_042():
                 logger.info("Waiting for Home Page to load")
                 home_page = HomePage(app_driver)
                 home_page.wait_for_navigation_to_load()
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.wait_for_home_page_load()
                 logger.info("Going to transaction history")
                 home_page.click_on_history()

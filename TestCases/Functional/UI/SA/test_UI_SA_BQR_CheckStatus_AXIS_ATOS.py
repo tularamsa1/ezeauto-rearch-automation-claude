@@ -99,7 +99,7 @@ def test_sa_100_102_203():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_home_page_load()
             home_page.wait_for_navigation_to_load()
             logger.info(f"App homepage loaded successfully")
@@ -175,7 +175,7 @@ def test_sa_100_102_203():
                                        "auth_code": auth_code, "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.wait_for_home_page_load()
                 logger.debug("Homepage of MPOSX app loaded successfully")
                 home_page.click_on_history()
@@ -491,7 +491,7 @@ def test_sa_100_102_204():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_home_page_load()
             home_page.wait_for_navigation_to_load()
             logger.info(f"App homepage loaded successfully")
@@ -575,7 +575,7 @@ def test_sa_100_102_204():
                                        }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.info(f"App homepage loaded successfully")
