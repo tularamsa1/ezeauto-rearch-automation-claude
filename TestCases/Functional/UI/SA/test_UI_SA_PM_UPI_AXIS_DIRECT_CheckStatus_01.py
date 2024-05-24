@@ -509,7 +509,7 @@ def test_sa_100_101_036():
             logger.debug(f"Fetching Transaction status of the transaction : {app_payment_status}")
             payment_page.click_on_proceed_homepage()
             payment_page.click_on_back_btn()
-            home_page.click_on_back_btn_enter_amt_page()
+            # home_page.click_on_back_btn_enter_amt_page()
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "';"
@@ -901,7 +901,7 @@ def test_sa_100_101_037():
             logger.debug(f"Fetching Transaction status of the transaction : {app_payment_status}")
             payment_page.click_on_proceed_homepage()
             payment_page.click_on_back_btn()
-            home_page.click_on_back_btn_enter_amt_page()
+            # home_page.click_on_back_btn_enter_amt_page()
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "';"
@@ -1291,7 +1291,7 @@ def test_sa_100_101_044():
             # payment_page = PaymentPage(app_driver)
             # home_page.perform_check_status()
             # payment_page.click_on_proceed_homepage()
-            # home_page.click_on_back_btn_enter_amt_page()
+            # # home_page.click_on_back_btn_enter_amt_page()
             # payment_page.validate_upi_bqr_payment_screen()
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(

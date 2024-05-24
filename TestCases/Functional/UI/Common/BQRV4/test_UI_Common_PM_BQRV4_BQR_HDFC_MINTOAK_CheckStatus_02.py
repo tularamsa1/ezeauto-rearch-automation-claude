@@ -131,7 +131,7 @@ def test_common_100_102_364():
             logger.info(f"Fetching status of payment from payment screen: {app_payment_status} ")
             payment_page.click_on_proceed_homepage()
             payment_page.click_on_back_btn()
-            home_page.click_on_back_btn_enter_amt_page()
+            # home_page.click_on_back_btn_enter_amt_page()
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch transaction id from database is: {query}")

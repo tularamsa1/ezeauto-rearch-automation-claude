@@ -583,7 +583,7 @@ def test_common_100_102_002():
 
                 payment_page.click_on_proceed_homepage()
                 payment_page.click_on_back_btn()
-                home_page.click_on_back_btn_enter_amt_page()
+                # home_page.click_on_back_btn_enter_amt_page()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 # home_page.check_home_page_logo()
@@ -954,7 +954,7 @@ def test_common_100_102_003():
 
                 payment_page.click_on_proceed_homepage()
                 payment_page.click_on_back_btn()
-                home_page.click_on_back_btn_enter_amt_page()
+                # home_page.click_on_back_btn_enter_amt_page()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 # home_page.check_home_page_logo()

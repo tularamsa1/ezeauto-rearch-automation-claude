@@ -226,7 +226,7 @@ def test_common_100_102_004():
                 # home_page.click_account_menu()
                 home_page.click_image_btn()
                 home_page.click_on_merchant_name()
-                home_page.click_on_settings()
+                # home_page.click_on_settings()
                 account_page.click_on_logout()
                 logger.info(f"Clicked on Signout button")
 

@@ -108,7 +108,7 @@ def test_common_100_102_167():
             logger.info("Selected payment mode is UPI")
             payment_page.click_on_proceed_homepage()
             payment_page.click_on_back_btn()
-            home_page.click_on_back_btn_enter_amt_page()
+            # home_page.click_on_back_btn_enter_amt_page()
 
             query = "select * from txn where org_code = '" + str(org_code) + "' AND external_ref = '" + str(
                 order_id) + "';"

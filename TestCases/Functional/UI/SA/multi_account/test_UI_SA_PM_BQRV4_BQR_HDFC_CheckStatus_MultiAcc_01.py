@@ -585,7 +585,7 @@ def test_sa_100_110_004():
             logger.debug(f"Fetching Transaction status of the transaction : {app_payment_status}")
             payment_page.click_on_proceed_homepage()
             payment_page.click_on_back_btn()
-            home_page.click_on_back_btn_enter_amt_page()
+            # home_page.click_on_back_btn_enter_amt_page()
 
             query = "select * from txn where org_code='" + org_code + "' and id LIKE '" \
                                                                       "" + datetime.utcnow().strftime(
