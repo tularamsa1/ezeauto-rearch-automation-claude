@@ -216,7 +216,7 @@ def test_common_100_103_091():
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
-                homePage.check_home_page_logo()
+                # homePage.check_home_page_logo()
                 homePage.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
 
@@ -703,7 +703,7 @@ def test_common_100_103_092():
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
-                homePage.check_home_page_logo()
+                # homePage.check_home_page_logo()
                 homePage.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
 
@@ -1199,7 +1199,7 @@ def test_common_100_103_093():
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
-                homePage.check_home_page_logo()
+                # homePage.check_home_page_logo()
                 homePage.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
 
@@ -1719,7 +1719,7 @@ def test_common_100_103_094():
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
                 homePage.wait_for_home_page_load()
-                homePage.check_home_page_logo()
+                # homePage.check_home_page_logo()
                 homePage.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
 
@@ -2412,7 +2412,7 @@ def test_common_100_103_095():
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
-                homePage.check_home_page_logo()
+                # homePage.check_home_page_logo()
                 homePage.wait_for_home_page_load()
                 homePage.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)

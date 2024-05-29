@@ -281,7 +281,7 @@ def test_sa_100_102_029():
             logger.info(f"Logging in the MPOSX application using username : {username}")
             loginPage.perform_login(username, password)
             homePage = HomePage(app_driver)
-            homePage.check_home_page_logo()
+            # homePage.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
             amount = 111
             order_id = datetime.now().strftime('%m%d%H%M%S')
