@@ -31,6 +31,7 @@ SQLITE_DB_PATH = os.path.join(DATABASE_DIR, 'ezeauto.db')
 RUNTIME_DIR = os.path.join(EZEAUTO_MAIN_DIR, 'Runtime')
 DATAPROVIDER_DIR = os.path.join(EZEAUTO_MAIN_DIR, 'DataProvider')
 DB_DETAILS_EXCEL_PATH = os.path.join(DATAPROVIDER_DIR, 'db_details.xlsx')
+DB_SERVICE_FEE_JSON_PATH = os.path.join(DATAPROVIDER_DIR,'service_fee.json')
 
 # FileNames
 STR_CARD_DETAILS_FILE = "card_details.xlsx"

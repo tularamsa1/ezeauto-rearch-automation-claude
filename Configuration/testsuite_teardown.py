@@ -148,6 +148,22 @@ def revert_cnp_payment_settings_default(org_code, bank_code, portal_un, portal_p
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting precondition DB refresh is : {response}")
 
+    if payment_gateway == "RAZORPAY":
+        query = "update merchant_pg_config set status = 'INACTIVE' where org_code='" + org_code + "';"
+        result = DBProcessor.setValueToDB(query)
+        logger.info(f"RESULT of updating upi_merchant_config table inactive: {result}")
+
+        query = f"update merchant_pg_config set status = 'ACTIVE' where org_code='{org_code}' and " \
+                f"payment_gateway='{payment_gateway}' and bank_code ='{bank_code}'"
+
+        logger.info(f"Query is: {query}")
+        result = DBProcessor.setValueToDB(query)
+        print("RESULT of updating DB setting active", result)
+        api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_un,
+                                                                              "password": portal_pw})
+        response = APIProcessor.send_request(api_details)
+        logger.debug(f"Response received for setting precondition DB refresh is : {response}")
+
     query = "update remotepay_setting set setting_value=2 where setting_name='cnpTxnTimeoutDuration' and  org_code='" + org_code + "';"
     result = DBProcessor.setValueToDB(query)
     logger.info(f"RESULT of updating remotepay_setting table: {result}")
@@ -661,5 +677,81 @@ def update_rule_status(org_code: str, credit_type: str, status: str):
     result = DBProcessor.setValueToDB(query=query, db_name='rule_engine')
     logger.debug(f"Result for rule table after activating or inactivating rule for org_code: {org_code} : {result}")
     refresh_db()
-    logger.debug(f"Using DB refresh method after updating rule table to active / inactive rule for org_code: {org_code}")
+    logger.debug(
+        f"Using DB refresh method after updating rule table to active / inactive rule for org_code: {org_code}")
 
+
+def insert_service_fee_config_data(portal_username: str, payment_mode: str, payment_by: str, derivation: str,
+                                   org_code: str, account_label: str, flat_fee: str, percent: str, minimum_amount: str,
+                                   maximum_amount: str, accepted_card_type: str, scheme: str, bank: str,
+                                   classification: str = 'ANY'):
+    """
+    This method is to insert the service fee data into service_fee_config table
+    """
+    try:
+        query = f"insert into service_fee_config(created_by, created_time, lock_id, modified_by, " \
+                f"modified_time, payment_mode, payment_by,derivation_type,flat_fee,percent,minimum_amount," \
+                f"maximum_amount,org_code,account_label,accepted_card_type,scheme,bank, classification) " \
+                f"values ('{portal_username}', now(), 1, '{portal_username}', now(), '{payment_mode}', " \
+                f"'{payment_by}', '{derivation}', {flat_fee}, {percent}, {minimum_amount}," \
+                f"{maximum_amount}, '{org_code}', '{account_label}', {accepted_card_type}, '{scheme}', {bank}, '{classification}');"
+        result = DBProcessor.setValueToDB(query)
+        logger.debug(f"Result for the insert query :'{query} and result : {result}'")
+        refresh_db()
+    except Exception as e:
+        logger.debug(f"Execution failed for Insert Query due to exception : {e}")
+
+
+def create_service_fee_config_data(portal_username: str, org_code: str, derivation_type: str, scheme: str,
+                                   payment_by: str, config_data_json_id: str, payment_mode: str, account_label: str,
+                                   bank: str):
+    """
+    This method is to create the service fee data into service_fee_config table
+    """
+    json_path = GlobalConstants.DB_SERVICE_FEE_JSON_PATH
+    with open(json_path, 'r') as json_file:
+        json_data_str = json.load(json_file)
+    json_data = (json_data_str[config_data_json_id])
+    payment_mode_json = payment_mode
+    account_label_json = account_label
+    flat_fee = 0.0
+    percent = 0.0
+    options_in_service_fee_config = json_data[0]["paymentModes"][0]["options"]
+    for option in options_in_service_fee_config:
+        bank_json = option['bank'] if 'bank' in option else 'NULL'
+        scheme_json = option['scheme'] if 'scheme' in option else "ANY"
+        for derivation in option["derivationRules"]:
+            if derivation['derivationType'] == derivation_type and scheme_json == scheme and option['paymentBy'] == payment_by and bank_json == bank:
+                flat_fee = derivation['flatFee'] if 'flatFee' in derivation else 'NULL'
+                percent = derivation['percentage'] if 'percentage' in derivation else 'NULL'
+            insert_service_fee_config_data(portal_username=portal_username,
+                                           payment_mode=payment_mode_json,
+                                           payment_by=option['paymentBy'],
+                                           accepted_card_type=repr(option[
+                                                                       'acceptedCardTypes']) if 'acceptedCardTypes' in option else 'NULL',
+                                           scheme=option[
+                                               'scheme'] if 'scheme' in option else 'ANY',
+                                           derivation=derivation['derivationType'],
+                                           flat_fee=derivation['flatFee'] if 'flatFee' in derivation else 'NULL',
+                                           percent=derivation['percentage'] if 'percentage' in derivation else 'NULL',
+                                           minimum_amount=derivation[
+                                               'minAmount'] if 'minAmount' in derivation else 'NULL',
+                                           maximum_amount=derivation[
+                                               'maxAmount'] if 'maxAmount' in derivation else 'NULL',
+                                           org_code=org_code,
+                                           account_label=account_label_json,
+                                           bank=repr(option['bank']) if 'bank' in option else 'NULL')
+    return flat_fee, percent
+
+
+def delete_service_fee_config_data(org_code: str):
+    """
+    This method is to delete the service fee data from service_fee_config table based on org_code
+    """
+    try:
+        query = f"delete from service_fee_config where org_code ='{org_code}';"
+        result = DBProcessor.delete_value_from_db(query)
+        logger.debug(f"Result for the delete query '{query}' is : {result} ")
+        refresh_db()
+    except Exception as e:
+        logger.debug(f"Execution failed for Delete Query due to exception : {e}")

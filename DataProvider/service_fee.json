@@ -1,0 +1,3767 @@
+{
+	"service_fee_json_TC_100_103_490": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 5,
+									"minAmount": 10,
+									"maxAmount": 20
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 1,
+									"minAmount": 25,
+									"maxAmount": 30
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 3,
+									"minAmount": 35,
+									"maxAmount": 40
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_491": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 1,
+									"minAmount": 10,
+									"maxAmount": 20
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 2,
+									"minAmount": 25,
+									"maxAmount": 30
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 1.5,
+									"minAmount": 35,
+									"maxAmount": 40
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_493": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 2.99,
+									"flatFee": 5.9999,
+									"minAmount": 10,
+									"maxAmount": 20
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 2.99,
+									"flatFee": 5.9999,
+									"minAmount": 25,
+									"maxAmount": 30
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 2.99,
+									"flatFee": 5.9999,
+									"minAmount": 35,
+									"maxAmount": 40
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_498": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 5,
+									"minAmount": 10,
+									"maxAmount": 20
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 1,
+									"minAmount": 25,
+									"maxAmount": 30
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 3,
+									"minAmount": 1,
+									"maxAmount": 1000
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_511": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"percentage": 10.99,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 6.1,
+									"minAmount": 200,
+									"maxAmount": 300
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 7.1,
+									"minAmount": 300,
+									"maxAmount": 400
+								}
+							]
+						},
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 5.9999,
+									"minAmount": 400,
+									"maxAmount": 500
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 6.1,
+									"minAmount": 600,
+									"maxAmount": 700
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 7.1,
+									"minAmount": 700,
+									"maxAmount": 800
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_512": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 10.99,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 2.99,
+									"minAmount": 200,
+									"maxAmount": 300
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 2.99,
+									"minAmount": 300,
+									"maxAmount": 400
+								}
+							]
+						},
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 2.99,
+									"minAmount": 400,
+									"maxAmount": 500
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 2.99,
+									"minAmount": 600,
+									"maxAmount": 700
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 2.99,
+									"minAmount": 700,
+									"maxAmount": 800
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_513": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 10.99,
+									"flatFee": 7.1,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 2.99,
+									"flatFee": 7.1,
+									"minAmount": 200,
+									"maxAmount": 300
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 2.99,
+									"flatFee": 7.1,
+									"minAmount": 300,
+									"maxAmount": 400
+								}
+							]
+						},
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 2.99,
+									"flatFee": 7.1,
+									"minAmount": 400,
+									"maxAmount": 500
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 2.99,
+									"flatFee": 7.1,
+									"minAmount": 600,
+									"maxAmount": 700
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 2.99,
+									"flatFee": 7.1,
+									"minAmount": 700,
+									"maxAmount": 800
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_520": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 2.99,
+									"flatFee": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 2.99,
+									"flatFee": 6.1,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 2.99,
+									"flatFee": 7.1,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "ANY",
+							"paymentBy": "ANY",
+							"acceptedCardTypes": "ANY",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 10,
+									"minAmount": 200,
+									"maxAmount": 300
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_521": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "ANY",
+							"paymentBy": "ANY",
+							"acceptedCardTypes": "ANY",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 10,
+									"minAmount": 200,
+									"maxAmount": 300
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_523": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "ANY",
+							"paymentBy": "NB",
+							"bank": "ANY",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 10,
+									"minAmount": 300,
+									"maxAmount": 400
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_522": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "ANY",
+							"paymentBy": "NB",
+							"bank": "ANY",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 10,
+									"minAmount": 300,
+									"maxAmount": 400
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_524": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 5.9999,
+									"minAmount": 0,
+									"maxAmount": 50
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 6.1,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 7.1,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 6.1,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 7.1,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "ANY",
+							"paymentBy": "NB",
+							"bank": "ANY",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 2,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_526": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 6.1,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 7.1,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 6.1,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 7.1,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "ANY",
+							"paymentBy": "NB",
+							"bank": "ANY",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 2,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_528": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 5.9999,
+									"flatFee": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 6.1,
+									"flatFee": 5.9999,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 7.1,
+									"flatFee": 5.9999,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 5.9999,
+									"flatFee": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 6.1,
+									"flatFee": 5.9999,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 7.1,
+									"flatFee": 5.9999,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "ANY",
+							"paymentBy": "NB",
+							"bank": "ANY",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 2,
+									"flatFee": 5.9999,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_530": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 6.1,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 7.1,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 6.1,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 7.1,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "ANY",
+							"paymentBy": "NB",
+							"bank": "ANY",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 2,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_531": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 6.1,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 7.1,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 6.1,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 5,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "ANY",
+							"paymentBy": "NB",
+							"bank": "ANY",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 2,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_532": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 5.9999,
+									"flatFee": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 6.1,
+									"flatFee": 5.9999,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 7.1,
+									"flatFee": 5.9999,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 5.9999,
+									"flatFee": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 6.1,
+									"flatFee": 5.9999,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 8.1,
+									"flatFee": 4.9999,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "ANY",
+							"paymentBy": "NB",
+							"bank": "ANY",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 2,
+									"flatFee": 5.9999,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_544": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 6.1,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 7.1,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 6.1,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 7.1,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "ANY",
+							"paymentBy": "NB",
+							"bank": "SBI",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 2.8,
+									"minAmount": 200,
+									"maxAmount": 300
+								}
+							]
+						},
+						{
+							"scheme": "ANY",
+							"paymentBy": "NB",
+							"bank": "HDFC",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 2.8,
+									"minAmount": 300,
+									"maxAmount": 400
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_547": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 2,
+									"minAmount": 10,
+									"maxAmount": 30
+								}
+							]
+						},
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 2,
+									"minAmount": 30,
+									"maxAmount": 50
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_548": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 2,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 2,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "ANY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 2,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "ANY",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 2,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "ANY",
+							"paymentBy": "ANY",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 2,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_550": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"classification": "ANY",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 2
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_551": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 2,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_553": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 3,
+									"minAmount": 1000,
+									"maxAmount": 100
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_554": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 2,
+									"minAmount": 0,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "PERCENT",
+									"percentage": 1.99,
+									"minAmount": 1000,
+									"maxAmount": 5000
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_555": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 3,
+									"minAmount": 100,
+									"maxAmount": 1000
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_556": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 3,
+									"minAmount": 100,
+									"maxAmount": 1000
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_557": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 3,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_558": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 3,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_559": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 10,
+									"flatFee": -5,
+									"minAmount": 1500,
+									"maxAmount": 2000
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_560": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": -10,
+									"flatFee": 5,
+									"minAmount": 1500,
+									"maxAmount": 2000
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_561": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED_PERCENT",
+									"percentage": 10,
+									"flatFee": 5,
+									"minAmount": 1500,
+									"maxAmount": 2500
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_562": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 6.1,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 7.1,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 6.1,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 7.1,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "ANY",
+							"paymentBy": "NB",
+							"bank": "YES",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 7,
+									"minAmount": 400,
+									"maxAmount": 500
+								}
+							]
+						},
+						{
+							"scheme": "ANY",
+							"paymentBy": "NB",
+							"bank": "ANY",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 3,
+									"minAmount": 500,
+									"maxAmount": 700
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_563": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 6.1,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 7.1,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 6.1,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 7.1,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "ANY",
+							"paymentBy": "NB",
+							"bank": "YES",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 7,
+									"minAmount": 400,
+									"maxAmount": 500
+								}
+							]
+						},
+						{
+							"scheme": "ANY",
+							"paymentBy": "NB",
+							"bank": "ANY",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 3,
+									"minAmount": 500,
+									"maxAmount": 700
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_564": [
+		{
+			"accountLabel": "",
+			"paymentModes": [
+				{
+					"paymentMode": "CNP",
+					"options": [
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 6.1,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "DEBIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 7.1,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "RUPAY",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 5.9999,
+									"minAmount": 50,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "VISA",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 6.1,
+									"minAmount": 0,
+									"maxAmount": 100
+								}
+							]
+						},
+						{
+							"scheme": "MASTER_CARD",
+							"paymentBy": "CREDIT",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 7.1,
+									"minAmount": 500,
+									"maxAmount": 1000
+								}
+							]
+						},
+						{
+							"scheme": "ANY",
+							"paymentBy": "NB",
+							"bank": "YES",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 7,
+									"minAmount": 400,
+									"maxAmount": 500
+								}
+							]
+						},
+						{
+							"scheme": "ANY",
+							"paymentBy": "NB",
+							"bank": "ANY",
+							"derivationRules": [
+								{
+									"derivationType": "FIXED",
+									"flatFee": 3,
+									"minAmount": 500,
+									"maxAmount": 700
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"service_fee_json_TC_100_103_488": [
+    {
+      "accountLabel": "",
+      "paymentModes": [
+        {
+          "paymentMode": "CNP",
+          "options": [
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 1,
+                  "minAmount": 10,
+                  "maxAmount": 20
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 2,
+                  "minAmount": 25,
+                  "maxAmount": 30
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 1.5,
+                  "minAmount": 35,
+                  "maxAmount": 40
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "service_fee_json_TC_100_103_492": [
+    {
+      "accountLabel": "",
+      "paymentModes": [
+        {
+          "paymentMode": "CNP",
+          "options": [
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 1,
+                  "flatFee": 5,
+                  "minAmount": 10,
+                  "maxAmount": 20
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 2,
+                  "flatFee": 1,
+                  "minAmount": 25,
+                  "maxAmount": 30
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 1.5,
+                  "flatFee": 3,
+                  "minAmount": 35,
+                  "maxAmount": 40
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "service_fee_json_TC_100_103_499": [
+    {
+      "accountLabel": "",
+      "paymentModes": [
+        {
+          "paymentMode": "CNP",
+          "options": [
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 5,
+                  "minAmount": 10,
+                  "maxAmount": 20
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 1,
+                  "minAmount": 25,
+                  "maxAmount": 30
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 3,
+                  "minAmount": 35,
+                  "maxAmount": 40
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "service_fee_json_TC_100_103_500": [
+    {
+      "accountLabel": "",
+      "paymentModes": [
+        {
+          "paymentMode": "CNP",
+          "options": [
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 1,
+                  "minAmount": 10,
+                  "maxAmount": 20
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 2,
+                  "minAmount": 25,
+                  "maxAmount": 30
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 1.5,
+                  "minAmount": 35,
+                  "maxAmount": 40
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "service_fee_json_TC_100_103_501": [
+    {
+      "accountLabel": "",
+      "paymentModes": [
+        {
+          "paymentMode": "CNP",
+          "options": [
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 1.99,
+                  "flatFee": 1.5,
+                  "minAmount": 10,
+                  "maxAmount": 20
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 1.99,
+                  "flatFee": 1.5,
+                  "minAmount": 25,
+                  "maxAmount": 30
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 1.99,
+                  "flatFee": 1.5,
+                  "minAmount": 35,
+                  "maxAmount": 40
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "service_fee_json_TC_100_103_503": [
+    {
+      "accountLabel": "",
+      "paymentModes": [
+        {
+          "paymentMode": "CNP",
+          "options": [
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 2.99,
+                  "flatFee": 5.9999,
+                  "minAmount": 10,
+                  "maxAmount": 20
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 2.99,
+                  "flatFee": 5.9999,
+                  "minAmount": 25,
+                  "maxAmount": 30
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 2.99,
+                  "flatFee": 5.9999,
+                  "minAmount": 35,
+                  "maxAmount": 40
+                }
+              ]
+            },
+            {
+              "scheme": "ANY",
+              "paymentBy": "DEBIT",
+              "acceptedCardTypes": "ANY",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 10,
+                  "minAmount": 50,
+                  "maxAmount": 60
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "service_fee_json_TC_100_103_504": [
+    {
+      "accountLabel": "",
+      "paymentModes": [
+        {
+          "paymentMode": "CNP",
+          "options": [
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 1.99,
+                  "flatFee": 1.5,
+                  "minAmount": 10,
+                  "maxAmount": 20
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 1.99,
+                  "flatFee": 1.5,
+                  "minAmount": 25,
+                  "maxAmount": 30
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 1.99,
+                  "flatFee": 1.5,
+                  "minAmount": 35,
+                  "maxAmount": 40
+                }
+              ]
+            },
+            {
+              "scheme": "ANY",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 1.5,
+                  "minAmount": 45,
+                  "maxAmount": 50
+                }
+              ]
+            },
+            {
+              "scheme": "ANY",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 2,
+                  "minAmount": 70,
+                  "maxAmount": 80
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "service_fee_json_TC_100_103_505": [
+    {
+      "accountLabel": "",
+      "paymentModes": [
+        {
+          "paymentMode": "CNP",
+          "options": [
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 1.99,
+                  "flatFee": 1.5,
+                  "minAmount": 10,
+                  "maxAmount": 20
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 1.99,
+                  "flatFee": 1.5,
+                  "minAmount": 25,
+                  "maxAmount": 30
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 1.99,
+                  "flatFee": 1.5,
+                  "minAmount": 35,
+                  "maxAmount": 40
+                }
+              ]
+            },
+            {
+              "scheme": "ANY",
+              "paymentBy": "ANY",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 1.5,
+                  "minAmount": 45,
+                  "maxAmount": 50
+                }
+              ]
+            },
+            {
+              "scheme": "ANY",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 2,
+                  "minAmount": 70,
+                  "maxAmount": 80
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "service_fee_json_TC_100_103_514": [
+    {
+      "accountLabel": "",
+      "paymentModes": [
+        {
+          "paymentMode": "CNP",
+          "options": [
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "percentage": 10.99,
+                  "minAmount": 0,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 6.1,
+                  "minAmount": 200,
+                  "maxAmount": 300
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 7.1,
+                  "minAmount": 300,
+                  "maxAmount": 400
+                }
+              ]
+            },
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 5.9999,
+                  "minAmount": 400,
+                  "maxAmount": 500
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 6.1,
+                  "minAmount": 600,
+                  "maxAmount": 700
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 7.1,
+                  "minAmount": 700,
+                  "maxAmount": 800
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "service_fee_json_TC_100_103_515": [
+    {
+      "accountLabel": "",
+      "paymentModes": [
+        {
+          "paymentMode": "CNP",
+          "options": [
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 10.99,
+                  "minAmount": 0,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 2.99,
+                  "minAmount": 200,
+                  "maxAmount": 300
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 2.99,
+                  "minAmount": 300,
+                  "maxAmount": 400
+                }
+              ]
+            },
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 2.99,
+                  "minAmount": 400,
+                  "maxAmount": 500
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 2.99,
+                  "minAmount": 600,
+                  "maxAmount": 700
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 2.99,
+                  "minAmount": 700,
+                  "maxAmount": 800
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "service_fee_json_TC_100_103_516": [
+    {
+      "accountLabel": "",
+      "paymentModes": [
+        {
+          "paymentMode": "CNP",
+          "options": [
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 10.99,
+                  "minAmount": 0,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 2.99,
+                  "flatFee": 6.1,
+                  "minAmount": 200,
+                  "maxAmount": 300
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 2.99,
+                  "flatFee": 7.1,
+                  "minAmount": 300,
+                  "maxAmount": 400
+                }
+              ]
+            },
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 2.99,
+                  "flatFee": 5.9999,
+                  "minAmount": 400,
+                  "maxAmount": 500
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 2.99,
+                  "flatFee": 6.1,
+                  "minAmount": 600,
+                  "maxAmount": 700
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 2.99,
+                  "flatFee": 7.1,
+                  "minAmount": 700,
+                  "maxAmount": 800
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],"service_fee_json_TC_100_103_533": [
+    {
+      "accountLabel": "",
+      "paymentModes": [
+        {
+          "paymentMode": "CNP",
+          "options": [
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 5.9999,
+                  "minAmount": 50,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 6.1,
+                  "minAmount": 0,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 6.1,
+                  "minAmount": 500,
+                  "maxAmount": 1000
+                }
+              ]
+            },
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 5.9999,
+                  "minAmount": 50,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 6.1,
+                  "minAmount": 0,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 7.1,
+                  "minAmount": 500,
+                  "maxAmount": 1000
+                }
+              ]
+            },
+            {
+              "scheme": "ANY",
+              "paymentBy": "NB",
+              "bank": "HDFC",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 2,
+                  "minAmount": 0,
+                  "maxAmount": 100
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "service_fee_json_TC_100_103_534": [
+    {
+      "accountLabel": "",
+      "paymentModes": [
+        {
+          "paymentMode": "CNP",
+          "options": [
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 5.9999,
+                  "minAmount": 50,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 6.1,
+                  "minAmount": 0,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 6.1,
+                  "minAmount": 500,
+                  "maxAmount": 1000
+                }
+              ]
+            },
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 5.9999,
+                  "minAmount": 50,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 6.1,
+                  "minAmount": 0,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 7.1,
+                  "minAmount": 500,
+                  "maxAmount": 1000
+                }
+              ]
+            },
+            {
+              "scheme": "ANY",
+              "paymentBy": "NB",
+              "bank": "HDFC",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 2,
+                  "minAmount": 0,
+                  "maxAmount": 100
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "service_fee_json_TC_100_103_535": [
+    {
+      "accountLabel": "",
+      "paymentModes": [
+        {
+          "paymentMode": "CNP",
+          "options": [
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 5.9999,
+                  "minAmount": 50,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 6.1,
+                  "minAmount": 0,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 7.1,
+                  "minAmount": 500,
+                  "maxAmount": 1000
+                }
+              ]
+            },
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 5.9999,
+                  "minAmount": 50,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 6.1,
+                  "minAmount": 0,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 7.1,
+                  "minAmount": 500,
+                  "maxAmount": 1000
+                }
+              ]
+            },
+            {
+              "scheme": "ANY",
+              "paymentBy": "NB",
+              "bank": "AXIS",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 6,
+                  "minAmount": 500,
+                  "maxAmount": 700
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "service_fee_json_TC_100_103_536": [
+    {
+      "accountLabel": "",
+      "paymentModes": [
+        {
+          "paymentMode": "CNP",
+          "options": [
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 5.9999,
+                  "minAmount": 50,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 6.1,
+                  "minAmount": 0,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 7.1,
+                  "minAmount": 500,
+                  "maxAmount": 1000
+                }
+              ]
+            },
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 5.9999,
+                  "minAmount": 50,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 6.1,
+                  "minAmount": 0,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 7.1,
+                  "minAmount": 500,
+                  "maxAmount": 1000
+                }
+              ]
+            },
+            {
+              "scheme": "ANY",
+              "paymentBy": "NB",
+              "bank": "AXIS",
+              "derivationRules": [
+                {
+                  "derivationType": "PERCENT",
+                  "percentage": 2.8,
+                  "minAmount": 200,
+                  "maxAmount": 300
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "service_fee_json_TC_100_103_537": [
+    {
+      "accountLabel": "",
+      "paymentModes": [
+        {
+          "paymentMode": "CNP",
+          "options": [
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 5.9999,
+                  "flatFee": 5.9999,
+                  "minAmount": 50,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 6.1,
+                  "flatFee": 5.9999,
+                  "minAmount": 0,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 7.1,
+                  "flatFee": 5.9999,
+                  "minAmount": 500,
+                  "maxAmount": 1000
+                }
+              ]
+            },
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 5.9999,
+                  "flatFee": 5.9999,
+                  "minAmount": 50,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 6.1,
+                  "flatFee": 5.9999,
+                  "minAmount": 0,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 8.1,
+                  "flatFee": 4.9999,
+                  "minAmount": 500,
+                  "maxAmount": 1000
+                }
+              ]
+            },
+            {
+              "scheme": "ANY",
+              "paymentBy": "NB",
+              "bank": "AXIS",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED_PERCENT",
+                  "percentage": 2,
+                  "flatFee": 3.6,
+                  "minAmount": 299,
+                  "maxAmount": 500
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "service_fee_json_TC_100_103_538": [
+    {
+      "accountLabel": "",
+      "paymentModes": [
+        {
+          "paymentMode": "CNP",
+          "options": [
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 5.9999,
+                  "minAmount": 50,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 6.1,
+                  "minAmount": 0,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "DEBIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 7.1,
+                  "minAmount": 500,
+                  "maxAmount": 1000
+                }
+              ]
+            },
+            {
+              "scheme": "RUPAY",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 5.9999,
+                  "minAmount": 50,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "VISA",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 6.1,
+                  "minAmount": 0,
+                  "maxAmount": 100
+                }
+              ]
+            },
+            {
+              "scheme": "MASTER_CARD",
+              "paymentBy": "CREDIT",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 7.1,
+                  "minAmount": 500,
+                  "maxAmount": 1000
+                }
+              ]
+            },
+            {
+              "scheme": "ANY",
+              "paymentBy": "NB",
+              "bank": "YES",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 7,
+                  "minAmount": 400,
+                  "maxAmount": 500
+                }
+              ]
+            },
+            {
+              "scheme": "ANY",
+              "paymentBy": "NB",
+              "bank": "ANY",
+              "derivationRules": [
+                {
+                  "derivationType": "FIXED",
+                  "flatFee": 3,
+                  "minAmount": 500,
+                  "maxAmount": 700
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+	"service_fee_json_TC_100_103_502":[
+    {
+        "accountLabel": "",
+        "paymentModes": [
+            {
+                "paymentMode": "CNP",
+                "options": [
+                    {
+                        "scheme": "RUPAY",
+                        "paymentBy": "CREDIT",
+                        "derivationRules": [
+                            {
+                                "derivationType": "FIXED_PERCENT",
+                                "percentage": 1.99,
+                                "flatFee": 1.5,
+                                "minAmount": 10,
+                                "maxAmount": 20
+                            }
+                        ]
+                    },
+                    {
+                        "scheme": "VISA",
+                        "paymentBy": "CREDIT",
+                        "derivationRules": [
+                            {
+                                "derivationType": "FIXED_PERCENT",
+                                "percentage": 1.99,
+                                "flatFee": 1.5,
+                                "minAmount": 25,
+                                "maxAmount": 30
+                            }
+                        ]
+                    },
+                    {
+                        "scheme": "MASTER_CARD",
+                        "paymentBy": "CREDIT",
+                        "derivationRules": [
+                            {
+                                "derivationType": "FIXED_PERCENT",
+                                "percentage": 1.99,
+                                "flatFee": 1.5,
+                                "minAmount": 35,
+                                "maxAmount": 40
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+ ],
+	"service_fee_json_TC_100_103_506":[
+    {
+        "accountLabel": "",
+        "paymentModes": [
+            {
+                "paymentMode": "CNP",
+                "options": [
+                    {
+                        "scheme": "RUPAY",
+                        "paymentBy": "CREDIT",
+                        "derivationRules": [
+                            {
+                                "derivationType": "FIXED_PERCENT",
+                                "percentage": 1.99,
+                                "flatFee": 1.5,
+                                "minAmount": 10,
+                                "maxAmount": 20
+                            }
+                        ]
+                    },
+                    {
+                        "scheme": "VISA",
+                        "paymentBy": "CREDIT",
+                        "derivationRules": [
+                            {
+                                "derivationType": "FIXED_PERCENT",
+                                "percentage": 1.99,
+                                "flatFee": 1.5,
+                                "minAmount": 25,
+                                "maxAmount": 30
+                            }
+                        ]
+                    },
+                    {
+                        "scheme": "MASTER_CARD",
+                        "paymentBy": "CREDIT",
+                        "derivationRules": [
+                            {
+                                "derivationType": "FIXED_PERCENT",
+                                "percentage": 1.99,
+                                "flatFee": 1.5,
+                                "minAmount": 0,
+                                "maxAmount": 1000
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+ ],
+	"service_fee_json_TC_100_103_508": [
+		{}
+	], "service_fee_json_TC_100_103_509":[
+    {
+        "accountLabel": "",
+        "paymentModes": [
+            {
+                "paymentMode": "CNP",
+                "options": [
+                    {
+                        "scheme": "RUPAY",
+                        "paymentBy": "DEBIT",
+                        "derivationRules": [
+                            {
+                                "derivationType": "FIXED_PERCENT",
+                                "percentage": 1.99,
+                                "flatFee": 1.5,
+                                "minAmount": 10,
+                                "maxAmount": 20
+                            }
+                        ]
+                    },
+                    {
+                        "scheme": "VISA",
+                        "paymentBy": "DEBIT",
+                        "derivationRules": [
+                            {
+                                "derivationType": "FIXED_PERCENT",
+                                "percentage": 1.99,
+                                "flatFee": 1.5,
+                                "minAmount": 25,
+                                "maxAmount": 30
+                            }
+                        ]
+                    },
+                    {
+                        "scheme": "MASTER_CARD",
+                        "paymentBy": "DEBIT",
+                        "derivationRules": [
+                            {
+                                "derivationType": "FIXED_PERCENT",
+                                "percentage": 1.99,
+                                "flatFee": 1.5,
+                                "minAmount": 0,
+                                "maxAmount": 1000
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+ ],"service_fee_json_TC_100_103_510":[
+    {
+        "accountLabel": "",
+        "paymentModes": [
+            {
+                "paymentMode": "CNP",
+                "options": [
+                    {
+                        "scheme": "RUPAY",
+                        "paymentBy": "CREDIT",
+                        "derivationRules": [
+                            {
+                                "derivationType": "FIXED_PERCENT",
+                                "percentage": 1.99,
+                                "flatFee": 1.5,
+                                "minAmount": 10,
+                                "maxAmount": 20
+                            }
+                        ]
+                    },
+                    {
+                        "scheme": "VISA",
+                        "paymentBy": "CREDIT",
+                        "derivationRules": [
+                            {
+                                "derivationType": "FIXED_PERCENT",
+                                "percentage": 1.99,
+                                "flatFee": 1.5,
+                                "minAmount": 25,
+                                "maxAmount": 30
+                            }
+                        ]
+                    },
+                    {
+                        "scheme": "MASTER_CARD",
+                        "paymentBy": "CREDIT",
+                        "derivationRules": [
+                            {
+                                "derivationType": "FIXED_PERCENT",
+                                "percentage": 1.99,
+                                "flatFee": 1.5,
+                                "minAmount": 0,
+                                "maxAmount": 1000
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+ ],"service_fee_json_TC_100_103_540": [
+	{
+  "accountLabel": "",
+  "paymentModes": [
+    {
+      "paymentMode": "CNP",
+      "options": [
+        {
+          "scheme": "RUPAY",
+          "paymentBy": "DEBIT",
+          "derivationRules": [
+            {
+              "derivationType": "FIXED_PERCENT",
+              "flatFee": 5.9999,
+              "percentage": 2,
+              "minAmount": 50,
+              "maxAmount": 100
+            }
+          ]
+        },
+        {
+          "scheme": "VISA",
+          "paymentBy": "DEBIT",
+          "derivationRules": [
+            {
+              "derivationType": "FIXED_PERCENT",
+              "flatFee": 6.1,
+              "percentage": 2.1,
+              "minAmount": 0,
+              "maxAmount": 100
+            }
+          ]
+        },
+        {
+          "scheme": "MASTER_CARD",
+          "paymentBy": "DEBIT",
+          "derivationRules": [
+            {
+              "derivationType": "FIXED_PERCENT",
+              "flatFee": 7.1,
+              "percentage": 3,
+              "minAmount": 500,
+              "maxAmount": 1000
+            }
+          ]
+        },
+        {
+          "scheme": "RUPAY",
+          "paymentBy": "CREDIT",
+          "derivationRules": [
+            {
+              "derivationType": "FIXED_PERCENT",
+              "flatFee": 5.9999,
+              "percentage": 3.1,
+              "minAmount": 50,
+              "maxAmount": 100
+            }
+          ]
+        },
+        {
+          "scheme": "VISA",
+          "paymentBy": "CREDIT",
+          "derivationRules": [
+            {
+              "derivationType": "FIXED_PERCENT",
+              "flatFee": 6.1,
+              "percentage": 4,
+              "minAmount": 0,
+              "maxAmount": 100
+            }
+          ]
+        },
+        {
+          "scheme": "MASTER_CARD",
+          "paymentBy": "CREDIT",
+          "derivationRules": [
+            {
+              "derivationType": "FIXED_PERCENT",
+              "flatFee": 7.1,
+              "percentage": 4.1,
+              "minAmount": 500,
+              "maxAmount": 1000
+            }
+          ]
+        },
+        {
+          "scheme": "ANY",
+          "paymentBy": "NB",
+          "bank": "YES",
+          "derivationRules": [
+            {
+              "derivationType": "FIXED_PERCENT",
+              "flatFee": 7,
+              "percentage": 5,
+              "minAmount": 400,
+              "maxAmount": 500
+            }
+          ]
+        },
+        {
+          "scheme": "ANY",
+          "paymentBy": "NB",
+          "bank": "ANY",
+          "derivationRules": [
+            {
+              "derivationType": "FIXED_PERCENT",
+              "flatFee": 3,
+              "percentage": 5.1,
+              "minAmount": 500,
+              "maxAmount": 700
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+], "service_fee_json_TC_100_103_539":[
+		{
+  "accountLabel": "",
+  "paymentModes": [
+    {
+      "paymentMode": "CNP",
+      "options": [
+        {
+          "scheme": "RUPAY",
+          "paymentBy": "DEBIT",
+          "derivationRules": [
+            {
+              "derivationType": "PERCENT",
+              "percentage": 2,
+              "minAmount": 50,
+              "maxAmount": 100
+            }
+          ]
+        },
+        {
+          "scheme": "VISA",
+          "paymentBy": "DEBIT",
+          "derivationRules": [
+            {
+              "derivationType": "PERCENT",
+              "percentage": 2.1,
+              "minAmount": 0,
+              "maxAmount": 100
+            }
+          ]
+        },
+        {
+          "scheme": "MASTER_CARD",
+          "paymentBy": "DEBIT",
+          "derivationRules": [
+            {
+              "derivationType": "PERCENT",
+              "percentage": 3,
+              "minAmount": 500,
+              "maxAmount": 1000
+            }
+          ]
+        },
+        {
+          "scheme": "RUPAY",
+          "paymentBy": "CREDIT",
+          "derivationRules": [
+            {
+              "derivationType": "PERCENT",
+              "percentage": 3.1,
+              "minAmount": 50,
+              "maxAmount": 100
+            }
+          ]
+        },
+        {
+          "scheme": "VISA",
+          "paymentBy": "CREDIT",
+          "derivationRules": [
+            {
+              "derivationType": "PERCENT",
+              "percentage": 4,
+              "minAmount": 0,
+              "maxAmount": 100
+            }
+          ]
+        },
+        {
+          "scheme": "MASTER_CARD",
+          "paymentBy": "CREDIT",
+          "derivationRules": [
+            {
+              "derivationType": "PERCENT",
+              "percentage": 4.1,
+              "minAmount": 500,
+              "maxAmount": 1000
+            }
+          ]
+        },
+        {
+          "scheme": "ANY",
+          "paymentBy": "NB",
+          "bank": "YES",
+          "derivationRules": [
+            {
+              "derivationType": "PERCENT",
+              "percentage": 5,
+              "minAmount": 400,
+              "maxAmount": 500
+            }
+          ]
+        },
+        {
+          "scheme": "ANY",
+          "paymentBy": "NB",
+          "bank": "ANY",
+          "derivationRules": [
+            {
+              "derivationType": "PERCENT",
+              "percentage": 5.1,
+              "minAmount": 500,
+              "maxAmount": 700
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+]
+
+
+}

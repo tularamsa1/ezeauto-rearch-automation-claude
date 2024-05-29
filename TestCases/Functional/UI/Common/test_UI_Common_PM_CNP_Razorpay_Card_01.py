@@ -470,6 +470,8 @@ def test_common_100_103_181():
             logger.info(f"Starting execution for the test case : {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+
+            expected_message="Your payment attempt failed, Sorry for the inconvenience. Please contact pos-support@razorpay.com for further clarifications."
             amount = random.randint(300, 399)
             order_id = datetime.now().strftime('%m%d%H%M%S')
             api_details = DBProcessor.get_api_details('Remotepay_Initiate',
@@ -494,6 +496,10 @@ def test_common_100_103_181():
                 remote_pay_txn.enterCreditCardCvv("111")
                 remote_pay_txn.clickOnProceedToPay()
                 remote_pay_txn.click_failure_pmt_btn()
+                actual_message = str(remote_pay_txn.failureScreenMessage())
+                logger.info(f"Your actual failure message is:  {actual_message}")
+                logger.info(f"Your expected failure Message is:  {expected_message}")
+                assert actual_message == expected_message, "Failure Message is not matching."
 
             query = f"select * from txn where org_code = '{str(org_code)}' AND external_ref = '{str(order_id)}';"
             logger.debug(f"Query to fetch Txn_id from the DB : {query}")

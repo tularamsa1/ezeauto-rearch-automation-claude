@@ -1,3 +1,5 @@
+import json
+
 from selenium.webdriver.common.by import By
 from PageFactory.merchant_portal.portal_base_page import BasePage
 
@@ -76,6 +78,22 @@ class RemotePayTxnPage(BasePage):
     txt_failure_msg = "//*[@id='page-wrapper']/div/div/div/div/h3/text()"
     lbl_input_debit_card_num = "//input[@placeholder='Card number']"
     btn_select_netbanking_Rzp = "AU Small Finance Bank"
+
+    txn_invalid_debit_card_message = "//div[@role='alert']"
+    txn_invalid_credit_card_message = "//div[@role='alert']"
+    text_json = "//pre[contains(text(),'{')]"
+    text_card_err_msg = "//h3[contains(text(),'Card Not Supported.')]"
+    txt_no_active_pmt_method = "//h3[contains(text(),'No active payment method found for {0}.Sorry for t')]"
+
+    txt_totalAmountValue = "//span[@class='totalAmount']"
+    txt_serviceFeeValue = "//span[@class='serviceFeeAmount']"
+    txt_orderAmountValue = "//span[@class='amount']"
+    txt_serviceFeeConfigErrorMessage = "//div[contains(@aria-label, 'An error occured. Please try another payment method or contact')]"
+    btn_failureMessage = "//h3[contains(text(),'Your payment attempt failed, Sorry for the inconve')]"
+    btn_failureMessageMaxAttempt = "//h3[contains(text(),'Maximum number of attempts for this url exceeded. Pleas')]"
+    btn_messageAfterSuccessTxn = "//h3[contains(text(),'The transaction has been completed already! Pl')]"
+    btn_successButton = "//button[contains(text(),'Success')]"
+    txt_in_progress_message = "//h3[contains(text(),'Transaction for the Reference Number:')]"
 
     def __init__(self, page):
         super().__init__(page)
@@ -310,4 +328,78 @@ class RemotePayTxnPage(BasePage):
         """
         locator = "//mat-panel-title[contains(text(),'Credit Card')]"
         return self.wait_for_element_invisible(locator)
+
+    def invalid_debit_card_error_message(self):
+        return self.fetch_text(self.txn_invalid_debit_card_message)
+
+    def invalid_credit_card_error_message(self):
+        return self.fetch_text(self.txn_invalid_credit_card_message)
+
+    def fetch_json(self):
+        fetched_json = self.fetch_text(self.text_json)
+        fetched_json = json.loads(fetched_json)
+        return fetched_json
+
+    def fetch_card_not_supported_message(self):
+        return self.fetch_text(self.text_card_err_msg)
+
+    def select_bank_from_list(self, bank_name):
+        self.select_from_drop_down_combobox(bank_name)
+
+    def fetch_no_active_pmt_method_message(self):
+        return self.fetch_text(self.txt_no_active_pmt_method)
+
+    def enter_debit_expiry_month_debit_only(self, value):
+        self.select_from_drop_down(self.ddl_cardExpiryMonth, value)
+
+    def enter_debit_expiry_year_debit_only(self, value):
+        self.select_from_drop_down(self.ddl_cardExpiryYear, value)
+
+    def clickOnSuccessBtn(self):
+        self.perform_click_cnp(self.btn_successButton)
+
+    def failureScreenMessage(self):
+        return self.fetch_text(self.btn_failureMessage)
+
+    def failureScreenMessageMaxAttempt(self):
+        return self.fetch_text(self.btn_failureMessageMaxAttempt)
+
+    def messageAfterSuccessTxn(self):
+        return self.fetch_text(self.btn_messageAfterSuccessTxn)
+
+    def fetch_service_fee(self):
+        return self.fetch_text(self.txt_serviceFeeValue)
+
+    def fetch_order_amount(self):
+        return self.fetch_text(self.txt_orderAmountValue)
+
+    def fetch_total_amount(self):
+        return self.fetch_text(self.txt_totalAmountValue)
+
+    def wait_for_success_btn(self):
+        """
+        This method is used to wait till success btn is visible in browser.
+        """
+        self.wait_for_element(self.btn_success)
+
+    def in_progress_screen_message(self) -> str:
+        """
+        This method is used to fetch progress msg text from browser.
+        return: progress msg: str
+        """
+        return self.fetch_text(self.txt_in_progress_message)
+
+    def serviceFeeConfigErrorMessage(self):
+        """
+        This method is used to fetch serviceFee config error message from browser.
+        return: serviceFee config error message msg: str
+        """
+        return self.fetch_text(self.txt_serviceFeeConfigErrorMessage)
+
+    def remote_pay_select_netbanking_bank_select(self, bank):
+        """
+        This method is used to select netbanking bank from dropdown
+        """
+        self.select_from_drop_down_combobox(bank)
+
 
