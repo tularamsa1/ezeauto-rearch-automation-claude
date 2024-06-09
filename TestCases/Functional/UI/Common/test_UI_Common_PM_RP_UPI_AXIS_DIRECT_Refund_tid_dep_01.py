@@ -214,8 +214,8 @@ def test_common_100_103_172():
                     "payer_name": payer_name,
                     "payer_name_2": payer_name,
                     "order_id": order_id,
-                    "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "REFUND SUCCESSFUL",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
                     "rrn": str(rrn_original),
                     "date_2": date_and_time,
                     "date": original_date_and_time
@@ -1585,7 +1585,7 @@ def test_common_100_103_174():
                     "payer_name_2": payer_name,
                     "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
                     "rrn": str(rrn_original),
                     "date_2": date_and_time,
                     "date": original_date_and_time
@@ -2303,7 +2303,7 @@ def test_common_100_103_175():
                     "payer_name_2": payer_name,
                     "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
                     "rrn": str(rrn_original),
                     "date_2": date_and_time,
                     "date": original_date_and_time

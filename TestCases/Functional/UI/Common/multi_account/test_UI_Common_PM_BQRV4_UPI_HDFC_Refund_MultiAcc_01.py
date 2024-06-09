@@ -197,7 +197,7 @@ def test_common_100_110_010():
                     "customer_name": customer_name,
                     "payer_name": payer_name,
                     "order_id": order_id,
-                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "REFUND SUCCESSFUL",
                     "auth_code": auth_code,
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
@@ -209,7 +209,7 @@ def test_common_100_110_010():
                     "customer_name_2": customer_name_new_2,
                     "payer_name_2": payer_name_new_2,
                     "order_id_2": order_id,
-                    "payment_msg_2": "PAYMENT SUCCESSFUL",
+                    "payment_msg_2": "REFUND SUCCESSFUL",
                     "auth_code_2": auth_code_new_2,
                     "date_2": date_and_time_new_2
                 }
@@ -879,7 +879,7 @@ def test_common_100_110_011():
                     "customer_name_2": customer_name_new_2,
                     "payer_name_2": payer_name_new_2,
                     "order_id_2": order_id,
-                    "payment_msg_2": "PAYMENT SUCCESSFUL",
+                    "payment_msg_2": "REFUND SUCCESSFUL",
                     "auth_code_2": auth_code_new_2,
                     "date_2": date_and_time_new_2
                 }

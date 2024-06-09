@@ -215,7 +215,7 @@ def test_common_100_102_120():
                     "customer_name_2": customer_name_new_2,
                     "payer_name_2": payer_name_new_2,
                     "order_id_2": order_id,
-                    "payment_msg_2": "PAYMENT SUCCESSFUL",
+                    "payment_msg_2": "REFUND SUCCESSFUL",
                     "auth_code_2": auth_code_new_2,
                     "date_2": date_and_time_new_2
                 }
@@ -904,7 +904,7 @@ def test_common_100_102_121():
                     "customer_name_2": customer_name_new_2,
                     "payer_name_2": payer_name_new_2,
                     "order_id_2": order_id,
-                    "payment_msg_2": "PAYMENT SUCCESSFUL",
+                    "payment_msg_2": "REFUND SUCCESSFUL",
                     "auth_code_2": auth_code_new_2,
                     "date_2": date_and_time_new_2
                 }
@@ -1599,7 +1599,7 @@ def test_common_100_102_122():
                     "customer_name": customer_name,
                     "payer_name": payer_name,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT SUCCESSFUL",
+                    "payment_msg": "REFUND SUCCESSFUL",
                     "auth_code": auth_code,
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
@@ -1611,7 +1611,7 @@ def test_common_100_102_122():
                     "customer_name_2": customer_name_new_2,
                     "payer_name_2": payer_name_new_2,
                     "order_id_2": order_id,
-                    "payment_msg_2": "PAYMENT SUCCESSFUL",
+                    "payment_msg_2": "REFUND SUCCESSFUL",
                     "auth_code_2": auth_code_new_2,
                     "date_2": date_and_time_new_2,
                     "pmt_mode_3": "UPI",
@@ -1623,7 +1623,7 @@ def test_common_100_102_122():
                     "customer_name_3": customer_name_new_3,
                     "payer_name_3": payer_name_new_3,
                     "order_id_3": order_id,
-                    "payment_msg_3": "PAYMENT SUCCESSFUL",
+                    "payment_msg_3": "REFUND SUCCESSFUL",
                     "auth_code_3": auth_code_new_3,
                     "date_3": date_and_time_new_3
                 }
@@ -2504,7 +2504,7 @@ def test_common_100_102_123():
                     "customer_name_2": customer_name_new_2,
                     "payer_name_2": payer_name_new_2,
                     "order_id_2": order_id,
-                    "payment_msg_2": "PAYMENT SUCCESSFUL",
+                    "payment_msg_2": "REFUND SUCCESSFUL",
                     "auth_code_2": auth_code_new_2,
                     "date_2": date_and_time_new_2
                 }

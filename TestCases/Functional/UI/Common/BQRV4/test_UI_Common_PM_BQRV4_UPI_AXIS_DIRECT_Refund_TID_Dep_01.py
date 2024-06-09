@@ -1712,8 +1712,8 @@ def test_common_100_102_351():
                     "payer_name_2": payer_name_refund,
                     "order_id": order_id,
                     "order_id_2": order_id,
-                    "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "REFUND SUCCESSFUL",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
                     "rrn": str(rrn),
                     "date": date_and_time,
                     "date_2": refund_date_and_time

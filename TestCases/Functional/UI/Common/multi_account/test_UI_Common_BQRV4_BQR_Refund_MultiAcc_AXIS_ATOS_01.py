@@ -184,8 +184,8 @@ def test_common_100_110_029():
                     "customer_name_2": customer_name,
                     "order_id": order_id,
                     "order_id_2": order_id,
-                    "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "REFUND SUCCESSFUL",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
                     "rrn": str(rrn),
                     "rrn_2": str(rrn_refunded),
                     "auth_code": auth_code,
@@ -804,7 +804,7 @@ def test_common_100_110_030():
                                        "rrn_2": str(rrn_refunded),
                                        "customer_name_2": customer_name,
                                        "order_id_2": order_id,
-                                       "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                                       "pmt_msg_2": "REFUND SUCCESSFUL",
                                        "date_2": date_and_time_2
                                        }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
