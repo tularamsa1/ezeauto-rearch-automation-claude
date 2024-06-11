@@ -242,7 +242,7 @@ def test_common_100_102_313():
                     "customer_name_2": customer_name,
                     "order_id": order_id,
                     "order_id_2": order_id,
-                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "REFUND SUCCESSFUL",
                     "pmt_msg_2": "REFUND SUCCESSFUL",
                     "rrn": str(rrn),
                     "rrn_2": str(rrn_refunded),
