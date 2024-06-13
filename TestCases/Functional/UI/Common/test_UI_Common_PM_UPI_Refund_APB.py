@@ -188,7 +188,7 @@ def test_common_100_101_071():
                     "txn_amt_2": "{:.2f}".format(amount),
                     "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "REFUND FAILED",
+                    "pmt_msg_2": "PAYMENT FAILED",
                     "rrn": str(rrn),
                     "date_2": date_and_time_refund,
                     "date": date_and_time
@@ -771,7 +771,7 @@ def test_common_100_101_072():
                     "order_id": order_id,
                     "order_id_2": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "REFUND SUCCESSFUL",
+                    "pmt_msg_2": "REFUND PENDING",
                     "rrn": str(rrn),
                     "rrn_2": str(rrn_refunded),
                     "date_2": date_and_time_refund,
