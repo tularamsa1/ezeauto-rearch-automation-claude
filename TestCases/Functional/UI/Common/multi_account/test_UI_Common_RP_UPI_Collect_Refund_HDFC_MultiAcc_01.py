@@ -198,7 +198,7 @@ def test_common_100_111_011():
                     "payer_name": payer_name,
                     "refund_payer_name": payer_name,
                     "order_id": order_id,
-                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "REFUND SUCCESSFUL",
                     "refund_pmt_msg": "REFUND SUCCESSFUL",
                     "rrn": str(rrn_original),
                     "refund_rrn": str(rrn_refunded),
