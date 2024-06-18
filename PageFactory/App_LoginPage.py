@@ -26,7 +26,10 @@ class LoginPage(BasePage):
         super().__init__(driver)
 
     def perform_login(self, username, password):
-        if read_config("APIs", "env") in self.fetch_text(self.btn_login):
+        if read_config("ParallelExecution", "deviceOnly") == "True":
+            self.scroll_to_text(read_config("APIs", "env")).click()
+
+        elif read_config("APIs", "env") in self.fetch_text(self.btn_login):
             pass
         else:
             self.perform_long_press(self.img_ezetaplogo)
