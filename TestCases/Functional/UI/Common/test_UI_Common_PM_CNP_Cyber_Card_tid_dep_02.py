@@ -1699,6 +1699,7 @@ def test_common_100_103_153():
 
             try:
                 date_and_time_portal = date_time_converter.to_portal_format(created_time)
+                date_and_time_portal_refund = date_time_converter.to_portal_format(refund_created_time)
                 expected_portal_values = {
                     "date_time": date_and_time_portal,
                     "pmt_state": "AUTHORIZED_REFUNDED",
@@ -1708,7 +1709,7 @@ def test_common_100_103_153():
                     "txn_id": original_txn_id,
                     "auth_code": auth_code,
 
-                    "date_time_2": date_and_time_portal,
+                    "date_time_2": date_and_time_portal_refund,
                     "pmt_state_2": "REFUNDED",
                     "pmt_type_2": "CNP",
                     "txn_amt_2": str(amount) + ".00",

@@ -90,6 +90,16 @@ class TransHistoryPage(BasePage):
     txt_ref_num_3 = (By.XPATH, "//*[@text='REFERENCE NO. 3']/following-sibling::android.widget.TextView")
     txt_card = (By.XPATH, "//*[@text='CARD']/following-sibling::android.widget.TextView")
     txt_mobile = (By.XPATH, "//*[@text='CUSTOMER MOBILE']/following-sibling::android.widget.TextView")
+    txt_bank = (By.XPATH, "//*[@text='BANK']/following-sibling::android.widget.TextView")
+    txt_cheque_number = (By.XPATH, "//*[@text='CHEQUE NUMBER']/following-sibling::android.widget.TextView")
+    txt_ifsc_code = (By.XPATH, "//*[@text='IFSC CODE']/following-sibling::android.widget.TextView")
+    txt_cheque_date = (By.XPATH, "//*[@text='CHEQUE DATED']/following-sibling::android.widget.TextView")
+    search_field = (By.ID, "com.ezetap.service.demo:id/searchField")
+    search_button = (By.ID, "com.ezetap.service.demo:id/search_button")
+    click_txn = (By.ID, "com.ezetap.service.demo:id/clTxnView")
+    search_category = (By.ID, 'com.ezetap.service.demo:id/search_category_selection_dropdown')
+    category_type_by_txn = (By.XPATH, "//*[@text='Transaction ID']")
+    btn_apply = (By.CLASS_NAME, "android.widget.Button")
 
     search_field = (By.ID, "com.ezetap.service.demo:id/searchField")
     search_button = (By.ID, "com.ezetap.service.demo:id/search_button")
@@ -574,3 +584,35 @@ class TransHistoryPage(BasePage):
         txn_status = str(self.fetch_text(self.txa_finalStatusField))
         self.scroll_to_text("STATUS")
         return txn_status
+
+    def fetch_bank_text_for_cheque(self) -> str:
+        """
+        This method is used to fetch bank text from txn history page for cheque flow.
+        return: bank: str
+        """
+        bank = str(self.fetch_text(self.txt_bank))
+        return bank
+
+    def fetch_cheque_number_for_cheque(self) -> str:
+        """
+        This method is used to fetch bank cheque number text from txn history page for cheque flow.
+        return: cheque_number: str
+        """
+        cheque_number = str(self.fetch_text(self.txt_cheque_number))
+        return cheque_number
+
+    def fetch_ifsc_code_for_cheque(self) -> str:
+        """
+        This method is used to fetch bank ifsc code text from txn history page for cheque flow.
+        return: ifsc_code: str
+        """
+        ifsc_code = str(self.fetch_text(self.txt_ifsc_code))
+        return ifsc_code
+
+    def fetch_cheque_date_for_cheque(self) -> str:
+        """
+        This method is used to fetch bank cheque date text from txn history page for cheque flow.
+        return: cheque_date: str
+        """
+        cheque_date = str(self.fetch_text(self.txt_cheque_date))
+        return cheque_date
