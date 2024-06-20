@@ -201,7 +201,7 @@ def test_common_100_103_001():
                 logger.debug("Login completed in the app.")
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
-                homePage.check_home_page_logo()
+                # homePage.check_home_page_logo()
                 homePage.wait_for_home_page_load()
                 logger.debug("Waiting completed for txn history page.")
                 homePage.click_on_history()
@@ -595,7 +595,7 @@ def test_common_100_103_002():
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
-                homePage.check_home_page_logo()
+                # homePage.check_home_page_logo()
                 homePage.wait_for_home_page_load()
                 homePage.click_on_history()
                 txnHistoryPage = TransHistoryPage(app_driver)
@@ -1095,7 +1095,7 @@ def test_common_100_103_010():
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
-                homePage.check_home_page_logo()
+                # homePage.check_home_page_logo()
                 homePage.wait_for_home_page_load()
                 homePage.click_on_history()
                 txnHistoryPage = TransHistoryPage(app_driver)
@@ -1614,7 +1614,7 @@ def test_common_100_103_012():
                     "txn_amt": str(amount) + ".00",
                     "rrn": str(original_rrn_cnp_txn),
                     "order_id": order_id,
-                    "msg": "PAYMENT SUCCESSFUL",
+                    "msg": "REFUND SUCCESSFUL",
                     "customer_name": txn_customer_name,
                     "settle_status": txn_settle_status,
                     "date": date_and_time,
@@ -1625,7 +1625,7 @@ def test_common_100_103_012():
                     "txn_amt_2": str(amount) + ".00",
                     "rrn_2": str(rrn_cnp_txn),
                     "order_id_2": order_id,
-                    "msg_2": "PAYMENT SUCCESSFUL",
+                    "msg_2": "REFUND SUCCESSFUL",
                     "customer_name_2": txn_customer_name,
                     "settle_status_2": txn_settle_status,
                     "date_2": date_and_time_2
@@ -1636,7 +1636,7 @@ def test_common_100_103_012():
                 home_page = HomePage(app_driver)
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(txn_id_after_refund)

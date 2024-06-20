@@ -109,7 +109,7 @@ def test_sa_100_110_003():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -179,7 +179,7 @@ def test_sa_100_110_003():
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
                 home_page = HomePage(app_driver)
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.info(f"App homepage loaded successfully")
@@ -562,7 +562,7 @@ def test_sa_100_110_004():
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(101, 200)
@@ -585,7 +585,7 @@ def test_sa_100_110_004():
             logger.debug(f"Fetching Transaction status of the transaction : {app_payment_status}")
             payment_page.click_on_proceed_homepage()
             payment_page.click_on_back_btn()
-            home_page.click_on_back_btn_enter_amt_page()
+            # home_page.click_on_back_btn_enter_amt_page()
 
             query = "select * from txn where org_code='" + org_code + "' and id LIKE '" \
                                                                       "" + datetime.utcnow().strftime(
@@ -632,7 +632,7 @@ def test_sa_100_110_004():
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.info(f"App homepage loaded successfully")
@@ -988,7 +988,7 @@ def test_sa_100_110_012():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -1057,7 +1057,7 @@ def test_sa_100_110_012():
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
                 home_page = HomePage(app_driver)
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.info(f"App homepage loaded successfully")

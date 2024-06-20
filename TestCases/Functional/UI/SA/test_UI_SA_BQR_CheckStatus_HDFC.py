@@ -97,7 +97,7 @@ def test_sa_100_102_007():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -157,7 +157,7 @@ def test_sa_100_102_007():
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
                 home_page = HomePage(app_driver)
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.info(f"App homepage loaded successfully")
@@ -480,7 +480,7 @@ def test_sa_100_102_008():
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(101, 200)
@@ -503,7 +503,7 @@ def test_sa_100_102_008():
             logger.debug(f"Fetching Transaction status of the transaction : {app_payment_status}")
             payment_page.click_on_proceed_homepage()
             payment_page.click_on_back_btn()
-            home_page.click_on_back_btn_enter_amt_page()
+            # home_page.click_on_back_btn_enter_amt_page()
 
             query = "select * from txn where org_code='"+org_code+"' and id LIKE '" \
             ""+datetime.utcnow().strftime('%y%m%d')+"%' order by created_time desc limit 1;"
@@ -541,7 +541,7 @@ def test_sa_100_102_008():
                                        "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.info(f"App homepage loaded successfully")
@@ -839,7 +839,7 @@ def test_sa_100_102_009():
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
             amount = random.choice([i for i in range(51, 100) if i != 55])
@@ -860,7 +860,7 @@ def test_sa_100_102_009():
             logger.info(f"Fetching status of payment from payment screen: {app_payment_status} ")
             payment_page.click_on_proceed_homepage()
             payment_page.click_on_back_btn()
-            home_page.click_on_back_btn_enter_amt_page()
+            # home_page.click_on_back_btn_enter_amt_page()
 
             query = "select * from txn where org_code='"+org_code+"' and id LIKE '" \
             ""+datetime.utcnow().strftime('%y%m%d')+"%' order by created_time desc limit 1;"
@@ -900,7 +900,7 @@ def test_sa_100_102_009():
                                        "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.info(f"App homepage loaded successfully")

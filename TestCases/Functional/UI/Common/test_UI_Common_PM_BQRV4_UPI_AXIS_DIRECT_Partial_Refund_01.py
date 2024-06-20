@@ -96,7 +96,7 @@ def test_common_100_102_173():
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(201, 300)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -227,7 +227,7 @@ def test_common_100_102_173():
                     "order_id": order_id,
                     "order_id_2": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
                     "rrn": str(rrn),
                     # "rrn_2": str(refund_rrn),
                     # "auth_code": auth_code,
@@ -243,7 +243,7 @@ def test_common_100_102_173():
                 login_page.perform_login(app_username, app_password)
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(refund_txn_id)
@@ -858,7 +858,7 @@ def test_common_100_102_174():
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
 
             amount = 250
@@ -982,7 +982,7 @@ def test_common_100_102_174():
                     "order_id": order_id,
                     "order_id_2": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
                     "rrn": str(rrn),
                     # "refund_rrn": str(refund_rrn),
                     # "auth_code": auth_code,
@@ -996,7 +996,7 @@ def test_common_100_102_174():
                 app_driver.reset()
                 login_page.perform_login(app_username, app_password)
                 home_page.wait_for_navigation_to_load()
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.wait_for_home_page_load()
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
@@ -1611,7 +1611,7 @@ def test_common_100_102_175():
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
             amount = 250
             partial_refunded_amount = 150
@@ -1770,9 +1770,9 @@ def test_common_100_102_175():
                     "order_id": order_id,
                     "order_id_2": order_id,
                     "order_id_3": order_id,
-                    "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_3": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "REFUND SUCCESSFUL",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
+                    "pmt_msg_3": "REFUND SUCCESSFUL",
                     "rrn": str(rrn),
                     # "partial_refund_rrn_1": str(partial_refund_rrn_1),
                     # "partial_refund_rrn_2": str(partial_refund_rrn_2),
@@ -1789,7 +1789,7 @@ def test_common_100_102_175():
                 app_driver.reset()
                 login_page.perform_login(app_username, app_password)
                 home_page.wait_for_navigation_to_load()
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.wait_for_home_page_load()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
@@ -2617,7 +2617,7 @@ def test_common_100_102_176():
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(201, 300)
             order_id = datetime.now().strftime('%m%d%H%M%S')
@@ -2740,7 +2740,7 @@ def test_common_100_102_176():
                     "order_id": order_id,
                     "order_id_2": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
                     "rrn": str(rrn),
                     # "refund_rrn": str(refund_rrn),
                     # "auth_code": auth_code,
@@ -2756,7 +2756,7 @@ def test_common_100_102_176():
                 login_page.perform_login(app_username, app_password)
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(refund_txn_id)

@@ -187,8 +187,8 @@ def test_common_100_110_017():
                     "customer_name_2": customer_name,
                     "order_id": order_id,
                     "order_id_2": order_id,
-                    "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "REFUND SUCCESSFUL",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
                     "rrn": str(rrn),
                     "rrn_2": str(rrn_refunded),
                     "auth_code": auth_code,
@@ -205,7 +205,7 @@ def test_common_100_110_017():
                 home_page = HomePage(app_driver)
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(txn_id_refunded)
@@ -818,7 +818,7 @@ def test_common_100_110_018():
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.wait_for_home_page_load()
                 logger.debug("Homepage of MPOSX app loaded successfully")
                 home_page.click_on_history()

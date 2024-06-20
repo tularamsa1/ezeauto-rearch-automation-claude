@@ -64,3 +64,9 @@ class BasePage:
         except Exception as e:
             print("Unexpected error:", e)
             return None
+
+    def wait_for_visibility_of_element_text(self, locator, ele_text, time=1):
+        """
+        This method is used to verify the text of the given locator element
+        """
+        return WebDriverWait(self.driver, time).until(EC.text_to_be_present_in_element(locator, ele_text))

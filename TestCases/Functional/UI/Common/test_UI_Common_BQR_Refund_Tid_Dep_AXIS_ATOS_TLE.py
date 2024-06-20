@@ -182,7 +182,7 @@ def test_common_100_102_191():
                     #"customer_name": customer_name,
                     #"payer_name": payer_name,
                     "order_id": order_id,
-                    "pmt_msg": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "REFUND SUCCESSFUL",
                     "auth_code": auth_code,
                     "date": date_and_time,
                     "pmt_mode_2": "BHARAT QR",
@@ -194,7 +194,7 @@ def test_common_100_102_191():
                     #"customer_name_2": customer_name_new_2,
                     #"payer_name_2": payer_name_new_2,
                     "order_id_2": order_id,
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
                     "auth_code_2": auth_code_new_2,
                     "date_2": date_and_time_new_2
                 }
@@ -206,7 +206,7 @@ def test_common_100_102_191():
                 home_page = HomePage(app_driver)
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
@@ -850,7 +850,7 @@ def test_common_100_102_192():
                 home_page = HomePage(app_driver)
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)

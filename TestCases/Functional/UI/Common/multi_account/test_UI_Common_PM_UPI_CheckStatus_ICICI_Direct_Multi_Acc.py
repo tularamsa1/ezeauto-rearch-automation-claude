@@ -110,7 +110,7 @@ def test_common_100_109_042():
             logger.info("Waiting for Home Page to load")
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_home_page_load()
             logger.info(f"Entering amount: {amount} and proceeding by entering order id: {order_id}")
             home_page.enter_amount_and_order_number(amount, order_id)

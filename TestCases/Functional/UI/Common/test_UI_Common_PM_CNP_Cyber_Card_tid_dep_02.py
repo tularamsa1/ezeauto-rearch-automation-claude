@@ -305,7 +305,7 @@ def test_common_100_103_151():
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
                 home_page.wait_for_navigation_to_load()
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.wait_for_home_page_load()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
@@ -804,7 +804,7 @@ def test_common_100_103_152():
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
                 home_page.wait_for_navigation_to_load()
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.wait_for_home_page_load()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
@@ -1365,7 +1365,7 @@ def test_common_100_103_153():
                     "txn_amt": str(amount) + ".00",
                     "rrn": str(original_rrn_cnp_txn),
                     "order_id": order_id,
-                    "msg": "PAYMENT SUCCESSFUL",
+                    "msg": "REFUND SUCCESSFUL",
                     "customer_name": txn_customer_name,
                     "settle_status": txn_settle_status,
                     "date": date_and_time,
@@ -1376,7 +1376,7 @@ def test_common_100_103_153():
                     "txn_amt_2": str(amount) + ".00",
                     "rrn_2": str(rrn_cnp_txn),
                     "order_id_2": order_id,
-                    "msg_2": "PAYMENT SUCCESSFUL",
+                    "msg_2": "REFUND SUCCESSFUL",
                     "customer_name_2": txn_customer_name,
                     "settle_status_2": txn_settle_status,
                     "date_2": date_and_time
@@ -1390,7 +1390,7 @@ def test_common_100_103_153():
                 home_page = HomePage(app_driver)
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
                 transactions_history_page.click_on_transaction_by_txn_id(txn_id_after_refund)

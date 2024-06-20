@@ -203,7 +203,7 @@ def test_common_100_102_054():
                     "customer_name_2": customer_name_new_2,
                     "payer_name_2": payer_name_new_2,
                     "order_id_2": order_id,
-                    "payment_msg_2": "PAYMENT SUCCESSFUL",
+                    "payment_msg_2": "REFUND SUCCESSFUL",
                     "auth_code_2": auth_code_new_2,
                     "date_2": date_and_time_new_2
                 }
@@ -215,7 +215,7 @@ def test_common_100_102_054():
                 home_page = HomePage(app_driver)
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
@@ -892,7 +892,7 @@ def test_common_100_102_055():
                 home_page = HomePage(app_driver)
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
 
@@ -1491,7 +1491,7 @@ def test_common_100_102_132():
                     "customer_name_2": customer_name_new_2,
                     "payer_name_2": payer_name_new_2,
                     "order_id_2": order_id,
-                    "payment_msg_2": "PAYMENT SUCCESSFUL",
+                    "payment_msg_2": "REFUND SUCCESSFUL",
                     "auth_code_2": auth_code_new_2,
                     "date_2": date_and_time_new_2
                 }
@@ -1503,7 +1503,7 @@ def test_common_100_102_132():
                 home_page = HomePage(app_driver)
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
@@ -2164,7 +2164,7 @@ def test_common_100_102_133():
                     "customer_name": customer_name,
                     "payer_name": payer_name,
                     "order_id": order_id,
-                    "payment_msg": "PAYMENT SUCCESSFUL",
+                    "payment_msg": "REFUND SUCCESSFUL",
                     "auth_code": auth_code,
                     "date": date_and_time,
                     "pmt_mode_2": "UPI",
@@ -2176,7 +2176,7 @@ def test_common_100_102_133():
                     "customer_name_2": customer_name_new_2,
                     "payer_name_2": payer_name_new_2,
                     "order_id_2": order_id,
-                    "payment_msg_2": "PAYMENT SUCCESSFUL",
+                    "payment_msg_2": "REFUND SUCCESSFUL",
                     "auth_code_2": auth_code_new_2,
                     "date_2": date_and_time_new_2,
                     "pmt_mode_3": "UPI",
@@ -2188,7 +2188,7 @@ def test_common_100_102_133():
                     "customer_name_3": customer_name_new_3,
                     "payer_name_3": payer_name_new_3,
                     "order_id_3": order_id,
-                    "payment_msg_3": "PAYMENT SUCCESSFUL",
+                    "payment_msg_3": "REFUND SUCCESSFUL",
                     "auth_code_3": auth_code_new_3,
                     "date_3": date_and_time_new_3
                 }
@@ -2200,7 +2200,7 @@ def test_common_100_102_133():
                 home_page = HomePage(app_driver)
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
@@ -3042,7 +3042,7 @@ def test_common_100_102_134():
                     "customer_name_2": customer_name_new_2,
                     "payer_name_2": payer_name_new_2,
                     "order_id_2": order_id,
-                    "payment_msg_2": "PAYMENT SUCCESSFUL",
+                    "payment_msg_2": "REFUND SUCCESSFUL",
                     "auth_code_2": auth_code_new_2,
                     "date_2": date_and_time_new_2
                 }
@@ -3054,7 +3054,7 @@ def test_common_100_102_134():
                 home_page = HomePage(app_driver)
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)

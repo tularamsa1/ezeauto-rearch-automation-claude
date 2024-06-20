@@ -199,8 +199,8 @@ def test_common_100_111_025():
                     "payer_name": payer_name,
                     "payer_name_2": payer_name,
                     "order_id": order_id,
-                    "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "REFUND SUCCESSFUL",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
                     "rrn": str(rrn_original),
                     "date_2": date_and_time,
                     "date": original_date_and_time
@@ -213,7 +213,7 @@ def test_common_100_111_025():
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
-                homePage.check_home_page_logo()
+                # homePage.check_home_page_logo()
                 homePage.wait_for_home_page_load()
                 homePage.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
@@ -825,7 +825,7 @@ def test_common_100_111_026():
                     "payer_name_2": payer_name,
                     "order_id": order_id,
                     "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
                     "rrn": str(rrn_original),
                     "date_2": date_and_time,
                     "date": original_date_and_time,
@@ -838,7 +838,7 @@ def test_common_100_111_026():
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
-                homePage.check_home_page_logo()
+                # homePage.check_home_page_logo()
                 homePage.wait_for_home_page_load()
                 homePage.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)

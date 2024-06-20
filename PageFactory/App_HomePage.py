@@ -8,13 +8,16 @@ from PageFactory.App_BasePage import BasePage
 
 class HomePage(BasePage):
     lbl_home = (By.ID, 'com.ezetap.basicapp:id/navigation_bar_item_large_label_view')
-    lbl_navigation = (By.ID, 'com.ezetap.basicapp:id/nav_account')
+    # lbl_navigation = (By.ID, 'com.ezetap.basicapp:id/nav_account')
+    lbl_navigation = (By.ID, 'com.ezetap.basicapp:id/logoToolbar')
     mnu_account = (By.ID, 'com.ezetap.basicapp:id/nav_account')
     txt_enterAmountField = (By.ID, 'com.ezetap.basicapp:id/tvAmountCard')
-    btn_pay = (By.ID, "com.ezetap.basicapp:id/btnPay")
-    btn_goToHistory = (By.ID, "com.ezetap.basicapp:id/clGotoHistory")
+    # btn_pay = (By.ID, "com.ezetap.basicapp:id/btnPay")
+    btn_collect_payment = (By.XPATH, "//*[@text = 'Collect Payment']")
+    btn_goToHistory = (By.ID, "com.ezetap.basicapp:id/btnHistory")
     img_companyLogo = (By.XPATH,'//android.widget.ImageView[@content-desc="Company Logo"]')
-    tab_history = (By.ID,"com.ezetap.basicapp:id/nav_txn_history")
+    # tab_history = (By.ID,"com.ezetap.basicapp:id/nav_txn_history")
+    tab_history = (By.ID, 'com.ezetap.basicapp:id/btnHistory')
     mnu_engSideMenu =(By.XPATH, '//android.widget.ImageButton[@content-desc="Open navigation drawer"]')
     mnu_hindiSideMenu = (By.XPATH, '//android.widget.ImageButton[@content-desc="नेविगेशन ड्रावर खोलें"]')
     mnu_merchantDetail = (By.ID, 'com.ezetap.basicapp:id/arrow')
@@ -36,6 +39,9 @@ class HomePage(BasePage):
     btn_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
     lbl_p2p_notification = (By.ID, "com.ezetap.service.demo:id/title")
 
+    btn_image = (By.XPATH, "//android.widget.ImageButton[@content-desc='Open navigation drawer']")
+    lbl_settings = (By.ID, "com.ezetap.basicapp:id/clSettingsItem")
+    btn_other = (By.XPATH, "//android.widget.TextView[@text='Other']")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -51,7 +57,11 @@ class HomePage(BasePage):
         list = self.type_amount(amt)
         for i in list:
             self.perform_click(i)
-        self.perform_click(self.btn_pay)
+        try:
+            if not self.wait_for_visibility_of_element_text(self.btn_collect_payment, ele_text="Collect Payment"):
+                self.perform_click(self.btn_collect_payment)
+        except:
+            self.perform_click(self.btn_other)
         self.perform_click(self.txt_orderNo)
         self.perform_sendkeys(self.txt_orderNo, order_number)
         self.perform_click(self.btn_paymentProceed)
@@ -61,7 +71,11 @@ class HomePage(BasePage):
         list = self.type_amount(amt)
         for i in list:
             self.perform_click(i)
-        self.perform_click(self.btn_pay)
+        try:
+            if not self.wait_for_visibility_of_element_text(self.btn_collect_payment, ele_text="Collect Payment"):
+                self.perform_click(self.btn_collect_payment)
+        except:
+            self.perform_click(self.btn_other)
         self.perform_click(self.txt_orderNo)
         self.perform_sendkeys(self.txt_orderNo, order_number)
         self.perform_sendkeys(self.txt_mobileField, str(mobilenum))
@@ -162,3 +176,17 @@ class HomePage(BasePage):
 
     def check_p2p_notification(self):
         return self.fetch_text(self.lbl_p2p_notification, 30)
+
+    def click_image_btn(self):
+        """
+        This method used to click on the navigation drawer
+        """
+        self.wait_for_element(self.btn_image)
+        self.perform_click(self.btn_image)
+
+    def click_on_settings(self):
+        """
+        This method used to click on the settings
+        """
+        self.wait_for_element(self.lbl_settings)
+        self.perform_click(self.lbl_settings)

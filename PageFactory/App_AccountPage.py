@@ -9,7 +9,8 @@ class AccountPage(BasePage):
     rdo_Language = (AppiumBy.ID, 'com.ezetap.basicapp:id/rbLanguage')
     btn_LanguageProceed = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnProceed')
     lbl_SAVersion = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvServiceVersionData')
-    btn_logout = (AppiumBy.ID, 'com.ezetap.basicapp:id/clLogout')
+    # btn_logout = (AppiumBy.ID, 'com.ezetap.basicapp:id/clLogout')
+    btn_logout = (AppiumBy.ID, "com.ezetap.basicapp:id/tvHintLogout")
     btn_confirmLogout = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnOk')
 
     def __init__(self, driver):

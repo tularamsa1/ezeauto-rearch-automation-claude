@@ -1,3 +1,5 @@
+import time
+
 from selenium.webdriver.common.by import By
 from PageFactory.Portal_BasePage import BasePage
 
@@ -176,6 +178,7 @@ class RemotePayTxnPage(BasePage):
 
     def switch_to_iframe(self):
         """Below method is used to pass the iframe locator path to switch the context to iframe"""
+        time.sleep(3)
         iframe_element = self.page.frame_locator(self.iframe_cybsource)
         iframe_element.get_by_placeholder(" Enter Code Here").fill("1234")
         iframe_element.locator(self.btn_cyberSourceSubmitButton).click()

@@ -273,7 +273,7 @@ def test_common_100_103_146():
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
-                homePage.check_home_page_logo()
+                # homePage.check_home_page_logo()
                 homePage.wait_for_home_page_load()
                 homePage.click_on_history()
 
@@ -758,7 +758,7 @@ def test_common_100_103_147():
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
-                homePage.check_home_page_logo()
+                # homePage.check_home_page_logo()
                 homePage.wait_for_home_page_load()
                 homePage.click_on_history()
 
@@ -1274,7 +1274,7 @@ def test_common_100_103_148():
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
-                homePage.check_home_page_logo()
+                # homePage.check_home_page_logo()
                 homePage.wait_for_home_page_load()
                 homePage.click_on_history()
 

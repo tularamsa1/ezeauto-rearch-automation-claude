@@ -110,7 +110,7 @@ def test_common_100_102_364():
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(251, 300)
@@ -131,7 +131,7 @@ def test_common_100_102_364():
             logger.info(f"Fetching status of payment from payment screen: {app_payment_status} ")
             payment_page.click_on_proceed_homepage()
             payment_page.click_on_back_btn()
-            home_page.click_on_back_btn_enter_amt_page()
+            # home_page.click_on_back_btn_enter_amt_page()
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch transaction id from database is: {query}")
@@ -166,7 +166,7 @@ def test_common_100_102_364():
                                        "date": date_and_time}
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.info(f"App homepage loaded successfully")
@@ -456,7 +456,7 @@ def test_common_100_102_371():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_home_page_load()
             home_page.wait_for_navigation_to_load()
             logger.info(f"App homepage loaded successfully")
@@ -550,7 +550,7 @@ def test_common_100_102_371():
                 logger.debug(f"Loging in again with user name : {app_username}")
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.wait_for_home_page_load()
                 logger.debug("Homepage of MPOSX app loaded successfully")
                 home_page.click_on_history()

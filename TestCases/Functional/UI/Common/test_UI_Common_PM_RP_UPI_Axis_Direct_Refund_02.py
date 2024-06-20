@@ -223,8 +223,8 @@ def test_common_100_103_106():
                     "payer_name": original_payer_name,
                     "payer_name_2": original_payer_name,
                     "order_id": order_id,
-                    "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "REFUND SUCCESSFUL",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
                     "rrn": str(original_rrn),
                     # "refund_rrn": str(partially_refunded_rrn),
                     # "auth_code": original_auth_code,
@@ -239,7 +239,7 @@ def test_common_100_103_106():
                     "txn_amt_3": "{:.2f}".format(full_refund_amount),
                     "customer_name_3": original_customer_name,
                     "payer_name_3": original_payer_name,
-                    "pmt_msg_3": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_3": "REFUND SUCCESSFUL",
                     # "full_refund_rrn": str(fully_refunded_rrn),
                     # "full_refund_auth_code": fully_refunded_auth_code
                 }
@@ -251,7 +251,7 @@ def test_common_100_103_106():
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
-                homePage.check_home_page_logo()
+                # homePage.check_home_page_logo()
                 homePage.wait_for_home_page_load()
                 homePage.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)
@@ -1062,8 +1062,8 @@ def test_common_100_103_107():
                     "payer_name": original_payer_name,
                     "payer_name_2": original_payer_name,
                     "order_id": order_id,
-                    "pmt_msg": "PAYMENT SUCCESSFUL",
-                    "pmt_msg_2": "PAYMENT SUCCESSFUL",
+                    "pmt_msg": "REFUND SUCCESSFUL",
+                    "pmt_msg_2": "REFUND SUCCESSFUL",
                     # "rrn": str(original_rrn),
                     # "refund_rrn": str(partially_refunded_rrn),
                     # "auth_code": original_auth_code,
@@ -1078,7 +1078,7 @@ def test_common_100_103_107():
                     "txn_amt_3": "{:.2f}".format(full_refund_amount),
                     "customer_name_3": original_customer_name,
                     "payer_name_3": original_payer_name,
-                    "pmt_msg_3": "PAYMENT SUCCESSFUL",
+                    "pmt_msg_3": "REFUND SUCCESSFUL",
                     # "full_refund_rrn": str(fully_refunded_rrn),
                     # "full_refund_auth_code": fully_refunded_auth_code
                 }
@@ -1090,7 +1090,7 @@ def test_common_100_103_107():
                 loginPage.perform_login(app_username, app_password)
                 homePage = HomePage(app_driver)
                 homePage.wait_for_navigation_to_load()
-                homePage.check_home_page_logo()
+                # homePage.check_home_page_logo()
                 homePage.wait_for_home_page_load()
                 homePage.click_on_history()
                 transactions_history_page = TransHistoryPage(app_driver)

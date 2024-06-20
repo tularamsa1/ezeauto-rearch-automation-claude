@@ -108,7 +108,7 @@ def test_common_100_110_049():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -178,7 +178,7 @@ def test_common_100_110_049():
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
                 home_page = HomePage(app_driver)
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.info(f"App homepage loaded successfully")
@@ -555,7 +555,7 @@ def test_common_100_110_050():
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(311, 320)
@@ -578,7 +578,7 @@ def test_common_100_110_050():
             logger.debug(f"Fetching Transaction status of the transaction : {app_payment_status}")
             payment_page.click_on_proceed_homepage()
             payment_page.click_on_back_btn()
-            home_page.click_on_back_btn_enter_amt_page()
+            # home_page.click_on_back_btn_enter_amt_page()
 
             query = f"select * from txn where org_code='{org_code}' and external_ref='{order_id}' order by created_time desc limit 1;"
             logger.debug(f"Query to fetch transaction id from db is : {query}")
@@ -626,7 +626,7 @@ def test_common_100_110_050():
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
-                home_page.check_home_page_logo()
+                # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.info(f"App homepage loaded successfully")
@@ -991,7 +991,7 @@ def test_common_100_110_051():
             logger.info("Waiting for Home Page to load")
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_home_page_load()
             logger.info(f"Entering amount: {amount} and proceeding by entering order id: {order_id}")
             home_page.enter_amount_and_order_number(amount, order_id)

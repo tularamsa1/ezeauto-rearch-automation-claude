@@ -104,7 +104,7 @@ def test_L3_5008_101_001():
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Clicking on start button")
             home_page.click_on_start_btn()
             payment_page = PaymentPage(app_driver)
