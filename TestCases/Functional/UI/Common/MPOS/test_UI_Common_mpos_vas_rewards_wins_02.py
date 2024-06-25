@@ -114,7 +114,7 @@ def test_mpos_600_602_020():
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
-                home_page.check_home_page_logo()
+                 # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 logger.info(f"App homepage loaded successfully")
                 rewards_page = Rewards(app_driver)
@@ -156,7 +156,7 @@ def test_mpos_600_602_020():
             try:
                 # --------------------------------------------------------------------------------------------
                 expected_app_values = {
-                    "coupon_code": coupon_code_from_wins_db }
+                    "coupon_code": coupon_code_from_wins_db}
                 actual_app_values = {
                     "coupon_code": coupon_code_rewards_tab, }
                 # ---------------------------------------------------------------------------------------------

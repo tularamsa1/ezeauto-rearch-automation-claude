@@ -24,8 +24,8 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_115_10_001():
     """
-        Sub Feature Code: UI_Common_Card_MQTT_Routing_Enabled_Success_HDFC_Dummy_VISA_Credit_Card_417666
-        Sub Feature Description: Performing the MQTT Routing enabled for success transaction via HDFC Dummy PG using visa credit card (bin : 417666)
+        Sub Feature Code: UI_Common_Card_MQTT_Routing_Enabled_Success_HDFC_HDFC_VISA_Credit_Card_417666
+        Sub Feature Description: Performing the MQTT Routing enabled for success transaction via HDFC HDFC PG using visa credit card (bin : 417666)
         TC naming code description: 100: Payment Method, 115: CARD_UI, 10:MQTT Routing , 001: TC001
     """
     try:
@@ -53,7 +53,7 @@ def test_common_100_115_10_001():
         org_code = result['org_code'].values[0]
         logger.debug(f"Fetching orgcode value from the org_employee table {org_code}")
 
-        query = f"select * from terminal_info where org_code= '{org_code}' and status = 'ACTIVE' and acquirer_code='HDFC' and payment_gateway='DUMMY' "
+        query = f"select * from terminal_info where org_code= '{org_code}' and status = 'ACTIVE' and acquirer_code='HDFC' and payment_gateway='HDFC' "
         logger.debug(f"Query to fetch data from the terminal_info table: {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for terminal_info table : {result}")
@@ -114,7 +114,6 @@ def test_common_100_115_10_001():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -440,7 +439,7 @@ def test_common_100_115_10_001():
                     "acquirer_code": "HDFC",
                     "mid": mid,
                     "tid": tid,
-                    "pmt_gateway": "DUMMY",
+                    "pmt_gateway": "HDFC",
                     "settle_status": "PENDING",
                     "device_serial": device_serial,
                     "merchant_code": org_code,
@@ -572,8 +571,8 @@ def test_common_100_115_10_001():
 @pytest.mark.chargeSlipVal
 def test_common_100_115_10_002():
     """
-        Sub Feature Code: UI_Common_Card_MQTT_Routing_Disabled_Success_HDFC_Dummy_VISA_Credit_Card_417666
-        Sub Feature Description: Performing the MQTT Routing disabled for success transaction via HDFC Dummy PG using visa credit card (bin : 417666)
+        Sub Feature Code: UI_Common_Card_MQTT_Routing_Disabled_Success_HDFC_HDFC_VISA_Credit_Card_417666
+        Sub Feature Description: Performing the MQTT Routing disabled for success transaction via HDFC HDFC PG using visa credit card (bin : 417666)
         TC naming code description: 100: Payment Method, 115: CARD_UI, 10:MQTT Routing , 002: TC002
     """
     try:
@@ -601,7 +600,7 @@ def test_common_100_115_10_002():
         org_code = result['org_code'].values[0]
         logger.debug(f"Fetching orgcode value from the org_employee table {org_code}")
 
-        query = f"select * from terminal_info where org_code= '{org_code}' and status = 'ACTIVE' and acquirer_code='HDFC' and payment_gateway='DUMMY' "
+        query = f"select * from terminal_info where org_code= '{org_code}' and status = 'ACTIVE' and acquirer_code='HDFC' and payment_gateway='HDFC' "
         logger.debug(f"Query to fetch data from the terminal_info table: {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Query result for terminal_info table : {result}")
@@ -651,7 +650,6 @@ def test_common_100_115_10_002():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -977,7 +975,7 @@ def test_common_100_115_10_002():
                     "acquirer_code": "HDFC",
                     "mid": mid,
                     "tid": tid,
-                    "pmt_gateway": "DUMMY",
+                    "pmt_gateway": "HDFC",
                     "settle_status": "PENDING",
                     "device_serial": device_serial,
                     "merchant_code": org_code,

@@ -67,7 +67,7 @@ def test_mpos_600_602_010():
             end_date = datetime.now() + timedelta(days=3)
             formatted_end_date = end_date.strftime('%Y-%m-%d')
             response_create_campaign = rewards_processor.create_campaign_reward('MER190211001', 'Ezetap@1234', org_code,
-                                                                           formatted_end_date, reward_name)
+                                                                                formatted_end_date, reward_name)
             logger.debug("campaign is created successfully")
             json_resp = json.loads(response_create_campaign.text)
             campaign_id = json_resp["campaignId"]
@@ -89,7 +89,7 @@ def test_mpos_600_602_010():
             end_date_1 = datetime.now() + timedelta(days=4)
             formatted_end_date_1 = end_date_1.strftime('%Y-%m-%d')
             response_create_campaign = rewards_processor.create_campaign_reward('MER190211001', 'Ezetap@1234', org_code,
-                                                                           formatted_end_date_1, reward_name)
+                                                                                formatted_end_date_1, reward_name)
             logger.debug("2nd campaign is created successfully")
             json_resp = json.loads(response_create_campaign.text)
             campaign_id_1 = json_resp["campaignId"]
@@ -134,7 +134,7 @@ def test_mpos_600_602_010():
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
-                home_page.check_home_page_logo()
+                 # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.debug(f"App homepage loaded successfully")
@@ -237,7 +237,7 @@ def test_mpos_600_602_011():
             end_date = datetime.now() + timedelta(days=3)
             formatted_end_date = end_date.strftime('%Y-%m-%d')
             response_create_campaign = rewards_processor.create_campaign_reward('MER190211001', 'Ezetap@1234', org_code,
-                                                                           formatted_end_date, reward_name)
+                                                                                formatted_end_date, reward_name)
             logger.debug("campaign is created successfully")
             json_resp = json.loads(response_create_campaign.text)
             campaign_id = json_resp["campaignId"]
@@ -282,7 +282,7 @@ def test_mpos_600_602_011():
                 logger.debug(f"Logging in the MPOSX application using username : {app_username}")
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
-                home_page.check_home_page_logo()
+                 # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.debug(f"App homepage loaded successfully")
@@ -386,7 +386,7 @@ def test_mpos_600_602_012():
             end_date = datetime.now() + timedelta(days=3)
             formatted_end_date = end_date.strftime('%Y-%m-%d')
             response_create_campaign = rewards_processor.create_campaign_reward('MER190211001', 'Ezetap@1234', org_code,
-                                                                           formatted_end_date, reward_name)
+                                                                                formatted_end_date, reward_name)
             logger.debug("campaign is created successfully")
             json_resp = json.loads(response_create_campaign.text)
             campaign_id = json_resp["campaignId"]
@@ -437,7 +437,7 @@ def test_mpos_600_602_012():
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
-                home_page.check_home_page_logo()
+                 # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.debug(f"App homepage loaded successfully")

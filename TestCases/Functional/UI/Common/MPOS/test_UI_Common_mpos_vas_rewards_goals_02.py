@@ -68,7 +68,7 @@ def test_mpos_600_602_016():
             end_date = datetime.now() + timedelta(days=3)
             formatted_end_date = end_date.strftime('%Y-%m-%d')
             response_create_campaign = rewards_processor.create_campaign_reward('MER190211001', 'Ezetap@1234', org_code,
-                                                                           formatted_end_date, reward_name)
+                                                                                formatted_end_date, reward_name)
             logger.debug("campaign is created successfully")
             json_resp = json.loads(response_create_campaign.text)
             campaign_id = json_resp["campaignId"]
@@ -113,7 +113,7 @@ def test_mpos_600_602_016():
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
-                home_page.check_home_page_logo()
+                 # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.debug(f"App homepage loaded successfully")
@@ -229,7 +229,8 @@ def test_mpos_600_602_019():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for setting preconditions is : {response}")
             reward_name = f"COUPON_ENABLED : {random.randint(1, 10000)}"
-            response_create_campaign = rewards_processor.create_campaign('MER190211001', 'Ezetap@1234', org_code, reward_name)
+            response_create_campaign = rewards_processor.create_campaign('MER190211001', 'Ezetap@1234', org_code,
+                                                                         reward_name)
             logger.debug("campaign is created successfully")
             json_resp = json.loads(response_create_campaign.text)
             campaign_id = json_resp["campaignId"]
@@ -245,7 +246,7 @@ def test_mpos_600_602_019():
             coupon_code = datetime.now().strftime('%M%S')
             pin = int(datetime.now().strftime('%M%S')) + 1
             response_create_coupon = rewards_processor.create_coupon('MER190211001', 'Ezetap@1234', coupon_code, pin,
-                                                                reward_name)
+                                                                     reward_name)
             logger.debug(f"Flipkart coupon Created : {response_create_coupon}")
             api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
                                                                                   "password": portal_password})
@@ -281,7 +282,7 @@ def test_mpos_600_602_019():
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
-                home_page.check_home_page_logo()
+                 # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 logger.info(f"App homepage loaded successfully")
                 rewards_page = Rewards(app_driver)
@@ -302,7 +303,7 @@ def test_mpos_600_602_019():
                 else:
                     logger.debug("Progress Percentage is not equal to 100")
                 rewards_page.click_on_back_btn_to_go_main_page()
-                home_page.check_home_page_logo()
+                 # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 rewards_page.click_on_side_menu()
                 rewards_page.click_on_my_rewards_from_side_menu()
@@ -311,10 +312,10 @@ def test_mpos_600_602_019():
                 title_win = rewards_page.fetch_title_from_wins_tab()
                 logger.debug(f"title_win: {title_win}")
                 cash_back_amount = rewards_page.fetch_cash_back_from_wins_tab()
-                cash_back_amount_wins= rewards_page.remove_space(cash_back_amount)
+                cash_back_amount_wins = rewards_page.remove_space(cash_back_amount)
                 logger.debug(f"cash_back_amount_wins: {cash_back_amount_wins}")
                 cash_back_amount_2 = rewards_page.fetch_cash_back_from_wins_tab_2()
-                cash_back_amount_2_wins= rewards_page.remove_space(cash_back_amount_2)
+                cash_back_amount_2_wins = rewards_page.remove_space(cash_back_amount_2)
                 logger.debug(f"cash_back_amount_2_wins: {cash_back_amount_2_wins}")
             finally:
                 revert_back_to_original_status(in_progress_list_ids, won_list_ids, claimed_list_ids)

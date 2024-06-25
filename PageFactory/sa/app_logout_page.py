@@ -3,7 +3,8 @@ from PageFactory.App_BasePage import BasePage
 
 
 class Logout(BasePage):
-    btn_account = (AppiumBy.ID, 'com.ezetap.basicapp:id/nav_account')
+    btn_account = (AppiumBy.ID, 'com.ezetap.basicapp:id/cardViewMerchant')
+    mnu_navigation_drawer = (AppiumBy.XPATH, '//android.widget.ImageButton[@content-desc="Open navigation drawer"]')
     btn_setting = (AppiumBy.ID, 'com.ezetap.basicapp:id/clSettingsItem')
     btn_logout = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvHintLogout')
     btn_logout_conformation = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnOk')
@@ -15,8 +16,10 @@ class Logout(BasePage):
         """
         This method is used to logout from the app when the autoLoginByTokenLogOutEnabled is enabled
         """
+        self.perform_click(self.mnu_navigation_drawer)
         self.perform_click(self.btn_account)
         self.perform_click(self.btn_setting)
         self.perform_click(self.btn_logout)
         self.perform_click(self.btn_logout_conformation)
+
 

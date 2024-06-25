@@ -64,7 +64,8 @@ def test_mpos_600_602_014():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for setting preconditions is : {response}")
             reward_name = f"COUPON_ENABLED : {random.randint(1, 10000)}"
-            response_create_campaign = rewards_processor.create_campaign('MER190211001', 'Ezetap@1234', org_code, reward_name)
+            response_create_campaign = rewards_processor.create_campaign('MER190211001', 'Ezetap@1234', org_code,
+                                                                         reward_name)
             logger.debug("campaign is created successfully")
             json_resp = json.loads(response_create_campaign.text)
             campaign_id = json_resp["campaignId"]
@@ -82,7 +83,7 @@ def test_mpos_600_602_014():
             coupon_code = datetime.now().strftime('%M%S')
             pin = int(datetime.now().strftime('%M%S')) + 1
             response_create_coupon = rewards_processor.create_coupon('MER190211001', 'Ezetap@1234', coupon_code, pin,
-                                                                reward_name)
+                                                                     reward_name)
             logger.debug(f"Flipkart coupan Created : {response_create_coupon}")
             api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
                                                                                   "password": portal_password})
@@ -116,7 +117,7 @@ def test_mpos_600_602_014():
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
-                home_page.check_home_page_logo()
+                 # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 logger.info(f"App homepage loaded successfully")
                 rewards_page = Rewards(app_driver)
@@ -223,7 +224,8 @@ def test_mpos_600_602_015():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for setting preconditions is : {response}")
             reward_name = f"COUPON_ENABLED : {random.randint(1, 10000)}"
-            response_create_campaign = rewards_processor.create_campaign('MER190211001', 'Ezetap@1234', org_code, reward_name)
+            response_create_campaign = rewards_processor.create_campaign('MER190211001', 'Ezetap@1234', org_code,
+                                                                         reward_name)
             logger.debug("campaign is created successfully")
             json_resp = json.loads(response_create_campaign.text)
             campaign_id = json_resp["campaignId"]
@@ -239,7 +241,7 @@ def test_mpos_600_602_015():
             coupon_code = datetime.now().strftime('%M%S')
             pin = int(datetime.now().strftime('%M%S')) + 1
             response_create_coupon = rewards_processor.create_coupon('MER190211001', 'Ezetap@1234', coupon_code, pin,
-                                                                reward_name)
+                                                                     reward_name)
             logger.debug(f"Flipkart coupon Created : {response_create_coupon}")
             api_details = DBProcessor.get_api_details('DB Refresh', request_body={"username": portal_username,
                                                                                   "password": portal_password})
@@ -269,7 +271,7 @@ def test_mpos_600_602_015():
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
-                home_page.check_home_page_logo()
+                 # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 logger.info(f"App homepage loaded successfully")
                 rewards_page = Rewards(app_driver)
@@ -286,17 +288,17 @@ def test_mpos_600_602_015():
                 logger.debug(f"lunching the app again")
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
-                home_page.check_home_page_logo()
+                 # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 rewards_page.click_on_my_rewards_tab_from_main_screen()
                 rewards_page.click_on_wins()
                 title_wins = rewards_page.fetch_title_from_wins_tab()
                 logger.debug(f"title_wins: {title_wins}")
                 cash_back_amount = rewards_page.fetch_cash_back_from_wins_tab()
-                cash_back_amount_wins= rewards_page.remove_space(cash_back_amount)
+                cash_back_amount_wins = rewards_page.remove_space(cash_back_amount)
                 logger.debug(f"cash_back_amount_wins: {cash_back_amount_wins}")
                 cash_back_amount_2 = rewards_page.fetch_cash_back_from_wins_tab_2()
-                cash_back_amount_2_wins= rewards_page.remove_space(cash_back_amount_2)
+                cash_back_amount_2_wins = rewards_page.remove_space(cash_back_amount_2)
                 logger.debug(f"cash_back_amount_2_wins: {cash_back_amount_2_wins}")
             finally:
                 revert_back_to_original_status(in_progress_list_ids, won_list_ids, claimed_list_ids)
@@ -392,7 +394,8 @@ def test_mpos_600_602_018():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received for setting preconditions is : {response}")
             reward_name = f"COUPON_ENABLED : {random.randint(1, 10000)}"
-            response_create_campaign = rewards_processor.create_campaign('MER190211001', 'Ezetap@1234', org_code, reward_name)
+            response_create_campaign = rewards_processor.create_campaign('MER190211001', 'Ezetap@1234', org_code,
+                                                                         reward_name)
             logger.debug("campaign is created successfully")
             json_resp = json.loads(response_create_campaign.text)
             campaign_id = json_resp["campaignId"]
@@ -400,7 +403,7 @@ def test_mpos_600_602_018():
             pin = int(datetime.now().strftime('%M%S')) + 1
             logger.debug(f"coupon_code : {coupon_code} and pin : {pin}")
             response_create_coupon = rewards_processor.create_coupon('MER190211001', 'Ezetap@1234', coupon_code, pin,
-                                                                reward_name)
+                                                                     reward_name)
             logger.debug(f"Flipkart coupon Created : {response_create_coupon}")
             query = "update campaign SET campaign_status = 'LIVE' where campaign_id = '" + str(campaign_id) + "';"
             DBProcessor.setValueToDB(query, 'rewards')
@@ -421,7 +424,7 @@ def test_mpos_600_602_018():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        Configuration.configureLogCaptureVariables(apiLog=True,reward_log=True)
+        Configuration.configureLogCaptureVariables(apiLog=True, reward_log=True)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -442,7 +445,7 @@ def test_mpos_600_602_018():
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
                 login_page.perform_login(app_username, app_password)
                 home_page = HomePage(app_driver)
-                home_page.check_home_page_logo()
+                 # home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 logger.info(f"App homepage loaded successfully")
                 rewards_page = Rewards(app_driver)

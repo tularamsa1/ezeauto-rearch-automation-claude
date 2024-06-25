@@ -321,6 +321,11 @@ class TransHistoryPage(BasePage):
         return self.fetch_text(self.txt_sale_amt)
 
     def fetch_card_type_desc_text(self):
+        """
+        Fetches and returns the text description of the card type from the current page after scrolling to
+        'Send E-Receipt'
+        """
+        self.scroll_to_text("Send E-Receipt")
         return self.fetch_text(self.txt_card_type_desc)
 
     def click_on_void_card_txn(self):

@@ -25,8 +25,8 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_115_06_001():
     """
-    Sub Feature Code: UI_Common_Card_Instant_EMI_Success_Txn_For_An_Org_HDFC_Dummy_EMV_VISA_CreditCard_With_Pin_417666_For_6_Months_Tenure
-    Sub Feature Description: Performing the instant EMI success transaction for an org (not ezetap) via HDFC Dummy PG using EMV VISA
+    Sub Feature Code: UI_Common_Card_Instant_EMI_Success_Txn_For_An_Org_HDFC_HDFC_EMV_VISA_CreditCard_With_Pin_417666_For_6_Months_Tenure
+    Sub Feature Description: Performing the instant EMI success transaction for an org (not ezetap) via HDFC HDFC PG using EMV VISA
     Credit card with pin for 6 months tenure (bin: 417666)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 06: Instant_EMI, 001: TC001
     """
@@ -56,7 +56,7 @@ def test_common_100_115_06_001():
         logger.debug(f"fetching org code from org_employee table : {org_code}")
 
         query = f"select * from terminal_info where org_code= '{org_code}' and status = 'ACTIVE' and " \
-                "acquirer_code='HDFC' and payment_gateway='DUMMY' "
+                "acquirer_code='HDFC' and payment_gateway='HDFC' "
         logger.debug(f"Query to fetch data from the terminal_info table for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Fetching result for terminal_info table : {result}")
@@ -608,7 +608,7 @@ def test_common_100_115_06_001():
                     "acquirer_code": "HDFC",
                     "mid": mid,
                     "tid": tid,
-                    "pmt_gateway": "DUMMY",
+                    "pmt_gateway": "HDFC",
                     "settle_status": "PENDING",
                     "device_serial": device_serial,
                     "merchant_code": org_code,
@@ -792,8 +792,8 @@ def test_common_100_115_06_001():
 @pytest.mark.chargeSlipVal
 def test_common_100_115_06_002():
     """
-    Sub Feature Code: UI_Common_Card_Instant_EMI_Success_Txn_For_An_Org_HDFC_Dummy_EMV_VISA_CreditCard_With_Pin_417666_For_9_Months_Tenure
-    Sub Feature Description: Performing the instant EMI success transaction for an org (not ezetap) via HDFC Dummy PG using EMV VISA
+    Sub Feature Code: UI_Common_Card_Instant_EMI_Success_Txn_For_An_Org_HDFC_HDFC_EMV_VISA_CreditCard_With_Pin_417666_For_9_Months_Tenure
+    Sub Feature Description: Performing the instant EMI success transaction for an org (not ezetap) via HDFC HDFC PG using EMV VISA
     Credit card with pin for 9 months tenure (bin: 417666)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 06: Instant_EMI, 002: TC002
     """
@@ -823,7 +823,7 @@ def test_common_100_115_06_002():
         logger.debug(f"fetching org code from org_employee table : {org_code}")
 
         query = f"select * from terminal_info where org_code= '{org_code}' and status = 'ACTIVE' and " \
-                "acquirer_code='HDFC' and payment_gateway='DUMMY' "
+                "acquirer_code='HDFC' and payment_gateway='HDFC' "
         logger.debug(f"Query to fetch data from the terminal_info table for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Fetching result for terminal_info table : {result}")
@@ -1378,7 +1378,7 @@ def test_common_100_115_06_002():
                     "acquirer_code": "HDFC",
                     "mid": mid,
                     "tid": tid,
-                    "pmt_gateway": "DUMMY",
+                    "pmt_gateway": "HDFC",
                     "settle_status": "PENDING",
                     "device_serial": device_serial,
                     "merchant_code": org_code,
@@ -1562,8 +1562,8 @@ def test_common_100_115_06_002():
 @pytest.mark.chargeSlipVal
 def test_common_100_115_06_003():
     """
-    Sub Feature Code: UI_Common_Card_Instant_EMI_Success_Txn_For_An_Org_HDFC_Dummy_EMV_VISA_CreditCard_With_Pin_417666_For_12_Months_Tenure
-    Sub Feature Description: Performing the instant EMI success transaction for an org (not ezetap) via HDFC Dummy PG using EMV VISA
+    Sub Feature Code: UI_Common_Card_Instant_EMI_Success_Txn_For_An_Org_HDFC_HDFC_EMV_VISA_CreditCard_With_Pin_417666_For_12_Months_Tenure
+    Sub Feature Description: Performing the instant EMI success transaction for an org (not ezetap) via HDFC HDFC PG using EMV VISA
     Credit card with pin for 12 months tenure (bin: 417666)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 06: Instant_EMI, 003: TC003
     """
@@ -1593,7 +1593,7 @@ def test_common_100_115_06_003():
         logger.debug(f"fetching org code from org_employee table : {org_code}")
 
         query = f"select * from terminal_info where org_code= '{org_code}' and status = 'ACTIVE' and " \
-                "acquirer_code='HDFC' and payment_gateway='DUMMY' "
+                "acquirer_code='HDFC' and payment_gateway='HDFC' "
         logger.debug(f"Query to fetch data from the terminal_info table for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Fetching result for terminal_info table : {result}")
@@ -2148,7 +2148,7 @@ def test_common_100_115_06_003():
                     "acquirer_code": "HDFC",
                     "mid": mid,
                     "tid": tid,
-                    "pmt_gateway": "DUMMY",
+                    "pmt_gateway": "HDFC",
                     "settle_status": "PENDING",
                     "device_serial": device_serial,
                     "merchant_code": org_code,
@@ -2332,8 +2332,8 @@ def test_common_100_115_06_003():
 @pytest.mark.chargeSlipVal
 def test_common_100_115_06_005():
     """
-    Sub Feature Code: UI_Common_Card_Instant_EMI_Success_Txn_For_An_Org_HDFC_Dummy_EMV_VISA_CreditCard_With_Pin_417666_For_3_Months_Tenure
-    Sub Feature Description: Performing the instant EMI success transaction for an org (not ezetap) via HDFC Dummy PG using EMV VISA
+    Sub Feature Code: UI_Common_Card_Instant_EMI_Success_Txn_For_An_Org_HDFC_HDFC_EMV_VISA_CreditCard_With_Pin_417666_For_3_Months_Tenure
+    Sub Feature Description: Performing the instant EMI success transaction for an org (not ezetap) via HDFC HDFC PG using EMV VISA
     Credit card with pin for 3 months tenure (bin: 417666)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 06: Instant_EMI, 005: TC005
     """
@@ -2363,7 +2363,7 @@ def test_common_100_115_06_005():
         logger.debug(f"fetching org code from org_employee table : {org_code}")
 
         query = f"select * from terminal_info where org_code= '{org_code}' and status = 'ACTIVE' and " \
-                "acquirer_code='HDFC' and payment_gateway='DUMMY' "
+                "acquirer_code='HDFC' and payment_gateway='HDFC' "
         logger.debug(f"Query to fetch data from the terminal_info table for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Fetching result for terminal_info table : {result}")
@@ -2918,7 +2918,7 @@ def test_common_100_115_06_005():
                     "acquirer_code": "HDFC",
                     "mid": mid,
                     "tid": tid,
-                    "pmt_gateway": "DUMMY",
+                    "pmt_gateway": "HDFC",
                     "settle_status": "PENDING",
                     "device_serial": device_serial,
                     "merchant_code": org_code,
@@ -3102,8 +3102,8 @@ def test_common_100_115_06_005():
 @pytest.mark.chargeSlipVal
 def test_common_100_115_06_013():
     """
-    Sub Feature Code: UI_Common_Card_Instant_EMI_Success_Txn_For_An_Org_HDFC_Dummy_EMV_VISA_DebitCard_With_Pin_428090_For_3_Months_Tenure
-    Sub Feature Description: Performing the instant EMI success transaction for an org (not ezetap) via HDFC Dummy PG using EMV VISA
+    Sub Feature Code: UI_Common_Card_Instant_EMI_Success_Txn_For_An_Org_HDFC_HDFC_EMV_VISA_DebitCard_With_Pin_428090_For_3_Months_Tenure
+    Sub Feature Description: Performing the instant EMI success transaction for an org (not ezetap) via HDFC HDFC PG using EMV VISA
     Debit card with pin for 3 months tenure (bin: 428090)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 06: Instant_EMI, 013: TC013
     """
@@ -3133,7 +3133,7 @@ def test_common_100_115_06_013():
         logger.debug(f"fetching org code from org_employee table : {org_code}")
 
         query = f"select * from terminal_info where org_code= '{org_code}' and status = 'ACTIVE' and " \
-                "acquirer_code='HDFC' and payment_gateway='DUMMY' "
+                "acquirer_code='HDFC' and payment_gateway='HDFC' "
         logger.debug(f"Query to fetch data from the terminal_info table for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Fetching result for terminal_info table : {result}")
@@ -3690,7 +3690,7 @@ def test_common_100_115_06_013():
                     "acquirer_code": "HDFC",
                     "mid": mid,
                     "tid": tid,
-                    "pmt_gateway": "DUMMY",
+                    "pmt_gateway": "HDFC",
                     "settle_status": "PENDING",
                     "device_serial": device_serial,
                     "merchant_code": org_code,
