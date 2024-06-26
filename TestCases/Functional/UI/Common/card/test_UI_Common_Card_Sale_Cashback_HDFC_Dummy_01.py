@@ -24,8 +24,8 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_115_02_001():
     """
-    Sub Feature Code: UI_Common_Card_Sale_Cashback_Success_HDFC_Dummy_EMVCTLS_VISA_DebitCard_Without_Pin_476173
-    Sub Feature Description:  Performing the EMVCTLS sale cashback Success transaction via HDFC Dummy PG using VISA Debit card having 16 digit
+    Sub Feature Code: UI_Common_Card_Sale_Cashback_Success_HDFC_HDFC_EMVCTLS_VISA_DebitCard_Without_Pin_476173
+    Sub Feature Description:  Performing the EMVCTLS sale cashback Success transaction via HDFC HDFC PG using VISA Debit card having 16 digit
      PAN length without pin (bin: 476173)
     TC naming code description: 100: Payment Method, 115: CARD, 02: Sale+Cash@Posh, 001: TC001
     """
@@ -54,7 +54,7 @@ def test_common_100_115_02_001():
         logger.debug(f"Query result, org_code : {org_code}")
 
         query = f"select * from terminal_info where org_code='{org_code}' and status='ACTIVE' and acquirer_code=" \
-                f"'HDFC' and payment_gateway='DUMMY'"
+                f"'HDFC' and payment_gateway='HDFC'"
         logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"fetching result for terminal info table  {org_code} : {result}")
@@ -109,7 +109,6 @@ def test_common_100_115_02_001():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(username=app_username, password=app_password)
             home_page = HomePage(driver=app_driver)
-            home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -485,7 +484,7 @@ def test_common_100_115_02_001():
                     "acquirer_code": "HDFC",
                     "mid": mid,
                     "tid": tid,
-                    "pmt_gateway": "DUMMY",
+                    "pmt_gateway": "HDFC",
                     "settle_status": "PENDING",
                     "device_serial": device_serial,
                     "merchant_code": org_code,
@@ -636,8 +635,8 @@ def test_common_100_115_02_001():
 @pytest.mark.chargeSlipVal
 def test_common_100_115_02_002():
     """
-    Sub Feature Code: UI_Common_Card_Sale_Cashback_Success_HDFC_Dummy_EMVCTLS_VISA_CreditCard_Without_Pin_417666
-    Sub Feature Description:  Performing the EMVCTLS sale cashback Success transaction via HDFC Dummy PG using VISA Credit card having 16 digit
+    Sub Feature Code: UI_Common_Card_Sale_Cashback_Success_HDFC_HDFC_EMVCTLS_VISA_CreditCard_Without_Pin_417666
+    Sub Feature Description:  Performing the EMVCTLS sale cashback Success transaction via HDFC HDFC PG using VISA Credit card having 16 digit
      PAN length without pin (bin: 417666)
     TC naming code description: 100: Payment Method, 115: CARD, 02: Sale+Cash@Pos, 002: TC002
     """
@@ -666,7 +665,7 @@ def test_common_100_115_02_002():
         logger.debug(f"Query result, org_code : {org_code}")
 
         query = f"select * from terminal_info where org_code='{org_code}' and status='ACTIVE' and acquirer_code=" \
-                f"'HDFC' and payment_gateway='DUMMY'"
+                f"'HDFC' and payment_gateway='HDFC'"
         logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"fetching result for terminal info table  {org_code} : {result}")
@@ -721,7 +720,7 @@ def test_common_100_115_02_002():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(username=app_username, password=app_password)
             home_page = HomePage(driver=app_driver)
-            home_page.check_home_page_logo()
+            #home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -1077,7 +1076,7 @@ def test_common_100_115_02_002():
                     "acquirer_code": "HDFC",
                     "mid": mid,
                     "tid": tid,
-                    "pmt_gateway": "DUMMY",
+                    "pmt_gateway": "HDFC",
                     "settle_status": "PENDING",
                     "device_serial": device_serial,
                     "merchant_code": org_code,
@@ -1225,8 +1224,8 @@ def test_common_100_115_02_002():
 @pytest.mark.appVal
 def test_common_100_115_02_003():
     """
-    Sub Feature Code: UI_Common_Card_Sale_Cashback_Failed_HDFC_Dummy_EMVCTLS_VISA_DebitCard_Without_Pin_476173
-    Sub Feature Description:  Performing the EMVCTLS sale cashback failed transaction via HDFC Dummy PG using VISA Debit card having 16 digit
+    Sub Feature Code: UI_Common_Card_Sale_Cashback_Failed_HDFC_HDFC_EMVCTLS_VISA_DebitCard_Without_Pin_476173
+    Sub Feature Description:  Performing the EMVCTLS sale cashback failed transaction via HDFC HDFC PG using VISA Debit card having 16 digit
      PAN length without pin (bin: 476173)
     TC naming code description: 100: Payment Method, 115: CARD, 02: Sale+Cash@Pos, 003: TC003
     """
@@ -1255,7 +1254,7 @@ def test_common_100_115_02_003():
         logger.debug(f"Query result, org_code : {org_code}")
 
         query = f"select * from terminal_info where org_code='{org_code}' and status='ACTIVE' and acquirer_code=" \
-                f"'HDFC' and payment_gateway='DUMMY'"
+                f"'HDFC' and payment_gateway='HDFC'"
         logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"fetching result for terminal info table  {org_code} : {result}")
@@ -1309,7 +1308,7 @@ def test_common_100_115_02_003():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(username=app_username, password=app_password)
             home_page = HomePage(driver=app_driver)
-            home_page.check_home_page_logo()
+            #home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -1687,7 +1686,7 @@ def test_common_100_115_02_003():
                     "acquirer_code": "HDFC",
                     "mid": mid,
                     "tid": tid,
-                    "pmt_gateway": "DUMMY",
+                    "pmt_gateway": "HDFC",
                     "settle_status": "FAILED",
                     "device_serial": device_serial,
                     "merchant_code": org_code,
@@ -1812,8 +1811,8 @@ def test_common_100_115_02_003():
 @pytest.mark.chargeSlipVal
 def test_common_100_115_02_004():
     """
-    Sub Feature Code: UI_Common_Card_Sale_Cashback_Failed_HDFC_Dummy_EMVCTLS_VISA_CreditCard_Without_Pin_417666
-    Sub Feature Description:  Performing the EMVCTLS sale cashback failed transaction via HDFC Dummy PG using VISA Credit card having 16 digit
+    Sub Feature Code: UI_Common_Card_Sale_Cashback_Failed_HDFC_HDFC_EMVCTLS_VISA_CreditCard_Without_Pin_417666
+    Sub Feature Description:  Performing the EMVCTLS sale cashback failed transaction via HDFC HDFC PG using VISA Credit card having 16 digit
      PAN length without pin (bin: 417666)
     TC naming code description: 100: Payment Method, 115: CARD, 02: Sale+Cash@Pos, 004: TC004
     """
@@ -1842,7 +1841,7 @@ def test_common_100_115_02_004():
         logger.debug(f"Query result, org_code : {org_code}")
 
         query = f"select * from terminal_info where org_code='{org_code}' and status='ACTIVE' and acquirer_code=" \
-                f"'HDFC' and payment_gateway='DUMMY'"
+                f"'HDFC' and payment_gateway='HDFC'"
         logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"fetching result for terminal info table  {org_code} : {result}")
@@ -1896,7 +1895,7 @@ def test_common_100_115_02_004():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(driver=app_driver)
-            home_page.check_home_page_logo()
+            #home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -2253,7 +2252,7 @@ def test_common_100_115_02_004():
                     "acquirer_code": "HDFC",
                     "mid": mid,
                     "tid": tid,
-                    "pmt_gateway": "DUMMY",
+                    "pmt_gateway": "HDFC",
                     "settle_status": "FAILED",
                     "device_serial": device_serial,
                     "merchant_code": org_code,

@@ -69,13 +69,15 @@ def test_common_400_402_001():
             login_page = LoginPage(app_driver)
             login_page.perform_login(app_username, app_password)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
-            home_page = HomePage(app_driver)
-            # home_page.check_home_page_logo()
             logger.debug(f"Login in to MPOSX application successful for 1st time")
             logout = Logout(app_driver)
             logout.perform_logout()
             logger.debug(f"logout from MPOS application is successful")
             app_driver.launch_app()
+            if ConfigReader.read_config("ParallelExecution", "deviceOnly") == "True":
+                login_page.select_environment()
+            else:
+                pass
             logger.debug(f"launching the app again ")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -177,9 +179,14 @@ def test_common_400_402_002():
             login_page.perform_login(app_username, app_password)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             home_page = HomePage(app_driver)
-            # home_page.check_home_page_logo()
+            home_page.wait_for_navigation_to_load()
+            home_page.wait_for_home_page_load()
             logger.debug(f"Login in to MPOSX application successful for 1st time")
             app_driver.launch_app()
+            if ConfigReader.read_config("ParallelExecution", "deviceOnly") == "True":
+                login_page.select_environment()
+            else:
+                pass
             logger.debug(f"Lunching the application again")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
@@ -202,8 +209,8 @@ def test_common_400_402_002():
                 # --------------------------------------------------------------------------------------------
                 expected_app_values = {'Result': "SUCCESS"}
                 try:
-                    # home_page.check_home_page_logo()
-                    result = 'SUCCESS'
+                    home_page.check_for_home_page()
+                    result = "SUCCESS"
                 except Exception as e :
                     result = f'FAILURE: {e}'
                 actual_app_values = {'Result': result}

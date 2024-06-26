@@ -12,13 +12,13 @@ logger = EzeAutoLogger(__name__)
 
 class HomePage(BasePage):
     lbl_home = (By.ID, 'com.ezetap.basicapp:id/navigation_bar_item_large_label_view')
-    lbl_navigation = (By.ID, 'com.ezetap.basicapp:id/nav_account')
+    lbl_navigation = (By.ID, 'com.ezetap.basicapp:id/logoToolbar')
     mnu_account = (By.ID, 'com.ezetap.basicapp:id/nav_account')
     txt_enterAmountField = (By.ID, 'com.ezetap.basicapp:id/tvAmountCard')
     btn_pay = (By.ID, "com.ezetap.basicapp:id/btnPay")
-    btn_goToHistory = (By.ID, "com.ezetap.basicapp:id/clGotoHistory")
+    btn_goToHistory = (By.ID, "com.ezetap.basicapp:id/btnHistory")
     img_companyLogo = (By.XPATH, '//android.widget.ImageView[@content-desc="Company Logo"]')
-    tab_history = (By.ID, "com.ezetap.basicapp:id/nav_txn_history")
+    tab_history = (By.ID, 'com.ezetap.basicapp:id/btnHistory')
     mnu_engSideMenu = (By.XPATH, '//android.widget.ImageButton[@content-desc="Open navigation drawer"]')
     mnu_hindiSideMenu = (By.XPATH, '//android.widget.ImageButton[@content-desc="नेविगेशन ड्रावर खोलें"]')
     mnu_merchantDetail = (By.ID, 'com.ezetap.basicapp:id/arrow')
@@ -93,6 +93,9 @@ class HomePage(BasePage):
     lbl_new_act_butterfly = (By.XPATH, "//androidx.recyclerview.widget.RecyclerView/android.view.ViewGroup[1]")
     txt_caf_no = (By.XPATH, '//*[@text="CAF no."]')
     txt_order_no = (By.XPATH, '//*[@text="Order no."]')
+    txt_home = (By.XPATH, "(//*[@resource-id ='com.ezetap.basicapp:id/tabText'])[1]")
+    btn_collect_payment = (By.XPATH, "//*[@text = 'Collect Payment']")
+    btn_other = (By.XPATH, "//android.widget.TextView[@text='Other']")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -108,7 +111,11 @@ class HomePage(BasePage):
         list = self.type_amount(amt)
         for i in list:
             self.perform_click(i)
-        self.perform_click(self.btn_pay)
+        try:
+            if self.wait_for_visibility_of_element_text(self.btn_collect_payment, ele_text="Collect Payment"):
+                self.perform_click(self.btn_collect_payment)
+        except:
+            self.perform_click(self.btn_other)
         self.perform_click(self.txt_orderNo)
         self.perform_sendkeys(self.txt_orderNo, order_number)
         self.perform_click(self.btn_paymentProceed)
@@ -118,7 +125,11 @@ class HomePage(BasePage):
         list = self.type_amount(amt)
         for i in list:
             self.perform_click(i)
-        self.perform_click(self.btn_pay)
+        try:
+            if self.wait_for_visibility_of_element_text(self.btn_collect_payment, ele_text="Collect Payment"):
+                self.perform_click(self.btn_collect_payment)
+        except:
+            self.perform_click(self.btn_other)
         self.perform_click(self.txt_orderNo)
         self.perform_sendkeys(self.txt_orderNo, order_number)
         self.perform_sendkeys(self.txt_mobileField, str(mobilenum))
@@ -137,7 +148,11 @@ class HomePage(BasePage):
         list = self.type_amount(amt)
         for i in list:
             self.perform_click(i)
-        self.perform_click(self.btn_pay)
+        try:
+            if self.wait_for_visibility_of_element_text(self.btn_collect_payment, ele_text="Collect Payment"):
+                self.perform_click(self.btn_collect_payment)
+        except:
+            self.perform_click(self.btn_other)
         self.perform_click(self.txt_orderNo)
         self.perform_sendkeys(self.txt_orderNo, order_number)
         self.perform_click(self.device_serialNo)
@@ -157,7 +172,11 @@ class HomePage(BasePage):
         list = self.type_amount(amt)
         for i in list:
             self.perform_click(i)
-        self.perform_click(self.btn_pay)
+        try:
+            if self.wait_for_visibility_of_element_text(self.btn_collect_payment, ele_text="Collect Payment"):
+                self.perform_click(self.btn_collect_payment)
+        except:
+            self.perform_click(self.btn_other)
         self.perform_click(self.txt_orderNo)
         self.perform_sendkeys(self.txt_orderNo, order_number)
         self.perform_click(self.txt_tip_amount)
@@ -399,7 +418,11 @@ class HomePage(BasePage):
         list = self.type_amount(amt)
         for i in list:
             self.perform_click(i)
-        self.perform_click(self.btn_pay)
+        try:
+            if self.wait_for_visibility_of_element_text(self.btn_collect_payment, ele_text="Collect Payment"):
+                self.perform_click(self.btn_collect_payment)
+        except:
+            self.perform_click(self.btn_other)
         self.perform_click(self.btn_paymentProceed)
 
     def click_on_start_btn(self):
@@ -577,3 +600,15 @@ class HomePage(BasePage):
         self.perform_sendkeys(self.txt_re_enter_mobile_no, ph_number)
         self.perform_sendkeys(self.txt_amt, amount)
         self.perform_click(self.btn_fetch_details)
+
+    def check_for_home_page(self):
+        """
+        This method is used to verify the home page
+        """
+        return self.fetch_text(self.txt_home, 30)
+
+    def navigate_to_home(self):
+        """
+        This method is used to navigate home screen
+        """
+        self.perform_click(self.txt_home)

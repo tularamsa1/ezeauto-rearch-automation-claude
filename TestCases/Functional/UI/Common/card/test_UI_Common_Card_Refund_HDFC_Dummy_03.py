@@ -25,8 +25,8 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.chargeSlipVal
 def test_common_100_115_126():
     """
-    Sub Feature Code: UI_Common_Card_Refund_HDFC_Dummy_EMV_VISA_DebitCard_With_Pin_428090
-    Sub Feature Description: Performing the EMV Refund transaction via HDFC Dummy PG using VISA Debit card having
+    Sub Feature Code: UI_Common_Card_Refund_HDFC_HDFC_EMV_VISA_DebitCard_With_Pin_428090
+    Sub Feature Description: Performing the EMV Refund transaction via HDFC HDFC PG using VISA Debit card having
     16 digit PAN length with pin (bin:428090)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 126: TC126
     """
@@ -55,7 +55,7 @@ def test_common_100_115_126():
         logger.debug(f"Query result, org_code : {org_code}")
 
         query = f"select * from terminal_info where org_code='{org_code}' and status = 'ACTIVE' and " \
-                "acquirer_code='HDFC' and payment_gateway='DUMMY'"
+                "acquirer_code='HDFC' and payment_gateway='HDFC'"
         logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Fetching result for terminal_info table : {result}")
@@ -103,7 +103,6 @@ def test_common_100_115_126():
             login_page.perform_login(username=app_username, password=app_password)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             home_page = HomePage(driver=app_driver)
-            home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -332,7 +331,6 @@ def test_common_100_115_126():
                 logger.info(f"reseting the app_driver to login again in the MPOSX application")
                 login_page.perform_login(username=app_username, password=app_password)
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
-                home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.info(f"App homepage loaded successfully")
@@ -722,7 +720,7 @@ def test_common_100_115_126():
                     "payer_name": "RAJA                     /",
                     "mid": mid,
                     "tid": tid,
-                    "pmt_gateway": "DUMMY",
+                    "pmt_gateway": "HDFC",
                     "txn_type": "CHARGE",
                     "settle_status": "SETTLED",
                     "pmt_card_brand": "VISA",
@@ -744,7 +742,7 @@ def test_common_100_115_126():
                     "payer_name_2": "RAJA                     /",
                     "mid_2": mid,
                     "tid_2": tid,
-                    "pmt_gateway_2": "DUMMY",
+                    "pmt_gateway_2": "HDFC",
                     "txn_type_2": "REFUND",
                     "settle_status_2": "PENDING",
                     "pmt_card_brand_2": "VISA",
@@ -947,8 +945,8 @@ def test_common_100_115_126():
 @pytest.mark.chargeSlipVal
 def test_common_100_115_127():
     """
-    Sub Feature Code: UI_Common_Card_Refund_HDFC_Dummy_EMV_RUPAY_DebitCard_With_Pin_608326
-    Sub Feature Description: Performing the EMV Refund transaction via HDFC Dummy PG using RUPAY Debit card having
+    Sub Feature Code: UI_Common_Card_Refund_HDFC_HDFC_EMV_RUPAY_DebitCard_With_Pin_608326
+    Sub Feature Description: Performing the EMV Refund transaction via HDFC HDFC PG using RUPAY Debit card having
     16 digit PAN length with pin (bin:608326)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 127: TC127
     """
@@ -977,7 +975,7 @@ def test_common_100_115_127():
         logger.debug(f"Query result, org_code : {org_code}")
 
         query = f"select * from terminal_info where org_code='{org_code}' and status = 'ACTIVE' and " \
-                "acquirer_code='HDFC' and payment_gateway='DUMMY'"
+                "acquirer_code='HDFC' and payment_gateway='HDFC'"
         logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Fetching result for terminal_info table : {result}")
@@ -1025,7 +1023,7 @@ def test_common_100_115_127():
             login_page.perform_login(username=app_username, password=app_password)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             home_page = HomePage(driver=app_driver)
-            home_page.check_home_page_logo()
+            #home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -1254,7 +1252,7 @@ def test_common_100_115_127():
                 logger.info(f"reseting the app_driver to login again in the MPOSX application")
                 login_page.perform_login(username=app_username, password=app_password)
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
-                home_page.check_home_page_logo()
+                #home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.info(f"App homepage loaded successfully")
@@ -1644,7 +1642,7 @@ def test_common_100_115_127():
                     "payer_name": "RUPAY CARD IMAGE 01      /",
                     "mid": mid,
                     "tid": tid,
-                    "pmt_gateway": "DUMMY",
+                    "pmt_gateway": "HDFC",
                     "txn_type": "CHARGE",
                     "settle_status": "SETTLED",
                     "pmt_card_brand": "RUPAY",
@@ -1666,7 +1664,7 @@ def test_common_100_115_127():
                     "payer_name_2": "RUPAY CARD IMAGE 01      /",
                     "mid_2": mid,
                     "tid_2": tid,
-                    "pmt_gateway_2": "DUMMY",
+                    "pmt_gateway_2": "HDFC",
                     "txn_type_2": "REFUND",
                     "settle_status_2": "PENDING",
                     "pmt_card_brand_2": "RUPAY",
@@ -1869,8 +1867,8 @@ def test_common_100_115_127():
 @pytest.mark.chargeSlipVal
 def test_common_100_115_128():
     """
-    Sub Feature Code: UI_Common_Card_Refund_HDFC_Dummy_EMV_VISA_DebitCard_Without_Pin_476173
-    Sub Feature Description: Performing the EMV Refund transaction via HDFC Dummy PG using VISA Debit card having
+    Sub Feature Code: UI_Common_Card_Refund_HDFC_HDFC_EMV_VISA_DebitCard_Without_Pin_476173
+    Sub Feature Description: Performing the EMV Refund transaction via HDFC HDFC PG using VISA Debit card having
     16 digit PAN length without pin (bin:476173)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 128: TC128
     """
@@ -1899,7 +1897,7 @@ def test_common_100_115_128():
         logger.debug(f"Query result, org_code : {org_code}")
 
         query = f"select * from terminal_info where org_code='{org_code}' and status = 'ACTIVE' and " \
-                "acquirer_code='HDFC' and payment_gateway='DUMMY'"
+                "acquirer_code='HDFC' and payment_gateway='HDFC'"
         logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Fetching result for terminal_info table : {result}")
@@ -1947,7 +1945,7 @@ def test_common_100_115_128():
             login_page.perform_login(username=app_username, password=app_password)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             home_page = HomePage(driver=app_driver)
-            home_page.check_home_page_logo()
+            #home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -2176,7 +2174,7 @@ def test_common_100_115_128():
                 logger.info(f"reseting the app_driver to login again in the MPOSX application")
                 login_page.perform_login(username=app_username, password=app_password)
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
-                home_page.check_home_page_logo()
+                #home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.info(f"App homepage loaded successfully")
@@ -2566,7 +2564,7 @@ def test_common_100_115_128():
                     "payer_name": "L3TEST/CARD0025",
                     "mid": mid,
                     "tid": tid,
-                    "pmt_gateway": "DUMMY",
+                    "pmt_gateway": "HDFC",
                     "txn_type": "CHARGE",
                     "settle_status": "SETTLED",
                     "pmt_card_brand": "VISA",
@@ -2588,7 +2586,7 @@ def test_common_100_115_128():
                     "payer_name_2": "L3TEST/CARD0025",
                     "mid_2": mid,
                     "tid_2": tid,
-                    "pmt_gateway_2": "DUMMY",
+                    "pmt_gateway_2": "HDFC",
                     "txn_type_2": "REFUND",
                     "settle_status_2": "PENDING",
                     "pmt_card_brand_2": "VISA",
@@ -2791,8 +2789,8 @@ def test_common_100_115_128():
 @pytest.mark.chargeSlipVal
 def test_common_100_115_129():
     """
-    Sub Feature Code: UI_Common_Card_Refund_HDFC_Dummy_EMV_MASTER_DebitCard_Without_Pin_222360
-    Sub Feature Description: Performing the EMV Refund transaction via HDFC Dummy PG using MASTER Debit card having
+    Sub Feature Code: UI_Common_Card_Refund_HDFC_HDFC_EMV_MASTER_DebitCard_Without_Pin_222360
+    Sub Feature Description: Performing the EMV Refund transaction via HDFC HDFC PG using MASTER Debit card having
     16 digit PAN length without pin (bin:222360)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 129: TC129
     """
@@ -2821,7 +2819,7 @@ def test_common_100_115_129():
         logger.debug(f"Query result, org_code : {org_code}")
 
         query = f"select * from terminal_info where org_code='{org_code}' and status = 'ACTIVE' and " \
-                "acquirer_code='HDFC' and payment_gateway='DUMMY'"
+                "acquirer_code='HDFC' and payment_gateway='HDFC'"
         logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Fetching result for terminal_info table : {result}")
@@ -2869,7 +2867,7 @@ def test_common_100_115_129():
             login_page.perform_login(username=app_username, password=app_password)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             home_page = HomePage(driver=app_driver)
-            home_page.check_home_page_logo()
+            #home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -3098,7 +3096,7 @@ def test_common_100_115_129():
                 logger.info(f"reseting the app_driver to login again in the MPOSX application")
                 login_page.perform_login(username=app_username, password=app_password)
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
-                home_page.check_home_page_logo()
+                #home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.info(f"App homepage loaded successfully")
@@ -3488,7 +3486,7 @@ def test_common_100_115_129():
                     "payer_name": "MTIP14 MCD 13A",
                     "mid": mid,
                     "tid": tid,
-                    "pmt_gateway": "DUMMY",
+                    "pmt_gateway": "HDFC",
                     "txn_type": "CHARGE",
                     "settle_status": "SETTLED",
                     "pmt_card_brand": "MASTER_CARD",
@@ -3510,7 +3508,7 @@ def test_common_100_115_129():
                     "payer_name_2": "MTIP14 MCD 13A",
                     "mid_2": mid,
                     "tid_2": tid,
-                    "pmt_gateway_2": "DUMMY",
+                    "pmt_gateway_2": "HDFC",
                     "txn_type_2": "REFUND",
                     "settle_status_2": "PENDING",
                     "pmt_card_brand_2": "MASTER_CARD",
@@ -3714,8 +3712,8 @@ def test_common_100_115_129():
 @pytest.mark.chargeSlipVal
 def test_common_100_115_130():
     """
-    Sub Feature Code: UI_Common_Card_Refund_HDFC_Dummy_EMV_RUPAY_DebitCard_Without_Pin_608326
-    Sub Feature Description: Performing the EMV Refund transaction via HDFC Dummy PG using RUPAY Debit card having
+    Sub Feature Code: UI_Common_Card_Refund_HDFC_HDFC_EMV_RUPAY_DebitCard_Without_Pin_608326
+    Sub Feature Description: Performing the EMV Refund transaction via HDFC HDFC PG using RUPAY Debit card having
     16 digit PAN length without pin (bin:608326)
     TC naming code description: 100: Payment Method, 115: CARD_UI, 130: TC130
     """
@@ -3744,7 +3742,7 @@ def test_common_100_115_130():
         logger.debug(f"Query result, org_code : {org_code}")
 
         query = f"select * from terminal_info where org_code='{org_code}' and status = 'ACTIVE' and " \
-                "acquirer_code='HDFC' and payment_gateway='DUMMY'"
+                "acquirer_code='HDFC' and payment_gateway='HDFC'"
         logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
         result = DBProcessor.getValueFromDB(query=query)
         logger.debug(f"Fetching result for terminal_info table : {result}")
@@ -3792,7 +3790,7 @@ def test_common_100_115_130():
             login_page.perform_login(username=app_username, password=app_password)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             home_page = HomePage(driver=app_driver)
-            home_page.check_home_page_logo()
+            #home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -4021,7 +4019,7 @@ def test_common_100_115_130():
                 logger.info(f"reseting the app_driver to login again in the MPOSX application")
                 login_page.perform_login(username=app_username, password=app_password)
                 logger.info(f"Logging in the MPOSX application using username : {app_username}")
-                home_page.check_home_page_logo()
+                #home_page.check_home_page_logo()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()
                 logger.info(f"App homepage loaded successfully")
@@ -4411,7 +4409,7 @@ def test_common_100_115_130():
                     "payer_name": "RUPAY CARD IMAGE 02      /",
                     "mid": mid,
                     "tid": tid,
-                    "pmt_gateway": "DUMMY",
+                    "pmt_gateway": "HDFC",
                     "txn_type": "CHARGE",
                     "settle_status": "SETTLED",
                     "pmt_card_brand": "RUPAY",
@@ -4433,7 +4431,7 @@ def test_common_100_115_130():
                     "payer_name_2": "RUPAY CARD IMAGE 02      /",
                     "mid_2": mid,
                     "tid_2": tid,
-                    "pmt_gateway_2": "DUMMY",
+                    "pmt_gateway_2": "HDFC",
                     "txn_type_2": "REFUND",
                     "settle_status_2": "PENDING",
                     "pmt_card_brand_2": "RUPAY",

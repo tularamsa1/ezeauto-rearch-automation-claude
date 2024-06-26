@@ -38,10 +38,10 @@ class HomePage(BasePage):
     btn_back = (By.ID, "com.ezetap.basicapp:id/imgBack")
     btn_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
     lbl_p2p_notification = (By.ID, "com.ezetap.service.demo:id/title")
-
     btn_image = (By.XPATH, "//android.widget.ImageButton[@content-desc='Open navigation drawer']")
     lbl_settings = (By.ID, "com.ezetap.basicapp:id/clSettingsItem")
     btn_other = (By.XPATH, "//android.widget.TextView[@text='Other']")
+    txt_home = (By.XPATH, "(//*[@resource-id ='com.ezetap.basicapp:id/tabText'])[1]")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -58,7 +58,7 @@ class HomePage(BasePage):
         for i in list:
             self.perform_click(i)
         try:
-            if not self.wait_for_visibility_of_element_text(self.btn_collect_payment, ele_text="Collect Payment"):
+            if self.wait_for_visibility_of_element_text(self.btn_collect_payment, ele_text="Collect Payment"):
                 self.perform_click(self.btn_collect_payment)
         except:
             self.perform_click(self.btn_other)
@@ -72,7 +72,7 @@ class HomePage(BasePage):
         for i in list:
             self.perform_click(i)
         try:
-            if not self.wait_for_visibility_of_element_text(self.btn_collect_payment, ele_text="Collect Payment"):
+            if self.wait_for_visibility_of_element_text(self.btn_collect_payment, ele_text="Collect Payment"):
                 self.perform_click(self.btn_collect_payment)
         except:
             self.perform_click(self.btn_other)
@@ -190,3 +190,9 @@ class HomePage(BasePage):
         """
         self.wait_for_element(self.lbl_settings)
         self.perform_click(self.lbl_settings)
+
+    def navigate_to_home(self):
+        """
+        This method is used to navigate home screen
+        """
+        self.perform_click(self.txt_home)

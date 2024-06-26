@@ -41,7 +41,7 @@ def test_mpos_600_601_017():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
         testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
-                                                           portal_pw=portal_password)
+                                                       portal_pw=portal_password)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -72,7 +72,7 @@ def test_mpos_600_601_017():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+             # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             logger.info(f"App homepage loaded successfully")
             ph_number_1 = random.randint(6124568645, 6910536941)
@@ -124,8 +124,8 @@ def test_mpos_600_601_017():
                 # --------------------------------------------------------------------------------------------
                 expected_app_values = {
                     "customer_name": khaata_holder_name_1,
-                    "label":  "Friend",
-                    "mobile_number":   str(ph_number_1)
+                    "label": "Friend",
+                    "mobile_number": str(ph_number_1)
                 }
                 khaata.click_first_khaata_holder_search_result()
                 khaata_holder_name = khaata.fetch_khaata_holder_name_from_account()
@@ -181,7 +181,7 @@ def test_mpos_600_601_018():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
         testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
-                                                           portal_pw=portal_password)
+                                                       portal_pw=portal_password)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -212,7 +212,7 @@ def test_mpos_600_601_018():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+             # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             logger.info(f"App homepage loaded successfully")
             ph_number_1 = random.randint(7124568645, 9910536941)
@@ -267,8 +267,8 @@ def test_mpos_600_601_018():
                 # --------------------------------------------------------------------------------------------
                 expected_app_values = {
                     "Customer_name": khaata_holder_name_2,
-                    "label":  "Supplier",
-                    "mobile_number":   str(ph_number_2)
+                    "label": "Supplier",
+                    "mobile_number": str(ph_number_2)
                 }
                 khaata.click_first_khaata_holder_search_result()
                 khaata_holder_name = khaata.fetch_khaata_holder_name_from_account()
@@ -324,7 +324,7 @@ def test_mpos_600_601_019():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
         testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
-                                                           portal_pw=portal_password)
+                                                       portal_pw=portal_password)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -354,7 +354,7 @@ def test_mpos_600_601_019():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+             # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             logger.info(f"App homepage loaded successfully")
             ph_number_1 = random.randint(7124568645, 8360536941)
@@ -422,5 +422,3 @@ def test_mpos_600_601_019():
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-
-

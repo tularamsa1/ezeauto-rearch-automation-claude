@@ -95,3 +95,9 @@ class LoginPage(BasePage):
         self.scroll_to_text("Set Merchant")
         self.perform_sendkeys(self.txt_app_mode_sample, read_config("APIs", "env"))
         self.perform_click(self.btn_set_merchant_sample)
+
+    def select_environment(self):
+        """
+        This is used to select environment in PAXs devices for executing autologin
+        """
+        self.scroll_to_text(read_config("APIs", "env")).click()

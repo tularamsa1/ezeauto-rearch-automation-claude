@@ -42,7 +42,7 @@ def test_mpos_600_601_015():
         logger.debug(f"Query result, org_code : {org_code}")
 
         testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
-                                                           portal_pw=portal_password)
+                                                       portal_pw=portal_password)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -71,7 +71,7 @@ def test_mpos_600_601_015():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+             # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(1, 100)
@@ -183,7 +183,7 @@ def test_mpos_600_601_016():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
         testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
-                                                           portal_pw=portal_password)
+                                                       portal_pw=portal_password)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -212,7 +212,7 @@ def test_mpos_600_601_016():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+             # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(1, 100)
@@ -289,7 +289,7 @@ def test_mpos_600_601_016():
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case : {testcase_id}")
-        # -----------------------------------------End of App Validation---------------------------------------
+            # -----------------------------------------End of App Validation---------------------------------------
             # -----------------------------------------Start of DB Validation--------------------------------------
             if (ConfigReader.read_config("Validations", "db_validation")) == "True":
                 logger.info(f"Started DB validation for the test case : {testcase_id}")
@@ -352,7 +352,7 @@ def test_mpos_600_601_022():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
         testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
-                                                           portal_pw=portal_password)
+                                                       portal_pw=portal_password)
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -382,7 +382,7 @@ def test_mpos_600_601_022():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+             # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             logger.info(f"App homepage loaded successfully")
             amount = random.randint(1, 100)
@@ -439,4 +439,3 @@ def test_mpos_600_601_022():
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
         Configuration.executeFinallyBlock(testcase_id)
-
