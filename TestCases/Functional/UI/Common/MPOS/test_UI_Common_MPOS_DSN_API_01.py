@@ -235,7 +235,7 @@ def test_mpos_400_407_008():
             response = APIProcessor.send_request(api_details)
             logger.debug(f"Response received from dsn_device_unmapping api:  {response}")
         except Exception as e:
-            logger.exception(f"Not able to unmapped due to : {e}")
+            logger.exception(f"Not able to unmap due to : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -646,7 +646,7 @@ def test_mpos_400_407_005():
             logger.debug(f"Response received from dsn_device_unmapping api:  {response}")
 
         except Exception as e:
-            logger.exception(f"Not able to unmapped due to : {e}")
+            logger.exception(f"Not able to unmap due to : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -1075,7 +1075,7 @@ def test_mpos_400_407_007():
             logger.debug(f"Response received from dsn_device_unmapping api:  {response}")
 
         except Exception as e:
-            logger.exception(f"Not able to unmapped due to : {e}")
+            logger.exception(f"Not able to unmap due to : {e}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
