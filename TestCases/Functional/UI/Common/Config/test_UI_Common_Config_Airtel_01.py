@@ -462,7 +462,7 @@ def test_common_100_300_302_016():
 
                 payment_page.click_on_proceed_homepage()
                 home_page.wait_for_home_page_load()
-                home_page.click_on_history()
+                home_page.click_on_history_config()
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
                 payment_mode = txn_history_page.fetch_txn_type_text()
@@ -1029,7 +1029,7 @@ def test_common_100_300_302_018():
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
                 home_page.wait_for_home_page_load()
-                home_page.click_on_history()
+                home_page.click_on_history_config()
                 txn_history_page = TransHistoryPage(app_driver)
                 txn_history_page.click_on_transaction_by_txn_id(txn_id)
                 payment_mode = txn_history_page.fetch_txn_type_text()
