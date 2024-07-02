@@ -94,12 +94,6 @@ class TransHistoryPage(BasePage):
     txt_cheque_number = (By.XPATH, "//*[@text='CHEQUE NUMBER']/following-sibling::android.widget.TextView")
     txt_ifsc_code = (By.XPATH, "//*[@text='IFSC CODE']/following-sibling::android.widget.TextView")
     txt_cheque_date = (By.XPATH, "//*[@text='CHEQUE DATED']/following-sibling::android.widget.TextView")
-    search_field = (By.ID, "com.ezetap.service.demo:id/searchField")
-    search_button = (By.ID, "com.ezetap.service.demo:id/search_button")
-    click_txn = (By.ID, "com.ezetap.service.demo:id/clTxnView")
-    search_category = (By.ID, 'com.ezetap.service.demo:id/search_category_selection_dropdown')
-    category_type_by_txn = (By.XPATH, "//*[@text='Transaction ID']")
-    btn_apply = (By.CLASS_NAME, "android.widget.Button")
 
     search_field = (By.ID, "com.ezetap.service.demo:id/searchField")
     search_button = (By.ID, "com.ezetap.service.demo:id/search_button")
@@ -108,6 +102,9 @@ class TransHistoryPage(BasePage):
     category_type_by_txn = (By.XPATH, "//*[@text='Transaction ID']")
     btn_apply = (By.CLASS_NAME, "android.widget.Button")
     category_type_by_reference = (By.XPATH, "//*[@text = 'Reference ID']")
+
+    txt_reference_no_2 = (By.XPATH, "//*[@text='REFERENCE NO. 2']/following-sibling::android.widget.TextView")
+    txt_reference_no_3 = (By.XPATH, "//*[@text='REFERENCE NO. 3']/following-sibling::android.widget.TextView")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -621,3 +618,15 @@ class TransHistoryPage(BasePage):
         """
         cheque_date = str(self.fetch_text(self.txt_cheque_date))
         return cheque_date
+
+    def fetch_reference_2_text(self):
+        """
+        This method is used to fetch reference number 2 from txn history page
+        """
+        return self.fetch_text(self.txt_reference_no_2)
+
+    def fetch_reference_3_text(self):
+        """
+        This method is used to fetch reference number 3 from txn history page
+        """
+        return self.fetch_text(self.txt_reference_no_3)

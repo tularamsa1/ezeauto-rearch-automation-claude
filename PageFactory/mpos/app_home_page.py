@@ -97,6 +97,97 @@ class HomePage(BasePage):
     btn_collect_payment = (By.XPATH, "//*[@text = 'Collect Payment']")
     btn_other = (By.XPATH, "//android.widget.TextView[@text='Other']")
 
+    btn_svm_violation = (By.XPATH, '//android.widget.Button[@text="SWM Violation"]')
+    btn_plastic_ban_enforcement = (By.XPATH, '//android.widget.Button[@text="Plastic Ban Enforcement"]')
+    btn_non_compliance_at_public_gathering = (
+    By.XPATH, '//android.widget.Button[@text="Non Compliance at Public Gathering"]')
+    btn_public_nuisance = (By.XPATH, '//android.widget.Button[@text="Public Nuisance"]')
+    btn_non_segregation_of_waste = (By.XPATH, '//android.widget.Button[@text="Non Segregation of Waste"]')
+    btn_unauthorized_handing_over_of_wast = (
+    By.XPATH, '//android.widget.Button[@text="Unauthorized Handing Over of Waste"]')
+    btn_mixing_of_segregated_waste_by_bbmp_staff = (
+    By.XPATH, '//android.widget.Button[@text="Mixing of segregated waste by BBMP staff"]')
+    btn_street_vendor = (By.XPATH, '//android.widget.Button[@text="Street Vendor"]')
+    btn_burning_of_wast_Unauthroized_burial = (
+    By.XPATH, '//android.widget.Button[@text="Burning of Waste/Unauthroized Burial"]')
+    btn_construction_demolition_waste = (By.XPATH, '//android.widget.Button[@text="Construction/Demolition Waste"]')
+    btn_other_offences = (By.XPATH, '//android.widget.Button[@text="Other Offences"]')
+
+    btn_not_wearing_mask = (By.XPATH, '//android.widget.Button[@text="Not Wearing Mask"]')
+    btn_violating_social_distancing = (By.XPATH, '//android.widget.Button[@text="Violating Social distancing"]')
+    btn_littering = (By.XPATH, '//android.widget.Button[@text="Littering"]')
+    btn_spitting = (By.XPATH, '//android.widget.Button[@text="SPITTING"]')
+    btn_urinating = (By.XPATH, '//android.widget.Button[@text="Urinating"]')
+    btn_open_defecation = (By.XPATH, '//android.widget.Button[@text="Open Defecation"]')
+    btn_other_public_nuisance = (By.XPATH, '//android.widget.Button[@text="Other Public Nuisance"]')
+    btn_domestic = (By.XPATH, '//android.widget.Button[@text="Domestic"]')
+    txt_name = (By.XPATH, '//android.widget.EditText[@text="Name"]')
+    txt_phone_number = (By.XPATH, '//android.widget.EditText[@text="Mobile Number"]')
+    txt_ward_number = (By.XPATH, '//android.widget.EditText[@text="Enter Ward Number"]')
+    txt_enter_locality_name = (By.XPATH, '//android.widget.EditText[@text="Enter Locality Name"]')
+    btn_bulk_waste_generator = (By.XPATH, '//android.widget.Button[@text="Bulk Waste Generator"]')
+    btn_small_commercial_establishment = (By.XPATH, "//android.widget.Button[@text='SMALL COMMERCIAL ESTABLISHMENT']")
+    txt_enter_details_and_pay_screen_title = (By.XPATH, '//android.widget.TextView[@text="Enter Details and Pay"]')
+    txt_fine_for_title = (By.XPATH, "//android.widget.TextView[@text='SMALL COMMERCIAL EST. VIOLATION']")
+    btn_fish_poultry_slaughterhouse = (By.XPATH, '//android.widget.Button[@text="Fish, poultry & slaughterhouse"]')
+    txt_fine_tittle_for_fish_poultry_slaughterhouse = \
+        (By.XPATH, '//android.widget.TextView[@text="Fish, poultry and slaughterhouse Violation"]')
+    txt_fine_tittle_for_not_wearing_mask = (By.XPATH, '//android.widget.TextView[@text="Not Wearing Mask"]')
+    btn_fine_tittle_for_not_wearing_mask = (By.XPATH, '//android.widget.Button[@text="Not Wearing Mask"]')
+    txt_fine_amount = (By.XPATH, "//*[@text='Fine Amount']/following-sibling::android.widget.TextView")
+
+    txt_eze_wallet = (By.XPATH, "//android.widget.CheckedTextView[@text='Eze Wallet']")
+    txt_balance = (By.ID, "com.ezetap.basicapp:id/tv_balance_value")
+    txt_withdraw_funds = (By.XPATH, "//android.widget.TextView[@text='Withdraw Funds']")
+    txt_quick_action = (By.ID, 'com.ezetap.basicapp:id/tv_quick_action')
+    txt_common_ele_to_fetch_tittle = (By.ID, 'com.ezetap.basicapp:id/tvTitle')
+    btn_transfer_funds = (By.ID, 'com.ezetap.basicapp:id/tv_transfer_funds')
+    txt_enter_agent_mobile_no = (By.ID, 'com.ezetap.basicapp:id/etAgentID')
+    txt_top_up_amt = (By.ID, 'com.ezetap.basicapp:id/etAmount')
+    txt_agency_names_tittle = (By.XPATH, '//android.widget.TextView[@text="Agency Names"]')
+    txt_agency_name = (By.ID, 'com.ezetap.basicapp:id/txtAgentName')
+    btn_confirm = (By.ID, 'com.ezetap.basicapp:id/btnConfirm')
+    txt_txn_success = (By.XPATH, '//android.widget.TextView[@text="Transaction Successful"]')
+    txt_txn_message = (By.XPATH, '//android.widget.TextView[@text="Your transaction has been completed"]')
+    txt_txn_no = (By.ID, 'com.ezetap.basicapp:id/txtTrxId')
+    txt_updated_balance = (By.ID, 'com.ezetap.basicapp:id/txtUpdatedBalc')
+    btn_cancel = (By.ID, 'com.ezetap.basicapp:id/btnClose')
+    btn_go_to_wallet_screen = (By.ID, 'com.ezetap.basicapp:id/txtBack')
+    btn_agency_transaction = (By.ID, 'com.ezetap.basicapp:id/tv_transaction')
+    txt_see_more_options = (By.ID, "com.ezetap.basicapp:id/iv_see_more")
+    txt_mobile_number = (By.ID, 'com.ezetap.basicapp:id/tv_mobile_no_value')
+    txt_agency_calendar = (By.ID, 'com.ezetap.basicapp:id/mtrl_picker_title_text')
+    btn_ok = (By.XPATH, "//android.widget.Button[@text='OK']")
+    btn_search_by_date = (By.ID, 'com.ezetap.basicapp:id/tv_search_by_date')
+    btn_agency_passbook = (By.ID, 'com.ezetap.basicapp:id/tv_passbook')
+    btn_search_by_date_in_agency_or_agent_passbook = (By.ID, 'com.ezetap.basicapp:id/tvSearchByDate')
+    btn_cancel_in_agency_passbook = (By.ID, 'com.ezetap.basicapp:id/cancel_button')
+    txt_topup_amount = (By.ID, 'com.ezetap.basicapp:id/etAmount')
+    btn_topup_proceed = (By.ID, "com.ezetap.basicapp:id/btnTopupProceed")
+    txt_my_password = (By.XPATH, "//android.widget.TextView[@text='My Passbook']")
+    btn_upi_payment_mode = (By.ID, 'com.ezetap.basicapp:id/paymentUPI')
+    btn_agent_passbook = (By.ID, 'com.ezetap.basicapp:id/textView10')
+    btn_agent_transaction = (By.ID, 'com.ezetap.basicapp:id/textView12')
+    txt_last_top_up = (By.ID, 'com.ezetap.basicapp:id/tv_last_topup_value')
+    txt_last_top_up_on = (By.ID, 'com.ezetap.basicapp:id/tv_last_topup_on_value')
+    txt_ezewallet_mobile_no = (By.ID, 'com.ezetap.basicapp:id/tv_mobile_no_value')
+    txt_agency_balance_in_txn_history = (By.XPATH,
+                                         '(//*[@text="Agency Balance"]/following-sibling::android.widget.TextView)[1]')
+    txt_no_txn_msg = (By.ID, 'com.ezetap.basicapp:id/textView2')
+
+    txt_calendar = (By.ID, "com.ezetap.basicapp:id/ivCalender")
+    txt_closing_bal = (By.ID, "com.ezetap.basicapp:id/txtCloseBalc")
+    txt_agent_mobile_no = (By.ID, "com.ezetap.basicapp:id/etAgentID")
+    txt_transfer_amt = (By.ID, "com.ezetap.basicapp:id/etAmount")
+    txt_recharge = (By.ID, "com.ezetap.basicapp:id/btnCustom")
+    txt_recharge_amt = (By.XPATH, "//android.widget.EditText[@text='Enter Recharge Amount']")
+    txt_recharge_mobile_no = (By.XPATH, "//android.widget.EditText[@text='Mobile Number']")
+    txt_go_to_wallet = (By.XPATH, "//android.widget.TextView[@text='Go To Wallet']")
+    txt_amt_customer_details = (By.ID, "com.ezetap.basicapp:id/txtAmount")
+    txt_mobile_no_customer_details = (By.ID, "com.ezetap.basicapp:id/txtWalletId")
+    txt_self_top_ups = (By.ID, "com.ezetap.basicapp:id/txtSelfTopup")
+    tab_history_config = (By.ID, "com.ezetap.basicapp:id/nav_txn_history")
+
     def __init__(self, driver):
         super().__init__(driver)
 
@@ -612,3 +703,612 @@ class HomePage(BasePage):
         This method is used to navigate home screen
         """
         self.perform_click(self.txt_home)
+
+    def fetch_all_bbmp_violation(self):
+        """
+        This method is used to fetch all the fine names text and storing it in list
+        return : list
+        """
+        return [self.fetch_text(bbmp_violation_type) for bbmp_violation_type in
+                [self.btn_svm_violation, self.btn_plastic_ban_enforcement, self.btn_non_compliance_at_public_gathering]]
+
+    def fetch_all_fine_names_of_swm_violation(self):
+        """
+        This method is used to fetch all the fine names text of SWM Violation and storing it in list
+        return : list
+        """
+        return [self.fetch_text(swm_spot_fines) for swm_spot_fines in
+                [self.btn_public_nuisance, self.btn_non_segregation_of_waste,
+                 self.btn_unauthorized_handing_over_of_wast, self.btn_mixing_of_segregated_waste_by_bbmp_staff,
+                 self.btn_street_vendor, self.btn_burning_of_wast_Unauthroized_burial,
+                 self.btn_construction_demolition_waste, self.btn_other_offences]]
+
+    def fetch_all_fine_names_of_public_nuisance(self):
+        """
+        This method is used to fetch all the fine names text of public nuisance and storing it in list
+        return : list
+        """
+        return [self.fetch_text(public_nuisance_fine_types) for public_nuisance_fine_types in
+                [self.btn_not_wearing_mask, self.btn_violating_social_distancing, self.btn_littering, self.btn_spitting,
+                 self.btn_urinating, self.btn_open_defecation, self.btn_other_offences]]
+
+    def validate_fine_tittle_for_not_wearing_mask(self):
+        """
+        This method is used to validate the fine tittle in the enter details & pay screen
+        """
+        self.wait_for_element(self.txt_fine_tittle_for_not_wearing_mask)
+
+    def click_on_svm_violation(self):
+        """
+        This method is used to click on the SWM Violation
+        """
+        self.perform_click(self.btn_svm_violation)
+
+    def click_on_public_nuisance(self):
+        """
+        This method is used to click on the public nuisance of the SWM violation
+        """
+        self.perform_click(self.btn_public_nuisance)
+
+    def click_on_non_segregation_of_waste(self):
+        """
+        This method is used to click on the Non Segregation of waste of the SWM violation
+        """
+        self.perform_click(self.btn_non_segregation_of_waste)
+
+    def click_on_small_commercial_establishment(self):
+        """
+        This method is used to click on the small commercial establishment of the Non Segregation of waste
+        """
+        self.perform_click(self.btn_small_commercial_establishment)
+
+    def validate_enter_details_and_pay_screen_title(self):
+        """
+        This method is used to validate the Enter details and pay Screen
+        """
+        self.wait_for_element(self.txt_enter_details_and_pay_screen_title)
+
+    def validate_fine_for_title(self):
+        """
+        This method is used to validate the tittle for fine
+        """
+        self.wait_for_element(self.txt_fine_for_title)
+
+    def enter_details_for_domestic(self, name, ph_number, ward_no, locality):
+        """
+        This method is used to enter the required details in the Enter details and pay Screen after clicking on the Domestic
+        param: name: str
+        param: ph_number: str
+        param: ward_no : str
+        param: locality : str
+        """
+        self.perform_click(self.btn_domestic)
+        self.perform_sendkeys(self.txt_name, name)
+        self.perform_sendkeys(self.txt_phone_number, ph_number)
+        self.perform_sendkeys(self.txt_ward_number, ward_no)
+        self.perform_sendkeys(self.txt_enter_locality_name, locality)
+
+    def enter_details_for_small_commercial_establishment(self, name, ph_number, ward_no, locality):
+        """
+        This method is used to enter the required details in the Enter details and pay Screen after clicking on the small commercial establishment
+        param: name: str
+        param: ph_number: str
+        param: ward_no : str
+        param: locality : str
+        """
+        self.perform_click(self.btn_small_commercial_establishment)
+        self.perform_sendkeys(self.txt_name, name)
+        self.perform_sendkeys(self.txt_phone_number, ph_number)
+        self.perform_sendkeys(self.txt_ward_number, ward_no)
+        self.perform_sendkeys(self.txt_enter_locality_name, locality)
+
+    def enter_details_for_bulk_waste_generator(self, name, ph_number, ward_no, locality):
+        """
+       This method is used to enter the required details in the Enter details and pay Screen after clicking on the bulk waste generator
+       param: name: str
+       param: ph_number: str
+       param: ward_no : str
+       param: locality : str
+       """
+        self.perform_click(self.btn_bulk_waste_generator)
+        self.perform_sendkeys(self.txt_name, name)
+        self.perform_sendkeys(self.txt_phone_number, ph_number)
+        self.perform_sendkeys(self.txt_ward_number, ward_no)
+        self.perform_sendkeys(self.txt_enter_locality_name, locality)
+
+    def click_on_unauthorized_handing_over_of_wast(self):
+        """
+        This method is used to click on the unauthorized handing over of waste button
+        """
+        self.perform_click(self.btn_unauthorized_handing_over_of_wast)
+
+    def click_on_fish_poultry_slaughterhouse(self):
+        """
+        This method is used to click on the fish, poultry and slaughterhouse button
+        """
+        self.perform_click(self.btn_fish_poultry_slaughterhouse)
+
+    def validate_fine_tittle_for_fish_poultry_slaughterhouse(self):
+        """
+        This method is used to validate the fine tittle in the enter details & pay screen
+        """
+        self.wait_for_element(self.txt_fine_tittle_for_fish_poultry_slaughterhouse)
+
+    def click_on_prepaid_recharge(self):
+        """
+            This method is used to click on prepaid recharge btn
+        """
+        self.perform_click(self.lbl_prepaid_recharge)
+
+    def click_on_not_wearing_mask(self):
+        """
+         This method is used to click on not wearing mask btn
+        """
+        self.perform_click(self.btn_fine_tittle_for_not_wearing_mask)
+
+    def fetch_amount_from_enter_details_and_pay_screen(self):
+        return int(self.fetch_text(self.txt_fine_amount))
+
+    def click_on_eze_wallet(self):
+        """
+            This method is used to click on ezewallet
+        """
+        self.wait_for_element(self.txt_eze_wallet)
+        self.perform_click(self.txt_eze_wallet)
+
+    def fetch_balance_txt(self):
+        """
+            This method is used to fetch the balance text from ezewallet
+            return : str
+        """
+        self.wait_for_element(self.txt_balance)
+        return self.fetch_text(self.txt_balance)
+
+    def click_on_withdraw_funds(self):
+        """
+            This method is used to click on withdraw funds
+        """
+        self.wait_for_element(self.txt_withdraw_funds)
+        self.perform_click(self.txt_withdraw_funds)
+
+    def validate_quick_action_under_ezewallet_screen(self):
+        """
+        This method is used to Verify quick action is present under ezewalet screen or not and fetchs the text
+        return : str
+        """
+        self.wait_for_element(self.txt_quick_action)
+        return self.fetch_text(self.txt_quick_action)
+
+    def validate_withdraw_funds_screen(self):
+        """
+        This method is used to validate withdraw funds screen
+        """
+        self.wait_for_element(self.txt_withdraw_funds)
+
+    def validate_eze_wallet_screen(self):
+        """
+        This method is used to validate eze wallet screen
+        """
+        self.wait_for_element(self.txt_common_ele_to_fetch_tittle)
+
+    def fetch_eze_wallet_screen(self):
+        """
+        This method is used to fetch text from  eze wallet tittle
+        return: str
+        """
+        return self.fetch_text(self.txt_common_ele_to_fetch_tittle)
+
+    def fetch_txn_status(self):
+        """
+        This method is used to fetch the txn status in the txn screen
+        """
+        return self.fetch_text(self.txt_txn_success)
+
+    def fetch_txn_message(self):
+        """
+        This method is used to fetch the txn message in the txn screen
+        """
+        return self.fetch_text(self.txt_txn_message)
+
+    def fetch_txn_number(self):
+        """
+        This method is used to fetch the txn id in the txn screen
+        """
+        return self.fetch_text(self.txt_txn_no)
+
+    def fetch_updated_balance(self):
+        """
+        This method is used to fetch the updated balance in the txn screen
+        """
+        return self.fetch_text(self.txt_updated_balance)
+
+    def click_on_transfer_funds(self):
+        """
+        This method is used is to click on the transfer funds
+        """
+        self.wait_for_element(self.btn_transfer_funds)
+        self.perform_click(self.btn_transfer_funds)
+
+    def validate_transfer_funds_screen(self):
+        """
+        This method is used to verify transfer funds screen and fetches text
+        return: str
+        """
+        self.wait_for_element(self.txt_common_ele_to_fetch_tittle)
+        return self.fetch_text(self.txt_common_ele_to_fetch_tittle)
+
+    def validate_transfer_funds_wallet_id_and_transfer_amount_input_field(self):
+        """
+        This method is used to verify agent wallet id and amount input field in the transfer funds screen
+        """
+        self.wait_for_element(self.txt_enter_agent_mobile_no)
+        self.wait_for_element(self.txt_top_up_amt)
+
+    def fetch_agency_name_txt(self):
+        """
+        This method is used to fetch agency name
+        return : str
+        """
+        return self.fetch_text(self.txt_agency_name)
+
+    def validate_proceed_button(self):
+        """
+        This method is used to check whether proceed button is enabled or not
+        """
+        button = self.wait_for_element(self.btn_langProceed)
+        return button.is_enabled()
+
+    def enter_agent_wallet_id(self, agent_wallet_id):
+        """
+        This method is used to enter agent wallet id
+        param: agent_wallet_id : str
+        """
+        self.wait_for_element(self.txt_enter_agent_mobile_no)
+        self.perform_sendkeys(self.txt_enter_agent_mobile_no, agent_wallet_id)
+
+    def enter_transfer_funds_amount(self, amount):
+        """
+           This method is used to enter amount
+           param: amount : str
+        """
+        self.wait_for_element(self.txt_top_up_amt)
+        self.perform_sendkeys(self.txt_top_up_amt, amount)
+
+    def click_on_confirm_btn(self):
+        """
+        This method is used to click on the confirm button
+        """
+        self.wait_for_element(self.btn_confirm)
+        self.perform_click(self.btn_confirm)
+
+    def perform_transfer_funds_from_agency_to_agent(self, agent_wallet_id, transfer_amount):
+        """
+        This method used to transfer funds from agency to agent wallet
+        param: agent_wallet_id : str
+        param: transfer_amount : str
+        """
+        self.wait_for_element(self.txt_enter_agent_mobile_no)
+        self.perform_sendkeys(self.txt_enter_agent_mobile_no, agent_wallet_id)
+        self.perform_sendkeys(self.txt_top_up_amt, transfer_amount)
+        self.perform_click(self.btn_langProceed)
+
+    def click_on_cancel_btn(self):
+        """
+        This method is used to click on the close in the confirm details screen
+        """
+        self.wait_for_element(self.btn_cancel)
+        self.perform_click(self.btn_cancel)
+
+    def click_on_go_to_wallet_btn(self):
+        """
+        This method is used to click on the go to wallet button
+        """
+        self.perform_click(self.btn_go_to_wallet_screen)
+
+    def click_on_agency_transaction_option_under_quick_action(self):
+        """
+        This method is used to click on the agency transaction
+        """
+        self.wait_for_element(self.btn_agency_transaction)
+        self.perform_click(self.btn_agency_transaction)
+
+    def validate_agency_transaction_screen(self):
+        """
+        This method is used to verify agency transaction screen and fetches text
+        """
+        self.wait_for_element(self.txt_common_ele_to_fetch_tittle)
+        return self.fetch_text(self.txt_common_ele_to_fetch_tittle)
+
+    def fetch_mobile_number(self):
+        """
+        This method is used to fetch mobile number
+        return : str
+        """
+        return self.fetch_text(self.txt_mobile_number)
+
+    def click_on_see_more_btn(self):
+        """
+        This method is used to click on the see more button
+        """
+        self.perform_click(self.txt_see_more_options)
+
+    def validate_calendar_in_agency_transaction_screen(self):
+        """
+        This method is used to verify calendar in the agency transaction screen
+        """
+        self.wait_for_element(self.txt_agency_calendar)
+
+    def click_on_given_date(self, date):
+        """
+        This method is used to click on the given date
+        """
+        self.perform_click((AppiumBy.ACCESSIBILITY_ID, '' + date + ''))
+
+    def validate_ok_button(self):
+        """
+        This method is used to verify whether ok button is enabled or not
+        """
+        button = self.wait_for_element(self.btn_ok)
+        return button.is_enabled()
+
+    def click_on_ok_btn(self):
+        """
+        This method is used to click ok
+        """
+        self.perform_click(self.btn_ok)
+
+    def click_on_search_by_date(self):
+        """
+        This method is used to click on the search by date
+        """
+        self.perform_click(self.btn_search_by_date)
+
+    def click_on_agency_passbook(self):
+        """
+        This method is used to click on the agency passbook under quick action
+        """
+        self.wait_for_element(self.btn_agency_passbook)
+        self.perform_click(self.btn_agency_passbook)
+
+    def validate_agency_passbook_screen(self):
+        """
+        This method is used to verify agency passbook screen and fetches text
+        return : str
+        """
+        self.wait_for_element(self.txt_common_ele_to_fetch_tittle)
+        return self.fetch_text(self.txt_common_ele_to_fetch_tittle)
+
+    def click_on_search_by_date_in_agency_or_agent_passbook_screen(self):
+        """
+        This method is used to click on the search by date in the agency or agent passbook screen
+        """
+        self.perform_click(self.btn_search_by_date_in_agency_or_agent_passbook)
+
+    def validate_future_date(self, future_date):
+        """
+        This method is used to verify future date in calendar is clickable or not
+        """
+        button = self.wait_for_element((AppiumBy.ACCESSIBILITY_ID, '' + future_date + ''))
+        return button.is_enabled
+
+    def click_on_agency_passbook_cancel_btn(self):
+        """
+        This method is used to click on the cancel button
+        """
+        self.perform_click(self.btn_cancel_in_agency_passbook)
+
+    def validate_topup_field_and_proceed_btn(self):
+        """
+        This method is used to validate top-up field and proceed button for agent
+        """
+        self.wait_for_element(self.txt_topup_amount)
+        self.wait_for_element(self.btn_topup_proceed)
+
+    def perform_top_up(self, amount):
+        """
+        This method is used to perform successful top up
+        """
+        self.perform_sendkeys(self.txt_topup_amount, amount)
+        self.perform_click(self.btn_topup_proceed)
+        self.perform_click(self.btn_upi_payment_mode)
+
+    def validate_top_up_proceed_button(self):
+        """
+        This method is used to check whether proceed button is enabled or not
+        return boolean
+        """
+        button = self.wait_for_element(self.btn_topup_proceed)
+        return button.is_enabled()
+
+    def validate_agent_passbook(self):
+        """
+        This method is used to verify agent passbook under quick action and fetches text
+        """
+        self.wait_for_element(self.btn_agent_passbook)
+        return self.fetch_text(self.btn_agent_passbook)
+
+    def validate_agent_transaction(self):
+        """
+        This method is used to verify agent transaction under quick action amd fetches text
+        """
+        self.wait_for_element(self.btn_agent_transaction)
+        return self.fetch_text(self.btn_agent_transaction)
+
+    def fetch_agent_balance(self):
+        """
+        This method is used to fetch agent balance in the eze wallet screen
+        return : str
+        """
+        return self.fetch_text(self.txt_balance)
+
+    def fetch_last_top_up(self):
+        """
+        This method is used to fetch agent last top up in the eze wallet screen
+        return: str
+        """
+        self.wait_for_element(self.txt_last_top_up)
+        return self.fetch_text(self.txt_last_top_up)
+
+    def fetch_last_top_up_on(self):
+        """
+            This method is used to fetch agent last top up on in the eze wallet screen
+            return: str
+        """
+        self.wait_for_element(self.txt_last_top_up_on)
+        return self.fetch_text(self.txt_last_top_up_on)
+
+    def fetch_mobile_no(self):
+        """
+        This method is used to fetch agent mobile number in the eze wallet screen
+        return: str
+        """
+        self.wait_for_element(self.txt_ezewallet_mobile_no)
+        return self.fetch_text(self.txt_ezewallet_mobile_no)
+
+    def click_on_my_passbook(self):
+        """
+        This method is used to click on my passbook under quick action
+        """
+        self.wait_for_element(self.txt_my_password)
+        self.perform_click(self.txt_my_password)
+
+    def fetch_agency_transaction_amount(self, transfer_mode):
+        """
+        This method is used to fetch agency amount transaction to agent in the txn history
+        param: transfer_mode: str
+        return: str
+        """
+        txt_transfer_amount = (
+        By.XPATH, f'(//*[@text="{transfer_mode}"]/following-sibling::android.widget.TextView)[1]')
+        return self.fetch_text(txt_transfer_amount)
+
+    def fetch_agency_transaction_date(self, transfer_mode):
+        """
+        This method is used to fetch date of agency transfer amount in the txn history
+        param: transfer_mode: str
+        return: str
+        """
+        txt_transfer_funds_date = (
+            By.XPATH, f'(//*[@text="{transfer_mode}"]/following-sibling::android.widget.TextView)[2]')
+        return self.fetch_text(txt_transfer_funds_date)
+
+    def fetch_agency_balance_from_txn_history(self):
+        """
+        This method is used to fetch agency balance from the txn history
+        return: str
+        """
+        return self.fetch_text(self.txt_agency_balance_in_txn_history)
+
+    def fetch_no_transaction_msg(self):
+        """
+        This method is used to fetch massage when there is no txn for the selected date
+        return: str
+        """
+        return self.fetch_text(self.txt_no_txn_msg)
+
+    def fetch_self_top_ups_value(self):
+        """
+            This method is used to fetch self top_ups values
+            return : str
+        """
+        self.wait_for_element(self.txt_self_top_ups)
+        return self.fetch_text(self.txt_self_top_ups)
+
+    def enter_top_up_my_wallet_details(self, top_up_amt):
+        """
+            This method is used to enter top_up amount and click on proceed button
+        """
+        self.wait_for_element(self.txt_top_up_amt)
+        self.perform_sendkeys(self.txt_top_up_amt, top_up_amt)
+        self.wait_for_element(self.btn_topup_proceed)
+        self.perform_click(self.btn_topup_proceed)
+
+    def click_on_calender_and_select_date(self, current_date):
+        """
+            This method is used click on calendar and select the date
+            param: current_date: str
+        """
+        select_date = (By.XPATH, f"//android.widget.TextView[@text='{current_date}']")
+        self.wait_for_element(self.txt_calendar)
+        self.perform_click(self.txt_calendar)
+        self.wait_for_element(select_date)
+        self.perform_click(select_date)
+        self.wait_for_element(self.btn_ok)
+        self.perform_click(self.btn_ok)
+
+    def click_on_see_more_options(self):
+        """
+            This method is used to click on see more options
+        """
+        self.wait_for_element(self.txt_see_more_options)
+        self.perform_click(self.txt_see_more_options)
+
+    def fetch_closing_balance(self):
+        """
+            This method is used to fetch closing balance value
+            return : str
+        """
+        self.wait_for_element(self.txt_closing_bal)
+        return self.fetch_text(self.txt_closing_bal)
+
+    def enter_mobile_no_and_transfer_amt(self, agent_mobile_no, transfer_amt):
+        """
+            This method is used to enter withdraw funds details like mobile no, transfer amount
+            param: agent_mobile_no: str
+            param: transfer_amt: str
+        """
+        self.wait_for_element(self.txt_agent_mobile_no)
+        self.perform_click(self.txt_agent_mobile_no)
+        self.perform_sendkeys(self.txt_agent_mobile_no, agent_mobile_no)
+        self.perform_sendkeys(self.txt_transfer_amt, transfer_amt)
+
+    def enter_agency_recharge_details(self, recharge_amt, recharge_mobile_no):
+        """
+            This method is used to enter agency recharge details like recharge amount, mobile
+            param: recharge_amt: str
+            param: recharge_mobile_no: str
+        """
+        self.wait_for_element(self.txt_recharge)
+        self.perform_click(self.txt_recharge)
+        self.wait_for_element(self.txt_recharge_amt)
+        self.perform_click(self.txt_recharge_amt)
+        self.perform_sendkeys(self.txt_recharge_amt, recharge_amt)
+        self.wait_for_element(self.txt_recharge_mobile_no)
+        self.perform_click(self.txt_recharge_mobile_no)
+        self.perform_sendkeys(self.txt_recharge_mobile_no, recharge_mobile_no)
+
+    def click_on_go_to_wallet(self):
+        """
+            This method is used to click on go to wallet
+        """
+        self.wait_for_element(self.txt_go_to_wallet)
+        self.perform_click(self.txt_go_to_wallet)
+
+    def validate_withdraw_fund_title(self):
+        """
+            This method is used validate withdraw funds
+        """
+        self.wait_for_element(self.txt_withdraw_funds)
+
+    def fetch_amount_txt(self):
+        """
+            This method is used fetch amount text
+            return : str
+        """
+        self.wait_for_element(self.txt_amt_customer_details)
+        return self.fetch_text(self.txt_amt_customer_details)
+
+    def fetch_customer_mobile_no(self):
+        """
+            This method is used fetch mobile no
+            return : str
+        """
+        self.wait_for_element(self.txt_mobile_no_customer_details)
+        return self.fetch_text(self.txt_mobile_no_customer_details)
+
+    def click_on_history_config(self):
+        """
+        This method is used to click on the history button in the home screen
+        """
+        self.perform_click(self.tab_history_config)
+
