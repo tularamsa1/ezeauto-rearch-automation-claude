@@ -182,7 +182,7 @@ def getValueFromDB(query: str, db_name: str = 'ezetap_demo'):
         print(f"Stopping the execution as server is disconnected due to : {e}")
         logger.error(f"Stopping the execution as server is disconnected due to : {e}")
         if ssh_username.lower() != 'ezetap':
-            os.system("kill python3.8")
+            os.system("kill python3.9")
     df_query_result = ""
     try:
         dict_db_credentials = get_db_credentials_from_excel()
@@ -231,7 +231,7 @@ def setValueToDB(query, db_name="ezetap_demo") -> str:
         print(f"Stopping the execution as server is disconnected due to : {e}")
         logger.error(f"Stopping the execution as server is disconnected due to : {e}")
         if ssh_username.lower() != 'ezetap':
-            os.system("kill python3.8")
+            os.system("kill python3.9")
     try:
         dict_db_credentials = get_db_credentials_from_excel()
         logger.info(
@@ -399,7 +399,7 @@ def delete_value_from_db(query, db_name="ezetap_demo") -> str:
         print(f"Stopping the execution as server is disconnected due to : {e}")
         logger.error(f"Stopping the execution as server is disconnected due to : {e}")
         if ssh_username.lower() != 'ezetap':
-            os.system("kill python3.8")
+            os.system("kill python3.9")
     try:
         dict_db_credentials = get_db_credentials_from_excel()
         logger.info(

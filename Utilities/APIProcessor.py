@@ -171,7 +171,7 @@ def send_request(api_details):
     except requests.exceptions.Timeout:
         print("API server is not responding. Stopping the process...")
         logger.error(f"API server is not responding. Stopping the process...")
-        os.system("pkill python3.8")
+        os.system("pkill python3.9")
 
 
 def update_api_details_to_report_variables(response: requests.models.Response):

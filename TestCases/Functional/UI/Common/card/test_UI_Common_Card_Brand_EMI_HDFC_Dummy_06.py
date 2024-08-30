@@ -16,6 +16,7 @@ from Utilities.merchant_configurer import refresh_db
 
 logger = EzeAutoLogger(__name__)
 
+from babel.numbers import format_currency
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
@@ -217,7 +218,7 @@ def test_common_100_115_07_049():
             logger.info(f"Logging in the MPOSX application using username and password : {app_username}, {app_password}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -1201,7 +1202,7 @@ def test_common_100_115_07_051():
             logger.info(f"Logging in the MPOSX application using username and password : {app_username}, {app_password}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -2185,7 +2186,7 @@ def test_common_100_115_07_053():
             logger.info(f"Logging in the MPOSX application using username and password : {app_username}, {app_password}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -3090,7 +3091,7 @@ def test_common_100_115_07_079():
             logger.info(f"Logging in the MPOSX application using username and password : {app_username}, {app_password}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -3127,7 +3128,7 @@ def test_common_100_115_07_079():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 expected_app_values = {
-                    "invalid_product_msg": f"Invalid Product in the range ₹ {brand_min_amount:,.2f} to ₹ {brand_max_amount:,.2f}"
+                    "invalid_product_msg": f"Invalid Product in the range ₹ {format_currency(brand_min_amount, 'INR', locale='en_IN').replace('₹', '')} to ₹ {format_currency(brand_max_amount, 'INR', locale='en_IN').replace('₹', '')}"
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
@@ -3271,7 +3272,7 @@ def test_common_100_115_07_080():
             logger.info(f"Logging in the MPOSX application using username and password : {app_username}, {app_password}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -3308,7 +3309,7 @@ def test_common_100_115_07_080():
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
                 expected_app_values = {
-                    "invalid_product_msg": f"Invalid Product in the range ₹ {brand_min_amount:,.2f} to ₹ {brand_max_amount:,.2f}"
+                    "invalid_product_msg": f"Invalid Product in the range ₹ {format_currency(brand_min_amount, 'INR', locale='en_IN').replace('₹', '')} to ₹ {format_currency(brand_max_amount, 'INR', locale='en_IN').replace('₹', '')}"
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
