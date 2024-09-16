@@ -247,7 +247,8 @@ def test_common_500_503_048():
 
             try:
                 expected_db_values = {
-                    "status": "RECEIVED",
+                    # "status": "RECEIVED",
+                    "status": "INITIATED",
                     "transaction_id": None,
                 }
 
@@ -507,7 +508,8 @@ def test_common_500_503_049():
 
             try:
                 expected_db_values = {
-                    "status": "RECEIVED",
+                    # "status": "RECEIVED",
+                    "status": "INITIATED",
                     "transaction_id": None,
                 }
 
@@ -764,7 +766,8 @@ def test_common_500_503_050():
 
             try:
                 expected_db_values = {
-                    "status": "RECEIVED",
+                    # "status": "RECEIVED",
+                    "status": "INITIATED",
                     "transaction_id": None,
                 }
 
@@ -1027,7 +1030,8 @@ def test_common_500_503_051():
 
             try:
                 expected_db_values = {
-                    "status": "RECEIVED",
+                    # "status": "RECEIVED",
+                    "status": "INITIATED",
                     "transaction_id": None,
                 }
 

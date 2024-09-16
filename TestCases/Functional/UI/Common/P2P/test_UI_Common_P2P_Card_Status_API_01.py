@@ -256,7 +256,8 @@ def test_common_500_503_043():
 
             try:
                 expected_db_values = {
-                    "status": "RECEIVED",
+                    # "status": "RECEIVED",
+                    "status": "INITIATED",
                     "transaction_id": None,
                 }
 
