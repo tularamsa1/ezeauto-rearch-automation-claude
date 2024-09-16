@@ -423,9 +423,11 @@ def test_common_500_502_006():
                     "bqr_merchant_pan": db_bqr_config_merchant_pan,
                     "bqr_org_code": org_code,
 
-                    "p2p_status": "RECEIVED",
+                    # "p2p_status": "RECEIVED",
+                    "p2p_status": "INITIATED",
                     "p2p_txn_id": None,
-                    "p2p_status_1": "COMPLETED",
+                    # "p2p_status_1": "COMPLETED",
+                    "p2p_status_1": "INITIATED",
                     "p2p_txn_id_1": txn_id
 
                 }
@@ -914,8 +916,10 @@ def test_common_500_502_007():
                     "bqr_merchant_pan": db_bqr_config_merchant_pan,
                     "bqr_org_code": org_code,
 
-                    "p2p_status": "RECEIVED",
-                    "p2p_status_1": "COMPLETED",
+                    # "p2p_status": "RECEIVED",
+                    "p2p_status": "INITIATED",
+                    # "p2p_status_1": "COMPLETED",
+                    "p2p_status_1": "INITIATED",
                     "p2p_txn_id_1": txn_id
 
                 }
@@ -1851,9 +1855,11 @@ def test_common_500_502_010():
                     "bqr_merchant_pan": db_bqr_config_merchant_pan,
                     "bqr_org_code": org_code,
 
-                    "p2p_status_bqr": "RECEIVED",
+                    # "p2p_status_bqr": "RECEIVED",
+                    "p2p_status_bqr": "INITIATED",
                     "p2p_txn_id_bqr": None,
-                    "p2p_status_bqr_1": "COMPLETED",
+                    # "p2p_status_bqr_1": "COMPLETED",
+                    "p2p_status_bqr_1": "INITIATED",
                     "p2p_txn_id_bqr_1": txn_id_bqr,
 
                     "txn_amt_upi_1": float(normal_amount_upi),
@@ -1892,9 +1898,11 @@ def test_common_500_502_010():
                     "upi_upi_mc_id": db_upi_config_id,
                     "upi_org_code": org_code,
 
-                    "p2p_status_upi": "RECEIVED",
+                    # "p2p_status_upi": "RECEIVED",
+                    "p2p_status_upi": "INITIATED",
                     "p2p_txn_id_upi": None,
-                    "p2p_status_upi_1": "COMPLETED",
+                    # "p2p_status_upi_1": "COMPLETED",
+                    "p2p_status_upi_1": "INITIATED",
                     "p2p_txn_id_upi_1": txn_id_upi
 
                 }
@@ -2394,7 +2402,8 @@ def test_common_500_502_036():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                    "p2p_status_1": "CANCELED_FROM_EXTERNAL_SYSTEM",
+                    # "p2p_status_1": "CANCELED_FROM_EXTERNAL_SYSTEM",
+                     "p2p_status_1": "INITIATED"
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 

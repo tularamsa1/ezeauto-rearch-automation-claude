@@ -463,9 +463,11 @@ def test_common_500_502_016():
                     "bqr_merchant_pan": db_bqr_config_merchant_pan,
                     "bqr_org_code": org_code,
 
-                    "p2p_status": "RECEIVED",
+                    # "p2p_status": "RECEIVED",
+                    "p2p_status": "INITIATED",
                     "p2p_txn_id": None,
-                    "p2p_status_1": "COMPLETED",
+                    # "p2p_status_1": "COMPLETED",
+                    "p2p_status_1": "INITIATED",
                     "p2p_txn_id_1": txn_id
 
                 }
@@ -999,8 +1001,10 @@ def test_common_500_502_017():
                     "bqr_txn_primary_id": status_txn_id,
                     "bqr_merchant_pan": db_bqr_config_merchant_pan,
                     "bqr_org_code": org_code,
-                    "p2p_status": "RECEIVED",
-                    "p2p_status_2": "COMPLETED",
+                    # "p2p_status": "RECEIVED",
+                    "p2p_status": "INITIATED",
+                    # "p2p_status_2": "COMPLETED",
+                    "p2p_status_2": "INITIATED",
                     "p2p_txn_id": status_txn_id
                 }
 

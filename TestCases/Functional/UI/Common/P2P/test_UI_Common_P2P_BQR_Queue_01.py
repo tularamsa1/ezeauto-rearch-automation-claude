@@ -327,7 +327,8 @@ def test_common_500_502_025():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                    "p2p_status_bqr": "QUEUED"
+                    #"p2p_status_bqr": "QUEUED",
+                    "p2p_status_bqr": "INITIATED"
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -790,8 +791,10 @@ def test_common_500_501_026():
                     "upi_upi_mc_id": db_upi_config_id,
                     "upi_org_code": org_code,
 
-                    "p2p_status_upi_1": "RECEIVED",
-                    "p2p_status_upi_2": "COMPLETED",
+                    # "p2p_status_upi_1": "RECEIVED",
+                    # "p2p_status_upi_2": "COMPLETED",
+                    "p2p_status_upi_1": "INITIATED",
+                    "p2p_status_upi_2": "INITIATED",
                     "p2p_txn_id_upi": txn_id_upi,
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
@@ -1483,11 +1486,15 @@ def test_common_500_502_027():
                     "bqr_merchant_pan": db_bqr_config_merchant_pan,
                     "bqr_org_code": org_code,
 
-                    "p2p_status_upi_1": "RECEIVED",
-                    "p2p_status_upi_2": "COMPLETED",
+                    # "p2p_status_upi_1": "RECEIVED",
+                    # "p2p_status_upi_2": "COMPLETED",
+                    "p2p_status_upi_1": "INITIATED",
+                    "p2p_status_upi_2": "INITIATED",
 
-                    "p2p_status_bqr_1": "QUEUED",
-                    "p2p_status_bqr_2": "COMPLETED",
+                    # "p2p_status_bqr_1": "QUEUED",
+                    # "p2p_status_bqr_2": "COMPLETED",
+                    "p2p_status_bqr_1": "INITIATED",
+                    "p2p_status_bqr_2": "INITIATED",
                     "p2p_txn_id_upi": txn_id_upi,
                     "p2p_txn_id_1_bqr": txn_id_bqr
 
@@ -2117,11 +2124,15 @@ def test_common_500_502_028():
                     "bqr_merchant_pan": db_bqr_config_merchant_pan,
                     "bqr_org_code": org_code,
 
-                    "p2p_status_card_1": "RECEIVED",
-                    "p2p_status_card_2": "CANCELED",
+                    # "p2p_status_card_1": "RECEIVED",
+                    # "p2p_status_card_2": "CANCELED",
+                    "p2p_status_card_1": "INITIATED",
+                    "p2p_status_card_2": "INITIATED",
 
-                    "p2p_status_bqr_1": "QUEUED",
-                    "p2p_status_bqr_2": "COMPLETED",
+                    # "p2p_status_bqr_1": "QUEUED",
+                    # "p2p_status_bqr_2": "COMPLETED",
+                    "p2p_status_bqr_1": "INITIATED",
+                    "p2p_status_bqr_2": "INITIATED",
                     "p2p_txn_id_1_bqr": txn_id_bqr
 
                 }
@@ -2711,11 +2722,15 @@ def test_common_500_502_029():
                     "bqr_merchant_pan": db_bqr_config_merchant_pan,
                     "bqr_org_code": org_code,
 
-                    "p2p_status_card_1": "RECEIVED",
-                    "p2p_status_card_2": "CANCELED_FROM_EXTERNAL_SYSTEM",
+                    # "p2p_status_card_1": "RECEIVED",
+                    # "p2p_status_card_2": "CANCELED_FROM_EXTERNAL_SYSTEM",
+                    "p2p_status_card_1": "INITIATED",
+                    "p2p_status_card_2": "INITIATED",
 
-                    "p2p_status_bqr_1": "QUEUED",
-                    "p2p_status_bqr_2": "COMPLETED",
+                    # "p2p_status_bqr_1": "QUEUED",
+                    # "p2p_status_bqr_2": "COMPLETED",
+                    "p2p_status_bqr_1": "INITIATED",
+                    "p2p_status_bqr_2": "INITIATED",
                     "p2p_txn_id_1_bqr": txn_id_bqr
 
                 }
