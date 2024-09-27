@@ -187,6 +187,8 @@ class HomePage(BasePage):
     txt_mobile_no_customer_details = (By.ID, "com.ezetap.basicapp:id/txtWalletId")
     txt_self_top_ups = (By.ID, "com.ezetap.basicapp:id/txtSelfTopup")
     tab_history_config = (By.ID, "com.ezetap.basicapp:id/nav_txn_history")
+    btn_pre_auth = (By.XPATH, "//android.widget.TextView[@text='Pre-Auth']")
+    txt_grow_your_business = (By.XPATH, "//android.widget.TextView[@resource-id='com.ezetap.basicapp:id/tabText']")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -294,7 +296,7 @@ class HomePage(BasePage):
         list = self.type_amount(amt)
         for i in list:
             self.perform_click(i)
-        self.perform_click(self.btn_pay)
+        self.perform_click(self.btn_pre_auth)
         self.perform_click(self.txt_orderNo)
         self.perform_sendkeys(self.txt_orderNo, order_number)
         self.perform_click(self.device_serialNo)
@@ -1312,3 +1314,6 @@ class HomePage(BasePage):
         """
         self.perform_click(self.tab_history_config)
 
+    def click_grow_your_business(self):
+        self.wait_for_element(self.txt_grow_your_business)
+        self.perform_click(self.txt_grow_your_business)

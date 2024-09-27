@@ -29,6 +29,10 @@ class CardPage(BasePage):
     txt_error_code = (By.ID, "com.ezetap.service.demo:id/dialogTitle")
     txt_error_message = (By.ID, "com.ezetap.service.demo:id/dialogText")
     btn_error_confirm = (By.ID, "com.ezetap.service.demo:id/rightButton")
+    MC_KWD_Chip = (By.XPATH, "//android.widget.TextView[@text='MC KWD chip']")
+    visa_ctls_gbp = (By.XPATH, "//android.widget.TextView[@text='VISA ctls GBP']")
+    visa_ctls_jpy = (By.XPATH, "//android.widget.TextView[@text='VISA ctls JPY']")
+    mc_ctls_USD = (By.XPATH, "//android.widget.TextView[@text='MC ctls USD']")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -74,7 +78,14 @@ class CardPage(BasePage):
             self.perform_long_press(self.EMV_VISA_CREDIT_417666)
         elif text == "EMV_MASTER_CREDIT_541333":
             self.perform_long_press(self.EMV_MASTER_CREDIT_541333)
-
+        elif text == "MC KWD chip":
+            self.perform_long_press(self.MC_KWD_Chip)
+        elif text == "VISA ctls GBP":
+            self.perform_long_press(self.visa_ctls_gbp)
+        elif text == "VISA ctls JPY":
+            self.perform_long_press(self.visa_ctls_jpy)
+        elif text == "MC ctls USD":
+            self.perform_long_press(self.mc_ctls_USD)
         else:
             raise Exception("Preferred card is invalid")
 

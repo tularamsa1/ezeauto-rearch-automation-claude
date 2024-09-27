@@ -105,6 +105,12 @@ class TransHistoryPage(BasePage):
 
     txt_reference_no_2 = (By.XPATH, "//*[@text='REFERENCE NO. 2']/following-sibling::android.widget.TextView")
     txt_reference_no_3 = (By.XPATH, "//*[@text='REFERENCE NO. 3']/following-sibling::android.widget.TextView")
+    txt_opted_dcc = (By.XPATH, "//*[@text='OPTED DCC']/following-sibling::android.widget.TextView")
+    txt_local_card = (By.XPATH, "//*[@text='LOCAL CARD']/following-sibling::android.widget.TextView")
+    txt_txn_currency = (By.XPATH, "//*[@text='TXN CURRENCY']/following-sibling::android.widget.TextView")
+    txt_markup_fee = (By.XPATH, "//*[@text='MARKUP FEE']/following-sibling::android.widget.TextView")
+    txt_currency_conversion_fee_rate = \
+        (By.XPATH, "//*[@text='CURRENCY CONVERSION FEE RATE']/following-sibling::android.widget.TextView")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -630,3 +636,26 @@ class TransHistoryPage(BasePage):
         This method is used to fetch reference number 3 from txn history page
         """
         return self.fetch_text(self.txt_reference_no_3)
+
+    def fetch_opted_dcc_text(self):
+        self.scroll_to_text("CURRENCY CONVERSION FEE RATE")
+        return self.fetch_text(self.txt_opted_dcc)
+
+    def fetch_local_card_text(self):
+        return self.fetch_text(self.txt_local_card)
+
+    def fetch_txn_currency_text(self):
+        return self.fetch_text(self.txt_txn_currency)
+
+    def fetch_markup_fee_text(self):
+        return self.fetch_text(self.txt_markup_fee)
+
+    def fetch_currency_conversion_fee_rate_text(self):
+        return self.fetch_text(self.txt_currency_conversion_fee_rate)
+
+
+    def click_on_conf_pre_auth_popup_dcc(self):
+        """
+            This method is used to click on confirm pre-auth pop ups
+        """
+        self.perform_click(self.btn_conf_pre_auth_popup)

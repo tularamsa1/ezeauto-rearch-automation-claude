@@ -136,6 +136,15 @@ class PaymentPage(BasePage):
     txt_payer_name = (By.ID, "com.ezetap.service.demo:id/txtInputEntryPayerName")
     btn_payment_link = (By.XPATH, "//*[@text='Pay Link']")
     error_msg = (By.XPATH, '//*[@resource-id="com.ezetap.service.demo:id/tvErrorMessage"]')
+    lbl_currency_type_foreign = (By.ID, "com.ezetap.service.demo:id/item_pay_in_foreign")
+    lbl_currency_type_inr = (By.ID, "com.ezetap.service.demo:id/item_pay_in_current")
+    btn_agree_and_pay = (By.ID, "com.ezetap.service.demo:id/btn_confirm_dcc_amount")
+    lnk_merchant_copy = (By.XPATH, "//*[@text='Print Merchant Receipt']")
+    txt_grow_your_business = (By.XPATH, "//android.widget.TextView[@resource-id='com.ezetap.basicapp:id/tabText']")
+    txt_selected_currency_message = (By.ID, "com.ezetap.service.demo:id/tv_confirmation")
+    txt_currency_rate = (By.ID, "com.ezetap.service.demo:id/tv_pay_in_foreign_currency")
+    txt_inr_currency_rate = (By.ID, "com.ezetap.service.demo:id/tv_pay_in_merchant_currency")
+    txt_pre_auth_txt_selected_currency_message = (By.ID, "com.ezetap.service.demo:id/tv_confirmation")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -1076,3 +1085,35 @@ class PaymentPage(BasePage):
         """
         error_msg = str(self.fetch_text(self.error_msg))
         return error_msg
+
+    def select_currency_type_foreign(self):
+        self.wait_for_element(self.lbl_currency_type_foreign)
+        self.perform_click(self.lbl_currency_type_foreign)
+
+    def select_currency_type_inr(self):
+        self.wait_for_element(self.lbl_currency_type_inr)
+        self.perform_click(self.lbl_currency_type_inr)
+
+    def click_agree_and_pay(self):
+        self.wait_for_element(self.btn_agree_and_pay)
+        self.perform_click(self.btn_agree_and_pay)
+
+    def fetch_selected_currency_type_message(self):
+        self.wait_for_element(self.txt_selected_currency_message)
+        offered_message = self.fetch_text(self.txt_selected_currency_message)
+        return offered_message
+
+    def fetch_inr_currency_value(self):
+        self.wait_for_element(self.txt_inr_currency_rate)
+        inr_currency_rate = self.fetch_text(self.txt_inr_currency_rate)
+        return inr_currency_rate
+
+    def fetch_converted_rate_currency_screen(self):
+        self.wait_for_element(self.txt_currency_rate)
+        currency_rate = self.fetch_text(self.txt_currency_rate)
+        return currency_rate
+
+    def fetch_pre_auth_selected_currency_type_message(self):
+        self.wait_for_element(self.txt_pre_auth_txt_selected_currency_message)
+        pre_auth_currency_rate = self.fetch_text(self.txt_pre_auth_txt_selected_currency_message)
+        return pre_auth_currency_rate
