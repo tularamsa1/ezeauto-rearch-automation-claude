@@ -317,11 +317,9 @@ def test_common_500_503_018():
 
             try:
                 expected_db_values = {
-                    # "p2p_status": "RECEIVED",
-                    "p2p_status": "INITIATED",
+                    "p2p_status": "RECEIVED",
                     "p2p_txn_id": transaction_id_db,
-                    # "p2p_status_2": "CANCELED",
-                    "p2p_status_2": "INITIATED",
+                    "p2p_status_2": "CANCELED",
                     "p2p_txn_id_2": None,
                 }
 
@@ -678,11 +676,9 @@ def test_common_500_503_019():
 
             try:
                 expected_db_values = {
-                    # "p2p_status": "RECEIVED",
-                    "p2p_status": "INITIATED",
+                    "p2p_status": "RECEIVED",
                     "p2p_txn_id": transaction_id_db,
-                    # "p2p_status_2": "CANCELED_FROM_EXTERNAL_SYSTEM",
-                    "p2p_status_2": "INITIATED",
+                    "p2p_status_2": "CANCELED_FROM_EXTERNAL_SYSTEM",
                     "p2p_txn_id_2": None,
                 }
 
