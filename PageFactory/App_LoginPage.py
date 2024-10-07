@@ -1,3 +1,5 @@
+import time
+
 from appium.webdriver.common.appiumby import AppiumBy
 from PageFactory.App_BasePage import BasePage
 from Utilities.ConfigReader import read_config
