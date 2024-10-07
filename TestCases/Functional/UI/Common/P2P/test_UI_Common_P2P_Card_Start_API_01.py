@@ -260,11 +260,9 @@ def test_common_500_503_004():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                    # "p2p_status": "RECEIVED",
-                    "p2p_status": "INITIATED",
+                    "p2p_status": "RECEIVED",
                     "p2p_txn_id": None,
-                    # "p2p_status_1": "CANCELED",
-                    "p2p_status_1": "INITIATED",
+                    "p2p_status_1": "CANCELED",
                     "p2p_txn_id_1": None
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
@@ -571,8 +569,7 @@ def test_common_500_503_037():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                    # "p2p_status_card_2": "CANCELED_FROM_EXTERNAL_SYSTEM",
-                    "p2p_status_card_2": "INITIATED"
+                    "p2p_status_card_2": "CANCELED_FROM_EXTERNAL_SYSTEM"
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
