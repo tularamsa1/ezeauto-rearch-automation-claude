@@ -416,11 +416,11 @@ def test_common_500_501_011():
                     "upi_upi_mc_id": db_upi_config_id,
                     "upi_org_code": org_code,
 
-                    # "p2p_status": "RECEIVED",
-                    "p2p_status": "INITIATED",
+                    "p2p_status": "RECEIVED",
+                    # "p2p_status": "INITIATED",
                     "p2p_txn_id": None,
-                    # "p2p_status_1": "COMPLETED",
-                    "p2p_status_1": "INITIATED",
+                    "p2p_status_1": "COMPLETED",
+                    # "p2p_status_1": "INITIATED",
                     "p2p_txn_id_1": txn_id
 
                 }
@@ -882,10 +882,10 @@ def test_common_500_501_012():
                     "upi_upi_mc_id": db_upi_config_id,
                     "upi_org_code": org_code,
 
-                    # "p2p_status": "RECEIVED",
-                    "p2p_status": "INITIATED",
-                    # "p2p_status_1": "COMPLETED",
-                    "p2p_status_1": "INITIATED",
+                    "p2p_status": "RECEIVED",
+                    # "p2p_status": "INITIATED",
+                    "p2p_status_1": "COMPLETED",
+                    # "p2p_status_1": "INITIATED",
                     "p2p_txn_id_1": txn_id
 
                 }
@@ -1286,8 +1286,8 @@ def test_common_500_501_035():
             logger.info(f"Started DB validation for the test case : {testcase_id}")
             try:
                 expected_db_values = {
-                    # "p2p_status_upi_2": "CANCELED_FROM_EXTERNAL_SYSTEM"
-                    "p2p_status_upi_2":"INITIATED"
+                    "p2p_status_upi_2": "CANCELED_FROM_EXTERNAL_SYSTEM"
+                    # "p2p_status_upi_2":"INITIATED"
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
