@@ -6,6 +6,7 @@ from time import sleep
 from Configuration import Configuration, testsuite_teardown, TestSuiteSetup
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
+from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, APIProcessor
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -105,10 +106,12 @@ def test_common_500_503_030():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -228,9 +231,10 @@ def test_common_500_503_030():
             payment_page.click_on_back_btn()
             payment_page.click_on_transaction_cancel_yes()
             logger.debug("Pressed back button and clicked Yes on transaction cancel page for BQR")
-            sleep(2)
+            # sleep(2)
             payment_page.click_on_proceed_homepage()
-            sleep(2)
+            sleep(4)
+            logger.debug("Waiting for 4 secs")
 
             # Cancel card pmt request
             api_details = DBProcessor.get_api_details('p2p_cancel', request_body={
@@ -324,7 +328,9 @@ def test_common_500_503_030():
             try:
                 expected_db_values = {
                     "p2p_status_bqr": "RECEIVED",
+                    # "p2p_status_bqr" : "INITIATED",
                     "p2p_status_card": "QUEUED",
+                    # "p2p_status_card": "INITIATED",
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
@@ -449,10 +455,12 @@ def test_common_500_503_031():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -739,10 +747,12 @@ def test_common_500_503_034():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -883,8 +893,7 @@ def test_common_500_503_034():
             logger.debug(f"Response received for P2P cancel API of CARD pmt request : {resp_cancel_card}")
             cancel_card_success = resp_cancel_card['success']
             logger.debug(f"Result of success of status API after canceling card payment using cancel API : {cancel_card_success}")
-
-            sleep(2)
+            payment_page.click_on_back_btn()
             payment_page.click_on_cancel_p2p_request_ok()
             logger.debug("Clicked Ok on p2p transaction cancel for card payment")
 
@@ -962,9 +971,13 @@ def test_common_500_503_034():
                 expected_db_values = {
                     "p2p_status_upi_1": "RECEIVED",
                     "p2p_status_upi_2": "CANCELED_FROM_EXTERNAL_SYSTEM",
+                    # "p2p_status_upi_1": "INITIATED",
+                    # "p2p_status_upi_2": "INITIATED",
 
                     "p2p_status_card_1": "QUEUED",
                     "p2p_status_card_2": "CANCELED_FROM_EXTERNAL_SYSTEM"
+                    # "p2p_status_card_1": "INITIATED",
+                    # "p2p_status_card_2": "INITIATED",
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 

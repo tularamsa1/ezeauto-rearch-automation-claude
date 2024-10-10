@@ -40,6 +40,7 @@ class PaxTransHistoryPage(BasePage):
     txt_payer_name = (By.XPATH, "//*[@text='PAYER NAME']/following-sibling::android.widget.TextView")
     txt_settlement_status = (By.XPATH, "//*[@text='SETTLEMENT STATUS']/following-sibling::android.widget.TextView")
     txt_date_time = (By.XPATH, "//*[@text='DATE']/following-sibling::android.widget.TextView")
+    btn_goToHistory = (By.ID, "com.ezetap.basicapp:id/btnHistory")
 
     txt_payment_msg_field = (By.ID, "com.ezetap.service.demo:id/tv_PaymentStatus")
 
@@ -61,7 +62,11 @@ class PaxTransHistoryPage(BasePage):
 
     def click_on_transaction_by_order_id(self, order_id):
         locator = (By.XPATH, '//*[@resource-id="com.ezetap.service.demo:id/tvTxnId" and @text="'+order_id+'"]/../..' )
+        self.wait_for_element(locator)
         self.perform_click(locator)
+
+    def click_on_pax_txn_history(self):
+        self.perform_click(self.btn_goToHistory)
 
     def click_on_transaction_by_txn_id(self, txn_id):
         locator = (By.ID, 'com.ezetap.service.demo:id/searchView')

@@ -16,8 +16,8 @@ class HomePage(BasePage):
     btn_collect_payment = (By.XPATH, "//*[@text = 'Collect Payment']")
     btn_goToHistory = (By.ID, "com.ezetap.basicapp:id/btnHistory")
     img_companyLogo = (By.XPATH,'//android.widget.ImageView[@content-desc="Company Logo"]')
-    # tab_history = (By.ID,"com.ezetap.basicapp:id/nav_txn_history")
-    tab_history = (By.ID, 'com.ezetap.basicapp:id/btnHistory')
+    tab_history = (By.ID,"com.ezetap.basicapp:id/nav_txn_history")
+    tab_history_p2p = (By.ID, 'com.ezetap.basicapp:id/btnHistory')
     mnu_engSideMenu =(By.XPATH, '//android.widget.ImageButton[@content-desc="Open navigation drawer"]')
     mnu_hindiSideMenu = (By.XPATH, '//android.widget.ImageButton[@content-desc="नेविगेशन ड्रावर खोलें"]')
     mnu_merchantDetail = (By.ID, 'com.ezetap.basicapp:id/arrow')
@@ -146,6 +146,9 @@ class HomePage(BasePage):
 
     def click_on_history(self):
         self.perform_click(self.tab_history)
+
+    def click_on_history_for_p2p(self):
+        self.perform_click(self.tab_history_p2p)
 
     def wait_for_home_page_load(self):
         self.wait_for_element(self.btn_goToHistory, 30)

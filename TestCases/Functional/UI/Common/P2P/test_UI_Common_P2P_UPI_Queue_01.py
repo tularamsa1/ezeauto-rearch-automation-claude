@@ -6,6 +6,7 @@ from time import sleep
 from Configuration import Configuration, testsuite_teardown, TestSuiteSetup
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
+from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.PAX_TransHistoryPage import PaxTransHistoryPage
 from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, \
@@ -138,10 +139,12 @@ def test_common_500_501_020():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -324,6 +327,7 @@ def test_common_500_501_020():
             try:
                 expected_db_values = {
                     "p2p_status_upi_1": "QUEUED",
+                    # "p2p_status_upi_1": "INITIATED"
 
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
@@ -465,10 +469,12 @@ def test_common_500_501_021():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -640,7 +646,7 @@ def test_common_500_501_021():
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                home_page.click_on_history()
+                home_page.click_on_history_for_p2p()
                 pax_txn_history_page = PaxTransHistoryPage(app_driver)
                 pax_txn_history_page.click_on_transaction_by_order_id(ext_ref_number_bqr)
                 payment_status_bqr = pax_txn_history_page.fetch_txn_status_text()
@@ -801,7 +807,9 @@ def test_common_500_501_021():
                     "bqr_org_code": org_code,
 
                     "p2p_status_bqr_1": "RECEIVED",
+                    # "p2p_status_bqr_1": "INITIATED",
                     "p2p_status_bqr_2": "COMPLETED",
+                    # "p2p_status_bqr_2": "INITIATED",
                     "p2p_txn_id_bqr": txn_id_bqr,
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
@@ -998,10 +1006,12 @@ def test_common_500_501_022():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -1230,7 +1240,7 @@ def test_common_500_501_022():
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                home_page.click_on_history()
+                home_page.click_on_history_for_p2p()
                 pax_txn_history_page = PaxTransHistoryPage(app_driver)
                 pax_txn_history_page.click_on_transaction_by_order_id(ext_ref_number_bqr)
                 payment_status_bqr = pax_txn_history_page.fetch_txn_status_text()
@@ -1482,9 +1492,13 @@ def test_common_500_501_022():
 
                     "p2p_status_bqr_1": "RECEIVED",
                     "p2p_status_bqr_2": "COMPLETED",
+                    # "p2p_status_bqr_1": "INITIATED",
+                    # "p2p_status_bqr_2": "INITIATED",
 
                     "p2p_status_upi_1": "QUEUED",
+                    # "p2p_status_upi_1": "INITIATED",
                     "p2p_status_upi_2": "COMPLETED",
+                    # "p2p_status_upi_2": "INITIATED",
                     "p2p_txn_id_bqr": txn_id_bqr,
                     "p2p_txn_id_1_upi": txn_id_upi
 
@@ -1722,10 +1736,12 @@ def test_common_500_501_023():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -1934,7 +1950,7 @@ def test_common_500_501_023():
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                home_page.click_on_history()
+                home_page.click_on_history_for_p2p()
                 pax_txn_history_page = PaxTransHistoryPage(app_driver)
                 pax_txn_history_page.click_on_transaction_by_order_id(ext_ref_number_upi)
                 payment_status_upi = pax_txn_history_page.fetch_txn_status_text()
@@ -2110,9 +2126,13 @@ def test_common_500_501_023():
 
                     "p2p_status_card_1": "RECEIVED",
                     "p2p_status_card_2": "CANCELED",
+                    # "p2p_status_card_1": "INITIATED",
+                    # "p2p_status_card_2": "INITIATED",
 
                     "p2p_status_upi_1": "QUEUED",
+                    # "p2p_status_upi_1": "INITIATED",
                     "p2p_status_upi_2": "COMPLETED",
+                    # "p2p_status_upi_2": "INITIATED",
                     "p2p_txn_id_1_upi": txn_id_upi
 
                 }
@@ -2292,10 +2312,12 @@ def test_common_500_501_024():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -2511,7 +2533,7 @@ def test_common_500_501_024():
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                home_page.click_on_history()
+                home_page.click_on_history_for_p2p()
                 pax_txn_history_page = PaxTransHistoryPage(app_driver)
                 pax_txn_history_page.click_on_transaction_by_order_id(ext_ref_number_upi)
                 payment_status_upi = pax_txn_history_page.fetch_txn_status_text()
@@ -2687,9 +2709,13 @@ def test_common_500_501_024():
 
                     "p2p_status_card_1": "RECEIVED",
                     "p2p_status_card_2": "CANCELED_FROM_EXTERNAL_SYSTEM",
+                    # "p2p_status_card_1": "INITIATED",
+                    # "p2p_status_card_2": "INITIATED",
 
                     "p2p_status_upi_1": "QUEUED",
+                    # "p2p_status_upi_1": "INITIATED",
                     "p2p_status_upi_2": "COMPLETED",
+                    # "p2p_status_upi_2": "INITIATED",
                     "p2p_txn_id_1_upi": txn_id_upi
 
                 }

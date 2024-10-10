@@ -1,3 +1,5 @@
+import time
+
 from appium.webdriver.common.appiumby import AppiumBy
 from PageFactory.App_BasePage import BasePage
 from Utilities.ConfigReader import read_config
@@ -7,7 +9,6 @@ logger = EzeAutoLogger(__name__)
 
 
 class LoginPage(BasePage):
-
     txt_username = (AppiumBy.ID, "com.ezetap.basicapp:id/etUid")
     txt_password =  (AppiumBy.ID, 'com.ezetap.basicapp:id/etPassword')
     btn_login = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnLogin')
@@ -21,6 +22,7 @@ class LoginPage(BasePage):
     btn_settings = (AppiumBy.ID, "android:id/button1")
     btn_allow_access = (AppiumBy.ID, "android:id/switch_widget")
     btn_click_on_back = (AppiumBy.XPATH, "//android.widget.ImageButton[@index='0']")
+    btn_allow_premission = (AppiumBy.ID, "com.android.packageinstaller:id/permission_allow_button")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -53,6 +55,65 @@ class LoginPage(BasePage):
         except Exception as e:
             logger.info(f"Settings popup is not displayed")
 
+    def perform_login_for_pax(self, username, password, Pax_Device=None):
+        if read_config("ParallelExecution", "deviceOnly") == "True":
+            self.scroll_to_text(read_config("APIs", "env")).click()
+            print("if condition")
+
+        elif read_config("APIs", "env") in self.fetch_text(self.btn_login):
+            print("elif condition")
+            pass
+        else:
+            self.perform_long_press(self.img_ezetaplogo)
+            self.scroll_to_text(read_config("APIs", "env")).click()
+            print("else condition")
+
+        try:
+            setting_btn_val = self.visibility_of_elements(self.btn_settings, time=10)
+            if Pax_Device == None and len(setting_btn_val) < 0:
+                logger.info(f"Pax_Device is False and setting_btn_val is zero")
+                pass
+            elif Pax_Device == True and len(setting_btn_val) > 0:
+                print("True Pax_Device")
+                # click on go to settings
+                self.perform_click(self.btn_settings)
+                # click on Allow permission
+                self.perform_click(self.btn_allow_access)
+                # click on allow media, photo and files on your device
+                self.perform_click(self.btn_allow_premission)
+                # click on allow manage device calls
+                self.perform_click(self.btn_allow_premission)
+                # click on allow device location
+                self.perform_click(self.btn_allow_premission)
+        except Exception as e:
+            logger.info(f"Settings popup is not displayed for PAX_Device")
+
+        try:
+            txt_username_val = self.visibility_of_elements(self.txt_username, time=10)
+            if Pax_Device == None and len(txt_username_val) < 0:
+                logger.info(f"Pax_Device is None and txt_username_val is zero")
+                pass
+            else:
+                self.wait_for_element(self.txt_username).clear()
+                self.perform_sendkeys(self.txt_username, username)
+                self.wait_for_element(self.txt_password).clear()
+                self.perform_sendkeys(self.txt_password, password)
+                self.perform_click(self.btn_login)
+        except Exception as e:
+            logger.info(f"Pax_Device and txt_username_val is not displayed for PAX_Device")
+
+        try:
+            setting_btn_val = self.visibility_of_elements(self.btn_settings, time=10)
+            if Pax_Device == None and len(setting_btn_val) < 0:
+                logger.info(f"Pax_Device is False and setting_btn_val is zero for click on battery optimize settings")
+                pass
+            elif Pax_Device == True and len(setting_btn_val) > 0:
+                # click on battery optimize settings
+                self.perform_click(self.btn_settings)
+                print("True Pax_Device for click on battery optimize settings")
+        except Exception as e:
+            logger.info(f"battery optimize settings popup is not displayed for PAX_Device")
+
     def validate_login_page(self):
         return self.wait_for_element(self.lbl_login)
 
@@ -60,4 +121,3 @@ class LoginPage(BasePage):
         self.wait_for_element(self.txt_auth_password).clear()
         self.perform_sendkeys(self.txt_auth_password, app_password)
         self.perform_click(self.btn_auth_login)
-

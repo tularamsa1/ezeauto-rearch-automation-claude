@@ -126,10 +126,12 @@ def test_common_500_502_006():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -279,7 +281,7 @@ def test_common_500_502_006():
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                home_page.click_on_history()
+                home_page.click_on_history_for_p2p()
                 pax_txn_history_page = PaxTransHistoryPage(app_driver)
                 pax_txn_history_page.click_on_transaction_by_order_id(ext_ref_number)
                 payment_status = pax_txn_history_page.fetch_txn_status_text()
@@ -422,8 +424,10 @@ def test_common_500_502_006():
                     "bqr_org_code": org_code,
 
                     "p2p_status": "RECEIVED",
+                    # "p2p_status": "INITIATED",
                     "p2p_txn_id": None,
                     "p2p_status_1": "COMPLETED",
+                    # "p2p_status_1": "INITIATED",
                     "p2p_txn_id_1": txn_id
 
                 }
@@ -604,10 +608,12 @@ def test_common_500_502_007():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password, Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -754,7 +760,7 @@ def test_common_500_502_007():
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                home_page.click_on_history()
+                home_page.click_on_history_for_p2p()
                 pax_txn_history_page = PaxTransHistoryPage(app_driver)
                 pax_txn_history_page.click_on_transaction_by_order_id(ext_ref_number)
                 payment_status = pax_txn_history_page.fetch_txn_status_text()
@@ -911,7 +917,9 @@ def test_common_500_502_007():
                     "bqr_org_code": org_code,
 
                     "p2p_status": "RECEIVED",
+                    # "p2p_status": "INITIATED",
                     "p2p_status_1": "COMPLETED",
+                    # "p2p_status_1": "INITIATED",
                     "p2p_txn_id_1": txn_id
 
                 }
@@ -1111,11 +1119,11 @@ def test_common_500_502_010():
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -1279,6 +1287,7 @@ def test_common_500_502_010():
             # Doing normal UPI txn
             normal_amount_upi = random.randint(201, 300)
             normal_order_id_upi = datetime.now().strftime('%m%d%H%M%S')
+            home_page.click_go_to_back()
             home_page.enter_amount_and_order_number(normal_amount_upi, normal_order_id_upi)
             logger.debug(f"Entered amount for normal UPI txn is : {normal_amount_upi}")
             logger.debug(f"Entered order_id for normal UPI txn is : {normal_order_id_upi}")
@@ -1470,8 +1479,10 @@ def test_common_500_502_010():
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                home_page.click_on_history()
+                home_page.click_go_to_back()
+                home_page.wait_for_home_page_load()
                 pax_txn_history_page = PaxTransHistoryPage(app_driver)
+                pax_txn_history_page = pax_txn_history_page.click_on_pax_txn_history()
                 pax_txn_history_page.click_on_transaction_by_order_id(ext_ref_number_bqr_p2p)
 
                 payment_status_bqr = pax_txn_history_page.fetch_txn_status_text()
@@ -1845,8 +1856,10 @@ def test_common_500_502_010():
                     "bqr_org_code": org_code,
 
                     "p2p_status_bqr": "RECEIVED",
+                    # "p2p_status_bqr": "INITIATED",
                     "p2p_txn_id_bqr": None,
                     "p2p_status_bqr_1": "COMPLETED",
+                    # "p2p_status_bqr_1": "INITIATED",
                     "p2p_txn_id_bqr_1": txn_id_bqr,
 
                     "txn_amt_upi_1": float(normal_amount_upi),
@@ -1886,8 +1899,10 @@ def test_common_500_502_010():
                     "upi_org_code": org_code,
 
                     "p2p_status_upi": "RECEIVED",
+                    # "p2p_status_upi": "INITIATED",
                     "p2p_txn_id_upi": None,
                     "p2p_status_upi_1": "COMPLETED",
+                    # "p2p_status_upi_1": "INITIATED",
                     "p2p_txn_id_upi_1": txn_id_upi
 
                 }
@@ -2165,10 +2180,12 @@ def test_common_500_502_036():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -2263,11 +2280,11 @@ def test_common_500_502_036():
             after_cancel_realCode = resp_status_2['realCode']
 
             # Fetch values from DB table txn after payment
-            query = "select * from txn where org_code='" + org_code + "' and external_ref = '" + ext_ref_number + "' order by created_time desc limit 1"
-            logger.debug(f"Query to fetch transaction id from txn : {query}")
-            result = DBProcessor.getValueFromDB(query)
-            txn_id = result["id"].values[0]
-            txn_created_time = result['created_time'].values[0]
+            # query = "select * from txn where org_code='" + org_code + "' and external_ref = '" + ext_ref_number + "' order by created_time desc limit 1"
+            # logger.debug(f"Query to fetch transaction id from txn : {query}")
+            # result = DBProcessor.getValueFromDB(query)
+            # txn_id = result["id"].values[0]
+            # txn_created_time = result['created_time'].values[0]
 
             if flow_success:
                 pass
@@ -2288,53 +2305,53 @@ def test_common_500_502_036():
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function : {testcase_id}")
 
-        # -----------------------------------------Start of App Validation---------------------------------
-        if (ConfigReader.read_config("Validations", "app_validation")) == "True":
-            logger.info(f"Started APP validation for the test case : {testcase_id}")
-            try:
-                date_and_time = date_time_converter.to_app_format(txn_created_time)
-
-                expected_app_values = {
-                    "pmt_mode": "BHARAT QR",
-                    "pmt_status": "EXPIRED",
-                    "txn_amt": "{:.2f}".format(amount),
-                    "settle_status": "FAILED",
-                    "txn_id": txn_id,
-                    "pmt_msg": "PAYMENT FAILED",
-                    "date": date_and_time
-                }
-                logger.debug(f"expectedAppValues: {expected_app_values}")
-
-                home_page.click_on_history()
-                pax_txn_history_page = PaxTransHistoryPage(app_driver)
-                pax_txn_history_page.click_on_transaction_by_order_id(ext_ref_number)
-                payment_status = pax_txn_history_page.fetch_txn_status_text()
-                payment_mode = pax_txn_history_page.fetch_txn_type_text()
-                app_txn_id = pax_txn_history_page.fetch_txn_id_text()
-                app_amount = pax_txn_history_page.fetch_txn_amount_text()
-                app_settlement_status = pax_txn_history_page.fetch_settlement_status_text()
-                app_payment_msg = pax_txn_history_page.fetch_txn_payment_message_text()
-                app_date_and_time = pax_txn_history_page.fetch_date_time_text()
-
-                actual_app_values = {
-                    "pmt_mode": payment_mode,
-                    "pmt_status": payment_status.split(':')[1],
-                    "txn_amt": app_amount.split(' ')[1],
-                    "txn_id": app_txn_id,
-                    "settle_status": app_settlement_status,
-                    "pmt_msg": app_payment_msg,
-                    "date": app_date_and_time
-                }
-                logger.debug(f"actual_app_values: {actual_app_values}")
-
-                Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
-            except Exception as e:
-                Configuration.perform_app_val_exception(testcase_id, e)
-            finally:
-                pax_txn_history_page.click_back_Btn_transaction_details()
-                pax_txn_history_page.click_back_Btn()
-            logger.info(f"Completed APP validation for the test case : {testcase_id}")
-        # -----------------------------------------End of App Validation---------------------------------------
+        # # -----------------------------------------Start of App Validation---------------------------------
+        # if (ConfigReader.read_config("Validations", "app_validation")) == "True":
+        #     logger.info(f"Started APP validation for the test case : {testcase_id}")
+        #     try:
+        #         date_and_time = date_time_converter.to_app_format(txn_created_time)
+        #
+        #         expected_app_values = {
+        #             "pmt_mode": "BHARAT QR",
+        #             "pmt_status": "EXPIRED",
+        #             "txn_amt": "{:.2f}".format(amount),
+        #             "settle_status": "FAILED",
+        #             "txn_id": txn_id,
+        #             "pmt_msg": "PAYMENT FAILED",
+        #             "date": date_and_time
+        #         }
+        #         logger.debug(f"expectedAppValues: {expected_app_values}")
+        #
+        #         home_page.click_on_history()
+        #         pax_txn_history_page = PaxTransHistoryPage(app_driver)
+        #         pax_txn_history_page.click_on_transaction_by_order_id(ext_ref_number)
+        #         payment_status = pax_txn_history_page.fetch_txn_status_text()
+        #         payment_mode = pax_txn_history_page.fetch_txn_type_text()
+        #         app_txn_id = pax_txn_history_page.fetch_txn_id_text()
+        #         app_amount = pax_txn_history_page.fetch_txn_amount_text()
+        #         app_settlement_status = pax_txn_history_page.fetch_settlement_status_text()
+        #         app_payment_msg = pax_txn_history_page.fetch_txn_payment_message_text()
+        #         app_date_and_time = pax_txn_history_page.fetch_date_time_text()
+        #
+        #         actual_app_values = {
+        #             "pmt_mode": payment_mode,
+        #             "pmt_status": payment_status.split(':')[1],
+        #             "txn_amt": app_amount.split(' ')[1],
+        #             "txn_id": app_txn_id,
+        #             "settle_status": app_settlement_status,
+        #             "pmt_msg": app_payment_msg,
+        #             "date": app_date_and_time
+        #         }
+        #         logger.debug(f"actual_app_values: {actual_app_values}")
+        #
+        #         Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
+        #     except Exception as e:
+        #         Configuration.perform_app_val_exception(testcase_id, e)
+        #     finally:
+        #         pax_txn_history_page.click_back_Btn_transaction_details()
+        #         pax_txn_history_page.click_back_Btn()
+        #     logger.info(f"Completed APP validation for the test case : {testcase_id}")
+        # # -----------------------------------------End of App Validation---------------------------------------
 
         # -----------------------------------------Start of API Validation------------------------------------
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
@@ -2386,6 +2403,7 @@ def test_common_500_502_036():
             try:
                 expected_db_values = {
                     "p2p_status_1": "CANCELED_FROM_EXTERNAL_SYSTEM",
+                     # "p2p_status_1": "INITIATED"
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 

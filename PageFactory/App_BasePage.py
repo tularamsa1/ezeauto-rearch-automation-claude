@@ -70,3 +70,9 @@ class BasePage:
         This method is used to verify the text of the given locator element
         """
         return WebDriverWait(self.driver, time).until(EC.text_to_be_present_in_element(locator, ele_text))
+
+    def click_go_to_back(self):
+        """
+            This method is used to click on back button when there is no back btn element present on UI
+        """
+        self.driver.back()

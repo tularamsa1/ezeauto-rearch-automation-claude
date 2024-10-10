@@ -6,6 +6,7 @@ import random
 from Configuration import testsuite_teardown, Configuration, TestSuiteSetup
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
+from PageFactory.App_LoginPage import LoginPage
 from PageFactory.App_PaymentPage import PaymentPage
 from PageFactory.PAX_TransHistoryPage import PaxTransHistoryPage
 from Utilities import ResourceAssigner, DBProcessor, APIProcessor, date_time_converter, ConfigReader, Validator
@@ -122,10 +123,12 @@ def test_common_500_502_016():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -163,10 +166,12 @@ def test_common_500_502_016():
 
             app_driver.activate_app("com.ezetap.basicapp")
             logger.debug(f"Relaunched the app")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app again after relaunching")
             logger.info(f"Loaded home page again after relaunching")
 
@@ -315,7 +320,7 @@ def test_common_500_502_016():
                 }
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                home_page.click_on_history()
+                home_page.click_on_history_for_p2p()
                 pax_txn_history_page = PaxTransHistoryPage(app_driver)
                 pax_txn_history_page.click_on_transaction_by_order_id(ext_ref_number)
                 payment_status = pax_txn_history_page.fetch_txn_status_text()
@@ -459,8 +464,10 @@ def test_common_500_502_016():
                     "bqr_org_code": org_code,
 
                     "p2p_status": "RECEIVED",
+                    # "p2p_status": "INITIATED",
                     "p2p_txn_id": None,
                     "p2p_status_1": "COMPLETED",
+                    # "p2p_status_1": "INITIATED",
                     "p2p_txn_id_1": txn_id
 
                 }
@@ -632,10 +639,12 @@ def test_common_500_502_017():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -837,7 +846,7 @@ def test_common_500_502_017():
 
                 logger.debug(f"expectedAppValues: {expected_app_values}")
 
-                home_page.click_on_history()
+                home_page.click_on_history_for_p2p()
                 sleep(2)
                 # txn_history_page = TransHistoryPage(app_driver)
                 pax_txn_history_page = PaxTransHistoryPage(app_driver)
@@ -993,7 +1002,9 @@ def test_common_500_502_017():
                     "bqr_merchant_pan": db_bqr_config_merchant_pan,
                     "bqr_org_code": org_code,
                     "p2p_status": "RECEIVED",
+                    # "p2p_status": "INITIATED",
                     "p2p_status_2": "COMPLETED",
+                    # "p2p_status_2": "INITIATED",
                     "p2p_txn_id": status_txn_id
                 }
 

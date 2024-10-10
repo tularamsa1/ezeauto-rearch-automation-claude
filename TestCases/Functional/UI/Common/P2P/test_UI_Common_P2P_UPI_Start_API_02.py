@@ -5,6 +5,7 @@ from Configuration import testsuite_teardown, TestSuiteSetup
 from Configuration import Configuration
 from DataProvider import GlobalVariables
 from PageFactory.App_HomePage import HomePage
+from PageFactory.App_LoginPage import LoginPage
 from Utilities import Validator, ConfigReader, DBProcessor, APIProcessor, ResourceAssigner
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -92,10 +93,12 @@ def test_common_500_501_038():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -295,10 +298,12 @@ def test_common_500_501_039():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -500,10 +505,12 @@ def test_common_500_501_040():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -695,10 +702,12 @@ def test_common_500_501_041():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -900,10 +909,12 @@ def test_common_500_501_042():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 

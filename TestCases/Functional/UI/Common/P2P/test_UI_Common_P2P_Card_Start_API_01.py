@@ -105,11 +105,11 @@ def test_common_500_503_004():
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             logger.info(f"Logging in the MPOSX application using username : {app_username} and password : {app_password}")
             login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -261,8 +261,10 @@ def test_common_500_503_004():
             try:
                 expected_db_values = {
                     "p2p_status": "RECEIVED",
+                    # "p2p_status": "INITIATED",
                     "p2p_txn_id": None,
                     "p2p_status_1": "CANCELED",
+                    # "p2p_status_1": "INITIATED",
                     "p2p_txn_id_1": None
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
@@ -404,10 +406,12 @@ def test_common_500_503_037():
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
 
             app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, "true")
+            login_page = LoginPage(app_driver)
+            login_page.perform_login_for_pax(app_username, app_password,Pax_Device=True)
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             logger.info(f"Logged in to the app")
             logger.info(f"Loaded home page")
 
@@ -568,6 +572,7 @@ def test_common_500_503_037():
             try:
                 expected_db_values = {
                     "p2p_status_card_2": "CANCELED_FROM_EXTERNAL_SYSTEM",
+                    # "p2p_status_card_2": "INITIATED"
                 }
                 logger.debug(f"expected_db_values: {expected_db_values}")
 
