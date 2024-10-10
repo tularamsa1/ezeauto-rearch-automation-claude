@@ -9,7 +9,6 @@ logger = EzeAutoLogger(__name__)
 
 
 class LoginPage(BasePage):
-
     txt_username = (AppiumBy.ID, "com.ezetap.basicapp:id/etUid")
     txt_password =  (AppiumBy.ID, 'com.ezetap.basicapp:id/etPassword')
     btn_login = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnLogin')
@@ -122,4 +121,3 @@ class LoginPage(BasePage):
         self.wait_for_element(self.txt_auth_password).clear()
         self.perform_sendkeys(self.txt_auth_password, app_password)
         self.perform_click(self.btn_auth_login)
-
