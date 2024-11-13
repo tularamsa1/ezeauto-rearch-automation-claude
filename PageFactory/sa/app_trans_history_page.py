@@ -136,6 +136,8 @@ class TransHistoryPage(BasePage):
     click_txn = (By.ID, "com.ezetap.service.demo:id/clTxnView")
     search_category = (By.ID, 'com.ezetap.service.demo:id/search_category_selection_dropdown')
     category_type_by_txn = (By.XPATH, "//*[@text='Transaction ID']")
+    category_type_by_amt = (By.XPATH, "//*[@text='Amount']")
+    category_type_by_rrn = (By.XPATH, "//*[@text='RRN Code']")
     btn_apply = (By.CLASS_NAME, "android.widget.Button")
     category_type_by_reference = (By.XPATH, "//*[@text = 'Reference ID']")
 
@@ -147,6 +149,13 @@ class TransHistoryPage(BasePage):
     txt_markup_fee = (By.XPATH, "//*[@text='MARKUP FEE']/following-sibling::android.widget.TextView")
     txt_currency_conversion_fee_rate = \
         (By.XPATH, "//*[@text='CURRENCY CONVERSION FEE RATE']/following-sibling::android.widget.TextView")
+
+    txt_original_amt = (By.ID, "com.ezetap.service.demo:id/tvOriginalAmountValue")
+    txt_refunded_amt = (By.ID, "com.ezetap.service.demo:id/tvRefundedAmountValue")
+    txt_balance_amt = (By.ID, "com.ezetap.service.demo:id/tvBalanceAmountValue")
+    txt_username = (By.ID, "com.ezetap.service.demo:id/tvInputEtUsername")
+    txt_password = (By.ID, "com.ezetap.service.demo:id/tvInputEtPassword")
+    btn_login = (By.ID, "com.ezetap.service.demo:id/btnLogin")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -232,6 +241,75 @@ class TransHistoryPage(BasePage):
         self.perform_click(self.search_button)
         self.wait_for_element(self.click_txn)
         self.perform_click(self.click_txn)
+
+    def click_on_transaction_by_amount(self, amount):
+        """
+          This method clicks on the search bar in history page and filter txn's based on amount
+          param amount: str
+        """
+        locator = (By.ID, 'com.ezetap.service.demo:id/ivSearch')
+        self.perform_click(locator)
+        self.wait_for_element(self.search_category)
+        self.perform_click(self.search_category)
+        self.wait_for_element(self.category_type_by_amt)
+        self.perform_click(self.category_type_by_amt)
+        self.wait_for_element(self.btn_apply)
+        self.perform_click(self.btn_apply)
+        self.perform_click(locator)
+        self.perform_sendkeys(self.search_field, amount)
+        self.perform_click(self.search_button)
+        self.wait_for_element(self.click_txn)
+        self.perform_click(self.click_txn)
+
+    def click_on_transaction_by_rrn(self, rrn):
+        """
+            This method clicks on the search bar in history page and filter txn's based on rrn
+            param rrn: str
+        """
+        locator = (By.ID, 'com.ezetap.service.demo:id/ivSearch')
+        self.perform_click(locator)
+        self.wait_for_element(self.search_category)
+        self.perform_click(self.search_category)
+        self.wait_for_element(self.category_type_by_rrn)
+        self.perform_click(self.category_type_by_rrn)
+        self.wait_for_element(self.btn_apply)
+        self.perform_click(self.btn_apply)
+        self.perform_click(locator)
+        self.perform_sendkeys(self.search_field, rrn)
+        self.perform_click(self.search_button)
+        self.wait_for_element(self.click_txn)
+        self.perform_click(self.click_txn)
+
+    def click_on_txn_by_txn_id(self, txn_id):
+        """
+            This method clicks on the search bar in history page and filter txn's based on txn_id
+            param txn_id: str
+        """
+        locator = (By.ID, 'com.ezetap.service.demo:id/ivSearch')
+        self.perform_click(locator)
+        self.wait_for_element(self.search_category)
+        self.perform_click(self.search_category)
+        self.wait_for_element(self.category_type_by_txn)
+        self.perform_click(self.category_type_by_txn)
+        self.wait_for_element(self.btn_apply)
+        self.perform_click(self.btn_apply)
+        self.perform_click(locator)
+        self.perform_sendkeys(self.search_field, txn_id)
+        self.perform_click(self.search_button)
+        self.wait_for_element(self.click_txn)
+        self.perform_click(self.click_txn)
+
+    def re_login_to_app(self, username, password):
+        """
+            This method is used to re-login and enter password for session expiry user
+            param username: str
+            param password: str
+        """
+        self.wait_for_element(self.txt_username).clear()
+        self.perform_sendkeys(self.txt_username, username)
+        self.wait_for_element(self.txt_password).clear()
+        self.perform_sendkeys(self.txt_password, password)
+        self.perform_click(self.btn_login)
 
     def click_on_second_transaction_by_order_id(self, order_id):
         locator = (By.XPATH, '(//*[@resource-id="com.ezetap.service.demo:id/tvTxnId" and @text="'+order_id+'"]/../..)[2]' )
@@ -697,6 +775,34 @@ class TransHistoryPage(BasePage):
             This method is used to click on confirm pre-auth pop ups
         """
         self.perform_click(self.btn_conf_pre_auth_popup)
+
+    def scroll_to_text_element(self, value):
+        """
+            This method is used to scroll to text based on the value passed
+            param: value : str
+        """
+        self.scroll_to_text(value)
+
+    def fetch_original_amt_text(self) -> str:
+        """
+            This method is used to fetch original amount txt
+            return: original_amt : str
+        """
+        return self.fetch_text(self.txt_original_amt)
+
+    def fetch_refunded_amt_text(self) -> str:
+        """
+            This method is used to fetch refunded amount txt
+            return: refunded_amt : str
+        """
+        return self.fetch_text(self.txt_refunded_amt)
+
+    def fetch_balance_amt_text(self) -> str:
+        """
+            This method is used to fetch refunded amount txt
+            return: refunded_amt : str
+        """
+        return self.fetch_text(self.txt_balance_amt)
 
     def scroll_to_given_input_text(self, input_text: str):
         """

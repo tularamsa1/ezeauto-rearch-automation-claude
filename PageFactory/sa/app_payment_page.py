@@ -148,6 +148,19 @@ class PaymentPage(BasePage):
     txt_inr_currency_rate = (By.ID, "com.ezetap.service.demo:id/tv_pay_in_merchant_currency")
     txt_pre_auth_txt_selected_currency_message = (By.ID, "com.ezetap.service.demo:id/tv_confirmation")
 
+    btn_refund = (By.ID, "com.ezetap.service.demo:id/ll_refund_amount")
+    btn_confirm_refund = (By.ID, "com.ezetap.service.demo:id/btn_proceed_refund")
+    rdo_refund_full_amt = (By.ID, "com.ezetap.service.demo:id/btnRefundFullAmt")
+    rdo_refund_amt_manually = (By.ID, "com.ezetap.service.demo:id/btnRefundManualAmt")
+    txt_refund_amt_manually = (By.ID, "com.ezetap.service.demo:id/etEnterRefundAmt")
+    btn_refund_txn = (By.ID, "com.ezetap.service.demo:id/btnRefundTxn")
+    txt_password = (AppiumBy.ID, 'com.ezetap.service.demo:id/etEnterPwd')
+    txt_user_password = (AppiumBy.ID, 'com.ezetap.service.demo:id/tvInputEtPassword')
+    btn_login = (AppiumBy.ID, "com.ezetap.service.demo:id/btnLogin")
+    txt_add_processing_fee = (AppiumBy.ID, "com.ezetap.service.demo:id/ivAddProcessingFee")
+    txt_processing_fee = (AppiumBy.ID, "com.ezetap.service.demo:id/etEnterProcessingFee")
+    txt_invalid_refundable_amt = (AppiumBy.ID, "com.ezetap.service.demo:id/dialogText")
+
     def __init__(self, driver):
         super().__init__(driver)
 
@@ -1120,3 +1133,88 @@ class PaymentPage(BasePage):
         self.wait_for_element(self.txt_pre_auth_txt_selected_currency_message)
         pre_auth_currency_rate = self.fetch_text(self.txt_pre_auth_txt_selected_currency_message)
         return pre_auth_currency_rate
+
+    def click_on_refund_btn(self):
+        """
+            This method is used to click on refund button
+        """
+        self.wait_for_element(self.btn_refund)
+        self.perform_click(self.btn_refund)
+
+    def click_on_confirm_refund_btn(self):
+        """
+            This method is used to click on confirm refund button
+        """
+        self.wait_for_element(self.btn_confirm_refund)
+        self.perform_click(self.btn_confirm_refund)
+
+    def click_on_refund_full_amt(self):
+        """
+            This method is used to click on refund full amount radio button
+        """
+        self.wait_for_element(self.rdo_refund_full_amt)
+        self.perform_click(self.rdo_refund_full_amt)
+
+    def click_on_refund_amt_manually(self):
+        """
+            This method is used to click on refund amount manually radio button
+        """
+        self.wait_for_element(self.rdo_refund_amt_manually)
+        self.perform_click(self.rdo_refund_amt_manually)
+
+    def enter_refund_amt_manually(self, amount):
+        """
+            This method is used to enter refund amount manually
+            param: amount: str
+        """
+        self.wait_for_element(self.txt_refund_amt_manually).clear()
+        self.perform_sendkeys(self.txt_refund_amt_manually, amount)
+
+    def click_on_add_processing_fee(self, processing_fee_amt):
+        """
+            This method is used to click on add processing fee and enter amount
+            param: processing_fee_amt: str
+        """
+        self.wait_for_element(self.txt_add_processing_fee)
+        self.perform_click(self.txt_add_processing_fee)
+        self.wait_for_element(self.txt_processing_fee).clear()
+        self.perform_sendkeys(self.txt_processing_fee, processing_fee_amt)
+
+    def click_on_refund_txn_btn(self):
+        """
+             This method is used to click on refund txn btn
+        """
+        self.wait_for_element(self.btn_refund_txn)
+        self.perform_click(self.btn_refund_txn)
+
+    def is_refund_txn_btn_visible(self):
+        """
+            This method is used to check refund txn button is visible or not
+        """
+        self.wait_for_invisibility_of_elements(self.btn_refund_txn)
+
+    def enter_password_to_confirm(self, password):
+        """
+            This method is used to enter password to confirm the refund amount
+            param: password: str
+        """
+        self.wait_for_element(self.txt_password).clear()
+        self.perform_sendkeys(self.txt_password, password)
+        self.wait_for_element(self.btn_confirm_refund)
+        self.perform_click(self.btn_confirm_refund)
+
+    def enter_user_password(self, password):
+        """
+            This method is used to enter the user password and click on proceed button
+            param: password: str
+        """
+        self.wait_for_element(self.txt_user_password).clear()
+        self.perform_sendkeys(self.txt_user_password, password)
+        self.perform_click(self.btn_login)
+
+    def fetch_invalid_refundable_amt_txt(self):
+        """
+            This method is used to fetch text of refundable amount
+        """
+        self.wait_for_element(self.txt_invalid_refundable_amt)
+        return self.fetch_text(self.txt_invalid_refundable_amt)
