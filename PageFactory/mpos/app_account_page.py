@@ -85,3 +85,17 @@ class AccountPage(BasePage):
         performs clicking on back buttom
         """
         self.perform_click(self.btn_back)
+
+    def change_language_to_hindi(self):
+        self.click_on_setting()
+        self.click_on_Language()
+        self.click_on_hindi_Lang()
+        self.click_on_proceed_btn()
+
+    def change_language_to_english(self):
+        self.click_on_setting()
+        self.click_on_Language()
+        self.click_on_eng_Lang()
+        self.click_on_proceed_btn()
+
+

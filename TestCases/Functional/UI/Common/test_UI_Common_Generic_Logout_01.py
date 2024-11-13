@@ -3,6 +3,7 @@ import pytest
 from Configuration import Configuration, TestSuiteSetup, testsuite_teardown
 from DataProvider import GlobalVariables
 from PageFactory.mpos.app_home_page import HomePage
+from PageFactory.mpos.app_installation import clear_cache_storage_and_grant_permission
 from PageFactory.mpos.app_login_page import LoginPage
 from PageFactory.sa.app_logout_page import Logout
 from Utilities import Validator, ConfigReader, ResourceAssigner, DBProcessor, APIProcessor
@@ -161,7 +162,8 @@ def test_common_400_402_002():
         api_details["RequestBody"]["settings"]["autoLoginByTokenLogOutEnabled"] = "false"
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
-        logger.debug(f"Response received for setting preconditions is : {response}")
+        logger.debug(f"Response received for setting preconditions of autoLoginByTokenEnabled is : {response}")
+        clear_cache_storage_and_grant_permission()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -174,7 +176,7 @@ def test_common_400_402_002():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, no_reset="true")
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(app_driver)
             login_page.perform_login(app_username, app_password)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")

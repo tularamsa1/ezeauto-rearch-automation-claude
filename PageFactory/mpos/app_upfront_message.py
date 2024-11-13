@@ -9,12 +9,14 @@ class Upfront(BasePage):
     txt_ph_number = (AppiumBy.ID, 'com.ezetap.basicapp:id/editTextMobile')
     txt_email = (AppiumBy.ID, 'com.ezetap.basicapp:id/editTextEmail')
     txt_amount = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvAmountCard')
-    btn_pay = (AppiumBy.ID, "com.ezetap.basicapp:id/btnPay")
     txt_enterAmountField = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvAmountCard')
     txt_orderNo = (AppiumBy.ID, "com.ezetap.basicapp:id/editTextOrderNo")
     txt_mobileField = (AppiumBy.ID, 'com.ezetap.basicapp:id/editTextMobile')
     txt_emailField = (AppiumBy.ID, 'com.ezetap.basicapp:id/editTextEmail')
     btn_paymentProceed = (AppiumBy.ID, 'com.ezetap.basicapp:id/buttonProceed')
+    btn_collect_payment = (By.XPATH, "//*[@text = 'Collect Payment']")
+    btn_other = (By.XPATH, "//android.widget.TextView[@text='Other']")
+
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -40,7 +42,11 @@ class Upfront(BasePage):
         list = self.type_amount(amt)
         for i in list:
             self.perform_click(i)
-        self.perform_click(self.btn_pay)
+        try:
+            if self.wait_for_visibility_of_element_text(self.btn_collect_payment, ele_text="Collect Payment"):
+                self.perform_click(self.btn_collect_payment)
+        except:
+            self.perform_click(self.btn_other)
         self.perform_click(self.txt_orderNo)
         self.perform_sendkeys(self.txt_orderNo, order_number)
         self.perform_sendkeys(self.txt_mobileField, str(mobile_num))

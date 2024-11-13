@@ -57,19 +57,49 @@ def test_common_100_115_04_007():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = f"select * from terminal_info where org_code= '{org_code}' and status = 'ACTIVE' and " \
-                "acquirer_code='HDFC' and payment_gateway='DUMMY' "
-        logger.debug(f"Query to fetch data from the terminal_info table for the {org_code} : {query}")
-        result = DBProcessor.getValueFromDB(query=query)
-        logger.debug(f"Fetching result for terminal_info table : {result}")
-        mid = result["mid"].iloc[0]
-        logger.debug(f"Fetching mid from the terminal_info table : mid : {mid}")
-        tid = result["tid"].iloc[0]
-        logger.debug(f"Fetching tid from the terminal_info table : tid : {tid}")
-        device_serial = result["device_serial"].iloc[0]
-        logger.debug(f"Fetching device_serial from the terminal_info table : device_serial : {device_serial}")
-        terminal_info_id = result["id"].iloc[0]
-        logger.debug(f"Fetching terminal_info_id from the terminal_info table : terminal_info_id : {terminal_info_id}")
+        if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == 'true':
+
+            app_driver = TestSuiteSetup.initialize_app_driver(request=testcase_id)
+            query = f"UPDATE terminal_info SET status = 'INACTIVE' WHERE org_code = '{org_code}';"
+            logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
+            DBProcessor.setValueToDB(query=query)
+            logger.debug(f"Disabled All the terminals")
+
+            query = f"UPDATE terminal_info SET status = 'ACTIVE' WHERE org_code='{org_code}' and status = 'INACTIVE' and " \
+                    f"acquirer_code='HDFC' and payment_gateway='DUMMY' and device_serial = '{GlobalVariables.str_device_id}';"
+            logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
+            result = DBProcessor.setValueToDB(query=query)
+            logger.debug(f"Fetching result for terminal_info table : {result}")
+
+            query = f"select * from terminal_info where org_code='{org_code}' and status = 'ACTIVE' and " \
+                    f"acquirer_code='HDFC' and payment_gateway='DUMMY' and device_serial = '{GlobalVariables.str_device_id}';"
+            logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query=query)
+            logger.debug(f"Fetching result for terminal_info table : {result}")
+            mid = result["mid"].values[0]
+            logger.debug(f"Fetching mid from the terminal_info table : mid : {mid}")
+            tid = result["tid"].values[0]
+            logger.debug(f"Fetching tid from the terminal_info table : tid : {tid}")
+            device_serial = result["device_serial"].values[0]
+            logger.debug(f"Fetching device_serial from the terminal_info table : device_serial : {device_serial}")
+            terminal_info_id = result['id'].values[0]
+            logger.debug(
+                f"Fetching terminal_info_id from the terminal_info table : terminal_info_id : {terminal_info_id}")
+        else:
+            query = f"select * from terminal_info where org_code='{org_code}' and status = 'ACTIVE' and " \
+                    "acquirer_code='HDFC' and payment_gateway='DUMMY'"
+            logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query=query)
+            logger.debug(f"Fetching result for terminal_info table : {result}")
+            mid = result["mid"].values[0]
+            logger.debug(f"Fetching mid from the terminal_info table : mid : {mid}")
+            tid = result["tid"].values[0]
+            logger.debug(f"Fetching tid from the terminal_info table : tid : {tid}")
+            device_serial = result["device_serial"].values[0]
+            logger.debug(f"Fetching device_serial from the terminal_info table : device_serial : {device_serial}")
+            terminal_info_id = result['id'].values[0]
+            logger.debug(
+                f"Fetching terminal_info_id from the terminal_info table : terminal_info_id : {terminal_info_id}")
 
         testsuite_teardown.revert_card_payment_settings_default(org_code=org_code, portal_un=portal_username,
                                                                 portal_pw=portal_password)
@@ -109,12 +139,12 @@ def test_common_100_115_04_007():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+            if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == 'false':
+                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(driver=app_driver)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(username=app_username, password=app_password)
             home_page = HomePage(driver=app_driver)
-            home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -154,6 +184,7 @@ def test_common_100_115_04_007():
             card_last_four_digit_db = result["card_last_four_digit"].iloc[0]
             logger.debug(f"Fetching card last four digit from txn table : {card_last_four_digit_db}")
 
+            home_page.navigate_to_home()
             home_page.perform_online_refund(password=app_password, card_last_four_digit=card_last_four_digit_db, device_serial=device_serial)
             logger.debug(f"To refund selecting the card type as : EMV_WITH_PIN_VISA_DEBIT_428090")
             card_page.select_cardtype(text="EMV_WITH_PIN_VISA_DEBIT_428090")

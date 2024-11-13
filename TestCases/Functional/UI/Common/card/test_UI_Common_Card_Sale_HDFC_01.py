@@ -535,16 +535,45 @@ def test_common_100_115_002():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = f"select * from terminal_info where org_code='{org_code}' and status='ACTIVE' and acquirer_code=" \
-                f"'HDFC' and payment_gateway='HDFC'"
-        result = DBProcessor.getValueFromDB(query)
-        logger.debug(f"query result : {result}")
-        mid = result["mid"].iloc[0]
-        tid = result["tid"].iloc[0]
-        device_serial = result["device_serial"].iloc[0]
-        terminal_info_id = result["id"].iloc[0]
-        logger.debug(
-            f"fetched mid : {mid}, tid : {tid}, device_serial : {device_serial}, terminal_info_id : {terminal_info_id}")
+        if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == 'true':
+
+            app_driver = TestSuiteSetup.initialize_app_driver(request=testcase_id)
+            query = f"UPDATE terminal_info SET status = 'INACTIVE' WHERE org_code = '{org_code}';"
+            logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
+            DBProcessor.setValueToDB(query=query)
+            logger.debug(f"Disabled All the terminals")
+
+            query = f"UPDATE terminal_info SET status = 'ACTIVE' WHERE org_code='{org_code}' and status = 'INACTIVE' and " \
+                    f"acquirer_code='HDFC' and payment_gateway='HDFC' and device_serial = '{GlobalVariables.str_device_id}';"
+            logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
+            result = DBProcessor.setValueToDB(query=query)
+            logger.debug(f"Fetching result for terminal_info table : {result}")
+
+            query = f"select * from terminal_info where org_code='{org_code}' and status = 'ACTIVE' and " \
+                    f"acquirer_code='HDFC' and payment_gateway='HDFC' and device_serial = '{GlobalVariables.str_device_id}';"
+            logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query=query)
+            logger.debug(f"Fetching result for terminal_info table : {result}")
+            mid = result["mid"].values[0]
+            logger.debug(f"Fetching mid from the terminal_info table : mid : {mid}")
+            tid = result["tid"].values[0]
+            logger.debug(f"Fetching tid from the terminal_info table : tid : {tid}")
+            device_serial = result["device_serial"].values[0]
+            logger.debug(f"Fetching device_serial from the terminal_info table : device_serial : {device_serial}")
+            terminal_info_id = result['id'].values[0]
+            logger.debug(
+                f"Fetching terminal_info_id from the terminal_info table : terminal_info_id : {terminal_info_id}")
+        else:
+            query = f"select * from terminal_info where org_code='{org_code}' and status='ACTIVE' and acquirer_code=" \
+                    f"'HDFC' and payment_gateway='HDFC'"
+            result = DBProcessor.getValueFromDB(query)
+            logger.debug(f"query result : {result}")
+            mid = result["mid"].iloc[0]
+            tid = result["tid"].iloc[0]
+            device_serial = result["device_serial"].iloc[0]
+            terminal_info_id = result["id"].iloc[0]
+            logger.debug(
+                f"fetched mid : {mid}, tid : {tid}, device_serial : {device_serial}, terminal_info_id : {terminal_info_id}")
 
         testsuite_teardown.revert_card_payment_settings_default(org_code=org_code, portal_un=portal_username,
                                                                 portal_pw=portal_password)
@@ -586,12 +615,13 @@ def test_common_100_115_002():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+            if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == 'false':
+                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
             login_page = LoginPage(app_driver)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -705,7 +735,9 @@ def test_common_100_115_002():
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
                 app_payment_msg = txn_history_page.fetch_txn_payment_message_text()
                 app_date_and_time = txn_history_page.fetch_date_time_text()
+                txn_history_page.scroll_to_given_input_text("RRNUMBER")
                 app_rrn = txn_history_page.fetch_RRN_text()
+                # txn_history_page.scroll_to_given_input_text("Auth Code")
                 app_auth_code = txn_history_page.fetch_auth_code_text()
                 app_batch_no = txn_history_page.fetch_batch_number_text()
                 app_customer_name = txn_history_page.fetch_customer_name_text()

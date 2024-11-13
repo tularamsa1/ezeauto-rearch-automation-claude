@@ -1,4 +1,5 @@
 import re
+import subprocess
 import time
 
 from appium.webdriver.common.appiumby import AppiumBy
@@ -96,6 +97,7 @@ class HomePage(BasePage):
     txt_home = (By.XPATH, "(//*[@resource-id ='com.ezetap.basicapp:id/tabText'])[1]")
     btn_collect_payment = (By.XPATH, "//*[@text = 'Collect Payment']")
     btn_other = (By.XPATH, "//android.widget.TextView[@text='Other']")
+    btn_merchant_account = (By.ID, 'com.ezetap.basicapp:id/cardViewMerchant')
 
     btn_svm_violation = (By.XPATH, '//android.widget.Button[@text="SWM Violation"]')
     btn_plastic_ban_enforcement = (By.XPATH, '//android.widget.Button[@text="Plastic Ban Enforcement"]')
@@ -276,6 +278,7 @@ class HomePage(BasePage):
         self.perform_sendkeys(self.txt_tip_amount, tip_amt)
         self.perform_click(self.device_serialNo)
         self.perform_sendkeys(self.device_serialNo, device_serial)
+        self.perform_click(self.txt_tip_amount)
         self.perform_click(self.btn_paymentProceed)
 
     def enter_order_number_and_device_serial_for_card(self, order_number, device_serial):
@@ -1317,3 +1320,9 @@ class HomePage(BasePage):
     def click_grow_your_business(self):
         self.wait_for_element(self.txt_grow_your_business)
         self.perform_click(self.txt_grow_your_business)
+
+    def click_on_merchant_account_details(self):
+        """
+        This method is used to click on merchant details present on side menu
+        """
+        self.perform_click(self.btn_merchant_account)

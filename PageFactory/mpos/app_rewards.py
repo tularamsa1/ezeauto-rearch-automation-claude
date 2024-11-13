@@ -47,7 +47,7 @@ class Rewards(BasePage):
     txt_goal_expiry_1 = (AppiumBy.XPATH, '(//*[@resource-id = "com.ezetap.basicapp:id/goal_expiry_txt"])[1]')
     txt_goal_expiry_2 = (AppiumBy.XPATH, '(//*[@resource-id = "com.ezetap.basicapp:id/goal_expiry_txt"])[2]')
     txt_goal_description = (AppiumBy.XPATH, '//*[@resource-id ="com.ezetap.basicapp:id/goal_title"]')
-    txt_rewards = (AppiumBy.XPATH, '(//android.widget.ImageView[@content-desc="reward icon"])[2]')
+    txt_rewards = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvRewardsTitle')
     txt_expiry_status = (AppiumBy.XPATH, '//*[@resource-id = "com.ezetap.basicapp:id/btn_claimed"]')
     lbl_initial_percentage = (AppiumBy.XPATH, '//*[@text ="0%"]')
     lbl_final_percentage = (AppiumBy.XPATH, '//*[@text ="50%"]')
@@ -296,6 +296,7 @@ class Rewards(BasePage):
         Retrieves the relative co_ordinates using bounds values of element from the rewards dashboard
         return: int
         """
+        self.scroll_to_text(self.fetch_text(self.txt_rewards))
         bounds_str = self.wait_for_element(self.txt_rewards).get_attribute("bounds")
         matches = re.findall(r'\d+', bounds_str)
         if len(matches) >= 2:

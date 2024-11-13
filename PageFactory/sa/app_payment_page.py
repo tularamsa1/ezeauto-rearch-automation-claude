@@ -1,4 +1,6 @@
 import re
+import time
+
 from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import StaleElementReferenceException
@@ -36,7 +38,7 @@ class PaymentPage(BasePage):
     lbl_scanQRCode = (By.XPATH, '//*[contains(@text,"Scan QR code")]')
     lbl_paymentMode = (By.ID, "com.ezetap.service.demo:id/tvPaymentType")
     lbl_paymentAmt = (By.ID, "com.ezetap.service.demo:id/tvTxnAmount")
-    lbl_payWith = (By.ID, 'com.ezetap.service.demo:id/tvPayWithTop')
+    lbl_payWith = (By.XPATH, "//*[@text='Pay with']")
     lbl_checkstatusTitle = (By.ID, 'com.ezetap.service.demo:id/tvCheckStatusTitle')
     lbl_checkstatus = (By.ID, "com.ezetap.service.demo:id/btn_check_status")
     lbl_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
@@ -214,6 +216,7 @@ class PaymentPage(BasePage):
         """
         self.wait_for_visibility_of_elements(self.btn_proceedToHomepage)
         self.perform_click(self.btn_proceedToHomepage)
+        time.sleep(4)
 
     def click_on_back_btn(self):
         staleElement = True
@@ -288,8 +291,8 @@ class PaymentPage(BasePage):
         try:
             self.wait_for_element(self.lbl_payWith, 6)
         except:
-            self.wait_for_element(self.lbl_checkstatusTitle)
-            self.perform_click(self.lbl_checkstatus)
+            # self.wait_for_element(self.lbl_checkstatusTitle)
+            # self.perform_click(self.lbl_checkstatus)
             if self.fetch_text(self.lbl_paymentStatus) == "Payment Successful":
                 self.perform_click(self.btn_proceedToHomepage)
             elif self.fetch_text(self.lbl_paymentStatus) == "Payment Failed":

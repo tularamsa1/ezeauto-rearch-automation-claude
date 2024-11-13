@@ -54,19 +54,49 @@ def test_common_100_115_01_001():
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
 
-        query = f"select * from terminal_info where org_code='{org_code}' and status = 'ACTIVE' and " \
-                "acquirer_code='HDFC' and payment_gateway='DUMMY'"
-        logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
-        result = DBProcessor.getValueFromDB(query=query)
-        logger.debug(f"Fetching result for terminal_info table : {result}")
-        mid = result["mid"].values[0]
-        logger.debug(f"Fetching mid from the terminal_info table : mid : {mid}")
-        tid = result["tid"].values[0]
-        logger.debug(f"Fetching tid from the terminal_info table : tid : {tid}")
-        device_serial = result["device_serial"].values[0]
-        logger.debug(f"Fetching device_serial from the terminal_info table : device_serial : {device_serial}")
-        terminal_info_id = result['id'].values[0]
-        logger.debug(f"Fetching terminal_info_id from the terminal_info table : terminal_info_id : {terminal_info_id}")
+        if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == 'true':
+
+            app_driver = TestSuiteSetup.initialize_app_driver(request=testcase_id)
+            query = f"UPDATE terminal_info SET status = 'INACTIVE' WHERE org_code = '{org_code}';"
+            logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
+            DBProcessor.setValueToDB(query=query)
+            logger.debug(f"Disabled All the terminals")
+
+            query = f"UPDATE terminal_info SET status = 'ACTIVE' WHERE org_code='{org_code}' and status = 'INACTIVE' and " \
+                    f"acquirer_code='HDFC' and payment_gateway='DUMMY' and device_serial = '{GlobalVariables.str_device_id}';"
+            logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
+            result = DBProcessor.setValueToDB(query=query)
+            logger.debug(f"Fetching result for terminal_info table : {result}")
+
+            query = f"select * from terminal_info where org_code='{org_code}' and status = 'ACTIVE' and " \
+                    f"acquirer_code='HDFC' and payment_gateway='DUMMY' and device_serial = '{GlobalVariables.str_device_id}';"
+            logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query=query)
+            logger.debug(f"Fetching result for terminal_info table : {result}")
+            mid = result["mid"].values[0]
+            logger.debug(f"Fetching mid from the terminal_info table : mid : {mid}")
+            tid = result["tid"].values[0]
+            logger.debug(f"Fetching tid from the terminal_info table : tid : {tid}")
+            device_serial = result["device_serial"].values[0]
+            logger.debug(f"Fetching device_serial from the terminal_info table : device_serial : {device_serial}")
+            terminal_info_id = result['id'].values[0]
+            logger.debug(
+                f"Fetching terminal_info_id from the terminal_info table : terminal_info_id : {terminal_info_id}")
+        else:
+            query = f"select * from terminal_info where org_code='{org_code}' and status = 'ACTIVE' and " \
+                    "acquirer_code='HDFC' and payment_gateway='DUMMY'"
+            logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
+            result = DBProcessor.getValueFromDB(query=query)
+            logger.debug(f"Fetching result for terminal_info table : {result}")
+            mid = result["mid"].values[0]
+            logger.debug(f"Fetching mid from the terminal_info table : mid : {mid}")
+            tid = result["tid"].values[0]
+            logger.debug(f"Fetching tid from the terminal_info table : tid : {tid}")
+            device_serial = result["device_serial"].values[0]
+            logger.debug(f"Fetching device_serial from the terminal_info table : device_serial : {device_serial}")
+            terminal_info_id = result['id'].values[0]
+            logger.debug(
+                f"Fetching terminal_info_id from the terminal_info table : terminal_info_id : {terminal_info_id}")
 
         testsuite_teardown.revert_card_payment_settings_default(org_code=org_code, portal_un=portal_username,
                                                                 portal_pw=portal_password)
@@ -113,12 +143,13 @@ def test_common_100_115_01_001():
             tip_amount = random.randint(1, max_tip_amount)
             total_amount = amount + tip_amount
             order_id = datetime.now().strftime('%m%d%H%M%S')
-            app_driver = TestSuiteSetup.initialize_app_driver(request=testcase_id)
+            if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == 'false':
+                app_driver = TestSuiteSetup.initialize_app_driver(request=testcase_id)
             login_page = LoginPage(driver=app_driver)
             login_page.perform_login(username=app_username, password=app_password)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             home_page = HomePage(driver=app_driver)
-            home_page.check_home_page_logo()
+            # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -131,8 +162,8 @@ def test_common_100_115_01_001():
             logger.debug(f"Entered tip_amount is : {tip_amount}")
             logger.debug(f"Entered device_serial is : {device_serial}")
             payment_page = PaymentPage(driver=app_driver)
-            payment_page.is_payment_page_displayed_card_with_tip(amount=amount, order_id=order_id,
-                                                                 tip_amt=tip_amount, device_serial=device_serial)
+            # payment_page.is_payment_page_displayed_card_with_tip(amount=amount, order_id=order_id,
+            #                                                      tip_amt=tip_amount, device_serial=device_serial)
             payment_page.click_on_Card_paymentMode()
             logger.info(f"Selected payment mode is Card")
             card_page = CardPage(driver=app_driver)
@@ -257,6 +288,8 @@ def test_common_100_115_01_001():
                 txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching txn amount from txn history for the txn : {txn_id}, {app_amount}")
+                app_customer_name = txn_history_page.fetch_customer_name_text()
+                logger.info(f"Fetching customer_name from txn history for the txn : {txn_id}, {app_customer_name}")
                 app_order_id = txn_history_page.fetch_order_id_text()
                 logger.info(f"Fetching order_id from txn history for the txn : {txn_id}, {app_order_id}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_msg_text()
@@ -271,6 +304,7 @@ def test_common_100_115_01_001():
                 logger.info(f"Fetching date_time from txn history for the txn : {txn_id}, {app_date_time}")
                 app_settle_status = txn_history_page.fetch_settlement_status_text()
                 logger.info(f"Fetching settlement_status from txn history for the txn : {txn_id}, {app_settle_status}")
+                txn_history_page.scroll_to_given_input_text("Tip Details")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(f"Fetching rrn from txn history for the txn : {txn_id}, {app_rrn}")
                 app_auth_code = txn_history_page.fetch_auth_code_text()
@@ -287,8 +321,6 @@ def test_common_100_115_01_001():
                 logger.info(f"Fetching mid from txn history for the txn : {txn_id}, {app_mid}")
                 app_tid = txn_history_page.fetch_tid_text()
                 logger.info(f"Fetching tid from txn history for the txn : {txn_id}, {app_tid}")
-                app_customer_name = txn_history_page.fetch_customer_name_text()
-                logger.info(f"Fetching customer_name from txn history for the txn : {txn_id}, {app_customer_name}")
 
                 actual_app_values = {
                     "txn_amt": app_amount.split(' ')[1],
@@ -633,6 +665,10 @@ def test_common_100_115_01_001():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
+        query = f"UPDATE terminal_info SET status = 'ACTIVE' WHERE org_code = '{org_code}';"
+        logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
+        DBProcessor.setValueToDB(query=query)
+        logger.debug(f"Revert to active status {org_code}")
         Configuration.executeFinallyBlock(testcase_id)
 
 

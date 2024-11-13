@@ -12,7 +12,7 @@ class TransHistoryPage(BasePage):
     lbl_summary = (By.ID, 'com.ezetap.service.demo:id/tvLblSummary')
     btn_backHome = (By.ID, 'com.ezetap.service.demo:id/iVBackArrow')
     btn_backTransactionDetails = (By.ID, "com.ezetap.service.demo:id/ivBackArrow")
-    btn_filters = (By.ID, 'com.ezetap.service.demo:id/csFilter')
+    btn_filters = (By.ID, 'com.ezetap.service.demo:id/ivFilter')
     lbl_transactions = (By.ID, '//android.widget.TextView[@text = "Transactions"]')
     lbl_noTransactionsAvailable = (By.ID, "com.ezetap.service.demo:id/tv_ErrorMsg")
     txa_amountField = (By.ID, 'com.ezetap.service.demo:id/tvAmount')
@@ -33,67 +33,103 @@ class TransHistoryPage(BasePage):
     lnk_chargeSlip = (By.XPATH, "//*[contains(@text,'Click Here')]")
     lbl_receipt = (By.ID, "com.ezetap.service.demo:id/tvAmount")
     lbl_receiptNotFound = (By.XPATH, "//android.view.View[@content-desc='Not Found']")
-    txa_authCode = (By.XPATH, "//*[@text='AUTH CODE']/following-sibling::android.widget.TextView")
+    txa_authCode = (By.XPATH, "//*[@text='AUTH CODE']/following-sibling::android.widget.TextView | "
+                              "//*[@text='Auth Code']/following-sibling::android.widget.TextView")
     btn_toggleStausArrow = (By.ID, 'com.ezetap.service.demo:id/iv_ToggleStatus')
     txt_txnType = (By.ID, "com.ezetap.service.demo:id/tvTransactionType")
     txt_txnID = (By.XPATH, "//*[@text='TRANSACTION ID']/following-sibling::android.widget.TextView")
     txt_txnAmount = (By.ID, "com.ezetap.service.demo:id/tvTxnAmount")
-    txt_rrNumber = (By.XPATH, "//*[@text='RR NUMBER']/following-sibling::android.widget.TextView")
-    txt_customer_name = (By.XPATH, "//*[@text='CUSTOMER NAME']/following-sibling::android.widget.TextView")
-    txt_payer_name = (By.XPATH, "//*[@text='PAYER NAME']/following-sibling::android.widget.TextView")
-    txt_settlement_status = (By.XPATH, "//*[@text='SETTLEMENT STATUS']/following-sibling::android.widget.TextView")
-    txt_date_time = (By.XPATH, "//*[@text='DATE']/following-sibling::android.widget.TextView")
-    txt_batch_number = (By.XPATH, "//*[@text='BATCH NO.']/following-sibling::android.widget.TextView")
+    txt_rrNumber = (By.XPATH, "//*[@text='RR NUMBER']/following-sibling::android.widget.TextView |"
+                              " //*[@text='RR Number']/following-sibling::android.widget.TextView")
+    txt_customer_name = (By.XPATH, "//*[@text='CUSTOMER NAME']/following-sibling::android.widget.TextView |"
+                                   " //*[@text='Customer Name']/following-sibling::android.widget.TextView")
+    txt_payer_name = (By.XPATH, "//*[@text='PAYER NAME']/following-sibling::android.widget.TextView | "
+                                "//*[@text='Payer Name']/following-sibling::android.widget.TextView")
+    txt_settlement_status = (By.XPATH, "//*[@text='SETTLEMENT STATUS']/following-sibling::android.widget.TextView |"
+                                       " //*[@text='Settlement Status']/following-sibling::android.widget.TextView")
+    txt_date_time = (By.XPATH, "//*[@text='DATE']/following-sibling::android.widget.TextView |"
+                               " //*[@text='Date']/following-sibling::android.widget.TextView")
+    txt_batch_number = (By.XPATH, "//*[@text='BATCH NO.']/following-sibling::android.widget.TextView |"
+                                  " //*[@text='Batch no.']/following-sibling::android.widget.TextView")
     txt_mid = (By.XPATH, "//*[@text='MID']/following-sibling::android.widget.TextView")
     txt_tid = (By.XPATH, "//*[@text='TID']/following-sibling::android.widget.TextView")
-    txt_tip_amt = (By.XPATH, "//*[@text='TIP AMOUNT']/following-sibling::android.widget.TextView")
-    txt_cash_amt = (By.XPATH, "//*[@text='CASH AMOUNT']/following-sibling::android.widget.TextView")
-    txt_sale_amt = (By.XPATH, "//*[@text='SALE AMOUNT']/following-sibling::android.widget.TextView")
-    txt_card_type_desc = (By.XPATH, "//*[@text='CARD TXN TYPE DESC']/following-sibling::android.widget.TextView")
-    txt_device_serial = (By.XPATH, "//*[@text='REFERENCE NO. 2']/following-sibling::android.widget.TextView")
+    txt_tip_amt = (By.XPATH, "//*[@text='TIP AMOUNT']/following-sibling::android.widget.TextView | "
+                             "//*[@text='Tip Amount']/following-sibling::android.widget.TextView")
+    txt_cash_amt = (By.XPATH, "//*[@text='CASH AMOUNT']/following-sibling::android.widget.TextView |"
+                              " //*[@text='Cash Amount']/following-sibling::android.widget.TextView")
+    txt_sale_amt = (By.XPATH, "//*[@text='SALE AMOUNT']/following-sibling::android.widget.TextView | "
+                              "//*[@text='Sale Amount']/following-sibling::android.widget.TextView")
+    txt_card_type_desc = (By.XPATH, "//*[@text='CARD TXN TYPE DESC']/following-sibling::android.widget.TextView | "
+                                    "//*[@text='Card Txn Type Desc']/following-sibling::android.widget.TextView")
+    txt_device_serial = (By.XPATH, "//*[@text='REFERENCE NO. 2']/following-sibling::android.widget.TextView |"
+                                   " //*[@text='Reference No. 2']/following-sibling::android.widget.TextView")
     btn_void_txn = (By.ID, "com.ezetap.service.demo:id/ll_VoidRefund")
     btn_void_yes = (By.ID, "com.ezetap.service.demo:id/btnPositive")
     btn_void_no = (By.ID, "com.ezetap.service.demo:id/btnNegative")
     btn_rel_pre_auth = (By.ID, "com.ezetap.service.demo:id/btnRelPreAuth")
     btn_confirm_pre_auth = (By.ID, "com.ezetap.service.demo:id/btnCnfPreAuth")
-    txt_ref_num_2 = (By.XPATH, "//*[@text='REFERENCE NO. 2']/following-sibling::android.widget.TextView")
+    txt_ref_num_2 = (By.XPATH, "//*[@text='REFERENCE NO. 2']/following-sibling::android.widget.TextView |"
+                               " //*[@text='Reference No. 2']/following-sibling::android.widget.TextView")
     btn_conf_pre_auth_popup = (By.ID, "com.ezetap.service.demo:id/rightButton")
-    btn_confirmation = (By.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.EditText")
+    btn_confirmation = (By.XPATH,
+                        "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout"
+                        "/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.EditText")
     txt_payment_msg_field = (By.ID, "com.ezetap.service.demo:id/tv_PaymentStatus")
     txt_payment_by = (By.XPATH, "//*[@text='PAYMENT BY']/following-sibling::android.widget.TextView")
     txt_card_type = (By.XPATH, "//*[@text='CARD TYPE']/following-sibling::android.widget.TextView")
-    txt_customer = (By.XPATH, "//*[@text='CUSTOMER']/following-sibling::android.widget.TextView")
+    txt_customer = (By.XPATH, "//*[@text='CUSTOMER']/following-sibling::android.widget.TextView | //*["
+                              "@text='Customer']/following-sibling::android.widget.TextView")
     txt_emi_status = (By.XPATH, "//*[@text='EMI STATUS']/following-sibling::android.widget.TextView")
     txt_lender = (By.XPATH, "//*[@text='LENDER']/following-sibling::android.widget.TextView")
-    txt_monthly_emi = (By.XPATH, "//*[@text='MONTHLY EMI']/following-sibling::android.widget.TextView")
-    txt_total_emi_amount = (By.XPATH, "//*[@text='TOTAL EMI AMOUNT']/following-sibling::android.widget.TextView")
-    txt_total_interest = (By.XPATH, "//*[@text='TOTAL INTEREST']/following-sibling::android.widget.TextView")
-    txt_loan_amount = (By.XPATH, "//*[@text='LOAN AMOUNT']/following-sibling::android.widget.TextView")
-    txt_interest_amount = (By.XPATH, "//*[contains(@text,'INTEREST AMT')]/following-sibling::android.widget.TextView")
-    txt_net_effective_price = (By.XPATH, "//*[@text='NET EFFECTIVE PRICE:']/following-sibling::android.widget.TextView")
-    txt_tenure = (By.XPATH, "//*[@text='TENURE']/following-sibling::android.widget.TextView")
-    add_loan_amt = (By.XPATH, "//*[@text='ADDITIONAL PAYBACK']/following-sibling::android.widget.TextView")
-    txt_brand_name = (By.XPATH, "//*[@text='BRAND']/following-sibling::android.widget.TextView")
-    txt_imei = (By.XPATH, "//*[@text='SERIAL/IMEI']/following-sibling::android.widget.TextView")
-    txt_scheme = (By.XPATH, "//*[@text='SCHEME']/following-sibling::android.widget.TextView")
-    txt_product_name = (By.XPATH, "//*[@text='PRODUCT']/following-sibling::android.widget.TextView")
+    txt_monthly_emi = (By.XPATH, "//*[@text='MONTHLY EMI']/following-sibling::android.widget.TextView | "
+                                 "//*[@text='Monthly EMI']/following-sibling::android.widget.TextView")
+    txt_total_emi_amount = (By.XPATH, "//*[@text='TOTAL EMI AMOUNT']/following-sibling::android.widget.TextView | "
+                                      "//*[@text='Total EMI Amount']/following-sibling::android.widget.TextView")
+    txt_total_interest = (By.XPATH, "//*[@text='TOTAL INTEREST']/following-sibling::android.widget.TextView |"
+                                    " //*[@text='Total Interest']/following-sibling::android.widget.TextView")
+    txt_loan_amount = (By.XPATH, "//*[@text='LOAN AMOUNT']/following-sibling::android.widget.TextView | "
+                                 "//*[@text='Loan Amount']/following-sibling::android.widget.TextView")
+    txt_interest_amount = (By.XPATH, "//*[contains(@text,'INTEREST AMT')]/following-sibling::android.widget.TextView | "
+                                     "//*[contains(@text,'Interest Amt')]/following-sibling::android.widget.TextView")
+    txt_net_effective_price = (By.XPATH, "//*[@text='NET EFFECTIVE PRICE:']/following-sibling::android.widget.TextView |"
+                                         "//*[@text='Net Effective Price:']/following-sibling::android.widget.TextView")
+    txt_tenure = (By.XPATH, "//*[@text='TENURE']/following-sibling::android.widget.TextView |"
+                            " //*[@text='Tenure']/following-sibling::android.widget.TextView")
+    add_loan_amt = (By.XPATH, "//*[@text='ADDITIONAL PAYBACK']/following-sibling::android.widget.TextView | "
+                              "//*[@text='Additional Payback']/following-sibling::android.widget.TextView")
+    txt_brand_name = (By.XPATH, "//*[@text='BRAND']/following-sibling::android.widget.TextView | "
+                                "//*[@text='Brand']/following-sibling::android.widget.TextView")
+    txt_imei = (By.XPATH, "//*[@text='SERIAL/IMEI']/following-sibling::android.widget.TextView | //*[@text='Serial/IMEI']/following-sibling::android.widget.TextView")
+    txt_scheme = (By.XPATH, "//*[@text='SCHEME']/following-sibling::android.widget.TextView | "
+                            "//*[@text='Scheme']/following-sibling::android.widget.TextView")
+    txt_product_name = (By.XPATH, "//*[@text='PRODUCT']/following-sibling::android.widget.TextView | "
+                                  "//*[@text='Product']/following-sibling::android.widget.TextView")
     txt_history = (By.XPATH, '//*[@text="Transactions"]')
     txt_e_order_id = (By.XPATH, '(//*[@class="android.view.View"])[9]')
     txt_e_receipt_created_date = (By.XPATH, '(//*[@class="android.view.View"])[10]')
     txt_e_receipt_time = (By.XPATH, '(//*[@class="android.view.View"])[11]')
     txt_e_receipt_payment_mode = (By.XPATH, '(//*[@class="android.view.View"])[16]')
-    txt_e_receipt_amount = (By.XPATH, '(//*[@class="android.view.View"])[19]')
-    lbl_logo = (By.XPATH, '//*[@text = "Ezetap"]')
+    txt_e_receipt_amount = (By.XPATH, '//*[@text="BASE AMOUNT:"]/following-sibling::android.view.View')
+    lbl_logo = (By.XPATH, '//android.widget.Image[@text="Ezetap"]')
     cashback_amt = (By.XPATH, "//*[@text='CASHBACK']/following-sibling::android.widget.TextView")
-    additional_cashback_amt = (By.XPATH, "//*[@text='ADDITIONAL CASHBACK']/following-sibling::android.widget.TextView")
-    additional_payback_amt = (By.XPATH, "//*[@text='ADDITIONAL PAYBACK']/following-sibling::android.widget.TextView")
-    txt_ref_num_3 = (By.XPATH, "//*[@text='REFERENCE NO. 3']/following-sibling::android.widget.TextView")
-    txt_card = (By.XPATH, "//*[@text='CARD']/following-sibling::android.widget.TextView")
-    txt_mobile = (By.XPATH, "//*[@text='CUSTOMER MOBILE']/following-sibling::android.widget.TextView")
-    txt_bank = (By.XPATH, "//*[@text='BANK']/following-sibling::android.widget.TextView")
-    txt_cheque_number = (By.XPATH, "//*[@text='CHEQUE NUMBER']/following-sibling::android.widget.TextView")
-    txt_ifsc_code = (By.XPATH, "//*[@text='IFSC CODE']/following-sibling::android.widget.TextView")
-    txt_cheque_date = (By.XPATH, "//*[@text='CHEQUE DATED']/following-sibling::android.widget.TextView")
+    additional_cashback_amt = (By.XPATH, "//*[@text='ADDITIONAL CASHBACK']/following-sibling::android.widget.TextView |"
+                                         " //*[@text='Additional Cashback']/following-sibling::android.widget.TextView")
+    additional_payback_amt = (By.XPATH, "//*[@text='ADDITIONAL PAYBACK']/following-sibling::android.widget.TextView |"
+                                        " //*[@text='Additional Payback']/following-sibling::android.widget.TextView")
+    txt_ref_num_3 = (By.XPATH, "//*[@text='REFERENCE NO. 3']/following-sibling::android.widget.TextView |"
+                               " //*[@text='Reference No. 3']/following-sibling::android.widget.TextView")
+    txt_card = (By.XPATH, "//*[@text='CARD']/following-sibling::android.widget.TextView |"
+                          " //*[@text='Card']/following-sibling::android.widget.TextView")
+    txt_mobile = (By.XPATH, "//*[@text='CUSTOMER MOBILE']/following-sibling::android.widget.TextView |"
+                            " //*[@text='Customer Mobile']/following-sibling::android.widget.TextView")
+    txt_bank = (By.XPATH, "//*[@text='BANK']/following-sibling::android.widget.TextView |"
+                          " //*[@text='Bank']/following-sibling::android.widget.TextView")
+    txt_cheque_number = (By.XPATH, "//*[@text='CHEQUE NUMBER']/following-sibling::android.widget.TextView |"
+                                   " //*[@text='Cheque Number']/following-sibling::android.widget.TextView")
+    txt_ifsc_code = (By.XPATH, "//*[@text='IFSC CODE']/following-sibling::android.widget.TextView |"
+                               " //*[@text='Ifsc Code']/following-sibling::android.widget.TextView")
+    txt_cheque_date = (By.XPATH, "//*[@text='CHEQUE DATED']/following-sibling::android.widget.TextView |"
+                                 " //*[@text='Cheque Dated']/following-sibling::android.widget.TextView")
 
     search_field = (By.ID, "com.ezetap.service.demo:id/searchField")
     search_button = (By.ID, "com.ezetap.service.demo:id/search_button")
@@ -246,9 +282,11 @@ class TransHistoryPage(BasePage):
         return self.fetch_text(self.txa_authCode)
 
     def fetch_txn_id_text(self):
+        self.scroll_to_text("TRANSACTION ID")
         return self.fetch_text(self.txt_txnID)
 
     def fetch_RRN_text(self):
+        self.scroll_to_text("RR NUMBER")
         return self.fetch_text(self.txt_rrNumber)
 
     def fetch_txn_payment_msg_text(self):
@@ -659,3 +697,9 @@ class TransHistoryPage(BasePage):
             This method is used to click on confirm pre-auth pop ups
         """
         self.perform_click(self.btn_conf_pre_auth_popup)
+
+    def scroll_to_given_input_text(self, input_text: str):
+        """
+        This method is used to scroll the screen to given text
+        """
+        self.scroll_to_text(input_text)

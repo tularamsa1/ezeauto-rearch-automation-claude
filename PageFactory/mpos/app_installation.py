@@ -126,3 +126,35 @@ def uninstall_sa_application():
     """
     subprocess.run(['adb', 'uninstall', 'com.ezetap.service.demo'])
     logger.debug(f"Uninstallation of SA is done")
+
+
+def clear_cache_storage_and_grant_permission():
+    try:
+        package_name = "com.ezetap.service.demo"
+        permissions_to_grant = [
+            'android.permission.CAMERA',
+            'android.permission.ACCESS_FINE_LOCATION',
+            'android.permission.ACCESS_COARSE_LOCATION',
+            'android.permission.READ_EXTERNAL_STORAGE',
+            'android.permission.WRITE_EXTERNAL_STORAGE',
+            'android.permission.READ_PHONE_STATE',
+        ]
+
+        print(f"Clearing cache and storage for package: {package_name}...")
+        clear_cache_command = ['adb', 'shell', 'pm', 'clear', package_name]
+        result = subprocess.run(clear_cache_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if "Success" in result.stdout:
+            print("Cache and storage cleared successfully.")
+            for permission in permissions_to_grant:
+                print(f"Granting {permission} permission to {package_name}...")
+                grant_command = ['adb', 'shell', 'pm', 'grant', package_name, permission]
+                grant_result = subprocess.run(grant_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                if grant_result.returncode == 0:
+                    print(f"Granted {permission} permission to {package_name}.")
+                else:
+                    print(f"Failed to grant {permission} permission: {grant_result.stderr.strip()}")
+        else:
+            print(f"Failed to clear cache and storage: {result.stderr.strip()}")
+
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")

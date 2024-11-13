@@ -82,7 +82,7 @@ def test_mpos_400_415_008():
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
             help_and_support = HelpSupport(app_driver)
-            help_and_support.click_help_support_from_nav_bar()
+            help_and_support.click_on_help_from_top_of_home_screen()
             email = f"email{random.choice(string.ascii_uppercase)}@gmail.com"
             help_and_support.click_register_a_complaint(email, 9999999999, "Need help")
             logger.debug(f"Complaint is registered successfully")

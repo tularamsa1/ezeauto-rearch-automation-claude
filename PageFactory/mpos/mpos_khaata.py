@@ -2,7 +2,9 @@ import re
 import time
 from appium.webdriver.common.appiumby import AppiumBy
 from PageFactory.mpos.app_base_page import BasePage
+from Utilities.execution_log_processor import EzeAutoLogger
 
+logger = EzeAutoLogger(__name__)
 
 class Khaata(BasePage):
     btn_mykhaata = (AppiumBy.XPATH, '(//android.widget.ImageView[@content-desc="Feature logo"])[1]')
@@ -563,20 +565,29 @@ class Khaata(BasePage):
 
     def extract_number_from_text(self, text):
         match = re.search(r'\d+', text)
+        logger.info("match :", match)
         if match:
             return int(match.group())
         return None
 
-    def wait_for_count_to_change_in_the_khaat_holder_tab(self):
+    def fetch_khaata_hoilder_txt(self):
+        """
+        This method is used to fetch the khaata holder text from khaata home screen
+        return: str
+        """
         self.wait_for_element(self.btn_khaata_holders)
-        btn_text = self.fetch_text(self.btn_khaata_holders)
+        return self.fetch_text(self.btn_khaata_holders)
+
+    def wait_for_count_to_change_in_the_khaat_holder_tab(self, btn_text):
         count = self.extract_number_from_text(btn_text)
+        logger.info("count: ", count)
         if count is not None:
             new_count = count - 1
             count_change_xpath = (AppiumBy.XPATH, f'//*[@text="Khaata Holders ({new_count})"]')
+            logger.info("count_change_xpath :", count_change_xpath)
             self.wait_for_element(count_change_xpath)
         else:
-            print("No number found in the button text.")
+            logger.info("No number found in the button text.")
 
     def click_on_back_botton_to_go_to_main_screen(self):
         self.wait_for_element(self.btn_back)

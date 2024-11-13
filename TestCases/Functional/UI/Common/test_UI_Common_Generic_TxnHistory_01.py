@@ -1,5 +1,6 @@
 import random
 import sys
+import time
 from datetime import datetime
 from datetime import date
 import pytest
@@ -79,7 +80,6 @@ def test_common_400_409_001():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             logger.info(f"App homepage loaded successfully")
             logger.debug(f"Started performing cash txn")
@@ -95,6 +95,7 @@ def test_common_400_409_001():
             payment_page.click_on_confirm()
             payment_page.click_on_proceed_homepage()
             logger.debug(f"completed cash txn")
+            home_page.navigate_to_home()
 
             logger.debug(f"started performing upi txn ")
             amount_upi = random.randint(201, 300)
@@ -109,6 +110,7 @@ def test_common_400_409_001():
             payment_page.click_on_transaction_cancel_yes()
             payment_page.click_on_proceed_homepage()
             logger.debug(f"completed upi txn")
+            home_page.navigate_to_home()
 
             logger.debug(f"started performing BQRV4 txn")
             amount_bqr = random.randint(401, 500)
@@ -123,8 +125,8 @@ def test_common_400_409_001():
             payment_page.click_on_transaction_cancel_yes()
             payment_page.click_on_proceed_homepage()
             logger.debug(f"completed BQR txn")
+            home_page.navigate_to_home()
 
-            # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             logger.debug(f"started performing cheque txn")
             amount_cheque = random.randint(401, 430)
@@ -189,8 +191,9 @@ def test_common_400_409_001():
             total_amount_card_1 = [0 if total_amount_card is None else total_amount_card]
             logger.debug(f"total_amount_card after if condition : {total_amount_card_1[0]}")
 
-            query = """SELECT sum(amount) FROM txn WHERE org_code = '{org_code}'AND payment_mode = 'remotepay'
-                       AND settlement_status='SETTLED' AND status='AUTHORIZED' AND created_time LIKE '{today}%';""".format(
+            query = """SELECT sum(amount) FROM txn WHERE org_code = '{org_code}'AND (payment_mode = 'CNP' OR
+             payment_mode = 'remotepay') AND settlement_status='SETTLED' AND status='AUTHORIZED' AND created_time
+                     LIKE '{today}%';""".format(
                 org_code=org_code,
                 today=date.today())
             logger.debug(f"Query to fetch total amount of CNP txn from database : {query}")
@@ -241,7 +244,7 @@ def test_common_400_409_001():
             try:
                 # --------------------------------------------------------------------------------------------
                 expected_app_values = {
-                    "sales_volume": str(total_amount).rstrip("0").rstrip("."),
+                    "sales_volume": float(total_amount),
                     "total_sales": str(total_sales),
                     "pmt_mode": "CHEQUE",
                     "pmt_mode_2": "CASH",
@@ -249,14 +252,16 @@ def test_common_400_409_001():
                     "pmt_mode_4": "BHARATQR",
                     "pmt_mode_5": "None" if total_amount_cnp_1 == [0] else "CNP",
                     "pmt_mode_6": "None" if total_amount_card_1 == [0] else "CARD",
-                    "amt": str(total_amount_cheque_1[0]).rstrip("0").rstrip("."),
-                    "amt_2": str(total_cash_amount).rstrip("0").rstrip("."),
-                    "amt_3": str(upi_result_int).rstrip("0").rstrip("."),
-                    "amt_4":  str(bqr_result_int).rstrip("0").rstrip("."),
-                    "amt_5": "0" if total_amount_cnp_1 == [0] else str(total_amount_cnp_1[0]).rstrip("0").rstrip("."),
-                    "amt_6": "0" if total_amount_card_1 == [0] else str(total_amount_card_1[0]).rstrip("0").rstrip(".")
+                    "amt": float(total_amount_cheque_1[0]),
+                    "amt_2": float(total_cash_amount),
+                    "amt_3": float(upi_result_int),
+                    "amt_4":  float(bqr_result_int),
+                    "amt_5": float(0) if total_amount_cnp_1 == [0] else float(total_amount_cnp_1[0]),
+                    "amt_6": float(0) if total_amount_card_1 == [0] else float(total_amount_card_1[0])
                 }
                 logger.debug(f"expected values : {expected_app_values}")
+                app_driver.launch_app()
+                login_page.perform_login(app_username, app_password)
                 home_page.click_on_history()
                 trans_summary = TxnSummary(app_driver)
                 trans_summary.click_on_txn_summary()
@@ -277,16 +282,16 @@ def test_common_400_409_001():
                     logger.debug(f"txn_amt and pmt_mode for CNP is {cnp_amt}, {cnp_pmt}")
                 except:
                     cnp_pmt = "None"
-                    cnp_amt = "0"
+                    cnp_amt = 0
                 try:
                     card_amt, card_pmt = trans_summary.fetch_card_payment_mode_and_amount()
                     logger.debug(f"txn_amt and pmt_mode for CARD is {card_amt}, {card_pmt}")
                 except:
                     card_pmt = "None"
-                    card_amt = "0"
+                    card_amt = 0
 
                 actual_app_values = {
-                    "sales_volume": total_volume_amount,
+                    "sales_volume": float(total_volume_amount),
                     "total_sales": total_sales_count,
                     "pmt_mode": cheque_pmt,
                     "pmt_mode_2": cash_pmt,
@@ -294,12 +299,12 @@ def test_common_400_409_001():
                     "pmt_mode_4": brq_pmt,
                     "pmt_mode_5": cnp_pmt,
                     "pmt_mode_6": card_pmt,
-                    "amt": cheque_amt,
-                    "amt_2": cash_amt,
-                    "amt_3": upi_amt,
-                    "amt_4": bqr_amt,
-                    "amt_5": cnp_amt,
-                    "amt_6": card_amt
+                    "amt": float(cheque_amt),
+                    "amt_2": float(cash_amt),
+                    "amt_3": float(upi_amt),
+                    "amt_4": float(bqr_amt),
+                    "amt_5": float(cnp_amt),
+                    "amt_6": float(card_amt)
                 }
                 logger.debug(f"actual app values: {actual_app_values}")
                 # ---------------------------------------------------------------------------------------------

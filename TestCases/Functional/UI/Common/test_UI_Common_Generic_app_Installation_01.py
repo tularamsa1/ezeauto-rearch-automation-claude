@@ -78,14 +78,22 @@ def test_common_400_404_001():
                 uninstall_sa_application()
             else:
                 logger.debug("SA Application is not Installed")
-            version_match = re.search(r'(\d+\.\d+\.\d+)', sa_version)
-            if version_match:
-                version_number = version_match.group(1)
-                logger.debug(f"Version number: {version_number}")
-            else:
-                logger.info("Version number not found in the filename.")
-            install_sa_application(id_of_device,sa_path)
-            logger.debug(f"Installed the SA Application successfully with version {version_number}")
+            install_sa_application(id_of_device, sa_path)
+            logger.debug(f"Installed the SA Application successfully")
+            extracted_actual_version = get_sa_version(str(id_of_device))
+            versions = sa_version, extracted_actual_version
+            extracted_sa_version = None
+            for version in versions:
+                version_match = re.search(r'(\d+\.\d+\.\d+(\.\d+)?)', version)
+                if version_match:
+                    if extracted_sa_version is None:
+                        extracted_sa_version = version_match.group(1)
+                        print(f"Extracted SA version: {extracted_sa_version}")
+                    else:
+                        extracted_actual_version = version_match.group(1)
+                        print(f"Extracted actual version: {extracted_actual_version}")
+                else:
+                    print("Version number not found")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -103,15 +111,12 @@ def test_common_400_404_001():
         if (ConfigReader.read_config("Validations", "app_validation")) == "True":
             logger.info(f"Started APP validation for the test case : {testcase_id}")
             try:
-                # --------------------------------------------------------------------------------------------
                 expected_app_values = {
-                    'sa': str(version_number)
+                    'sa': str(extracted_sa_version)
                 }
-                actual_sa_version = get_sa_version(str(id_of_device))
                 actual_app_values = {
-                    'sa': str(actual_sa_version)
+                    'sa': str(extracted_actual_version)
                 }
-                # ---------------------------------------------------------------------------------------------
                 Validator.validateAgainstAPP(expectedApp=expected_app_values, actualApp=actual_app_values)
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)

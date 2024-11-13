@@ -219,11 +219,14 @@ def test_mpos_600_601_021():
             khaata.create_new_khaata_holder(remove_khaata_holder_ph_number, remove_khaata_holder_name, 'Customer')
             khaata.click_proceed_button()
             logger.debug(f"New khaata holder is created with user : {khaata_holder_name}")
+            khaata.click_on_back()
+            btn_text = khaata.fetch_khaata_hoilder_txt()
+            khaata.khaata_search(remove_khaata_holder_ph_number)
+            khaata.click_first_khaata_holder_search_result()
             khaata.click_on_menu()
             khaata.click_remove_khaata_holder()
             khaata.click_proceed_button()
-            khaata.wait_for_count_to_change_in_the_khaat_holder_tab()
-            khaata.khaata_search(remove_khaata_holder_ph_number)
+            khaata.wait_for_count_to_change_in_the_khaat_holder_tab(btn_text)
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -245,6 +248,7 @@ def test_mpos_600_601_021():
                 expected_app_values = {
                     "message": "No Khaata Holder found"
                 }
+                khaata.khaata_search(remove_khaata_holder_ph_number)
                 error_message = khaata.fetch_no_search_result_found()
                 logger.debug(f"error_message : {error_message}")
                 actual_app_values = {

@@ -58,7 +58,6 @@ def test_mpos_400_415_004():
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
-        # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=False)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
@@ -73,12 +72,11 @@ def test_mpos_400_415_004():
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
             login_page.perform_login(app_username, app_password)
             home_page = HomePage(app_driver)
-            # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
             help_and_support = HelpSupport(app_driver)
-            help_and_support.click_help_support_from_nav_bar()
+            help_and_support.click_on_help_from_top_of_home_screen()
             help_and_support.click_request_callback(9999999999)
             successful_message, subtext_for_successful_message = help_and_support.is_request_callback_successful()
             logger.info(f"labels are {successful_message} and {subtext_for_successful_message}")
