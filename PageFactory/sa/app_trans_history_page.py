@@ -776,6 +776,12 @@ class TransHistoryPage(BasePage):
         """
         self.perform_click(self.btn_conf_pre_auth_popup)
 
+    def scroll_to_given_input_text(self, input_text: str):
+        """
+        This method is used to scroll the screen to given text
+        """
+        self.scroll_to_text(input_text)
+
     def scroll_to_text_element(self, value):
         """
             This method is used to scroll to text based on the value passed
