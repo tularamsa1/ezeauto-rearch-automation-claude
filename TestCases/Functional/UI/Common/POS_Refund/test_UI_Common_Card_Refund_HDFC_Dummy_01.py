@@ -21,11 +21,11 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.dbVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_115_280():
+def test_common_100_115_287():
     """
         Sub Feature Code: UI_Common_Mpos_Refund_From_POS_Validate_Full_Refund_Card_EMV_VISA_DEBIT_476173
         Sub Feature Description: Verify that the user can perform a full refund for Card transactions using the Refund from POS feature (bin:476173)
-        TC naming code description:  100: Payment Method, 115: CARD_UI, 280: TC280
+        TC naming code description:  100: Payment Method, 115: CARD_UI, 287: TC287
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -882,11 +882,11 @@ def test_common_100_115_280():
 @pytest.mark.dbVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_115_281():
+def test_common_100_115_288():
     """
         Sub Feature Code: UI_Common_Mpos_Refund_From_POS_Validate_Partial_Refund_Card_EMV_VISA_DEBIT_476173
         Sub Feature Description: Verify the user can perform a partial refund for Card transactions using Refund from POS (bin:476173)
-        TC naming code description:  100: Payment Method, 115: CARD_UI, 281: TC281
+        TC naming code description:  100: Payment Method, 115: CARD_UI, 288: TC288
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -1785,7 +1785,7 @@ def test_common_100_115_281():
 @pytest.mark.dbVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_115_282():
+def test_common_100_115_289():
     """
         Sub Feature Code: UI_Common_Mpos_Refund_From_POS_Check_Card_Max_refund_Adjustment_EMV_VISA_DEBIT_476173
                                                     (OR)
@@ -1799,7 +1799,7 @@ def test_common_100_115_282():
                                                     (OR)
         Verify the user can initiate and complete a refund for partially refunded transactions (bin: 476173)
 
-        TC naming code description:  100: Payment Method, 115: CARD_UI, 282: TC282
+        TC naming code description:  100: Payment Method, 115: CARD_UI, 289: TC289
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -2708,11 +2708,11 @@ def test_common_100_115_282():
 @pytest.mark.dbVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_115_283():
+def test_common_100_115_290():
     """
         Sub Feature Code: UI_Common_Mpos_Refund_From_POS_Confirm_Full_Refund_Card_Setting_On_EMV_VISA_DEBIT_476173
         Sub Feature Description: Verify the user can do a full Card refund when the 'Maximum refund allowed' setting is ON (bin:476173)
-        TC naming code description:  100: Payment Method, 115: CARD_UI, 283: TC283
+        TC naming code description:  100: Payment Method, 115: CARD_UI, 290: TC290
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -3596,11 +3596,11 @@ def test_common_100_115_283():
 @pytest.mark.dbVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_100_115_284():
+def test_common_100_115_291():
     """
         Sub Feature Code: UI_Common_Mpos_Refund_From_POS_Permit_Multiple_Partial_Refunds_Card_EMV_VISA_DEBIT_476173
         Sub Feature Description: Verify the user can initiate multiple partial refunds for a single transaction (bin:476173)
-        TC naming code description:  100: Payment Method, 115: CARD_UI, 284: TC284
+        TC naming code description:  100: Payment Method, 115: CARD_UI, 291: TC291
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
