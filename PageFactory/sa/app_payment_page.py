@@ -1,4 +1,6 @@
 import re
+import time
+
 from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import StaleElementReferenceException
@@ -36,7 +38,7 @@ class PaymentPage(BasePage):
     lbl_scanQRCode = (By.XPATH, '//*[contains(@text,"Scan QR code")]')
     lbl_paymentMode = (By.ID, "com.ezetap.service.demo:id/tvPaymentType")
     lbl_paymentAmt = (By.ID, "com.ezetap.service.demo:id/tvTxnAmount")
-    lbl_payWith = (By.ID, 'com.ezetap.service.demo:id/tvPayWithTop')
+    lbl_payWith = (By.XPATH, "//*[@text='Pay with']")
     lbl_checkstatusTitle = (By.ID, 'com.ezetap.service.demo:id/tvCheckStatusTitle')
     lbl_checkstatus = (By.ID, "com.ezetap.service.demo:id/btn_check_status")
     lbl_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
@@ -145,10 +147,19 @@ class PaymentPage(BasePage):
     txt_currency_rate = (By.ID, "com.ezetap.service.demo:id/tv_pay_in_foreign_currency")
     txt_inr_currency_rate = (By.ID, "com.ezetap.service.demo:id/tv_pay_in_merchant_currency")
     txt_pre_auth_txt_selected_currency_message = (By.ID, "com.ezetap.service.demo:id/tv_confirmation")
-    btn_bosch_brand = (By.XPATH, "//*[@text = 'Bosch']")
-    txt_min_error = (By.XPATH, "//android.widget.TextView[@resource-id='com.ezetap.service.demo:id/dialogText']")
-    txt_invalid_imei_error = (By.XPATH, "//*[@resource-id='com.ezetap.service.demo:id/dialogText']")
-    txt_invalid_imei_error_code = (By.XPATH, "//*[@resource-id='com.ezetap.service.demo:id/dialogTitle']")
+
+    btn_refund = (By.ID, "com.ezetap.service.demo:id/ll_refund_amount")
+    btn_confirm_refund = (By.ID, "com.ezetap.service.demo:id/btn_proceed_refund")
+    rdo_refund_full_amt = (By.ID, "com.ezetap.service.demo:id/btnRefundFullAmt")
+    rdo_refund_amt_manually = (By.ID, "com.ezetap.service.demo:id/btnRefundManualAmt")
+    txt_refund_amt_manually = (By.ID, "com.ezetap.service.demo:id/etEnterRefundAmt")
+    btn_refund_txn = (By.ID, "com.ezetap.service.demo:id/btnRefundTxn")
+    txt_password = (AppiumBy.ID, 'com.ezetap.service.demo:id/etEnterPwd')
+    txt_user_password = (AppiumBy.ID, 'com.ezetap.service.demo:id/tvInputEtPassword')
+    btn_login = (AppiumBy.ID, "com.ezetap.service.demo:id/btnLogin")
+    txt_add_processing_fee = (AppiumBy.ID, "com.ezetap.service.demo:id/ivAddProcessingFee")
+    txt_processing_fee = (AppiumBy.ID, "com.ezetap.service.demo:id/etEnterProcessingFee")
+    txt_invalid_refundable_amt = (AppiumBy.ID, "com.ezetap.service.demo:id/dialogText")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -218,6 +229,7 @@ class PaymentPage(BasePage):
         """
         self.wait_for_visibility_of_elements(self.btn_proceedToHomepage)
         self.perform_click(self.btn_proceedToHomepage)
+        time.sleep(4)
 
     def click_on_back_btn(self):
         staleElement = True
@@ -292,8 +304,8 @@ class PaymentPage(BasePage):
         try:
             self.wait_for_element(self.lbl_payWith, 6)
         except:
-            self.wait_for_element(self.lbl_checkstatusTitle)
-            self.perform_click(self.lbl_checkstatus)
+            # self.wait_for_element(self.lbl_checkstatusTitle)
+            # self.perform_click(self.lbl_checkstatus)
             if self.fetch_text(self.lbl_paymentStatus) == "Payment Successful":
                 self.perform_click(self.btn_proceedToHomepage)
             elif self.fetch_text(self.lbl_paymentStatus) == "Payment Failed":
@@ -617,7 +629,7 @@ class PaymentPage(BasePage):
         self.perform_sendkeys(self.search_prod_or_brand, prod)
         self.perform_click(self.select_brand)
 
-    def click_and_enter_imei_no(self, imei):
+    def click_and_enter_imei_no(self, imei: int):
         """
         This method is used to enter imei no or serial no for brand EMI payment mode and click on proceed button
         :param imei: int
@@ -1122,48 +1134,87 @@ class PaymentPage(BasePage):
         pre_auth_currency_rate = self.fetch_text(self.txt_pre_auth_txt_selected_currency_message)
         return pre_auth_currency_rate
 
-    def click_on_bosch_brand(self):
-        """this method is used to click on the Bosch brand button """
-        self.perform_click(self.btn_bosch_brand)
-
-    def fetch_min_amount_error(self):
-        """Fetches and returns the minimum amount error message displayed on the UI."""
-        self.wait_for_element(self.txt_min_error)
-        txt_min_error = self.fetch_text(self.txt_min_error)
-        return txt_min_error
-
-    def fetch_imei_error_message(self):
-        """Fetches and returns the IMEI error message text."""
-        self.wait_for_element(self.txt_min_error)
-        txt_min_error = self.fetch_text(self.txt_min_error)
-        return txt_min_error
-
-    def fetch_invalid_imei_error(self):
-        """Fetches and returns the text of the invalid IMEI error message."""
-        self.wait_for_element(self.txt_invalid_imei_error)
-        txt_invalid_imei_error = self.fetch_text(self.txt_invalid_imei_error)
-        return txt_invalid_imei_error
-
-    def fetch_invalid_imei_error_code(self):
-        """Fetches and returns the error code text for an invalid IMEI."""
-        self.wait_for_element(self.txt_invalid_imei_error_code)
-        txt_invalid_imei_error_code = self.fetch_text(self.txt_invalid_imei_error_code)
-        return txt_invalid_imei_error_code
-
-    def click_and_enter_invalid_imei_no(self, imei):
+    def click_on_refund_btn(self):
         """
-        This method is used to enter imei no or serial no for brand EMI payment mode and click on proceed button
-        :param imei: int
+            This method is used to click on refund button
         """
-        self.scroll_to_text("Enter number or Scan")
-        self.perform_click(self.serial_no)
-        self.perform_sendkeys(self.serial_no, imei)
-        self.perform_click(self.btn_proceed)
+        self.wait_for_element(self.btn_refund)
+        self.perform_click(self.btn_refund)
 
-    def is_bosch_brand_visible(self):
+    def click_on_confirm_refund_btn(self):
         """
-        This method is used to check the visibility of Bosch brand button
+            This method is used to click on confirm refund button
         """
-        self.wait_for_invisibility_of_elements(self.btn_bosch_brand)
+        self.wait_for_element(self.btn_confirm_refund)
+        self.perform_click(self.btn_confirm_refund)
 
+    def click_on_refund_full_amt(self):
+        """
+            This method is used to click on refund full amount radio button
+        """
+        self.wait_for_element(self.rdo_refund_full_amt)
+        self.perform_click(self.rdo_refund_full_amt)
 
+    def click_on_refund_amt_manually(self):
+        """
+            This method is used to click on refund amount manually radio button
+        """
+        self.wait_for_element(self.rdo_refund_amt_manually)
+        self.perform_click(self.rdo_refund_amt_manually)
+
+    def enter_refund_amt_manually(self, amount):
+        """
+            This method is used to enter refund amount manually
+            param: amount: str
+        """
+        self.wait_for_element(self.txt_refund_amt_manually).clear()
+        self.perform_sendkeys(self.txt_refund_amt_manually, amount)
+
+    def click_on_add_processing_fee(self, processing_fee_amt):
+        """
+            This method is used to click on add processing fee and enter amount
+            param: processing_fee_amt: str
+        """
+        self.wait_for_element(self.txt_add_processing_fee)
+        self.perform_click(self.txt_add_processing_fee)
+        self.wait_for_element(self.txt_processing_fee).clear()
+        self.perform_sendkeys(self.txt_processing_fee, processing_fee_amt)
+
+    def click_on_refund_txn_btn(self):
+        """
+             This method is used to click on refund txn btn
+        """
+        self.wait_for_element(self.btn_refund_txn)
+        self.perform_click(self.btn_refund_txn)
+
+    def is_refund_txn_btn_visible(self):
+        """
+            This method is used to check refund txn button is visible or not
+        """
+        self.wait_for_invisibility_of_elements(self.btn_refund_txn)
+
+    def enter_password_to_confirm(self, password):
+        """
+            This method is used to enter password to confirm the refund amount
+            param: password: str
+        """
+        self.wait_for_element(self.txt_password).clear()
+        self.perform_sendkeys(self.txt_password, password)
+        self.wait_for_element(self.btn_confirm_refund)
+        self.perform_click(self.btn_confirm_refund)
+
+    def enter_user_password(self, password):
+        """
+            This method is used to enter the user password and click on proceed button
+            param: password: str
+        """
+        self.wait_for_element(self.txt_user_password).clear()
+        self.perform_sendkeys(self.txt_user_password, password)
+        self.perform_click(self.btn_login)
+
+    def fetch_invalid_refundable_amt_txt(self):
+        """
+            This method is used to fetch text of refundable amount
+        """
+        self.wait_for_element(self.txt_invalid_refundable_amt)
+        return self.fetch_text(self.txt_invalid_refundable_amt)
