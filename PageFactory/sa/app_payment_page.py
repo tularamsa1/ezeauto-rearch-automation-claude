@@ -160,6 +160,8 @@ class PaymentPage(BasePage):
     txt_add_processing_fee = (AppiumBy.ID, "com.ezetap.service.demo:id/ivAddProcessingFee")
     txt_processing_fee = (AppiumBy.ID, "com.ezetap.service.demo:id/etEnterProcessingFee")
     txt_invalid_refundable_amt = (AppiumBy.ID, "com.ezetap.service.demo:id/dialogText")
+    btn_bosch_brand = (By.XPATH, "//*[@text = 'Bosch']")
+    txt_min_error = (By.XPATH, "//android.widget.TextView[@resource-id='com.ezetap.service.demo:id/dialogText']")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -629,7 +631,7 @@ class PaymentPage(BasePage):
         self.perform_sendkeys(self.search_prod_or_brand, prod)
         self.perform_click(self.select_brand)
 
-    def click_and_enter_imei_no(self, imei: int):
+    def click_and_enter_imei_no(self, imei):
         """
         This method is used to enter imei no or serial no for brand EMI payment mode and click on proceed button
         :param imei: int
@@ -1218,3 +1220,19 @@ class PaymentPage(BasePage):
         """
         self.wait_for_element(self.txt_invalid_refundable_amt)
         return self.fetch_text(self.txt_invalid_refundable_amt)
+
+    def click_on_bosch_brand(self):
+        """this method is used to click on the Bosch brand button """
+        self.perform_click(self.btn_bosch_brand)
+
+    def fetch_min_amount_error(self):
+        """Fetches and returns the minimum amount error message displayed on the UI."""
+        self.wait_for_element(self.txt_min_error)
+        txt_min_error = self.fetch_text(self.txt_min_error)
+        return txt_min_error
+
+    def is_bosch_brand_visible(self):
+        """
+        This method is used to check the visibility of Bosch brand button
+        """
+        self.wait_for_invisibility_of_elements(self.btn_bosch_brand)

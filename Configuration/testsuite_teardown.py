@@ -756,3 +756,47 @@ def delete_service_fee_config_data(org_code: str):
         refresh_db()
     except Exception as e:
         logger.debug(f"Execution failed for Delete Query due to exception : {e}")
+
+
+def check_sku_code(sku_list_org, bosch_sku_list):
+    """Checks if SKU codes in bosch_sku_list are present and returns the result."""
+    for sku_code in sku_list_org:
+        if sku_code in bosch_sku_list or sku_code == "INVALID":
+            logger.debug(f"sku code {sku_code} present in brand_sku_details table")
+            result = "Verified, Product is available in brand_sku_details table"
+        else:
+            logger.debug(f"sku code is not present in brand_sku_details table")
+            result = "Product is not available in brand_sku_details table"
+    return result
+
+
+def update_emi_status_for_a_brand(org_code: str, card_type: str, status: str, brand_id: int):
+    """
+    Updates the EMI status for a specific brand in the EMI table based on the given organization code, card type, and status.
+    """
+    try:
+        if org_code is None or card_type is None or status is None or org_code.lower() == "ezetap":
+            logger.error(f"please provide proper data to update the status in emi table.")
+        else:
+            query = f"update emi set status='{status.upper()}' where org_code='{org_code}' and card_type='{card_type.upper()}' and brand ='{brand_id}';"
+            logger.debug(f"Query to update emi status in the emi table for the {org_code} : {query}")
+            result = DBProcessor.setValueToDB(query=query)
+            logger.debug(f"query result : {result}")
+            logger.debug(f"Refreshing database")
+            refresh_db()
+            logger.debug(f"Database refreshed")
+    except Exception as e:
+        logger.exception(f"update emi status query execution failed due to {e}")
+
+
+def update_product_details(brand_id : int):
+    """
+    This method is used to update the status as active in subvention_plan_details table
+    param: brand_id int
+    """
+    query = f"update brand_sku_details set status = 1 where brand_id ='{brand_id}'"
+    logger.debug(f"Query to update brand_sku_details with status as ACTIVE : {query}")
+    result = DBProcessor.setValueToDB(query)
+    logger.debug(f"Query to fetch result from brand_sku_details for status as ACTIVE : {result}")
+    refresh_db()
+    logger.debug(f"Using DB refresh method after updating the status as active in brand_sku_details table")

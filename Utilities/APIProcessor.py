@@ -200,3 +200,27 @@ def get_request(api_details):
     resp = requests.get(url, headers=headers)
     json_resp = json.loads(resp.text)
     return json_resp
+
+
+def send_request_non_dev(api_details):
+    """
+    Sends an API request based on the provided API details and handles the response.
+    """
+    payload = api_details['RequestBody']
+    endPoint = api_details['EndPoint']
+    method = api_details['Method']
+    headers = api_details['Header']
+    url = endPoint
+    timeout = 180
+
+    try:
+        resp = requests.request(method=method, url=str(url), headers=headers, data=json.dumps(payload), timeout=timeout)
+        update_api_details_to_report_variables(resp)
+        json_resp = resp.text if "{" not in resp.text else json.loads(resp.text)
+        logger.debug(
+            f"payload : {json.dumps(payload)} to trigger the {endPoint} api and the API_OUTPUT is : {json_resp}")
+        return json_resp
+    except requests.exceptions.Timeout:
+        print("API server is not responding. Stopping the process...")
+        logger.error(f"API server is not responding. Stopping the process...")
+        os.system("pkill python3.9")
