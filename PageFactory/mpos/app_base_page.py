@@ -13,6 +13,10 @@ class BasePage:
     def fetch_elements(self, locator, time=45):
         return len(WebDriverWait(self.driver, time).until(EC.presence_of_all_elements_located(locator)))
 
+    def fetch_list_elements(self, locator, time=45):
+        """ fetching multiple elements text """
+        return WebDriverWait(self.driver, time).until(EC.presence_of_all_elements_located(locator))
+
     def perform_click(self, locator, time=45):
         WebDriverWait(self.driver, time).until(EC.element_to_be_clickable(locator)).click()
 

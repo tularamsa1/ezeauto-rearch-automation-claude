@@ -132,10 +132,6 @@ class PaymentPage(BasePage):
     txt_email_address = (By.XPATH, "//*[@text='Email Id']")
     txt_cash_pmt = (By.XPATH, "//*[@text='CASH']")
     txt_customer_details_title = (By.XPATH, "(//*[@text='Customer Details'])[1]")
-    txt_payer_name = (By.ID, "com.ezetap.service.demo:id/txtInputEntryPayerName")
-    btn_payment_link = (By.XPATH, "//*[@text='Pay Link']")
-    error_msg = (By.XPATH, '//*[@resource-id="com.ezetap.service.demo:id/tvErrorMessage"]')
-    txt_payer_name = (By.ID, "com.ezetap.service.demo:id/txtInputEntryPayerName")
     btn_payment_link = (By.XPATH, "//*[@text='Pay Link']")
     error_msg = (By.XPATH, '//*[@resource-id="com.ezetap.service.demo:id/tvErrorMessage"]')
     lbl_currency_type_foreign = (By.ID, "com.ezetap.service.demo:id/item_pay_in_foreign")
@@ -1051,18 +1047,6 @@ class PaymentPage(BasePage):
         self.perform_click(self.txt_payer_name)
         self.perform_sendkeys(self.txt_payer_name, payer_name)
 
-    def check_remote_pay_pmt_mode_present(self):
-        """
-        This method is used to check whether bank emi pmt mode is present or not
-        return: bool
-        """
-        try:
-            self.visibility_of_elements(self.btn_remote_pay)
-            return True
-        except Exception as e:
-            logger.exception(f"Remotepay payment mode is not visible due to : {e}")
-            return False
-
     def validate_payment_link_btn(self):
         self.wait_for_element(self.btn_payment_link)
 
@@ -1073,13 +1057,6 @@ class PaymentPage(BasePage):
         """
         error_msg = str(self.fetch_text(self.error_msg))
         return error_msg
-
-    def fill_payer_name(self, payer_name: str):
-        """
-        Clicks the payer name field, then enters 'payer_name' text into the input field
-        """
-        self.perform_click(self.txt_payer_name)
-        self.perform_sendkeys(self.txt_payer_name, payer_name)
 
     def check_remote_pay_pmt_mode_present(self):
         """
@@ -1092,17 +1069,6 @@ class PaymentPage(BasePage):
         except Exception as e:
             logger.exception(f"Remotepay payment mode is not visible due to : {e}")
             return False
-
-    def validate_payment_link_btn(self):
-        self.wait_for_element(self.btn_payment_link)
-
-    def fetch_message_for_duplicate_check(self):
-        """
-        Fetches and returns the error message for duplicate check
-        return: String
-        """
-        error_msg = str(self.fetch_text(self.error_msg))
-        return error_msg
 
     def select_currency_type_foreign(self):
         self.wait_for_element(self.lbl_currency_type_foreign)
@@ -1236,3 +1202,4 @@ class PaymentPage(BasePage):
         This method is used to check the visibility of Bosch brand button
         """
         self.wait_for_invisibility_of_elements(self.btn_bosch_brand)
+

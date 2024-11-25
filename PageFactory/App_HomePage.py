@@ -16,7 +16,7 @@ class HomePage(BasePage):
     btn_collect_payment = (By.XPATH, "//*[@text = 'Collect Payment']")
     btn_goToHistory = (By.ID, "com.ezetap.basicapp:id/btnHistory")
     img_companyLogo = (By.XPATH,'//android.widget.ImageView[@content-desc="Company Logo"]')
-    tab_history = (By.ID,"com.ezetap.basicapp:id/nav_txn_history")
+    tab_history = (By.ID,"com.ezetap.basicapp:id/btnHistory")
     tab_history_p2p = (By.ID, 'com.ezetap.basicapp:id/btnHistory')
     mnu_engSideMenu =(By.XPATH, '//android.widget.ImageButton[@content-desc="Open navigation drawer"]')
     mnu_hindiSideMenu = (By.XPATH, '//android.widget.ImageButton[@content-desc="नेविगेशन ड्रावर खोलें"]')

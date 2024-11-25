@@ -2,7 +2,6 @@ from time import sleep
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
-
 from DataProvider import GlobalVariables
 from PageFactory.mpos.app_base_page import BasePage
 
@@ -149,6 +148,45 @@ class TransHistoryPage(BasePage):
     txt_markup_fee = (By.XPATH, "//*[@text='MARKUP FEE']/following-sibling::android.widget.TextView")
     txt_currency_conversion_fee_rate = \
         (By.XPATH, "//*[@text='CURRENCY CONVERSION FEE RATE']/following-sibling::android.widget.TextView")
+
+    txt_order_id = (By.ID, "com.ezetap.service.demo:id/tvTxnId")
+    txt_view_summary = (By.XPATH, "//*[@text='View Summary']")
+    id_filter = (By.ID, "com.ezetap.service.demo:id/ivFilter")
+    txt_cash_payment_mode = (By.XPATH, "//*[@resource-id='com.ezetap.service.demo:id/chipGroupPaymentMetho']"
+                                       "/..//*[@text='Cash']")
+    id_shift_list = (By.ID, "com.ezetap.service.demo:id/spinnerShift")
+    id_shift_title_history_page = (By.ID, "com.ezetap.service.demo:id/tvShiftNo")
+    id_end_shift_history_page = (By.ID, "com.ezetap.service.demo:id/btnEndShift")
+    id_total_amount_history_page = (By.ID, "com.ezetap.service.demo:id/tvTotalTxn")
+    txt_current_previous_shifts = (By.ID, "android:id/text1")
+    id_date_range = (By.ID, "com.ezetap.service.demo:id/tvLblDateRange")
+    id_all_payment_modes_and_status = (By.ID, "com.ezetap.service.demo:id/tvFilter")
+    btn_apply_filter = (By.ID, "com.ezetap.service.demo:id/btnApply")
+    txt_upi_pmt_mode = (By.XPATH, "//android.widget.TextView[@text='UPI']")
+    txt_success_pmt_status = (By.XPATH, "//android.widget.TextView[@text='Success']")
+    id_shift_title = (By.ID, "com.ezetap.basicapp:id/tvShiftTitle")
+    id_org_code_summary_page = (By.ID, "com.ezetap.service.demo:id/tvMerchantName")
+    txt_shift_nummer_summary_page = (By.XPATH, "//android.widget.TextView[@text='Shift No.']/..//android.widget.TextView[@resource-id='com.ezetap.service.demo:id/tvShiftIdValue']")
+    txt_receipt_date_summary_page = (By.XPATH, "//android.widget.TextView[@text='Date']/..//android.widget.TextView[@resource-id='com.ezetap.service.demo:id/tvDateValue']")
+    txt_shift_start_time_summary_page = (By.XPATH, "//android.widget.TextView[@text='Shift Start Time']/..//android.widget.TextView[@resource-id='com.ezetap.service.demo:id/tvShiftStartTimeValue']")
+    txt_shift_end_time_summary_page = (By.XPATH, "//android.widget.TextView[@text='Shift End Time']/..//android.widget.TextView[@resource-id='com.ezetap.service.demo:id/tvShiftEndTimeValue']")
+    txt_mid_summary_page = (By.XPATH, "//android.widget.TextView[@text='MID']/..//android.widget.TextView[@resource-id='com.ezetap.service.demo:id/tvMIDValue']")
+    txt_tid_summary_page = (By.XPATH, "//android.widget.TextView[@text='TID']/..//android.widget.TextView[@resource-id='com.ezetap.service.demo:id/tvTIDValue']")
+    txt_upi_payment_mode_sale_count_summary_page = (By.XPATH, "//android.widget.TextView[@text='Payment -UPI']/..//*[@resource-id='com.ezetap.service.demo:id/tvSaleCount']")
+    txt_upi_payment_mode_sale_amount_summary_page = (By.XPATH, "//android.widget.TextView[@text='Payment -UPI']/..//*[@resource-id='com.ezetap.service.demo:id/tvSaleAmount']")
+    txt_upi_payment_mode_total_sale_count_summary_page = (By.XPATH, "//android.widget.TextView[@text='Payment -UPI']/..//*[@resource-id='com.ezetap.service.demo:id/tvTotalCount']")
+    txt_upi_payment_mode_total_sale_amount_summary_page = (By.XPATH, "//android.widget.TextView[@text='Payment -UPI']/..//*[@resource-id='com.ezetap.service.demo:id/tvTotalAmount']")
+    txt_cash_payment_mode_sale_count_summary_page = (By.XPATH, "//android.widget.TextView[@text='Payment -CASH']/..//*[@resource-id='com.ezetap.service.demo:id/tvSaleCount']")
+    txt_cash_payment_mode_sale_amount_summary_page = (By.XPATH, "//android.widget.TextView[@text='Payment -CASH']/..//*[@resource-id='com.ezetap.service.demo:id/tvSaleAmount']")
+    txt_cash_payment_mode_total_sale_count_summary_page = (By.XPATH, "//android.widget.TextView[@text='Payment -CASH']/..//*[@resource-id='com.ezetap.service.demo:id/tvTotalCount']")
+    txt_cash_payment_mode_total_sale_amount_summary_page = (By.XPATH, "//android.widget.TextView[@text='Payment -CASH']/..//*[@resource-id='com.ezetap.service.demo:id/tvTotalAmount']")
+
+    txt_original_amt = (By.ID, "com.ezetap.service.demo:id/tvOriginalAmountValue")
+    txt_refunded_amt = (By.ID, "com.ezetap.service.demo:id/tvRefundedAmountValue")
+    txt_balance_amt = (By.ID, "com.ezetap.service.demo:id/tvBalanceAmountValue")
+    txt_username = (By.ID, "com.ezetap.service.demo:id/tvInputEtUsername")
+    txt_password = (By.ID, "com.ezetap.service.demo:id/tvInputEtPassword")
+    btn_login = (By.ID, "com.ezetap.service.demo:id/btnLogin")
 
     txt_original_amt = (By.ID, "com.ezetap.service.demo:id/tvOriginalAmountValue")
     txt_refunded_amt = (By.ID, "com.ezetap.service.demo:id/tvRefundedAmountValue")
@@ -769,13 +807,193 @@ class TransHistoryPage(BasePage):
     def fetch_currency_conversion_fee_rate_text(self):
         return self.fetch_text(self.txt_currency_conversion_fee_rate)
 
-
     def click_on_conf_pre_auth_popup_dcc(self):
         """
             This method is used to click on confirm pre-auth pop ups
         """
         self.perform_click(self.btn_conf_pre_auth_popup)
 
+    def scroll_to_text_element(self, value):
+        """
+            This method is used to scroll to text based on the value passed
+            param: value : str
+        """
+        self.scroll_to_text(value)
+
+    def fetch_original_amt_text(self) -> str:
+        """
+            This method is used to fetch original amount txt
+            return: original_amt : str
+        """
+        return self.fetch_text(self.txt_original_amt)
+
+    def fetch_refunded_amt_text(self) -> str:
+        """
+            This method is used to fetch refunded amount txt
+            return: refunded_amt : str
+        """
+        return self.fetch_text(self.txt_refunded_amt)
+
+    def fetch_balance_amt_text(self) -> str:
+        """
+            This method is used to fetch refunded amount txt
+            return: refunded_amt : str
+        """
+        return self.fetch_text(self.txt_balance_amt)
+
+    def fetch_order_ids_from_history_page(self):
+        """ fetching order id from txn screen """
+        self.wait_for_element(self.txt_order_id)
+        return [ele.text for ele in self.fetch_list_elements(self.txt_order_id)]
+
+    def fetch_shift_dashboard_management_enabled_history_page(self):
+        """ Validating shift management dashboard by checking shift title"""
+        self.wait_for_element(self.id_shift_title_history_page)
+        return self.fetch_text(self.id_shift_title_history_page)
+
+    def perform_end_shift_history_page(self):
+        """ performing end shift from history page """
+        self.wait_for_element(self.id_end_shift_history_page)
+        self.perform_click(self.id_end_shift_history_page)
+
+    def fetch_end_shift_history_page(self):
+        """ fetching end shift button from history page """
+        self.wait_for_element(self.id_end_shift_history_page)
+        return self.fetch_text(self.id_end_shift_history_page)
+
+    def get_total_shift_amount_history_page(self):
+        """ fetching total shift amount from app """
+        self.wait_for_element(self.id_total_amount_history_page)
+        return self.fetch_text(self.id_total_amount_history_page)
+
+    def fetch_view_summary(self):
+        """ fetching view summary text """
+        self.wait_for_element(self.txt_view_summary)
+        return self.fetch_text(self.txt_view_summary)
+
+    def click_view_summary(self):
+        """ clicking on view summary """
+        self.wait_for_element(self.txt_view_summary)
+        self.perform_click(self.txt_view_summary)
+
+    def validate_view_summary_button_invisibility(self):
+        """ validating view summary button invisibility """
+        return self.wait_for_invisibility_of_elements(self.txt_view_summary)
+
+    def validate_invisibility_of_dashboard(self):
+        """ validating invisibility of dashboard """
+        return self.wait_for_invisibility_of_elements(self.id_shift_title)
+
+    def perform_click_filter(self):
+        """ clicking on filter """
+        self.wait_for_element(self.id_filter)
+        self.perform_click(self.id_filter)
+
+    def validate_all_payment_modes_and_status(self):
+        """ fetching all payment modes and payment status """
+        self.wait_for_element(self.id_all_payment_modes_and_status)
+        return [ele.text for ele in self.fetch_list_elements(self.id_all_payment_modes_and_status)]
+
+    def perform_click_shift_list(self):
+        """ performing click on list of shifts """
+        self.wait_for_element(self.id_shift_list)
+        self.perform_click(self.id_shift_list)
+
+    def fetching_current_previous_shift(self):
+        """ fetching current and previous shift """
+        self.wait_for_element(self.txt_current_previous_shifts)
+        return [ele.text for ele in self.fetch_list_elements(self.txt_current_previous_shifts)]
+
+    def perform_click_apply_filter(self):
+        """ perform click on apply  filter """
+        self.wait_for_element(self.btn_apply_filter)
+        self.perform_click(self.btn_apply_filter)
+
+    def perform_click_on_upi_pmt_mode(self):
+        """ perform click on upi pmt mode """
+        self.wait_for_element(self.txt_upi_pmt_mode)
+        self.perform_click(self.txt_upi_pmt_mode)
+
+    def perform_click_on_success_status(self):
+        """ perform click on success status """
+        self.wait_for_element(self.txt_success_pmt_status)
+        self.perform_click(self.txt_success_pmt_status)
+
+    def fetch_org_code_summary_page(self):
+        """ fetching merchant code from summary page """
+        self.wait_for_element(self.id_org_code_summary_page)
+        return self.fetch_text(self.id_org_code_summary_page)
+
+    def fetch_shift_num_summary_page(self):
+        """ fetching shift number from summary page """
+        self.wait_for_element(self.txt_shift_nummer_summary_page)
+        return self.fetch_text(self.txt_shift_nummer_summary_page)
+
+    def fetch_receipt_date_summary_page(self):
+        """ fetching receipt data from summary page """
+        self.wait_for_element(self.txt_receipt_date_summary_page)
+        return self.fetch_text(self.txt_receipt_date_summary_page)
+
+    def fetch_receipt_shift_start_date_summary_page(self):
+        """ fetching receipt shift start data from summary page """
+        self.wait_for_element(self.txt_shift_start_time_summary_page)
+        return self.fetch_text(self.txt_shift_start_time_summary_page)
+
+    def fetch_receipt_shift_end_date_summary_page(self):
+        """ fetching receipt shift end data from summary page """
+        self.wait_for_element(self.txt_shift_end_time_summary_page)
+        return self.fetch_text(self.txt_shift_end_time_summary_page)
+
+    def fetch_receipt_mid_summary_page(self):
+        """ fetching mid from summary page """
+        self.wait_for_element(self.txt_mid_summary_page)
+        return self.fetch_text(self.txt_mid_summary_page)
+
+    def fetch_receipt_tid_summary_page(self):
+        """ fetching tid from summary page """
+        self.wait_for_element(self.txt_tid_summary_page)
+        return self.fetch_text(self.txt_tid_summary_page)
+
+    def fetch_receipt_upi_sale_count_summary_page(self):
+        """ fetching upi sale count from summary page """
+        self.wait_for_element(self.txt_upi_payment_mode_sale_count_summary_page)
+        return self.fetch_text(self.txt_upi_payment_mode_sale_count_summary_page)
+
+    def fetch_receipt_upi_sale_amount_summary_page(self):
+        """ fetching upi sale amount from summary page """
+        self.wait_for_element(self.txt_upi_payment_mode_sale_amount_summary_page)
+        return self.fetch_text(self.txt_upi_payment_mode_sale_amount_summary_page)
+
+    def fetch_receipt_upi_total_sale_count_summary_page(self):
+        """ fetching upi total sale count from summary page """
+        self.wait_for_element(self.txt_upi_payment_mode_total_sale_count_summary_page)
+        return self.fetch_text(self.txt_upi_payment_mode_total_sale_count_summary_page)
+
+    def fetch_receipt_upi_total_sale_amount_summary_page(self):
+        """ fetching upi total sale amount from summary page """
+        self.wait_for_element(self.txt_upi_payment_mode_total_sale_amount_summary_page)
+        return self.fetch_text(self.txt_upi_payment_mode_total_sale_amount_summary_page)
+
+    def fetch_receipt_cash_sale_count_summary_page(self):
+        """ fetching cash sale count from summary page """
+        self.wait_for_element(self.txt_cash_payment_mode_sale_count_summary_page)
+        return self.fetch_text(self.txt_cash_payment_mode_sale_count_summary_page)
+
+    def fetch_receipt_cash_sale_amount_summary_page(self):
+        """ fetching cash sale amount from summary page """
+        self.wait_for_element(self.txt_cash_payment_mode_sale_amount_summary_page)
+        return self.fetch_text(self.txt_cash_payment_mode_sale_amount_summary_page)
+
+    def fetch_receipt_cash_total_sale_count_summary_page(self):
+        """ fetching cash total sale count from summary page """
+        self.wait_for_element(self.txt_cash_payment_mode_total_sale_count_summary_page)
+        return self.fetch_text(self.txt_cash_payment_mode_total_sale_count_summary_page)
+
+    def fetch_receipt_cash_total_sale_amount_summary_page(self):
+        """ fetching cash total sale amount from summary page """
+        self.wait_for_element(self.txt_cash_payment_mode_total_sale_amount_summary_page)
+        return self.fetch_text(self.txt_cash_payment_mode_total_sale_amount_summary_page)
+     
     def scroll_to_given_input_text(self, input_text: str):
         """
         This method is used to scroll the screen to given text

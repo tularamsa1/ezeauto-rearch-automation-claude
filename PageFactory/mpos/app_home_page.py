@@ -191,6 +191,14 @@ class HomePage(BasePage):
     tab_history_config = (By.ID, "com.ezetap.basicapp:id/nav_txn_history")
     btn_pre_auth = (By.XPATH, "//android.widget.TextView[@text='Pre-Auth']")
     txt_grow_your_business = (By.XPATH, "//android.widget.TextView[@resource-id='com.ezetap.basicapp:id/tabText']")
+    id_shift_title = (By.ID, "com.ezetap.basicapp:id/tvShiftTitle")
+    # id_shift_title_history_page = (By.ID, "com.ezetap.basicapp:id/tvShiftTitle")
+    id_end_button = (By.ID, "com.ezetap.basicapp:id/btnEndShift")
+    id_shift_start_date_time = (By.ID, "com.ezetap.basicapp:id/tvShiftTime")
+    id_shift_amount = (By.ID, "com.ezetap.basicapp:id/tvShiftAmount")
+    id_yes_proces = (By.ID, "com.ezetap.service.demo:id/btnProceed")
+    id_cancel_shift_history_page = (By.ID, "com.ezetap.service.demo:id/btnCancel")
+    id_close_receipt = (By.ID, "com.ezetap.service.demo:id/imgClose")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -1320,6 +1328,49 @@ class HomePage(BasePage):
     def click_grow_your_business(self):
         self.wait_for_element(self.txt_grow_your_business)
         self.perform_click(self.txt_grow_your_business)
+
+    def fetch_shift_management_dashboard_enabled_home_page(self):
+        """ Validating shift management dashboard by checking shift title"""
+        self.wait_for_element(self.id_shift_title)
+        return self.fetch_text(self.id_shift_title)
+
+    def get_current_shift_on_dashboard_home_page(self):
+        """ Fetching current shift from dashboard """
+        self.wait_for_element(self.id_shift_title)
+        return self.fetch_text(self.id_shift_title)
+
+    def validation_end_shift_button_home_page(self):
+        """ Validating end shift button on dashboard"""
+        self.wait_for_element(self.id_end_button)
+        return self.fetch_text(self.id_end_button)
+
+    def fetch_shift_start_date_time(self):
+        """ Fetching shift start date and time on dashboard"""
+        self.wait_for_element(self.id_shift_start_date_time)
+        return self.fetch_text(self.id_shift_start_date_time)
+
+    def perform_end_shift_home_page(self):
+        """ Ending the current shift """
+        self.wait_for_element(self.id_end_button)
+        self.perform_click(self.id_end_button)
+
+    def click_yes_proceed(self):
+        self.wait_for_element(self.id_yes_proces)
+        self.perform_click(self.id_yes_proces)
+
+    def click_cancel_to_end_shift(self):
+        self.wait_for_element(self.id_cancel_shift_history_page)
+        self.perform_click(self.id_cancel_shift_history_page)
+
+    def get_current_shift_amount_home_page(self):
+        """ Fetching current shift total amount from dashboard """
+        self.wait_for_element(self.id_shift_amount)
+        return self.fetch_text(self.id_shift_amount)
+
+    def close_receipt(self):
+        """ closing receipt """
+        self.wait_for_element(self.id_close_receipt)
+        self.perform_click(self.id_close_receipt)
 
     def click_on_merchant_account_details(self):
         """
