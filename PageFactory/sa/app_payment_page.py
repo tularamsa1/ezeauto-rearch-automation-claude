@@ -158,6 +158,8 @@ class PaymentPage(BasePage):
     txt_invalid_refundable_amt = (AppiumBy.ID, "com.ezetap.service.demo:id/dialogText")
     btn_bosch_brand = (By.XPATH, "//*[@text = 'Bosch']")
     txt_min_error = (By.XPATH, "//android.widget.TextView[@resource-id='com.ezetap.service.demo:id/dialogText']")
+    txt_imei_error_message = (By.XPATH, "//*[@resource-id='com.ezetap.service.demo:id/dialogText']")
+    txt_imei_error_code = (By.XPATH, "//*[@resource-id='com.ezetap.service.demo:id/dialogTitle']")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -227,7 +229,7 @@ class PaymentPage(BasePage):
         """
         self.wait_for_visibility_of_elements(self.btn_proceedToHomepage)
         self.perform_click(self.btn_proceedToHomepage)
-        time.sleep(4)
+
 
     def click_on_back_btn(self):
         staleElement = True
@@ -1202,4 +1204,14 @@ class PaymentPage(BasePage):
         This method is used to check the visibility of Bosch brand button
         """
         self.wait_for_invisibility_of_elements(self.btn_bosch_brand)
+
+    def fetch_error_msg_and_error_code(self):
+        """
+        Fetches and returns error message and error code for bosch brand - EMI transactions.
+        """
+        self.wait_for_element(self.txt_imei_error_message)
+        txt_imei_error_message = self.fetch_text(self.txt_imei_error_message)
+        self.wait_for_element(self.txt_imei_error_code)
+        txt_imei_error_code = self.fetch_text(self.txt_imei_error_code)
+        return txt_imei_error_message, txt_imei_error_code
 

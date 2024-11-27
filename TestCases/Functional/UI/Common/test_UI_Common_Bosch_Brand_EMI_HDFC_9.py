@@ -485,8 +485,6 @@ def test_common_100_115_07_205():
             logger.debug(f"Fetching status value from the brand_validation table : {status}")
             brand_name = result['brand_name'].values[0]
             logger.debug(f"Fetching brand_name value from the brand_validation table : {status}")
-            device_serial = result['device_serial'].values[0]
-            logger.debug(f"Fetching error_code value from the brand_validation table : {device_serial}")
             offer_type = result['offer_type'].values[0]
             logger.debug(f"Fetching error_code value from the brand_validation table : {offer_type}")
             device_serial_db = result['device_serial'].values[0]

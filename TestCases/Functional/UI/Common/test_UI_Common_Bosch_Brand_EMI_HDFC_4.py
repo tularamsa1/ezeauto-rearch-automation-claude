@@ -1825,7 +1825,7 @@ def test_common_100_115_07_173():
     """
     Sub Feature Code: UI_Common_Verify_Bosch_Brand_EMI_Flow_(No_Cashback)_EMV_VISA_DebitCard_With_Pin_428090_with_6_month_tenure_for_Ezetap_level
     Sub Feature Description: Performing successful Bosch Brand EMI transaction at root level via HDFC-HDFC using EMV VISA Debit card with pin for 6 months tenure (bin: 428090) with cash back type none
-    TC naming code description: 100: Payment Method, 115: CARD_UI, 07: Brand_EMI, 172: TC172
+    TC naming code description: 100: Payment Method, 115: CARD_UI, 07: Brand_EMI, 173: TC173
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -3309,7 +3309,7 @@ def test_common_100_115_07_175():
 @pytest.mark.chargeSlipVal
 def test_common_100_115_07_164():
     """
-    Sub Feature Code: UI_Common_Verify_Brand_EMI_Flow_(No_Cashback)_EMV_VISA_CreditCard_With_Pin_417666_with_3_month_tenure_for_ezetap_level
+    Sub Feature Code: UI_Common_Verify_Brand_EMI_Flow_(No_Cashback)_EMV_VISA_CreditCard_With_Pin_417666_with_6_month_tenure_for_ezetap_level
     Sub Feature Description: Performing successful Brand EMI transaction at ezetap root level via HDFC-HDFC using EMV VISA Credit card with pin for 6 months tenure (bin: 417666) with cash back type none
     TC naming code description: 100: Payment Method, 115: CARD_UI, 07: Brand_EMI, 164: TC164
     """
