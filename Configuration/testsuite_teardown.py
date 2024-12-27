@@ -239,31 +239,11 @@ def revert_org_settings_default(org_code, portal_un, portal_pw):
     })
     # Set session expiry as default (86400 sec)
     orgsettings_apidetails["RequestBody"]["settings"]["sessionTimeOut"] = "86400"
-    # Set autologin as default (false)
-    orgsettings_apidetails["RequestBody"]["settings"]["autoLoginByTokenEnabled"] = "false"
-    # disabling khaata
-    orgsettings_apidetails["RequestBody"]["settings"]["enableKhataForMerchants"] = "false"
-    # disabling emi
-    orgsettings_apidetails["RequestBody"]["settings"]["emiEnabled"] = "false"
-    # disabling paylater
-    orgsettings_apidetails["RequestBody"]["settings"]["paylaterEnabled"] = "false"
-    orgsettings_apidetails["RequestBody"]["settings"]["enabledPaylaterIssuerBanks"] = ""
-    # disabling collectMobileEmailUpfront
     orgsettings_apidetails["RequestBody"]["settings"]["collectMobileEmailUpfront"] = "false"
-    #disabling MultilingualForApp
-    orgsettings_apidetails["RequestBody"]["settings"]["enableMultilingualForApp"] = "false"
-    #disabling RewardForMerchants
-    orgsettings_apidetails["RequestBody"]["settings"]["enableRewardForMerchants"] = "false"
-
     orgsettings_apidetails["RequestBody"]["settings"]["autoLoginByTokenLogOutEnabled"] = "false"
     orgsettings_apidetails["RequestBody"]["settings"]["addlAuthReqdForCash"] = "false"
     orgsettings_apidetails["RequestBody"]["settings"]["customerAuthDataCaptureEnabled"] = "false"
-    orgsettings_apidetails["RequestBody"]["settings"]["amountCutOffForCustomerAuth"] = ""
-    orgsettings_apidetails["RequestBody"]["settings"]["appMaxRows"] = "20"
-    orgsettings_apidetails["RequestBody"]["settings"]["serviceRequestEnabled"] = "false"
-    orgsettings_apidetails["RequestBody"]["settings"]["eSignatureForNonCardEnabled"] = "false"
-    orgsettings_apidetails["RequestBody"]["settings"]["emiEnabledForClient"] = "false"
-    orgsettings_apidetails["RequestBody"]["settings"]["mqttEnabled"] = "false"
+
     logger.debug(f"API details  : {orgsettings_apidetails} ")
     response = APIProcessor.send_request(orgsettings_apidetails)
     logger.debug(f"Response received for setting sessionExpiry as default is : {response}")
@@ -800,3 +780,27 @@ def update_product_details(brand_id : int):
     logger.debug(f"Query to fetch result from brand_sku_details for status as ACTIVE : {result}")
     refresh_db()
     logger.debug(f"Using DB refresh method after updating the status as active in brand_sku_details table")
+
+def update_org_settings_for_auto_login(org_code, portal_un, portal_pw):
+    """
+    Updates org settings for auto-login and other features via API.
+    Sends request with updated settings for the specified org_code.
+    """
+
+    orgsettings_apidetails = DBProcessor.get_api_details('org_settings_update', request_body={
+        "username": portal_un,
+        "password": portal_pw,
+        "settingForOrgCode": org_code
+    })
+    orgsettings_apidetails["RequestBody"]["settings"]["autoLoginByTokenEnabled"] = "true"
+    orgsettings_apidetails["RequestBody"]["settings"]["customerInfoCaptureEnabled"] = "true"
+    orgsettings_apidetails["RequestBody"]["settings"]["pollingEnabled"] = "true"
+    orgsettings_apidetails["RequestBody"]["settings"]["paymentNotificationForMerchantEnabled"] = "true"
+    orgsettings_apidetails["RequestBody"]["settings"]["printMerchantCopy"] = "true"
+    orgsettings_apidetails["RequestBody"]["settings"]["paperReceiptEnabled"] = "true"
+    orgsettings_apidetails["RequestBody"]["settings"]["mqttEnabled"] = "true"
+    orgsettings_apidetails["RequestBody"]["settings"]["enableMultilingualForApp"] = "true"
+    orgsettings_apidetails["RequestBody"]["settings"]["enableDqrSoundBoxDevice"] = "true"
+    logger.debug(f"API details  : {orgsettings_apidetails} ")
+    response = APIProcessor.send_request(orgsettings_apidetails)
+    logger.debug(f"Response received from org_settings_update for org settings related to auto login for MPOS and SA test cases: {response}")

@@ -38,12 +38,11 @@ def test_mpos_400_407_001():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-        testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
-                                                       portal_pw=portal_password)
-        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+        testsuite_teardown.update_org_settings_for_auto_login(org_code, portal_un=portal_username,
+                                                       portal_pw=portal_password)
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -57,10 +56,11 @@ def test_mpos_400_407_001():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, no_reset=True)
             login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
+            login_page.perform_login_for_auto_login_functionality(app_username, app_password, Pax_Device=True)
+            logger.debug(f"Logged in to the MPOS application with the autoLoginByTokenEnabled feature enabled")
             # ------------------------------------------------------------------------------------------------
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()

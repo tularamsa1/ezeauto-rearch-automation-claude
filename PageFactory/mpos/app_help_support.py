@@ -25,6 +25,7 @@ class HelpSupport(BasePage):
     txt_email_id = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvRegisterComplaint')
     txt_help_and_support = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvTitle')
     btn_help_from_top_of_home_screen = (AppiumBy.ID, 'com.ezetap.basicapp:id/rlHelp')
+    btn_radio_request_callback = (AppiumBy.ID, 'com.ezetap.basicapp:id/rbNewPhone')
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -49,6 +50,7 @@ class HelpSupport(BasePage):
         self.perform_click(self.btn_request_callback)
         self.wait_for_element(self.btn_request_callback_2)
         self.perform_click(self.btn_request_callback_2)
+        self.perform_click(self.btn_radio_request_callback)
         self.wait_for_element(self.txt_mobile_number).clear()
         self.perform_sendkeys(self.txt_mobile_number, mobile_number)
         self.perform_click(self.btn_request_callback_3)

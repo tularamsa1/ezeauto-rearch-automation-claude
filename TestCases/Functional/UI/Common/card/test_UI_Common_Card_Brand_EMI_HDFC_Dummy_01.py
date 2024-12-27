@@ -56,7 +56,7 @@ def test_common_100_115_07_001():
 
         if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == 'true':
 
-            app_driver = TestSuiteSetup.initialize_app_driver(request=testcase_id)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, no_reset=True)
             query = f"UPDATE terminal_info SET status = 'INACTIVE' WHERE org_code = '{org_code}';"
             logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
             DBProcessor.setValueToDB(query=query)
@@ -198,7 +198,8 @@ def test_common_100_115_07_001():
 
         refresh_db()
         logger.debug(f"Using DB refresh method after updating the status as active in subvention_plan_details table")
-
+        testsuite_teardown.update_org_settings_for_auto_login(org_code, portal_un=portal_username,
+                                                       portal_pw=portal_password)
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True  # Do not remove this line of code.
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -216,10 +217,11 @@ def test_common_100_115_07_001():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == 'false':
-                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, no_reset=True)
             login_page = LoginPage(app_driver)
-            logger.info(f"Logging in the MPOSX application using username and password : {app_username}, {app_password}")
-            login_page.perform_login(app_username, app_password)
+            logger.info(f"Logging in the MPOSX application using username : {app_username}")
+            login_page.perform_login_for_auto_login_functionality(app_username, app_password, Pax_Device=True)
+            logger.debug(f"Logged in to the MPOS application with the autoLoginByTokenEnabled feature enabled")
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
@@ -483,7 +485,8 @@ def test_common_100_115_07_001():
                 app_scheme = txn_history_page.fetch_scheme_text()
                 logger.debug(f"Fetching scheme from txn history for the txn : {txn_id}, {app_scheme}")
 
-                txn_history_page.scroll_to_given_input_text("EMI")
+                # txn_history_page.scroll_to_given_input_text("EMI")
+                txn_history_page.scroll_to_given_input_text("Void Transaction")
                 app_payment_status = txn_history_page.fetch_emi_txn_status_text()
                 logger.info(f"Fetching payment_status from txn history for the txn : {txn_id}, {app_payment_status}")
                 app_txn_id = txn_history_page.fetch_txn_id_text()

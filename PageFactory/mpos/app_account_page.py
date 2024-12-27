@@ -30,12 +30,14 @@ class AccountPage(BasePage):
         """
         performs click on setting menu
         """
+        self.wait_for_element(self.mnu_setting)
         self.perform_click(self.mnu_setting)
 
     def click_on_Language(self):
         """
         performs clicking on language menu
         """
+        self.wait_for_element(self.mnu_Language)
         self.perform_click(self.mnu_Language)
 
     def click_on_eng_Lang(self):

@@ -16,10 +16,15 @@ class Logout(BasePage):
         """
         This method is used to logout from the app when the autoLoginByTokenLogOutEnabled is enabled
         """
+        self.wait_for_element(self.mnu_navigation_drawer)
         self.perform_click(self.mnu_navigation_drawer)
+        self.wait_for_element(self.btn_account)
         self.perform_click(self.btn_account)
+        self.wait_for_element(self.btn_setting)
         self.perform_click(self.btn_setting)
+        self.wait_for_element(self.btn_logout)
         self.perform_click(self.btn_logout)
+        self.wait_for_element(self.btn_logout_conformation)
         self.perform_click(self.btn_logout_conformation)
 
 

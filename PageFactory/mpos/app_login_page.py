@@ -101,3 +101,44 @@ class LoginPage(BasePage):
         This is used to select environment in PAXs devices for executing autologin
         """
         self.scroll_to_text(read_config("APIs", "env")).click()
+
+    def perform_login_for_auto_login_functionality(self, username, password, Pax_Device=None):
+        """
+        Logs into the application, handling both standard and auto-login scenarios.
+        Checks device type and manages battery optimize settings popup
+        """
+
+        if read_config("ParallelExecution", "deviceOnly") == "True":
+            self.scroll_to_text(read_config("APIs", "env")).click()
+        elif read_config("APIs", "env") in self.fetch_text(self.btn_login):
+            pass
+        else:
+            self.perform_long_press(self.img_ezetaplogo)
+            self.scroll_to_text(read_config("APIs", "env")).click()
+
+        try:
+            txt_username_val = self.visibility_of_elements(self.txt_username, time=10)
+            if Pax_Device == None and len(txt_username_val) < 0:
+                logger.info(f"Pax_Device is None and txt_username_val is null")
+                pass
+            else:
+                self.wait_for_element(self.txt_username).clear()
+                self.perform_sendkeys(self.txt_username, username)
+                self.wait_for_element(self.txt_password).clear()
+                self.perform_sendkeys(self.txt_password, password)
+                self.perform_click(self.btn_login)
+                logger.info(f"Pax_Device is True and txt_username_val is not null")
+        except Exception as e:
+            logger.info(f"Pax_Device is null and txt_username_val is not displayed")
+
+        try:
+            setting_btn_val = self.visibility_of_elements(self.btn_settings, time=10)
+            if Pax_Device == None and len(setting_btn_val) < 0:
+                logger.info(f"Pax_Device is False and setting_btn_val is zero to click on battery optimize settings")
+                pass
+            elif Pax_Device == True and len(setting_btn_val) > 0:
+                # click on battery optimize settings
+                self.perform_click(self.btn_settings)
+                logger.info(f"Pax_Device is True and setting_btn_val is not null to click on battery optimize settings")
+        except Exception as e:
+            logger.info(f"battery optimize settings popup is not displayed for pax device")

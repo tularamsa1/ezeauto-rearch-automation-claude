@@ -12,7 +12,8 @@ from PageFactory.sa.app_payment_page import PaymentPage
 from PageFactory.mpos.app_home_page import HomePage
 from PageFactory.mpos.app_login_page import LoginPage
 from PageFactory.sa.app_trans_history_page import TransHistoryPage
-from Utilities import Validator, ConfigReader, DBProcessor, ResourceAssigner, date_time_converter, APIProcessor, receipt_validator
+from Utilities import Validator, ConfigReader, DBProcessor, ResourceAssigner, date_time_converter, APIProcessor, \
+    receipt_validator
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -68,7 +69,8 @@ def test_common_100_115_231():
         terminal_info_id = result["id"].iloc[0]
         logger.debug(f"Fetching terminal_info_id value from the terminal_info table : {terminal_info_id}")
 
-        testsuite_teardown.revert_card_payment_settings_default(org_code=org_code, portal_un=portal_username, portal_pw=portal_password)
+        testsuite_teardown.revert_card_payment_settings_default(org_code=org_code, portal_un=portal_username,
+                                                                portal_pw=portal_password)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -245,11 +247,13 @@ def test_common_100_115_231():
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching amount value from txn history for the txn : {txn_id}, {app_amount}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(f"Fetching settlement status value from txn history for the txn : {txn_id}, {app_settlement_status}")
+                logger.info(
+                    f"Fetching settlement status value from txn history for the txn : {txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_message_text()
                 logger.info(f"Fetching payment msg value from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
-                logger.info(f"Fetching date and time value from txn history for the txn : {txn_id}, {app_date_and_time}")
+                logger.info(
+                    f"Fetching date and time value from txn history for the txn : {txn_id}, {app_date_and_time}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(f"Fetching rrn value from txn history for the txn : {txn_id}, {app_rrn}")
                 app_auth_code = txn_history_page.fetch_auth_code_text()
@@ -267,7 +271,8 @@ def test_common_100_115_231():
                 app_card_type_desc = txn_history_page.fetch_card_type_desc_text()
                 logger.info(f"Fetching card type value from txn history for the txn : {txn_id}, {app_card_type_desc}")
                 app_customer_name = txn_history_page.fetch_customer_name_text()
-                logger.info(f"Fetching customer name value from txn history for the txn : {txn_id}, {app_customer_name}")
+                logger.info(
+                    f"Fetching customer name value from txn history for the txn : {txn_id}, {app_customer_name}")
 
                 actual_app_values = {
                     "pmt_mode": payment_mode,
@@ -331,7 +336,7 @@ def test_common_100_115_231():
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
-                api_details = DBProcessor.get_api_details('txnlist',request_body={
+                api_details = DBProcessor.get_api_details('txnlist', request_body={
                     "username": app_username,
                     "password": app_password
                 })
@@ -384,9 +389,11 @@ def test_common_100_115_231():
                         batch_number_api = elements["batchNumber"]
                         logger.debug(f"Value of batchNumber obtained from txnlist api : {batch_number_api}")
                         card_last_four_digit_api = elements["cardLastFourDigit"]
-                        logger.debug(f"Value of cardLastFourDigit obtained from txnlist api : {card_last_four_digit_api}")
+                        logger.debug(
+                            f"Value of cardLastFourDigit obtained from txnlist api : {card_last_four_digit_api}")
                         external_ref_number_api = elements["externalRefNumber"]
-                        logger.debug(f"Value of externalRefNumber obtained from txnlist api : {external_ref_number_api}")
+                        logger.debug(
+                            f"Value of externalRefNumber obtained from txnlist api : {external_ref_number_api}")
                         merchant_name_api = elements["merchantName"]
                         logger.debug(f"Value of merchantName obtained from txnlist api : {merchant_name_api}")
                         payment_card_bin_api = elements["paymentCardBin"]
@@ -542,7 +549,8 @@ def test_common_100_115_231():
                     "rrn": rr_number,
                 }
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
@@ -631,7 +639,8 @@ def test_common_100_115_232():
         terminal_info_id = result["id"].iloc[0]
         logger.debug(f"Fetching terminal_info_id value from the terminal_info table : {terminal_info_id}")
 
-        testsuite_teardown.revert_card_payment_settings_default(org_code=org_code, portal_un=portal_username, portal_pw=portal_password)
+        testsuite_teardown.revert_card_payment_settings_default(org_code=org_code, portal_un=portal_username,
+                                                                portal_pw=portal_password)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -808,11 +817,13 @@ def test_common_100_115_232():
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching amount value from txn history for the txn : {txn_id}, {app_amount}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(f"Fetching settlement status value from txn history for the txn : {txn_id}, {app_settlement_status}")
+                logger.info(
+                    f"Fetching settlement status value from txn history for the txn : {txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_message_text()
                 logger.info(f"Fetching payment msg value from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
-                logger.info(f"Fetching date and time value from txn history for the txn : {txn_id}, {app_date_and_time}")
+                logger.info(
+                    f"Fetching date and time value from txn history for the txn : {txn_id}, {app_date_and_time}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(f"Fetching rrn value from txn history for the txn : {txn_id}, {app_rrn}")
                 app_auth_code = txn_history_page.fetch_auth_code_text()
@@ -830,7 +841,8 @@ def test_common_100_115_232():
                 app_card_type_desc = txn_history_page.fetch_card_type_desc_text()
                 logger.info(f"Fetching card type value from txn history for the txn : {txn_id}, {app_card_type_desc}")
                 app_customer_name = txn_history_page.fetch_customer_name_text()
-                logger.info(f"Fetching customer name value from txn history for the txn : {txn_id}, {app_customer_name}")
+                logger.info(
+                    f"Fetching customer name value from txn history for the txn : {txn_id}, {app_customer_name}")
 
                 actual_app_values = {
                     "pmt_mode": payment_mode,
@@ -894,7 +906,7 @@ def test_common_100_115_232():
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
-                api_details = DBProcessor.get_api_details('txnlist',request_body={
+                api_details = DBProcessor.get_api_details('txnlist', request_body={
                     "username": app_username,
                     "password": app_password
                 })
@@ -947,9 +959,11 @@ def test_common_100_115_232():
                         batch_number_api = elements["batchNumber"]
                         logger.debug(f"Value of batchNumber obtained from txnlist api : {batch_number_api}")
                         card_last_four_digit_api = elements["cardLastFourDigit"]
-                        logger.debug(f"Value of cardLastFourDigit obtained from txnlist api : {card_last_four_digit_api}")
+                        logger.debug(
+                            f"Value of cardLastFourDigit obtained from txnlist api : {card_last_four_digit_api}")
                         external_ref_number_api = elements["externalRefNumber"]
-                        logger.debug(f"Value of externalRefNumber obtained from txnlist api : {external_ref_number_api}")
+                        logger.debug(
+                            f"Value of externalRefNumber obtained from txnlist api : {external_ref_number_api}")
                         merchant_name_api = elements["merchantName"]
                         logger.debug(f"Value of merchantName obtained from txnlist api : {merchant_name_api}")
                         payment_card_bin_api = elements["paymentCardBin"]
@@ -1105,7 +1119,8 @@ def test_common_100_115_232():
                     "rrn": rr_number,
                 }
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
@@ -1194,7 +1209,8 @@ def test_common_100_115_233():
         terminal_info_id = result["id"].iloc[0]
         logger.debug(f"Fetching terminal_info_id value from the terminal_info table : {terminal_info_id}")
 
-        testsuite_teardown.revert_card_payment_settings_default(org_code=org_code, portal_un=portal_username, portal_pw=portal_password)
+        testsuite_teardown.revert_card_payment_settings_default(org_code=org_code, portal_un=portal_username,
+                                                                portal_pw=portal_password)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -1254,7 +1270,7 @@ def test_common_100_115_233():
             logger.debug(f"Query result for txn table before voiding the txn : {result}")
             txn_id = result['id'].values[0]
             logger.debug(f"Fetching txn_id value from the txn table : {txn_id}")
-   
+
             txn_history_page = TransHistoryPage(app_driver)
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
@@ -1371,11 +1387,13 @@ def test_common_100_115_233():
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching amount value from txn history for the txn : {txn_id}, {app_amount}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(f"Fetching settlement status value from txn history for the txn : {txn_id}, {app_settlement_status}")
+                logger.info(
+                    f"Fetching settlement status value from txn history for the txn : {txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_message_text()
                 logger.info(f"Fetching payment msg value from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
-                logger.info(f"Fetching date and time value from txn history for the txn : {txn_id}, {app_date_and_time}")
+                logger.info(
+                    f"Fetching date and time value from txn history for the txn : {txn_id}, {app_date_and_time}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(f"Fetching rrn value from txn history for the txn : {txn_id}, {app_rrn}")
                 app_auth_code = txn_history_page.fetch_auth_code_text()
@@ -1393,7 +1411,8 @@ def test_common_100_115_233():
                 app_card_type_desc = txn_history_page.fetch_card_type_desc_text()
                 logger.info(f"Fetching card type value from txn history for the txn : {txn_id}, {app_card_type_desc}")
                 app_customer_name = txn_history_page.fetch_customer_name_text()
-                logger.info(f"Fetching customer name value from txn history for the txn : {txn_id}, {app_customer_name}")
+                logger.info(
+                    f"Fetching customer name value from txn history for the txn : {txn_id}, {app_customer_name}")
 
                 actual_app_values = {
                     "pmt_mode": payment_mode,
@@ -1457,7 +1476,7 @@ def test_common_100_115_233():
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
-                api_details = DBProcessor.get_api_details('txnlist',request_body={
+                api_details = DBProcessor.get_api_details('txnlist', request_body={
                     "username": app_username,
                     "password": app_password
                 })
@@ -1510,9 +1529,11 @@ def test_common_100_115_233():
                         batch_number_api = elements["batchNumber"]
                         logger.debug(f"Value of batchNumber obtained from txnlist api : {batch_number_api}")
                         card_last_four_digit_api = elements["cardLastFourDigit"]
-                        logger.debug(f"Value of cardLastFourDigit obtained from txnlist api : {card_last_four_digit_api}")
+                        logger.debug(
+                            f"Value of cardLastFourDigit obtained from txnlist api : {card_last_four_digit_api}")
                         external_ref_number_api = elements["externalRefNumber"]
-                        logger.debug(f"Value of externalRefNumber obtained from txnlist api : {external_ref_number_api}")
+                        logger.debug(
+                            f"Value of externalRefNumber obtained from txnlist api : {external_ref_number_api}")
                         merchant_name_api = elements["merchantName"]
                         logger.debug(f"Value of merchantName obtained from txnlist api : {merchant_name_api}")
                         payment_card_bin_api = elements["paymentCardBin"]
@@ -1668,7 +1689,8 @@ def test_common_100_115_233():
                     "rrn": rr_number,
                 }
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
@@ -1746,7 +1768,7 @@ def test_common_100_115_234():
 
         if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == 'true':
 
-            app_driver = TestSuiteSetup.initialize_app_driver(request=testcase_id)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, no_reset=True)
             query = f"UPDATE terminal_info SET status = 'INACTIVE' WHERE org_code = '{org_code}';"
             logger.debug(f"Query to fetch data from the terminal_info for the {org_code} : {query}")
             DBProcessor.setValueToDB(query=query)
@@ -1787,7 +1809,8 @@ def test_common_100_115_234():
             terminal_info_id = result["id"].iloc[0]
             logger.debug(f"Fetching terminal_info_id value from the terminal_info table : {terminal_info_id}")
 
-        testsuite_teardown.revert_card_payment_settings_default(org_code=org_code, portal_un=portal_username, portal_pw=portal_password)
+        testsuite_teardown.revert_card_payment_settings_default(org_code=org_code, portal_un=portal_username,
+                                                                portal_pw=portal_password)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -1800,7 +1823,8 @@ def test_common_100_115_234():
         result = DBProcessor.getValueFromDB(query=query)
         issuer_code = result["bank_code"].values[0]
         logger.debug(f"Fetching bank_code from the bin_info table : bank_code : {issuer_code}")
-
+        testsuite_teardown.update_org_settings_for_auto_login(org_code, portal_un=portal_username,
+                                                              portal_pw=portal_password)
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1818,12 +1842,12 @@ def test_common_100_115_234():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             if str(ConfigReader.read_config("ParallelExecution", "deviceOnly")).lower() == 'false':
-                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+                app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, no_reset=True)
             login_page = LoginPage(app_driver)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
-            login_page.perform_login(app_username, app_password)
+            login_page.perform_login_for_auto_login_functionality(app_username, app_password, Pax_Device=True)
+            logger.debug(f"Logged in to the MPOS application with the autoLoginByTokenEnabled feature enabled")
             home_page = HomePage(app_driver)
-            # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -1852,6 +1876,7 @@ def test_common_100_115_234():
             txn_history_page = TransHistoryPage(app_driver)
             txn_history_page.click_on_transaction_by_txn_id(txn_id)
             txn_history_page.click_on_void_card_txn()
+            login_page.perform_cash_additional_auth(app_password)
 
             time.sleep(3)
             logger.debug(f"Waiting for 3 secs to get data from txn table for void txn")
@@ -1965,11 +1990,13 @@ def test_common_100_115_234():
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching amount value from txn history for the txn : {txn_id}, {app_amount}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(f"Fetching settlement status value from txn history for the txn : {txn_id}, {app_settlement_status}")
+                logger.info(
+                    f"Fetching settlement status value from txn history for the txn : {txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_message_text()
                 logger.info(f"Fetching payment msg value from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
-                logger.info(f"Fetching date and time value from txn history for the txn : {txn_id}, {app_date_and_time}")
+                logger.info(
+                    f"Fetching date and time value from txn history for the txn : {txn_id}, {app_date_and_time}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(f"Fetching rrn value from txn history for the txn : {txn_id}, {app_rrn}")
                 app_auth_code = txn_history_page.fetch_auth_code_text()
@@ -1987,7 +2014,8 @@ def test_common_100_115_234():
                 app_card_type_desc = txn_history_page.fetch_card_type_desc_text()
                 logger.info(f"Fetching card type value from txn history for the txn : {txn_id}, {app_card_type_desc}")
                 app_customer_name = txn_history_page.fetch_customer_name_text()
-                logger.info(f"Fetching customer name value from txn history for the txn : {txn_id}, {app_customer_name}")
+                logger.info(
+                    f"Fetching customer name value from txn history for the txn : {txn_id}, {app_customer_name}")
 
                 actual_app_values = {
                     "pmt_mode": payment_mode,
@@ -2051,7 +2079,7 @@ def test_common_100_115_234():
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
-                api_details = DBProcessor.get_api_details('txnlist',request_body={
+                api_details = DBProcessor.get_api_details('txnlist', request_body={
                     "username": app_username,
                     "password": app_password
                 })
@@ -2104,9 +2132,11 @@ def test_common_100_115_234():
                         batch_number_api = elements["batchNumber"]
                         logger.debug(f"Value of batchNumber obtained from txnlist api : {batch_number_api}")
                         card_last_four_digit_api = elements["cardLastFourDigit"]
-                        logger.debug(f"Value of cardLastFourDigit obtained from txnlist api : {card_last_four_digit_api}")
+                        logger.debug(
+                            f"Value of cardLastFourDigit obtained from txnlist api : {card_last_four_digit_api}")
                         external_ref_number_api = elements["externalRefNumber"]
-                        logger.debug(f"Value of externalRefNumber obtained from txnlist api : {external_ref_number_api}")
+                        logger.debug(
+                            f"Value of externalRefNumber obtained from txnlist api : {external_ref_number_api}")
                         merchant_name_api = elements["merchantName"]
                         logger.debug(f"Value of merchantName obtained from txnlist api : {merchant_name_api}")
                         payment_card_bin_api = elements["paymentCardBin"]
@@ -2262,7 +2292,8 @@ def test_common_100_115_234():
                     "rrn": rr_number,
                 }
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")
@@ -2355,7 +2386,8 @@ def test_common_100_115_235():
         terminal_info_id = result["id"].iloc[0]
         logger.debug(f"Fetching terminal_info_id value from the terminal_info table : {terminal_info_id}")
 
-        testsuite_teardown.revert_card_payment_settings_default(org_code=org_code, portal_un=portal_username, portal_pw=portal_password)
+        testsuite_teardown.revert_card_payment_settings_default(org_code=org_code, portal_un=portal_username,
+                                                                portal_pw=portal_password)
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -2532,11 +2564,13 @@ def test_common_100_115_235():
                 app_amount = txn_history_page.fetch_txn_amount_text()
                 logger.info(f"Fetching amount value from txn history for the txn : {txn_id}, {app_amount}")
                 app_settlement_status = txn_history_page.fetch_settlement_status_text()
-                logger.info(f"Fetching settlement status value from txn history for the txn : {txn_id}, {app_settlement_status}")
+                logger.info(
+                    f"Fetching settlement status value from txn history for the txn : {txn_id}, {app_settlement_status}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_message_text()
                 logger.info(f"Fetching payment msg value from txn history for the txn : {txn_id}, {app_payment_msg}")
                 app_date_and_time = txn_history_page.fetch_date_time_text()
-                logger.info(f"Fetching date and time value from txn history for the txn : {txn_id}, {app_date_and_time}")
+                logger.info(
+                    f"Fetching date and time value from txn history for the txn : {txn_id}, {app_date_and_time}")
                 app_rrn = txn_history_page.fetch_RRN_text()
                 logger.info(f"Fetching rrn value from txn history for the txn : {txn_id}, {app_rrn}")
                 app_auth_code = txn_history_page.fetch_auth_code_text()
@@ -2554,7 +2588,8 @@ def test_common_100_115_235():
                 app_card_type_desc = txn_history_page.fetch_card_type_desc_text()
                 logger.info(f"Fetching card type value from txn history for the txn : {txn_id}, {app_card_type_desc}")
                 app_customer_name = txn_history_page.fetch_customer_name_text()
-                logger.info(f"Fetching customer name value from txn history for the txn : {txn_id}, {app_customer_name}")
+                logger.info(
+                    f"Fetching customer name value from txn history for the txn : {txn_id}, {app_customer_name}")
 
                 actual_app_values = {
                     "pmt_mode": payment_mode,
@@ -2618,7 +2653,7 @@ def test_common_100_115_235():
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
-                api_details = DBProcessor.get_api_details('txnlist',request_body={
+                api_details = DBProcessor.get_api_details('txnlist', request_body={
                     "username": app_username,
                     "password": app_password
                 })
@@ -2671,9 +2706,11 @@ def test_common_100_115_235():
                         batch_number_api = elements["batchNumber"]
                         logger.debug(f"Value of batchNumber obtained from txnlist api : {batch_number_api}")
                         card_last_four_digit_api = elements["cardLastFourDigit"]
-                        logger.debug(f"Value of cardLastFourDigit obtained from txnlist api : {card_last_four_digit_api}")
+                        logger.debug(
+                            f"Value of cardLastFourDigit obtained from txnlist api : {card_last_four_digit_api}")
                         external_ref_number_api = elements["externalRefNumber"]
-                        logger.debug(f"Value of externalRefNumber obtained from txnlist api : {external_ref_number_api}")
+                        logger.debug(
+                            f"Value of externalRefNumber obtained from txnlist api : {external_ref_number_api}")
                         merchant_name_api = elements["merchantName"]
                         logger.debug(f"Value of merchantName obtained from txnlist api : {merchant_name_api}")
                         payment_card_bin_api = elements["paymentCardBin"]
@@ -2829,7 +2866,8 @@ def test_common_100_115_235():
                     "rrn": rr_number,
                 }
                 logger.debug(f"actual_portal_values : {actual_portal_values}")
-                Validator.validateAgainstPortal(expectedPortal=expected_portal_values, actualPortal=actual_portal_values)
+                Validator.validateAgainstPortal(expectedPortal=expected_portal_values,
+                                                actualPortal=actual_portal_values)
             except Exception as e:
                 Configuration.perform_portal_val_exception(testcase_id, e)
             logger.info(f"Completed Portal validation for the test case : {testcase_id}")

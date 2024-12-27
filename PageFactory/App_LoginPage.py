@@ -116,3 +116,5 @@ class LoginPage(BasePage):
         self.wait_for_element(self.txt_auth_password).clear()
         self.perform_sendkeys(self.txt_auth_password, app_password)
         self.perform_click(self.btn_auth_login)
+
+

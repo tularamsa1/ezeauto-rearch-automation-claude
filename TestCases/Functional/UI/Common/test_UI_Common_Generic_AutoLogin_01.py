@@ -40,9 +40,6 @@ def test_common_400_401_036():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-        testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
-                                                       portal_pw=portal_password)
-        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")

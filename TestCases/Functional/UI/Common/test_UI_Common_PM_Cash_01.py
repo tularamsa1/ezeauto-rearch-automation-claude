@@ -48,12 +48,11 @@ def test_common_100_106_001():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-        testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
-                                                       portal_pw=portal_password)
-        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+        testsuite_teardown.update_org_settings_for_auto_login(org_code, portal_un=portal_username,
+                                                       portal_pw=portal_password)
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -68,12 +67,12 @@ def test_common_100_106_001():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, no_reset=True)
             login_page = LoginPage(app_driver)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
-            login_page.perform_login(app_username, app_password)
+            login_page.perform_login_for_auto_login_functionality(app_username, app_password, Pax_Device=True)
+            logger.debug(f"Logged in to the MPOS application with the autoLoginByTokenEnabled feature enabled")
             home_page = HomePage(app_driver)
-            # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
@@ -136,7 +135,7 @@ def test_common_100_106_001():
 
                 home_page.click_on_history()
                 txn_history_page = TransHistoryPage(app_driver)
-                txn_history_page.click_on_transaction_by_order_id(order_id)
+                txn_history_page.click_on_transaction_by_txn_id(txn_id)
                 payment_status = txn_history_page.fetch_txn_status_text()
                 logger.info(f"Fetching status from txn history for the txn : {txn_id}, {payment_status}")
                 payment_mode = txn_history_page.fetch_txn_type_text()
@@ -357,9 +356,6 @@ def test_common_100_106_002():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-        testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
-                                                       portal_pw=portal_password)
-        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
@@ -369,6 +365,8 @@ def test_common_100_106_002():
         # -----------------------------PreConditions(Completed)-----------------------------
         # Set the below variables depending on the log capturing need of the test case.
         Configuration.configureLogCaptureVariables(apiLog=True, portalLog=True)
+        testsuite_teardown.update_org_settings_for_auto_login(org_code, portal_un=portal_username,
+                                                       portal_pw=portal_password)
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function : {testcase_id}")
         # -----------------------------------------Start of Test Execution-------------------------------------
@@ -377,10 +375,11 @@ def test_common_100_106_002():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, no_reset=True)
             login_page = LoginPage(app_driver)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
-            login_page.perform_login(app_username, app_password)
+            login_page.perform_login_for_auto_login_functionality(app_username, app_password, Pax_Device=True)
+            logger.debug(f"Logged in to the MPOS application with the autoLoginByTokenEnabled feature enabled")
             home_page = HomePage(app_driver)
             # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
@@ -454,6 +453,8 @@ def test_common_100_106_002():
                 logger.info(f"Fetching date from txn history for the txn : {txn_id}, {app_date_and_time}")
                 app_payment_msg = txn_history_page.fetch_txn_payment_message_text()
                 logger.info(f"Fetching txn status msg from txn history for the txn : {txn_id}, {app_payment_msg}")
+                # txn_history_page.move_back_to_home()
+                # logger.debug(f"came back to home")
 
                 actual_app_values = {"pmt_mode": payment_mode,
                                      "pmt_status": payment_status.split(':')[1],
@@ -659,8 +660,6 @@ def test_common_100_106_003():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-        testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username, portal_pw=portal_password)
-        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -672,6 +671,9 @@ def test_common_100_106_003():
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
+
+        testsuite_teardown.update_org_settings_for_auto_login(org_code, portal_un=portal_username,
+                                                       portal_pw=portal_password)
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -685,10 +687,11 @@ def test_common_100_106_003():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, no_reset=True)
             login_page = LoginPage(app_driver)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
-            login_page.perform_login(app_username, app_password)
+            login_page.perform_login_for_auto_login_functionality(app_username, app_password, Pax_Device=True)
+            logger.debug(f"Logged in to the MPOS application with the autoLoginByTokenEnabled feature enabled")
             home_page = HomePage(app_driver)
             # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
@@ -968,6 +971,8 @@ def test_common_100_106_003():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
+        testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username, portal_pw=portal_password)
+        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -999,10 +1004,6 @@ def test_common_100_106_004():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-
-        testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
-                                                       portal_pw=portal_password)
-        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -1015,6 +1016,8 @@ def test_common_100_106_004():
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
+        testsuite_teardown.update_org_settings_for_auto_login(org_code, portal_un=portal_username,
+                                                       portal_pw=portal_password)
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
         # -----------------------------PreConditions(Completed)-----------------------------
@@ -1027,10 +1030,11 @@ def test_common_100_106_004():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, no_reset=True)
             login_page = LoginPage(app_driver)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
-            login_page.perform_login(app_username, app_password)
+            login_page.perform_login_for_auto_login_functionality(app_username, app_password, Pax_Device=True)
+            logger.debug(f"Logged in to the MPOS application with the autoLoginByTokenEnabled feature enabled")
             home_page = HomePage(app_driver)
             # home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
@@ -1135,10 +1139,6 @@ def test_common_100_106_005():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-
-        testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
-                                                       portal_pw=portal_password)
-        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
@@ -1152,6 +1152,8 @@ def test_common_100_106_005():
         logger.debug(f"API details  : {api_details} ")
         response = APIProcessor.send_request(api_details)
         logger.debug(f"Response received for setting preconditions is : {response}")
+        testsuite_teardown.update_org_settings_for_auto_login(org_code, portal_un=portal_username,
+                                                       portal_pw=portal_password)
         TestSuiteSetup.launch_browser_and_context_initialize()
         GlobalVariables.setupCompletedSuccessfully = True
         logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
@@ -1168,10 +1170,11 @@ def test_common_100_106_005():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, no_reset=True)
             login_page = LoginPage(app_driver)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
-            login_page.perform_login(app_username, app_password)
+            login_page.perform_login_for_auto_login_functionality(app_username, app_password, Pax_Device=True)
+            logger.debug(f"Logged in to the MPOS application with the autoLoginByTokenEnabled feature enabled")
             home_page = HomePage(app_driver)
             # home_page.check_home_page_logo()
             home_page.wait_for_home_page_load()

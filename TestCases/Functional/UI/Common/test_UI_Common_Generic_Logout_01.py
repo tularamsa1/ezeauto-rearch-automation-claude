@@ -119,6 +119,8 @@ def test_common_400_402_001():
         logger.info(f"Completed Validation for the test case : {testcase_id}")
         # -------------------------------------------End of Validation---------------------------------------------
     finally:
+        testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
+                                                       portal_pw=portal_password)
         Configuration.executeFinallyBlock(testcase_id)
 
 
@@ -149,9 +151,6 @@ def test_common_400_402_002():
         result = DBProcessor.getValueFromDB(query)
         org_code = result['org_code'].values[0]
         logger.debug(f"Query result, org_code : {org_code}")
-        testsuite_teardown.revert_org_settings_default(org_code, portal_un=portal_username,
-                                                       portal_pw=portal_password)
-        logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
@@ -176,10 +175,11 @@ def test_common_400_402_002():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
             # ------------------------------------------------------------------------------------------------
-            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id)
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, no_reset=True)
             login_page = LoginPage(app_driver)
-            login_page.perform_login(app_username, app_password)
             logger.info(f"Logging in the MPOSX application using username : {app_username}")
+            login_page.perform_login_for_auto_login_functionality(app_username, app_password, Pax_Device=True)
+            logger.debug(f"Logged in to the MPOS application with the autoLoginByTokenEnabled feature enabled")
             home_page = HomePage(app_driver)
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
