@@ -591,6 +591,12 @@ def log_on_failure(request):
                             reward_logs = LogProcessor.fetch_reward_logs()
                             rerun_file = Path(path + "/reward.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
+
+                        if GlobalVariables.adb_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_adb") == "True":
+                            adb_logs = LogProcessor.fetch_adb_exception_logs()
+                            rerun_file = Path(path + "/adb.log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, adb_logs)
                     else:
                         if Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True":
                             print("Inside capturing log of last run TCs in one file")
@@ -674,6 +680,12 @@ def log_on_failure(request):
                                     reward_logs = LogProcessor.fetch_reward_logs()
                                     rerun_file = Path(path + "/reward.log")
                                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
+
+                                if GlobalVariables.adb_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_adb") == "True":
+                                    adb_logs = LogProcessor.fetch_adb_exception_logs()
+                                    rerun_file = Path(path + "/adb.log")
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, adb_logs)
                             else:
                                 print("This is not last run")
                         else:
@@ -799,6 +811,15 @@ def log_on_failure(request):
                                             rerun_file = Path(path + "/reward_Rerun_" + str(j) + ".log")
                                         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
 
+                                    if GlobalVariables.adb_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_adb") == "True":
+                                        adb_logs = LogProcessor.fetch_adb_exception_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/adb.log")
+                                        else:
+                                            rerun_file = Path(path + "/adb_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, adb_logs)
+
                                 i -= 1
                                 j += 1
                         else:
@@ -886,6 +907,12 @@ def log_on_failure(request):
                                         reward_logs = LogProcessor.fetch_reward_logs()
                                         rerun_file = Path(path + "/reward.log")
                                         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
+
+                                    if GlobalVariables.adb_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_adb") == "True":
+                                        adb_logs = LogProcessor.fetch_adb_exception_logs()
+                                        rerun_file = Path(path + "/adb.log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, adb_logs)
                                 else:
                                     print("This is not last run")
                             else:
@@ -966,6 +993,12 @@ def log_on_failure(request):
                         reward_logs = LogProcessor.fetch_reward_logs()
                         rerun_file = Path(path + "/reward.log")
                         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
+
+                    if GlobalVariables.adb_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_adb") == "True":
+                        adb_logs = LogProcessor.fetch_adb_exception_logs()
+                        rerun_file = Path(path + "/adb.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, adb_logs)
                 else:
                     if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True":
                         testCaseID = str(item.nodeid).split('/')
@@ -1053,6 +1086,12 @@ def log_on_failure(request):
                             rerun_file = Path(path + "/reward.log")
                             open(rerun_file, 'w').close()
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
+
+                        if GlobalVariables.adb_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_adb") == "True":
+                            adb_logs = LogProcessor.fetch_adb_exception_logs()
+                            rerun_file = Path(path + "/adb.log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, adb_logs)
                     else:
                         print("Both bool_capt_log_one_file and bool_capt_log_different_files are disabled")
 
@@ -1220,6 +1259,12 @@ def log_on_success(request):
                             reward_logs = LogProcessor.fetch_reward_logs()
                             rerun_file = Path(path + "/reward.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
+
+                        if GlobalVariables.adb_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_adb") == "True":
+                            adb_logs = LogProcessor.fetch_adb_exception_logs()
+                            rerun_file = Path(path + "/adb.log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, adb_logs)
                     else:
                         if Base_Actions.is_log_capture_required("bool_capt_log_last_run") == "True":
                             print("capt_log_last_run == true")
@@ -1292,6 +1337,12 @@ def log_on_success(request):
                                 reward_logs = LogProcessor.fetch_reward_logs()
                                 rerun_file = Path(path + "/reward.log")
                                 LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
+
+                            if GlobalVariables.adb_logs and Base_Actions.is_log_capture_required(
+                                    "bool_capt_log_adb") == "True":
+                                adb_logs = LogProcessor.fetch_adb_exception_logs()
+                                rerun_file = Path(path + "/adb.log")
+                                LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, adb_logs)
                         else:
                             print("Both last_run and all_run are disabled")
                 else:
@@ -1411,6 +1462,16 @@ def log_on_success(request):
                                             rerun_file = Path(path + "/reward_Rerun_" + str(j) + ".log")
                                         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
 
+                                    if GlobalVariables.adb_logs and Base_Actions.is_log_capture_required(
+                                            "bool_capt_log_adb") == "True":
+                                        adb_logs = LogProcessor.fetch_adb_exception_logs()
+                                        if j == 0:
+                                            rerun_file = Path(path + "/adb.log")
+                                        else:
+                                            rerun_file = Path(path + "/adb_Rerun_" + str(j) + ".log")
+                                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, adb_logs)
+
+
                                 i -= 1
                                 j += 1
                         else:
@@ -1499,6 +1560,12 @@ def log_on_success(request):
                                     reward_logs = LogProcessor.fetch_reward_logs()
                                     rerun_file = Path(path + "/reward.log")
                                     LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
+
+                                if GlobalVariables.adb_logs and Base_Actions.is_log_capture_required(
+                                        "bool_capt_log_adb") == "True":
+                                    adb_logs = LogProcessor.fetch_adb_exception_logs()
+                                    rerun_file = Path(path + "/adb.log")
+                                    LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, adb_logs)
                             else:
                                 print("Both last_run and each_run are disabled")
                     else:
@@ -1576,6 +1643,12 @@ def log_on_success(request):
                         reward_logs = LogProcessor.fetch_reward_logs()
                         rerun_file = Path(path + "/reward.log")
                         LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
+
+                    if GlobalVariables.adb_logs and Base_Actions.is_log_capture_required(
+                            "bool_capt_log_adb") == "True":
+                        adb_logs = LogProcessor.fetch_adb_exception_logs()
+                        rerun_file = Path(path + "/adb.log")
+                        LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, adb_logs)
                 else:
                     if Base_Actions.is_log_capture_required("bool_capt_log_different_files") == "True":
                         testCaseID = str(item.nodeid).split('/')
@@ -1653,6 +1726,12 @@ def log_on_success(request):
                             reward_logs = LogProcessor.fetch_reward_logs()
                             rerun_file = Path(path + "/reward.log")
                             LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, reward_logs)
+
+                        if GlobalVariables.adb_logs and Base_Actions.is_log_capture_required(
+                                "bool_capt_log_adb") == "True":
+                            adb_logs = LogProcessor.fetch_adb_exception_logs()
+                            rerun_file = Path(path + "/adb.log")
+                            LogProcessor.appendLogs(rerun_file, TCIdWithTimeStamp, adb_logs)
                     else:
                         print("Both bool_capt_log_one_file and bool_capt_log_different_files are disabled")
 

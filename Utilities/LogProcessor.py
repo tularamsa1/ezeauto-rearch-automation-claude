@@ -1,6 +1,8 @@
 import datetime
 from datetime import datetime
-
+import subprocess
+import os
+from Utilities import DirectoryCreator
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -199,6 +201,29 @@ def fetch_reward_logs() -> str:
     for line in iter(lambda: ssh_stdout.readline(), ''):
         data_buffer += line
     return data_buffer
+
+
+def fetch_adb_exception_logs():
+    try:
+        execution_date = datetime.now().strftime("%m-%d")
+        logcat_result = subprocess.run(
+            ["adb", "logcat", "-d", "*:E"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if logcat_result.returncode != 0:
+            print(f"Error fetching logs: {logcat_result.stderr}")
+            return
+        grep_result = subprocess.run(
+            ["grep", "-E", f"^{execution_date} {GlobalVariables.start_time}|{execution_date} {GlobalVariables.end_time}"],
+            input=logcat_result.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if grep_result.returncode != 0:
+            print(f"Error with grep: {grep_result.stderr}")
+        else:
+            if grep_result.stdout:
+                return grep_result.stdout
+            else:
+                print("No matching logs found.")
+                return None
+    except Exception as e:
+        print(f"Error: {str(e)}")
 
 
 class LogFileNotFoundError(Exception):

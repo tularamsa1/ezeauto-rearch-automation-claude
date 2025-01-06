@@ -38,6 +38,7 @@ commx_logs = False
 ezestore_logs = False
 khata_logs = False
 reward_logs = False
+adb_logs = False
 
 # portalSS = False
 
@@ -132,3 +133,6 @@ tot_chargeslip_val = 0
 
 # to skip navigation flow lines of code while fetching 2nd/3rd app txn details, we are initializing as False
 bool_validate_multiple_txns = False
+
+start_time = ''
+end_time = ''
