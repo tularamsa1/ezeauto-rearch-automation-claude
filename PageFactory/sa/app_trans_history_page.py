@@ -1,3 +1,5 @@
+import logging
+import time
 from time import sleep
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.webdriver import ActionChains
@@ -15,8 +17,10 @@ class TransHistoryPage(BasePage):
     lbl_transactions = (By.ID, '//android.widget.TextView[@text = "Transactions"]')
     lbl_noTransactionsAvailable = (By.ID, "com.ezetap.service.demo:id/tv_ErrorMsg")
     txa_amountField = (By.ID, 'com.ezetap.service.demo:id/tvAmount')
+    txa_amount_field_prod = (By.ID, 'com.ezetap.service.prod:id/tvAmount')
     txa_statusField = (By.ID, "com.ezetap.service.demo:id/tvTxnStatus")
     txt_orderIdField = (By.ID, "com.ezetap.service.demo:id/tvOderId")
+    txt_orderId_field_prod = (By.ID, "com.ezetap.service.prod:id/tvOderId")
     btn_printReceipt = (By.ID, 'com.ezetap.service.demo:id/btnPrintReceipt')
     btn_printCustomerCopy = (By.ID, "com.ezetap.service.demo:id/btnNegative")
     btn_skip = (By.ID, "com.ezetap.service.demo:id/btnPositive")
@@ -27,7 +31,9 @@ class TransHistoryPage(BasePage):
     btn_voidTransaction = (By.ID, "com.ezetap.service.demo:id/btnVoidTxn")
     btn_voidTransactionYes = (By.ID, "com.ezetap.service.demo:id/btnPositive")
     txa_finalStatusField = (By.ID, "com.ezetap.service.demo:id/tvTxnFinalStatus")
+    txa_final_status_field_prod = (By.ID, "com.ezetap.service.prod:id/tvTxnFinalStatus")
     txa_payment_status_message = (By.ID, "com.ezetap.service.demo:id/tv_PaymentStatus")
+    txa_payment_status_message_prod = (By.ID, "com.ezetap.service.prod:id/tv_PaymentStatus")
     snp_fetchingChargeSlipMessage = (By.XPATH, "//*[contains(@text, 'Fetching Charge-slip')]")
     lnk_chargeSlip = (By.XPATH, "//*[contains(@text,'Click Here')]")
     lbl_receipt = (By.ID, "com.ezetap.service.demo:id/tvAmount")
@@ -36,8 +42,10 @@ class TransHistoryPage(BasePage):
                               "//*[@text='Auth Code']/following-sibling::android.widget.TextView")
     btn_toggleStausArrow = (By.ID, 'com.ezetap.service.demo:id/iv_ToggleStatus')
     txt_txnType = (By.ID, "com.ezetap.service.demo:id/tvTransactionType")
+    txt_type_prod = (By.ID, "com.ezetap.service.prod:id/tvTransactionType")
     txt_txnID = (By.XPATH, "//*[@text='TRANSACTION ID']/following-sibling::android.widget.TextView")
     txt_txnAmount = (By.ID, "com.ezetap.service.demo:id/tvTxnAmount")
+    txt_amount_prod = (By.ID, "com.ezetap.service.prod:id/tvTxnAmount")
     txt_rrNumber = (By.XPATH, "//*[@text='RR NUMBER']/following-sibling::android.widget.TextView |"
                               " //*[@text='RR Number']/following-sibling::android.widget.TextView")
     txt_customer_name = (By.XPATH, "//*[@text='CUSTOMER NAME']/following-sibling::android.widget.TextView |"
@@ -64,6 +72,8 @@ class TransHistoryPage(BasePage):
                                    " //*[@text='Reference No. 2']/following-sibling::android.widget.TextView")
     btn_void_txn = (By.ID, "com.ezetap.service.demo:id/ll_VoidRefund")
     btn_void_yes = (By.ID, "com.ezetap.service.demo:id/btnPositive")
+    btn_void_txn_prod = (By.ID, "com.ezetap.service.prod:id/ll_VoidRefund")
+    btn_void_yes_prod = (By.ID, "com.ezetap.service.prod:id/btnPositive")
     btn_void_no = (By.ID, "com.ezetap.service.demo:id/btnNegative")
     btn_rel_pre_auth = (By.ID, "com.ezetap.service.demo:id/btnRelPreAuth")
     btn_confirm_pre_auth = (By.ID, "com.ezetap.service.demo:id/btnCnfPreAuth")
@@ -211,6 +221,10 @@ class TransHistoryPage(BasePage):
 
     def click_first_amount_field(self):
         el = self.wait_for_all_elements(self.txa_amountField)
+        el[0].click()
+
+    def click_first_amount_field_prod(self):
+        el = self.wait_for_all_elements(self.txa_amount_field_prod)
         el[0].click()
 
     def click_on_transaction_by_order_id(self, order_id: str):
@@ -414,17 +428,32 @@ class TransHistoryPage(BasePage):
     def fetch_txn_status_text(self):
         return str(self.fetch_text(self.txa_finalStatusField))
 
+    def fetch_txn_status_text_prod(self):
+        return str(self.fetch_text(self.txa_final_status_field_prod))
+
     def fetch_txn_payment_message_text(self):
         return str(self.fetch_text(self.txa_payment_status_message))
+
+    def fetch_txn_payment_message_text_prod(self):
+        return str(self.fetch_text(self.txa_payment_status_message_prod))
 
     def fetch_txn_type_text(self):
         return str(self.fetch_text(self.txt_txnType))
 
+    def fetch_txn_type_text_prod(self):
+        return str(self.fetch_text(self.txt_type_prod))
+
     def fetch_order_id_text(self):
         return str(self.fetch_text(self.txt_orderIdField))
 
+    def fetch_order_id_text_prod(self):
+        return str(self.fetch_text(self.txt_orderId_field_prod))
+
     def fetch_txn_amount_text(self):
         return str(self.fetch_text(self.txt_txnAmount))
+
+    def fetch_txn_amount_text_prod(self):
+        return str(self.fetch_text(self.txt_amount_prod))
 
     def fetch_customer_name_text(self):
         return self.fetch_text(self.txt_customer_name)
@@ -488,6 +517,15 @@ class TransHistoryPage(BasePage):
     def click_on_void_card_txn(self):
         self.perform_click(self.btn_void_txn)
         self.perform_click(self.btn_void_yes)
+
+    def click_on_void_card_txn_prod(self):
+        self.wait_for_element(self.btn_void_txn_prod)
+        self.perform_click(self.btn_void_txn_prod)
+        self.wait_for_element(self.btn_void_yes_prod)
+        self.perform_click(self.btn_void_yes_prod)
+        self.wait_for_element(self.btn_void_yes_prod)
+        self.perform_click(self.btn_void_yes_prod)
+        time.sleep(3)
 
     def fetch_device_serial_text(self) -> str:
         """

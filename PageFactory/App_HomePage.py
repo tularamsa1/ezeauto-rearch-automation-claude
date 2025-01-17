@@ -38,6 +38,7 @@ class HomePage(BasePage):
     btn_back = (By.ID, "com.ezetap.basicapp:id/imgBack")
     btn_skip = (By.ID, "com.ezetap.service.demo:id/btnSkip")
     lbl_p2p_notification = (By.ID, "com.ezetap.service.demo:id/title")
+    lbl_p2p_notification_prod = (By.ID, "com.ezetap.service.prod:id/title")
     btn_image = (By.XPATH, "//android.widget.ImageButton[@content-desc='Open navigation drawer']")
     lbl_settings = (By.ID, "com.ezetap.basicapp:id/clSettingsItem")
     btn_other = (By.XPATH, "//android.widget.TextView[@text='Other']")
@@ -179,6 +180,10 @@ class HomePage(BasePage):
 
     def check_p2p_notification(self):
         return self.fetch_text(self.lbl_p2p_notification, 30)
+
+    def check_p2p_notification_prod(self):
+        """ fetching p2p notification text """
+        return self.fetch_text(self.lbl_p2p_notification_prod, 30)
 
     def click_image_btn(self):
         """

@@ -12,6 +12,7 @@ from pandas import DataFrame as df
 from DataProvider import GlobalConstants
 from PageFactory import Base_Actions
 from Utilities import ConfigReader
+from Utilities.ConfigReader import read_config
 from Utilities.execution_log_processor import EzeAutoLogger
 from DataProvider.GlobalConstants import SQLITE_DB_PATH
 
@@ -153,7 +154,10 @@ def get_api_details(api_name: str, request_body: dict = None, expected_result: d
 
 
 def get_value_from_db(query):
-    return getValueFromDB(query)
+    if read_config("APIs", "env").lower() == "prod":
+        pass
+    else:
+        return getValueFromDB(query)
 
 
 def getValueFromDB(query: str, db_name: str = 'ezetap_demo'):
@@ -161,48 +165,50 @@ def getValueFromDB(query: str, db_name: str = 'ezetap_demo'):
     This method is used to run a query and fetch the results from the specified db.
     :param query:str db_name: str
     """
+    if read_config("APIs", "env").lower() == "prod":
+        pass
+    else:
+        envi = ConfigReader.read_config("environment", "str_exe_env")
+        ssh_username = ConfigReader.read_config("environment", "str_ssh_username")
+        try:
+            ssh_private_key_password = ConfigReader.read_config("SSH", "ssh_private_key_password")
+        except Exception as e:
+            logger.warning(e)
+            ssh_private_key_password = None
 
-    envi = ConfigReader.read_config("environment", "str_exe_env")
-    ssh_username = ConfigReader.read_config("environment", "str_ssh_username")
-    try:
-        ssh_private_key_password = ConfigReader.read_config("SSH", "ssh_private_key_password")
-    except Exception as e:
-        logger.warning(e)
-        ssh_private_key_password = None
+        try:
+            sshtunnel.SSH_TIMEOUT = 5.0
+            tunnel = sshtunnel.SSHTunnelForwarder(
+                ssh_address_or_host=envi.lower(),
+                remote_bind_address=('localhost', 3306),
+                ssh_private_key_password=ssh_private_key_password
+            )
+            tunnel.start()
+        except Exception as e:
+            print(f"Stopping the execution as server is disconnected due to : {e}")
+            logger.error(f"Stopping the execution as server is disconnected due to : {e}")
+            if ssh_username.lower() != 'ezetap':
+                os.system("kill python3.9")
+        df_query_result = ""
+        try:
+            dict_db_credentials = get_db_credentials_from_excel()
+            logger.info(
+                f"Trying to connect to {db_name} db with username '{dict_db_credentials['username']}' and password '{dict_db_credentials['password']}'")
 
-    try:
-        sshtunnel.SSH_TIMEOUT = 5.0
-        tunnel = sshtunnel.SSHTunnelForwarder(
-            ssh_address_or_host=envi.lower(),
-            remote_bind_address=('localhost', 3306),
-            ssh_private_key_password=ssh_private_key_password
-        )
-        tunnel.start()
-    except Exception as e:
-        print(f"Stopping the execution as server is disconnected due to : {e}")
-        logger.error(f"Stopping the execution as server is disconnected due to : {e}")
-        if ssh_username.lower() != 'ezetap':
-            os.system("kill python3.9")
-    df_query_result = ""
-    try:
-        dict_db_credentials = get_db_credentials_from_excel()
-        logger.info(
-            f"Trying to connect to {db_name} db with username '{dict_db_credentials['username']}' and password '{dict_db_credentials['password']}'")
+            actual_db_name = get_db_name_from_excel(db_name)
 
-        actual_db_name = get_db_name_from_excel(db_name)
+            logger.info(f"DB name in environment is {actual_db_name}")
 
-        logger.info(f"DB name in environment is {actual_db_name}")
+            conn = pymysql.connect(host='localhost', user=dict_db_credentials['username'],
+                                   passwd=dict_db_credentials['password'], database=actual_db_name,
+                                   port=tunnel.local_bind_port)
 
-        conn = pymysql.connect(host='localhost', user=dict_db_credentials['username'],
-                               passwd=dict_db_credentials['password'], database=actual_db_name,
-                               port=tunnel.local_bind_port)
-
-        df_query_result = pd.read_sql_query(query, conn)
-        conn.close()
-    except Exception as e:
-        logger.error(f"Unable to connect to run query in db due to error {str(e)}")
-    tunnel.close()
-    return df_query_result
+            df_query_result = pd.read_sql_query(query, conn)
+            conn.close()
+        except Exception as e:
+            logger.error(f"Unable to connect to run query in db due to error {str(e)}")
+        tunnel.close()
+        return df_query_result
 
 
 def setValueToDB(query, db_name="ezetap_demo") -> str:
@@ -211,50 +217,53 @@ def setValueToDB(query, db_name="ezetap_demo") -> str:
         This takes database name and query as parameters.
         :return: string
         """
-    envi = ConfigReader.read_config("environment", "str_exe_env")
-    ssh_username = ConfigReader.read_config("environment", "str_ssh_username")
-    try:
-        ssh_private_key_password = ConfigReader.read_config("SSH", "ssh_private_key_password")
-    except Exception as e:
-        logger.warning(e)
-        ssh_private_key_password = None
-
-    try:
-        sshtunnel.SSH_TIMEOUT = 5.0
-        tunnel = sshtunnel.SSHTunnelForwarder(
-            ssh_address_or_host=envi.lower(),
-            remote_bind_address=('localhost', 3306),
-            ssh_private_key_password=ssh_private_key_password
-        )
-        tunnel.start()
-    except Exception as e:
-        print(f"Stopping the execution as server is disconnected due to : {e}")
-        logger.error(f"Stopping the execution as server is disconnected due to : {e}")
-        if ssh_username.lower() != 'ezetap':
-            os.system("kill python3.9")
-    try:
-        dict_db_credentials = get_db_credentials_from_excel()
-        logger.info(
-            f"Trying to connect to {db_name} db with username '{dict_db_credentials['username']}' and password '{dict_db_credentials['password']}'")
-        db_name_in_environment = get_db_name_from_excel(db_name)
-        conn = pymysql.connect(host='localhost', user=dict_db_credentials['username'],
-                               passwd=dict_db_credentials['password'], database=db_name_in_environment,
-                               port=tunnel.local_bind_port)
-        mycursor = conn.cursor()
+    if read_config("APIs", "env").lower() == "prod":
+        pass
+    else:
+        envi = ConfigReader.read_config("environment", "str_exe_env")
+        ssh_username = ConfigReader.read_config("environment", "str_ssh_username")
         try:
-            mycursor.execute(query)
-            conn.commit()
-        except:
-            print("Running Update query failed..!")
-            logger.error("Running Update query failed..!")
+            ssh_private_key_password = ConfigReader.read_config("SSH", "ssh_private_key_password")
+        except Exception as e:
+            logger.warning(e)
+            ssh_private_key_password = None
 
-        data = str(mycursor.rowcount) + ",record(s) affected"
-        conn.close()
-        tunnel.close()
-    except:
-        print("Not able to connect to Database for running update query")
-        logger.error("Not able to connect to Database for running update query")
-    return data
+        try:
+            sshtunnel.SSH_TIMEOUT = 5.0
+            tunnel = sshtunnel.SSHTunnelForwarder(
+                ssh_address_or_host=envi.lower(),
+                remote_bind_address=('localhost', 3306),
+                ssh_private_key_password=ssh_private_key_password
+            )
+            tunnel.start()
+        except Exception as e:
+            print(f"Stopping the execution as server is disconnected due to : {e}")
+            logger.error(f"Stopping the execution as server is disconnected due to : {e}")
+            if ssh_username.lower() != 'ezetap':
+                os.system("kill python3.9")
+        try:
+            dict_db_credentials = get_db_credentials_from_excel()
+            logger.info(
+                f"Trying to connect to {db_name} db with username '{dict_db_credentials['username']}' and password '{dict_db_credentials['password']}'")
+            db_name_in_environment = get_db_name_from_excel(db_name)
+            conn = pymysql.connect(host='localhost', user=dict_db_credentials['username'],
+                                   passwd=dict_db_credentials['password'], database=db_name_in_environment,
+                                   port=tunnel.local_bind_port)
+            mycursor = conn.cursor()
+            try:
+                mycursor.execute(query)
+                conn.commit()
+            except:
+                print("Running Update query failed..!")
+                logger.error("Running Update query failed..!")
+
+            data = str(mycursor.rowcount) + ",record(s) affected"
+            conn.close()
+            tunnel.close()
+        except:
+            print("Not able to connect to Database for running update query")
+            logger.error("Not able to connect to Database for running update query")
+        return data
 
 
 def update_api_details_db(api_details_list: list):

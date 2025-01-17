@@ -126,7 +126,7 @@ def test_d102_108_001():
             try:
                 expected_api_values = {"success": False,
                                        "error_code": "EZETAP_6100006",
-                                       "error_message": "MID_TID_MISMATCH_FOR_UPIMC_AND_BQRMC"
+                                       "error_message": "Either UPI Merchant Config or BQR Merchant Config missing for entered MID and TID."
                                        }
 
                 actual_api_values = {"success": success_api,
@@ -913,7 +913,7 @@ def test_d102_108_018():
             try:
                 expected_api_values = {"success": False,
                                        "errorCode": "EZETAP_0001606",
-                                       "errorMessage": "USER_DETAILS_NOT_MATCHED"
+                                       "errorMessage": "User Login Name does not match with qrUserName"
                                        }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 

@@ -17,6 +17,7 @@ class PaymentPage(BasePage):
     btn_Details = (By.ID, 'com.ezetap.service.demo:id/btnDetails')
     btn_dismissDetails = (By.ID, 'com.ezetap.service.demo:id/btnDismiss')
     btn_confirmPayment = (By.ID, 'com.ezetap.service.demo:id/btnConfirm')
+    btn_confirm_payment_prod = (By.ID, "com.ezetap.service.prod:id/btnConfirm")
     lbl_customerEmail = (By.XPATH, "//android.widget.TextView[contains(text(),'.com')]")
     lbl_mobileNumber = (By.XPATH, "//android.widget.TextView[contains(text(),'9845698456')]")
     btn_upi = (By.XPATH, "//*[@text='UPI']")
@@ -30,6 +31,7 @@ class PaymentPage(BasePage):
     txa_promoMessage = (By.ID, 'com.ezetap.service.demo:id/tvAvailableOffer')
     lbl_paymentStatus = (By.ID, 'com.ezetap.service.demo:id/tvTxnStatus')
     btn_proceedToHomepage = (By.ID, "com.ezetap.service.demo:id/btnProceed")
+    btn_proceed_to_homepage_prod = (By.ID, "com.ezetap.service.prod:id/btnProceed")
     btn_viewDetails = (By.ID, "com.ezetap.service.demo:id/btnViewDetails")
     txa_transactionId = (By.XPATH, '//*[@text="Transaction Id"]/following-sibling::android.widget.TextView[2]')
     txa_status = (By.XPATH, '//*[@text="Status"]/following-sibling::android.widget.TextView[2]')
@@ -182,6 +184,10 @@ class PaymentPage(BasePage):
         self.scroll_to_text("CARD")
         self.perform_click(self.btn_card)
 
+    def click_on_card_payment_mode_prod(self):
+        self.wait_for_element(self.btn_card)
+        self.perform_click(self.btn_card)
+
     def click_on_credit_debit_card_mode(self):
         self.scroll_to_text("Card")
         self.perform_click(self.btn_credit_debit_card)
@@ -193,6 +199,7 @@ class PaymentPage(BasePage):
         return self.fetch_text(self.txa_promoMessage)
 
     def click_on_Cash(self):
+        time.sleep(3)
         self.scroll_to_text("Cash")
         self.perform_click(self.btn_cash)
 
@@ -212,7 +219,14 @@ class PaymentPage(BasePage):
         self.perform_click(self.btn_dismissDetails)
 
     def click_on_confirm(self):
+        # self.wait_for_element(self.btn_confirmPayment)
+        time.sleep(3)
         self.perform_click(self.btn_confirmPayment)
+
+    def click_on_confirm_prod(self):
+        # self.wait_for_element(self.btn_confirmPayment)
+        time.sleep(3)
+        self.perform_click(self.btn_confirm_payment_prod)
 
     def fetch_payment_status(self):
         return self.fetch_text(self.lbl_paymentStatus)
@@ -229,6 +243,14 @@ class PaymentPage(BasePage):
         """
         self.wait_for_visibility_of_elements(self.btn_proceedToHomepage)
         self.perform_click(self.btn_proceedToHomepage)
+
+    def click_on_proceed_homepage_prod(self):
+        """
+        This method is used to proceed to homepage after successful transaction
+        """
+        time.sleep(3)
+        self.wait_for_visibility_of_elements(self.btn_proceed_to_homepage_prod)
+        self.perform_click(self.btn_proceed_to_homepage_prod)
 
 
     def click_on_back_btn(self):

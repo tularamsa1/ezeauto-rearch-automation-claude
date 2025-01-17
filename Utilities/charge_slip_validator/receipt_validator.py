@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 import pytest_check as check
 
 from Utilities.DBProcessor import get_value_from_db
-from Utilities.ConfigReader import read_config as get_config
+from Utilities.ConfigReader import read_config as get_config, read_config
 from Utilities.execution_log_processor import EzeAutoLogger
 from Utilities import Validator
 from DataProvider import GlobalVariables as global_variables, GlobalVariables, GlobalConstants
@@ -390,26 +390,29 @@ def _get_present_receipt_info_from_receipt_table_n_post_table_sections(receipt_t
 
 
 def get_receipt_url_from_db(txn_id) -> str:
-    query = f"""SELECT  receipt_url_shortcode FROM txn WHERE id = '{txn_id}';"""
-
-    logger.info('Getting the receipt url info from the db')
-    df = get_value_from_db(query)
-
-    if df.shape[0] and df.shape[0]:
-        receipt_url_shortcode = df.iloc[0]['receipt_url_shortcode']
-        logger.debug('Successfully retrieved the receipt url info from the db')
-        try:
-            env = str(get_config("APIs", "env")).lower()
-        except Exception as e:
-            logger.warning(f"Unable to get env from config.ini: {e}. set env first.")
-            raise Exception(f"Unable to get env from config.ini: {e}. set env first.")
-        base_url = get_config("APIs", "baseurl")
-        url = f"{base_url}/r/o/{receipt_url_shortcode}/"
+    if read_config("APIs", "env").lower() == "prod":
+        pass
     else:
-        logger.warning(f"No receipt url info is found in DB for the given txn id '{txn_id}'. Please check the DB.")
-        url = None
-    
-    return url
+        query = f"""SELECT  receipt_url_shortcode FROM txn WHERE id = '{txn_id}';"""
+
+        logger.info('Getting the receipt url info from the db')
+        df = get_value_from_db(query)
+
+        if df.shape[0] and df.shape[0]:
+            receipt_url_shortcode = df.iloc[0]['receipt_url_shortcode']
+            logger.debug('Successfully retrieved the receipt url info from the db')
+            try:
+                env = str(get_config("APIs", "env")).lower()
+            except Exception as e:
+                logger.warning(f"Unable to get env from config.ini: {e}. set env first.")
+                raise Exception(f"Unable to get env from config.ini: {e}. set env first.")
+            base_url = get_config("APIs", "baseurl")
+            url = f"{base_url}/r/o/{receipt_url_shortcode}/"
+        else:
+            logger.warning(f"No receipt url info is found in DB for the given txn id '{txn_id}'. Please check the DB.")
+            url = None
+
+        return url
 
 
 def get_current_charge_slip_data_from_receipt_loaded_webdriver(driver) -> dict:

@@ -5,6 +5,7 @@ import os
 from Utilities import DirectoryCreator
 from DataProvider import GlobalVariables
 from PageFactory import Base_Actions
+from Utilities.ConfigReader import read_config
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -267,60 +268,63 @@ def appendLogs(fileName, testName, logs):
 
 
 def startLineNoOfServerLogFile():
-    if Base_Actions.is_log_capture_required("bool_capt_log_pass") == "True" or Base_Actions.is_log_capture_required(
-            "bool_capt_log_fail") == "True":
-        global LogCollTime
-        current = datetime.now()
-        LogColl_Starting_Time = current.strftime("%H:%M:%S")
-        if Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
-            GlobalVariables.start_line_number_API = get_no_of_log_lines(Base_Actions.pathToLogFile('api'))
-        if Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
-            GlobalVariables.start_line_number_portal = get_no_of_log_lines(Base_Actions.pathToLogFile('portal'))
-        if Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True":
-            GlobalVariables.start_line_number_middleware = get_no_of_log_lines(
-                Base_Actions.pathToLogFile('middleware'))
-        if Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
-            GlobalVariables.start_line_number_cnpware = get_no_of_log_lines(Base_Actions.pathToLogFile('cnpware'))
-        if Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
-            GlobalVariables.start_line_number_closedloop = get_no_of_log_lines(Base_Actions.pathToLogFile('closedloop_logfile'))
-        if Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
-            GlobalVariables.start_line_number_q2 = get_no_of_log_lines(Base_Actions.pathToLogFile('q2_logfile'))
-        if Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
-            GlobalVariables.start_line_number_commx = get_no_of_log_lines(Base_Actions.pathToLogFile('commx'))
-        if Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
-            GlobalVariables.start_line_number_ezestore = get_no_of_log_lines(Base_Actions.pathToLogFile('ezestore'))
-        if Base_Actions.is_log_capture_required("bool_capt_log_khata") == "True":
-            GlobalVariables.start_line_number_khata = get_no_of_log_lines(Base_Actions.pathToLogFile('khata'))
-        if Base_Actions.is_log_capture_required("bool_capt_log_reward") == "True":
-            GlobalVariables.start_line_number_reward = get_no_of_log_lines(Base_Actions.pathToLogFile('reward'))
-        #========================================================================================
-        # if Base_Actions.is_log_capture_required("bool_capt_log_config") is True:
-        if Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
-            log_filepath_template = Base_Actions.pathToLogFile('config_apps_log_filepath_format')
-            config_log_filepath = log_filepath_template.format(date_in_strfmt = datetime.now().date().strftime('%Y_%m_%d'))
+    if read_config("APIs", "env").lower() == "prod":
+        pass
+    else:
+        if Base_Actions.is_log_capture_required("bool_capt_log_pass") == "True" or Base_Actions.is_log_capture_required(
+                "bool_capt_log_fail") == "True":
+            global LogCollTime
+            current = datetime.now()
+            LogColl_Starting_Time = current.strftime("%H:%M:%S")
+            if Base_Actions.is_log_capture_required("bool_capt_log_api") == "True":
+                GlobalVariables.start_line_number_API = get_no_of_log_lines(Base_Actions.pathToLogFile('api'))
+            if Base_Actions.is_log_capture_required("bool_capt_log_portal") == "True":
+                GlobalVariables.start_line_number_portal = get_no_of_log_lines(Base_Actions.pathToLogFile('portal'))
+            if Base_Actions.is_log_capture_required("bool_capt_log_middleware") == "True":
+                GlobalVariables.start_line_number_middleware = get_no_of_log_lines(
+                    Base_Actions.pathToLogFile('middleware'))
+            if Base_Actions.is_log_capture_required("bool_capt_log_cnpware") == "True":
+                GlobalVariables.start_line_number_cnpware = get_no_of_log_lines(Base_Actions.pathToLogFile('cnpware'))
+            if Base_Actions.is_log_capture_required("bool_capt_log_closedloop") == "True":
+                GlobalVariables.start_line_number_closedloop = get_no_of_log_lines(Base_Actions.pathToLogFile('closedloop_logfile'))
+            if Base_Actions.is_log_capture_required("bool_capt_log_q2") == "True":
+                GlobalVariables.start_line_number_q2 = get_no_of_log_lines(Base_Actions.pathToLogFile('q2_logfile'))
+            if Base_Actions.is_log_capture_required("bool_capt_log_commx") == "True":
+                GlobalVariables.start_line_number_commx = get_no_of_log_lines(Base_Actions.pathToLogFile('commx'))
+            if Base_Actions.is_log_capture_required("bool_capt_log_ezestore") == "True":
+                GlobalVariables.start_line_number_ezestore = get_no_of_log_lines(Base_Actions.pathToLogFile('ezestore'))
+            if Base_Actions.is_log_capture_required("bool_capt_log_khata") == "True":
+                GlobalVariables.start_line_number_khata = get_no_of_log_lines(Base_Actions.pathToLogFile('khata'))
+            if Base_Actions.is_log_capture_required("bool_capt_log_reward") == "True":
+                GlobalVariables.start_line_number_reward = get_no_of_log_lines(Base_Actions.pathToLogFile('reward'))
+            #========================================================================================
+            # if Base_Actions.is_log_capture_required("bool_capt_log_config") is True:
+            if Base_Actions.is_log_capture_required("bool_capt_log_config") == "True":
+                log_filepath_template = Base_Actions.pathToLogFile('config_apps_log_filepath_format')
+                config_log_filepath = log_filepath_template.format(date_in_strfmt = datetime.now().date().strftime('%Y_%m_%d'))
 
+                try:
+                    start_line_number_config = fetch_number_of_lines_as_super_user(config_log_filepath)
+                    logger.debug(f'The count of lines in config_log file is found: {start_line_number_config}. Therefore {int(start_line_number_config)+1} will be start line number')
+                    start_line_number_config = str(int(start_line_number_config) + 1)
+                except Exception as e:
+                    logger.warning(f'The count of lines in config_log file is not found due to error: {e}')
+                    logger.warning('Therefore setting start line number for config log file as 1 (if in case during the execution of current session if new log file is created. setting 1 will handle the scenario)')
+                    start_line_number_config = str(1)
+
+                GlobalVariables.start_line_number_config = start_line_number_config
+
+            current = datetime.now()
+            LogColl_Ending_Time = current.strftime("%H:%M:%S")
+            FMT = '%H:%M:%S'
             try:
-                start_line_number_config = fetch_number_of_lines_as_super_user(config_log_filepath)
-                logger.debug(f'The count of lines in config_log file is found: {start_line_number_config}. Therefore {int(start_line_number_config)+1} will be start line number')
-                start_line_number_config = str(int(start_line_number_config) + 1)
+                totalLogCollectionTime = datetime.strptime(LogColl_Ending_Time, FMT) - datetime.strptime(
+                    str(LogColl_Starting_Time),
+                    FMT)
             except Exception as e:
-                logger.warning(f'The count of lines in config_log file is not found due to error: {e}')
-                logger.warning('Therefore setting start line number for config log file as 1 (if in case during the execution of current session if new log file is created. setting 1 will handle the scenario)')
-                start_line_number_config = str(1)
-
-            GlobalVariables.start_line_number_config = start_line_number_config
-
-        current = datetime.now()
-        LogColl_Ending_Time = current.strftime("%H:%M:%S")
-        FMT = '%H:%M:%S'
-        try:
-            totalLogCollectionTime = datetime.strptime(LogColl_Ending_Time, FMT) - datetime.strptime(
-                str(LogColl_Starting_Time),
-                FMT)
-        except Exception as e:
-            print("Unable to set the totalLogCollectionTime due to error : "+str(e)+". Hence setting it to 0.")
-            totalLogCollectionTime = 0
-        print("Portal logs coll time: ", str(totalLogCollectionTime))
-        # Converting time duration to seconds
-        LogCollTime = sum(x * int(t) for x, t in zip([3600, 60, 1], str(totalLogCollectionTime).split(":")))
-        return LogCollTime
+                print("Unable to set the totalLogCollectionTime due to error : "+str(e)+". Hence setting it to 0.")
+                totalLogCollectionTime = 0
+            print("Portal logs coll time: ", str(totalLogCollectionTime))
+            # Converting time duration to seconds
+            LogCollTime = sum(x * int(t) for x, t in zip([3600, 60, 1], str(totalLogCollectionTime).split(":")))
+            return LogCollTime

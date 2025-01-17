@@ -20,6 +20,7 @@ class HomePage(BasePage):
     btn_goToHistory = (By.ID, "com.ezetap.basicapp:id/btnHistory")
     img_companyLogo = (By.XPATH, '//android.widget.ImageView[@content-desc="Company Logo"]')
     tab_history = (By.ID, 'com.ezetap.basicapp:id/btnHistory')
+    tab_history_prod = (By.ID, "com.ezetap.basicapp:id/tabHistoryText")
     mnu_engSideMenu = (By.XPATH, '//android.widget.ImageButton[@content-desc="Open navigation drawer"]')
     mnu_hindiSideMenu = (By.XPATH, '//android.widget.ImageButton[@content-desc="नेविगेशन ड्रावर खोलें"]')
     mnu_merchantDetail = (By.ID, 'com.ezetap.basicapp:id/arrow')
@@ -262,6 +263,26 @@ class HomePage(BasePage):
         self.perform_sendkeys(self.device_serialNo, device_serial)
         self.perform_click(self.btn_paymentProceed)
 
+    def prod_enter_amount_and_order_number_for_card(self, amt: float, order_number: str):
+        """
+       This method is used to enter amount, order number and device serial in the home page.
+       :param amt int
+       :param order_number str
+       :param device_serial str
+       """
+        self.perform_click(self.txt_enterAmountField)
+        list = self.type_amount(amt)
+        for i in list:
+            self.perform_click(i)
+        try:
+            if self.wait_for_visibility_of_element_text(self.btn_collect_payment, ele_text="Collect Payment"):
+                self.perform_click(self.btn_collect_payment)
+        except:
+            self.perform_click(self.btn_other)
+        self.perform_click(self.txt_orderNo)
+        self.perform_sendkeys(self.txt_orderNo, order_number)
+        self.perform_click(self.btn_paymentProceed)
+
     def enter_tip_and_amount_and_order_number_and_device_serial_for_card(self, amt: int, order_number: str,
                                                                          tip_amt: int, device_serial: str):
         """
@@ -407,6 +428,11 @@ class HomePage(BasePage):
 
     def click_on_history(self):
         self.perform_click(self.tab_history)
+
+    def click_on_history_prod(self):
+        """ clicking on txn history button """
+        self.wait_for_element(self.tab_history_prod)
+        self.perform_click(self.tab_history_prod)
 
     def wait_for_home_page_load(self):
         self.wait_for_element(self.btn_goToHistory, 30)

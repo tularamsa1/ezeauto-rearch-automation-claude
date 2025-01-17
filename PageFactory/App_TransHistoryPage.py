@@ -15,7 +15,7 @@ class TransHistoryPage(BasePage):
     btn_filters = (By.ID, 'com.ezetap.service.demo:id/csFilter')
     lbl_transactions = (By.ID, '//android.widget.TextView[@text = "Transactions"]')
     lbl_noTransactionsAvailable = (By.ID, "com.ezetap.service.demo:id/tv_ErrorMsg")
-    txa_amountField = (By.ID, 'com.ezetap.service.demo:id/tvAmount')
+    txa_amountField = (By.ID, 'com.ezetap.service.demo:id/tvAmount | com.ezetap.service.prod:id/tvAmount')
     txa_statusField = (By.ID, "com.ezetap.service.demo:id/tvTxnStatus")
     txt_orderIdField = (By.ID, "com.ezetap.service.demo:id/tvOderId")
     btn_printReceipt = (By.ID, 'com.ezetap.service.demo:id/btnPrintReceipt')

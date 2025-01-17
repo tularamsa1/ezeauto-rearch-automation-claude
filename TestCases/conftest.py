@@ -24,6 +24,7 @@ import pytest
 from termcolor import colored
 from DataProvider import GlobalVariables
 from Utilities import ExcelProcessor
+from Utilities.ConfigReader import read_config
 from Utilities.ReportProcessor import revert_global_variables_to_default, \
     updateExcel_With_Deselect_And_Broken, updateExcel_With_RerunAttempts, updateExcel_With_Category_And_Subcategory
 from Utilities.time_calculator import EzeAutoTimeCalculator
@@ -1736,27 +1737,31 @@ def log_on_success(request):
                         print("Both bool_capt_log_one_file and bool_capt_log_different_files are disabled")
 
     GlobalVariables.time_calc.log_collection.pause()
-    print(colored("Log Collection Timer paused in 'log on sucess' function in conftest".center(shutil.get_terminal_size().columns, "="), 'cyan'))
+    print(colored(
+        "Log Collection Timer paused in 'log on sucess' function in conftest".center(shutil.get_terminal_size().columns,
+                                                                                     "="), 'cyan'))
 
     GlobalVariables.time_calc.log_collection.end()
-    print(colored("Log Collection Timer ended in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="),'cyan'))
+    print(colored(
+        "Log Collection Timer ended in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="),
+        'cyan'))
 
     GlobalVariables.time_calc.save()
     GlobalVariables.time_calc = None
-    print(colored("Saved time_calc object in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="),'cyan'))
+    print(colored(
+        "Saved time_calc object in 'fin' of method_setup fixture".center(shutil.get_terminal_size().columns, "="),
+        'cyan'))
 
 
 def pytest_sessionstart(session):
-    print("Session setup level")
-    TestSuiteSetup.ssh_connection(router_ip, router_port, router_username, key_filename)
+    if read_config("APIs", "env").lower() == "prod":
+        pass
+    else:
+        print("Session setup level")
+        TestSuiteSetup.ssh_connection(router_ip, router_port, router_username, key_filename)
 
+        # Added on Apr 11
+        updateExcel_With_Category_And_Subcategory()
+        updateExcel_With_RerunAttempts()
 
-def pytest_sessionfinish(session, exitstatus):
-    print("Session teardown level")
-    updateExcel_With_Deselect_And_Broken()
-
-    # Added on Apr 11
-    updateExcel_With_Category_And_Subcategory()
-    updateExcel_With_RerunAttempts()
-
-    ssh.close()
+        ssh.close()

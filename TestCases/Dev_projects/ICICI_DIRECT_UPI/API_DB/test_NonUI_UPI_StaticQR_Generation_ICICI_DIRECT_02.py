@@ -122,7 +122,7 @@ def test_d102_107_018():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
 
-            expected_error_message = "UPI_MERCHANT_CONFIG_NOT_FOUND"
+            expected_error_message = f"UPI Merchant Config Not Found for {dummy_vpa}"
             expected_success = False
 
             try:
@@ -266,7 +266,7 @@ def test_d102_107_019():
         if (ConfigReader.read_config("Validations", "api_validation")) == "True":
             logger.info(f"Started API validation for the test case : {testcase_id}")
 
-            expected_error_message = "USER_DETAILS_NOT_MATCHED"
+            expected_error_message = "User Login Name does not match with qrUserName"
             expected_success = False
 
             try:

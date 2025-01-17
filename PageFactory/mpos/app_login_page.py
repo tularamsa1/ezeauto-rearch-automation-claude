@@ -61,6 +61,14 @@ class LoginPage(BasePage):
         except Exception as e:
             logger.info(f"Settings popup is not displayed")
 
+    def prod_app_login(self, username, password):
+        """ Loging into the prod app """
+        self.wait_for_element(self.txt_username).clear()
+        self.perform_sendkeys(self.txt_username, username)
+        self.wait_for_element(self.txt_password).clear()
+        self.perform_sendkeys(self.txt_password, password)
+        self.perform_click(self.btn_login)
+
     def validate_login_page(self):
         return self.wait_for_element(self.lbl_login)
 

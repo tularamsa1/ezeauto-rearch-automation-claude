@@ -19,6 +19,7 @@ from Utilities import DirectoryCreator, card_processor
 from Utilities import sqlite_processor,merchant_creator,DBProcessor
 from Utilities import ResourceAssigner, ConfigReader, merchant_configurer
 from DataProvider.GlobalConstants import RUNTIME_DIR, DATAPROVIDER_DIR
+from Utilities.ConfigReader import read_config
 from Utilities.android_utilities import get_the_list_of_currently_not_started_avds, start_emulator
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -119,25 +120,28 @@ def prepareTestCaseDetailsDataFrame(path):
 
 
 def ssh_connection(ip_address, routerPort, username, key_filename):
-    GlobalVariables.ssh.load_system_host_keys()
-    GlobalVariables.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    if read_config("APIs", "env").lower() == "prod":
+        pass
+    else:
+        GlobalVariables.ssh.load_system_host_keys()
+        GlobalVariables.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    # getting ssh private key file password if it is encrypted
-    try:
-        ssh_private_key_password = ConfigReader.read_config("SSH", "ssh_private_key_password")
-    except Exception as e:
-        print(e)  # later change this is to log the warning
-        ssh_private_key_password = None
+        # getting ssh private key file password if it is encrypted
+        try:
+            ssh_private_key_password = ConfigReader.read_config("SSH", "ssh_private_key_password")
+        except Exception as e:
+            print(e)  # later change this is to log the warning
+            ssh_private_key_password = None
 
-    try:
-        GlobalVariables.ssh.connect(ip_address, port=routerPort, username=username,
-                                    pkey=paramiko.RSAKey.from_private_key_file(key_filename,
-                                                                               password=ssh_private_key_password))
-        return True
-    except Exception as error_message:
-        print("Unable to connect")
-        print(error_message)
-        return False
+        try:
+            GlobalVariables.ssh.connect(ip_address, port=routerPort, username=username,
+                                        pkey=paramiko.RSAKey.from_private_key_file(key_filename,
+                                                                                   password=ssh_private_key_password))
+            return True
+        except Exception as error_message:
+            print("Unable to connect")
+            print(error_message)
+            return False
 
 
 def getValidationConfig():

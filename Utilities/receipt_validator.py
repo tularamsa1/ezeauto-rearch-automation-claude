@@ -12,7 +12,7 @@ import pytest_check as check
 
 from Configuration import TestSuiteSetup
 from Utilities.DBProcessor import get_value_from_db
-from Utilities.ConfigReader import read_config as get_config
+from Utilities.ConfigReader import read_config as get_config, read_config
 from Utilities.charge_slip_validator import charge_slip_validator
 from Utilities.execution_log_processor import EzeAutoLogger
 from Utilities import Validator
@@ -472,26 +472,29 @@ def _get_present_receipt_info_from_receipt_table_n_post_table_sections(receipt_t
 
 
 def get_receipt_url_from_db(txn_id) -> str:
-    query = f"""SELECT  receipt_url_shortcode FROM txn WHERE id = '{txn_id}';"""
-
-    logger.info('Getting the receipt url info from the db')
-    df = get_value_from_db(query)
-
-    if df.shape[0] and df.shape[0]:
-        receipt_url_shortcode = df.iloc[0]['receipt_url_shortcode']
-        logger.debug('Successfully retrieved the receipt url info from the db')
-        try:
-            env = str(get_config("APIs", "env")).lower()
-        except Exception as e:
-            logger.warning(f"Unable to get env from config.ini: {e}. set env first.")
-            raise Exception(f"Unable to get env from config.ini: {e}. set env first.")
-        base_url = get_config("APIs", "baseurl")
-        url = f"{base_url}/r/o/{receipt_url_shortcode}/"
+    if read_config("APIs", "env").lower() == "prod":
+        pass
     else:
-        logger.warning(f"No receipt url info is found in DB for the given txn id '{txn_id}'. Please check the DB.")
-        url = None
+        query = f"""SELECT  receipt_url_shortcode FROM txn WHERE id = '{txn_id}';"""
 
-    return url
+        logger.info('Getting the receipt url info from the db')
+        df = get_value_from_db(query)
+
+        if df.shape[0] and df.shape[0]:
+            receipt_url_shortcode = df.iloc[0]['receipt_url_shortcode']
+            logger.debug('Successfully retrieved the receipt url info from the db')
+            try:
+                env = str(get_config("APIs", "env")).lower()
+            except Exception as e:
+                logger.warning(f"Unable to get env from config.ini: {e}. set env first.")
+                raise Exception(f"Unable to get env from config.ini: {e}. set env first.")
+            base_url = get_config("APIs", "baseurl")
+            url = f"{base_url}/r/o/{receipt_url_shortcode}/"
+        else:
+            logger.warning(f"No receipt url info is found in DB for the given txn id '{txn_id}'. Please check the DB.")
+            url = None
+
+        return url
 
 
 def get_current_charge_slip_data_from_receipt_loaded_webdriver(driver) -> dict:
@@ -520,72 +523,75 @@ def get_current_charge_slip_data_from_receipt_loaded_webdriver(driver) -> dict:
 
 def compare_present_receipt_info_with_expected_receipt_info(present_details: dict, expected_details: dict, txn_id,
                                                             valid_receipt_url) -> dict:
-    print("=======   CHARGE SLIP Validation Started    =======")
-    fields_that_are_not_present = set()
-    matching_fields = set()
-    unmatching_fields = set()
-    # # logo validation
-    value_cs_logo_validation_enabled = get_config(section="Validations", key="cs_logo_validation")
-    cs_logo_validation_enabled = str(value_cs_logo_validation_enabled).strip().title() == 'True'
-    # # logo_validation = None
-    if cs_logo_validation_enabled:
-        logo_validation_1 = validate_logo_from_charge_slip(txn_id, url=valid_receipt_url)
-        # validation_list.append(logo_validation)
-
-        if logo_validation_1 is True:
-            logger.info(f"Logo Validation is Passed")
-        if logo_validation_1 is False:
-            logger.info(f"Logo Validation is Failed")
-
-        expected_details['logo_validation'] = True
-        present_details['logo_validation'] = logo_validation_1
-
-    expected_details, present_details = Validator.filter_values("chargeslip", expected_details, present_details)
-    if expected_details == {} and present_details == {}:
-        print("Expected and actual values list is empty.")
-        if not GlobalVariables.str_chargeslip_val_result in ("Fail", "Pass"):
-            GlobalVariables.str_chargeslip_val_result = GlobalConstants.STR_EMPTY_VALIDATION_STATUS
-    elif expected_details == "" and present_details == "":
-        print("Expected and actual values list is empty.")
-        if not GlobalVariables.str_chargeslip_val_result in ("Fail", "Pass"):
-            GlobalVariables.str_chargeslip_val_result = GlobalConstants.STR_EMPTY_VALIDATION_STATUS
+    if read_config("APIs", "env").lower() == "prod":
+        pass
     else:
-        if present_details:
-            for key in expected_details:
-                if key in present_details:
-                    GlobalVariables.tot_chargeslip_val = GlobalVariables.tot_chargeslip_val + 1
-                    logger.debug(f"{key} found")
-                    # below if block is to handle the net cost value for brand emi axis issuer root org
-                    if key == 'Net cost':
-                        pattern = re.compile(r'Rs\.\d{1,3}(,\d{3})*\.\d{2}')
-                        present_details[key] = pattern.search(present_details[key].strip()).group()
-                    if expected_details[key] == present_details[key]:
-                        matching_fields.add(key)
-                        logger.debug(f"'{key}' is matching")
-                    else:
-                        unmatching_fields.add(key)
-                        logger.debug(f"'{key}' is not matching")
-                        check.equal(expected_details[key], present_details[key])
-                else:
-                    fields_that_are_not_present.add(key)
-                    print(f"The field '{key}' not present in actual values list")
-                    logger.debug(f"The field '{key}' not present in actual values list")
-                    check.equal(f"Expected key {key}", f"Actual key ''", f"Expected field {key} is not available in"
-                                                                         f" the actual values list.")
-            Validator.print_validation_result(expected_details, present_details, matching_fields, unmatching_fields)
+        print("=======   CHARGE SLIP Validation Started    =======")
+        fields_that_are_not_present = set()
+        matching_fields = set()
+        unmatching_fields = set()
+        # # logo validation
+        value_cs_logo_validation_enabled = get_config(section="Validations", key="cs_logo_validation")
+        cs_logo_validation_enabled = str(value_cs_logo_validation_enabled).strip().title() == 'True'
+        # # logo_validation = None
+        if cs_logo_validation_enabled:
+            logo_validation_1 = validate_logo_from_charge_slip(txn_id, url=valid_receipt_url)
+            # validation_list.append(logo_validation)
 
+            if logo_validation_1 is True:
+                logger.info(f"Logo Validation is Passed")
+            if logo_validation_1 is False:
+                logger.info(f"Logo Validation is Failed")
+
+            expected_details['logo_validation'] = True
+            present_details['logo_validation'] = logo_validation_1
+
+        expected_details, present_details = Validator.filter_values("chargeslip", expected_details, present_details)
+        if expected_details == {} and present_details == {}:
+            print("Expected and actual values list is empty.")
+            if not GlobalVariables.str_chargeslip_val_result in ("Fail", "Pass"):
+                GlobalVariables.str_chargeslip_val_result = GlobalConstants.STR_EMPTY_VALIDATION_STATUS
+        elif expected_details == "" and present_details == "":
+            print("Expected and actual values list is empty.")
+            if not GlobalVariables.str_chargeslip_val_result in ("Fail", "Pass"):
+                GlobalVariables.str_chargeslip_val_result = GlobalConstants.STR_EMPTY_VALIDATION_STATUS
         else:
-            print("No present receipt info found")
-            logger.warning("No present receipt info found")
-            GlobalVariables.str_chargeslip_val_result = "Fail"
-            check.equal("Charge slip expected", "Chargeslip unavailable", "Unable to read the contents of chargeslip "
-                                                                          "page. Receipt may not have loaded.")
-    print("=======   CHARGE SLIP Validation Completed    =======")
-    return {
-        "fields_that_are_not_present": fields_that_are_not_present,
-        "matching_fields": matching_fields,
-        "unmatching_fields": unmatching_fields,
-    }
+            if present_details:
+                for key in expected_details:
+                    if key in present_details:
+                        GlobalVariables.tot_chargeslip_val = GlobalVariables.tot_chargeslip_val + 1
+                        logger.debug(f"{key} found")
+                        # below if block is to handle the net cost value for brand emi axis issuer root org
+                        if key == 'Net cost':
+                            pattern = re.compile(r'Rs\.\d{1,3}(,\d{3})*\.\d{2}')
+                            present_details[key] = pattern.search(present_details[key].strip()).group()
+                        if expected_details[key] == present_details[key]:
+                            matching_fields.add(key)
+                            logger.debug(f"'{key}' is matching")
+                        else:
+                            unmatching_fields.add(key)
+                            logger.debug(f"'{key}' is not matching")
+                            check.equal(expected_details[key], present_details[key])
+                    else:
+                        fields_that_are_not_present.add(key)
+                        print(f"The field '{key}' not present in actual values list")
+                        logger.debug(f"The field '{key}' not present in actual values list")
+                        check.equal(f"Expected key {key}", f"Actual key ''", f"Expected field {key} is not available in"
+                                                                             f" the actual values list.")
+                Validator.print_validation_result(expected_details, present_details, matching_fields, unmatching_fields)
+
+            else:
+                print("No present receipt info found")
+                logger.warning("No present receipt info found")
+                GlobalVariables.str_chargeslip_val_result = "Fail"
+                check.equal("Charge slip expected", "Chargeslip unavailable", "Unable to read the contents of chargeslip "
+                                                                              "page. Receipt may not have loaded.")
+        print("=======   CHARGE SLIP Validation Completed    =======")
+        return {
+            "fields_that_are_not_present": fields_that_are_not_present,
+            "matching_fields": matching_fields,
+            "unmatching_fields": unmatching_fields,
+        }
 
 
 # def run(playwright, receipt_url:str):
@@ -613,68 +619,71 @@ def validate_receipt_info_from_receipt_url(receipt_url: str, expected_details: d
 
     '''
     # time.sleep(5)
-    validation_successful = False
-    print("##########")
-    if receipt_url:
-        present_receipt_info_ = None
-        try:
-            # driver = initialize_webdriver()
-            # driver.get(receipt_url)
-            # browser = playwright.firefox.launch(headless=False, slow_mo=1000)
-            # print("##########")
-            # context = browser.new_context()
-            # page = context.new_page()
-            # page.goto(receipt_url)
-            # driver = page
-            # with sync_playwright() as playwright:
-            #     run(playwright, receipt_url)
-            # driver = GlobalVariables.portalDriver
-            if GlobalVariables.context == '':
-                TestSuiteSetup.launch_browser_and_context_initialize()
-            TestSuiteSetup.initialize_chargeslip_browser()
-            GlobalVariables.charge_slip_page.goto(receipt_url)
-            present_receipt_info_ = get_current_charge_slip_data_from_receipt_loaded_webdriver(GlobalVariables.charge_slip_page)
-            results = compare_present_receipt_info_with_expected_receipt_info(present_receipt_info_, expected_details, txn_id, receipt_url)
-
-            if results['fields_that_are_not_present']:
-
-                logger.warning(
-                    f"The following fields are not present in the Charge Slip: {', '.join(results['fields_that_are_not_present'])}")
-            else:
-                validation_successful = True
-
-            if results['unmatching_fields']:
-                logger.warning("Some fields are not matching")
-
-                validation_successful = False
-
-            # if take_screenshot is True:  # (take_screenshot is True) and (get_config("APIs", "screenshot_on_failure") == "True"):  # check type of bool also
-            #     try:
-            #         capture_ss_when_exe_failed(driver)
-            #         # driver.save_screenshot(screenshot_filepath)
-            #         # print(f"Screenshot saved at {screenshot_filepath}")
-            #         # logger.warning(f"Screenshot saved at {screenshot_filepath}")
-            #     except Exception as e:
-            #         logger.exception(f"Screenshot-taking not done due to the following error: {e}")
-
-            
-            global_variables.charge_slip_driver = GlobalVariables.portalDriver
-            # global_variables.charge_slip_driver = driver
-
-
-        except ReceiptValidationError as e:
-            print(e)
-            logger.exception(f"Reciept Validation Error: {e}. Therefore Cannot proceed to validate", exc_info=True)
-
-        except Exception as e:
-            print(e)
-            logger.exception(f"Error: {e}. Therefore Cannot proceed to validate", exc_info=True)
-
+    if read_config("APIs", "env").lower() == "prod":
+        pass
     else:
-        print("No reciept url found")
-        logger.warning("No reciept url found")
+        validation_successful = False
+        print("##########")
+        if receipt_url:
+            present_receipt_info_ = None
+            try:
+                # driver = initialize_webdriver()
+                # driver.get(receipt_url)
+                # browser = playwright.firefox.launch(headless=False, slow_mo=1000)
+                # print("##########")
+                # context = browser.new_context()
+                # page = context.new_page()
+                # page.goto(receipt_url)
+                # driver = page
+                # with sync_playwright() as playwright:
+                #     run(playwright, receipt_url)
+                # driver = GlobalVariables.portalDriver
+                if GlobalVariables.context == '':
+                    TestSuiteSetup.launch_browser_and_context_initialize()
+                TestSuiteSetup.initialize_chargeslip_browser()
+                GlobalVariables.charge_slip_page.goto(receipt_url)
+                present_receipt_info_ = get_current_charge_slip_data_from_receipt_loaded_webdriver(GlobalVariables.charge_slip_page)
+                results = compare_present_receipt_info_with_expected_receipt_info(present_receipt_info_, expected_details, txn_id, receipt_url)
 
-    return validation_successful
+                if results['fields_that_are_not_present']:
+
+                    logger.warning(
+                        f"The following fields are not present in the Charge Slip: {', '.join(results['fields_that_are_not_present'])}")
+                else:
+                    validation_successful = True
+
+                if results['unmatching_fields']:
+                    logger.warning("Some fields are not matching")
+
+                    validation_successful = False
+
+                # if take_screenshot is True:  # (take_screenshot is True) and (get_config("APIs", "screenshot_on_failure") == "True"):  # check type of bool also
+                #     try:
+                #         capture_ss_when_exe_failed(driver)
+                #         # driver.save_screenshot(screenshot_filepath)
+                #         # print(f"Screenshot saved at {screenshot_filepath}")
+                #         # logger.warning(f"Screenshot saved at {screenshot_filepath}")
+                #     except Exception as e:
+                #         logger.exception(f"Screenshot-taking not done due to the following error: {e}")
+
+
+                global_variables.charge_slip_driver = GlobalVariables.portalDriver
+                # global_variables.charge_slip_driver = driver
+
+
+            except ReceiptValidationError as e:
+                print(e)
+                logger.exception(f"Reciept Validation Error: {e}. Therefore Cannot proceed to validate", exc_info=True)
+
+            except Exception as e:
+                print(e)
+                logger.exception(f"Error: {e}. Therefore Cannot proceed to validate", exc_info=True)
+
+        else:
+            print("No reciept url found")
+            logger.warning("No reciept url found")
+
+        return validation_successful
 
 
 def get_json_response_of_txn_details(txn_id, username, password):
@@ -726,113 +735,125 @@ def validate_n_get_working_receipt_url(receipt_url_from_api):
 
 
 def get_txn_record_details(txn_id: str) -> pd.Series:
-    query = f'select * from txn where id="{txn_id}"'
-    result = get_value_from_db(query)
-
-    if result.shape[0]:
-        if result.shape[0] == 1:
-            pass  # the pass takes out of the if section. in all other cases exceptions are raised
-        else:
-            print(f"it seems multiple rows are there for txn_id: {txn_id}")
-            raise Exception(f"it seems multiple rows are there for txn_id: {txn_id}")
+    if read_config("APIs", "env").lower() == "prod":
+        pass
     else:
-        print(f"No records found for the txn_id: {txn_id}")
-        raise Exception(f"No records found for the txn_id: {txn_id}")
+        query = f'select * from txn where id="{txn_id}"'
+        result = get_value_from_db(query)
 
-    txn_details_from_db = result.iloc[0]
-    return txn_details_from_db
+        if result.shape[0]:
+            if result.shape[0] == 1:
+                pass  # the pass takes out of the if section. in all other cases exceptions are raised
+            else:
+                print(f"it seems multiple rows are there for txn_id: {txn_id}")
+                raise Exception(f"it seems multiple rows are there for txn_id: {txn_id}")
+        else:
+            print(f"No records found for the txn_id: {txn_id}")
+            raise Exception(f"No records found for the txn_id: {txn_id}")
+
+        txn_details_from_db = result.iloc[0]
+        return txn_details_from_db
 
 
 def get_acquirer_code_n_payment_gateway_from_txn_id(txn_id: str):
-    txn_details_from_db = get_txn_record_details(txn_id)
-    return dict(
-        acquirer_code=txn_details_from_db['acquirer_code'],
-        payment_gateway=txn_details_from_db['payment_gateway']
-    )
+    if read_config("APIs", "env").lower() == "prod":
+        pass
+    else:
+        txn_details_from_db = get_txn_record_details(txn_id)
+        return dict(
+            acquirer_code=txn_details_from_db['acquirer_code'],
+            payment_gateway=txn_details_from_db['payment_gateway']
+        )
 
 
 def validate_logo_from_charge_slip(txn_id: str, url: str):
-    banks_with_fiserv_ezetap_logo = {
-        "ICICI": "FDC",
-        "IDFC": "IDFC_FDC",
-    }  # this could read of json file
-
-    logger.info(f"Getting acquirer code and payment gateway information from DB for {txn_id}")
-    acquirer_n_pg = get_acquirer_code_n_payment_gateway_from_txn_id(txn_id)
-    acquirer = acquirer_n_pg['acquirer_code']
-    pg = acquirer_n_pg['payment_gateway']
-
-    if pg in banks_with_fiserv_ezetap_logo.values():
-        ezetap_logo = 'fiserv.ezetap'
+    if read_config("APIs", "env").lower() == "prod":
+        pass
     else:
-        ezetap_logo = 'ezetap'
+        banks_with_fiserv_ezetap_logo = {
+            "ICICI": "FDC",
+            "IDFC": "IDFC_FDC",
+        }  # this could read of json file
 
-    company_logo_valid, bank_logo_valid = charge_slip_validator.validate_chargeslip_image_logos_from_url(url,
-                                                                                                         bank=acquirer,
-                                                                                                         company=ezetap_logo,
-                                                                                                         visualize=True)
-    if company_logo_valid and bank_logo_valid:
-        logger.info(f"Both Ezetap Logo and Bank Logo validations are successful")
-    elif company_logo_valid:
-        if company_logo_valid is True:
-            logger.info(f"Ezetap Logo Validation is successful")
-        elif company_logo_valid is False:
-            logger.info(f"Ezetap Logo Validation is unsuccessful")
-        else:
-            logger.info(f"It seems no ezetap logo is found for txn_id '{txn_id}'")
-    elif bank_logo_valid:
-        if bank_logo_valid is True:
-            logger.info(f"Bank Logo Validation is successful")
-        elif bank_logo_valid is False:
-            logger.info(f"Bank Logo Validation is unsuccessful")
-        else:
-            logger.info(f"It seems no Bank Logo is found for txn_id '{txn_id}'")
-    else:
-        logger.info(f"Both Ezetap Logo and Bank Logo validations are unsuccessful")
+        logger.info(f"Getting acquirer code and payment gateway information from DB for {txn_id}")
+        acquirer_n_pg = get_acquirer_code_n_payment_gateway_from_txn_id(txn_id)
+        acquirer = acquirer_n_pg['acquirer_code']
+        pg = acquirer_n_pg['payment_gateway']
 
-    # company_logo_valid, bank_logo_valid
-    return all([company_logo_valid, bank_logo_valid])
+        if pg in banks_with_fiserv_ezetap_logo.values():
+            ezetap_logo = 'fiserv.ezetap'
+        else:
+            ezetap_logo = 'ezetap'
+
+        company_logo_valid, bank_logo_valid = charge_slip_validator.validate_chargeslip_image_logos_from_url(url,
+                                                                                                             bank=acquirer,
+                                                                                                             company=ezetap_logo,
+                                                                                                             visualize=True)
+        if company_logo_valid and bank_logo_valid:
+            logger.info(f"Both Ezetap Logo and Bank Logo validations are successful")
+        elif company_logo_valid:
+            if company_logo_valid is True:
+                logger.info(f"Ezetap Logo Validation is successful")
+            elif company_logo_valid is False:
+                logger.info(f"Ezetap Logo Validation is unsuccessful")
+            else:
+                logger.info(f"It seems no ezetap logo is found for txn_id '{txn_id}'")
+        elif bank_logo_valid:
+            if bank_logo_valid is True:
+                logger.info(f"Bank Logo Validation is successful")
+            elif bank_logo_valid is False:
+                logger.info(f"Bank Logo Validation is unsuccessful")
+            else:
+                logger.info(f"It seems no Bank Logo is found for txn_id '{txn_id}'")
+        else:
+            logger.info(f"Both Ezetap Logo and Bank Logo validations are unsuccessful")
+
+        # company_logo_valid, bank_logo_valid
+        return all([company_logo_valid, bank_logo_valid])
 
 
 def perform_charge_slip_validations(txn_id: str, credentials: dict, expected_details: dict):
-    validation_sucessful = False
+    if read_config("APIs", "env").lower() == "prod":
+        pass
+    else:
+        validation_sucessful = False
 
-    # validation_list = []
+        # validation_list = []
 
-    json_response = get_json_response_of_txn_details(**credentials, txn_id=txn_id)
+        json_response = get_json_response_of_txn_details(**credentials, txn_id=txn_id)
 
-    try:
-        receipt_url_field = "receiptUrl"
-        if receipt_url_field in json_response:
-            logger.info(f"Receipt URL key('{receipt_url_field}') found from API response")
-            receipt_url = json_response[
-                receipt_url_field]  # check here and next lines if no url is found  -- issue from vineeth
-            if receipt_url:
-                valid_receipt_url = validate_n_get_working_receipt_url(receipt_url)
-                print(f"valid_receipt_url : {valid_receipt_url}")
-                if valid_receipt_url:
-                    print("after valid receipt url")
-                    logger.debug(valid_receipt_url)
-                    print(valid_receipt_url)
-                    validation_sucessful = validate_receipt_info_from_receipt_url(valid_receipt_url, expected_details,
-                                                                                  txn_id)
+        try:
+            receipt_url_field = "receiptUrl"
+            if receipt_url_field in json_response:
+                logger.info(f"Receipt URL key('{receipt_url_field}') found from API response")
+                receipt_url = json_response[
+                    receipt_url_field]  # check here and next lines if no url is found  -- issue from vineeth
+                if receipt_url:
+                    valid_receipt_url = validate_n_get_working_receipt_url(receipt_url)
+                    print(f"valid_receipt_url : {valid_receipt_url}")
+                    if valid_receipt_url:
+                        print("after valid receipt url")
+                        logger.debug(valid_receipt_url)
+                        print(valid_receipt_url)
+                        validation_sucessful = validate_receipt_info_from_receipt_url(valid_receipt_url, expected_details,
+                                                                                      txn_id)
 
-                    # with sync_playwright() as playwright:
-                    #     print("with with")
-                    validation_sucessful = validate_receipt_info_from_receipt_url(valid_receipt_url, expected_details)
+                        # with sync_playwright() as playwright:
+                        #     print("with with")
+                        validation_sucessful = validate_receipt_info_from_receipt_url(valid_receipt_url, expected_details)
+                    else:
+                        check.equal("Charge slip expected", "Charge slip unavailable", "Charge slip is not available.")
                 else:
+                    logger.warning("Receipt URL value is empty. therefore unable to continue.")
                     check.equal("Charge slip expected", "Charge slip unavailable", "Charge slip is not available.")
             else:
-                logger.warning("Receipt URL value is empty. therefore unable to continue.")
+                logger.warning("Receipt url is not available.")
                 check.equal("Charge slip expected", "Charge slip unavailable", "Charge slip is not available.")
-        else:
-            logger.warning("Receipt url is not available.")
-            check.equal("Charge slip expected", "Charge slip unavailable", "Charge slip is not available.")
-    except Exception as e:
-        logger.error(f"Unable to fetch receipt url from Error: {e}")
-    if not global_variables.str_chargeslip_val_result == "Fail":
-        global_variables.str_chargeslip_val_result = "Pass" if validation_sucessful else "Fail"
-    return validation_sucessful
+        except Exception as e:
+            logger.error(f"Unable to fetch receipt url from Error: {e}")
+        if not global_variables.str_chargeslip_val_result == "Fail":
+            global_variables.str_chargeslip_val_result = "Pass" if validation_sucessful else "Fail"
+        return validation_sucessful
 
 # playwright = sync_playwright()
 # playwright.start()
