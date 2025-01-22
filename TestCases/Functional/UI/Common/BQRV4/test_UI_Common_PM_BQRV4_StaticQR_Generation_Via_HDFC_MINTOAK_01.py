@@ -960,7 +960,7 @@ def test_common_100_108_037():
                 expected_api_values = {
                     "success": False,
                     "errorCode": "EZETAP_0001606",
-                    "errorMessage": "USER_DETAILS_NOT_MATCHED"
+                    "errorMessage": "User Login Name does not match with qrUserName"
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 

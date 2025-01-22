@@ -200,6 +200,7 @@ class HomePage(BasePage):
     id_yes_proces = (By.ID, "com.ezetap.service.demo:id/btnProceed")
     id_cancel_shift_history_page = (By.ID, "com.ezetap.service.demo:id/btnCancel")
     id_close_receipt = (By.ID, "com.ezetap.service.demo:id/imgClose")
+    lbl_p2p_notification_prod = (By.ID, "com.ezetap.service.prod:id/title")
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -346,6 +347,10 @@ class HomePage(BasePage):
 
     def perform_check_status(self):
         self.perform_click(self.btn_checkStatus)
+
+    def check_p2p_notification_prod(self):
+        """ fetching p2p notification text """
+        return self.fetch_text(self.lbl_p2p_notification_prod, 30)
 
     def click_on_skip_button(self):
         self.perform_click(self.btn_skip)

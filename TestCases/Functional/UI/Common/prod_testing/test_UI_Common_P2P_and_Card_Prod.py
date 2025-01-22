@@ -6,7 +6,6 @@ from datetime import datetime
 import pytest
 from Configuration import Configuration, TestSuiteSetup
 from DataProvider import GlobalVariables
-from PageFactory.App_HomePage import HomePage
 from PageFactory.mpos.app_home_page import HomePage
 from PageFactory.mpos.app_login_page import LoginPage
 from PageFactory.sa.app_payment_page import PaymentPage
@@ -33,7 +32,7 @@ def test_common_prod_001():
         logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
 
         app_username = "1234554297"
-        app_password = "s123456"
+        app_password = "S123456"
 
         # -----------------------------PreConditions(Setup to be done for the test case)--------------------------
         logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
@@ -70,6 +69,7 @@ def test_common_prod_001():
             logger.info(f"Pulled notification bar for checking P2P notification")
             try:
                 actual_notification = home_page.check_p2p_notification_prod()
+                app_driver.back()
             except:
                 app_driver.back()
                 raise Exception(f"Exception in locating P2P notification on device")
@@ -81,8 +81,6 @@ def test_common_prod_001():
             else:
                 app_driver.back()
                 raise Exception(f"P2P notification mismatch on device. Actual notification: {actual_notification}")
-
-            app_driver.back()
 
             # Start API for Cash
             amount = random.randint(10, 20)
@@ -216,7 +214,7 @@ def test_common_prod_002():
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
 
         app_username = "1234554297"
-        app_password = "s123456"
+        app_password = "S123456"
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -345,7 +343,7 @@ def test_common_prod_003():
         logger.info(f"Reverting back all the settings that were done as preconditions : {testcase_id}")
 
         app_username = "1234554297"
-        app_password = "s123456"
+        app_password = "S123456"
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
