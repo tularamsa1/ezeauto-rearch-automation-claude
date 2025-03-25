@@ -36,7 +36,8 @@ class LoginPage(BasePage):
     def perform_login(self, username, password):
         if read_config("ParallelExecution", "deviceOnly") == "True":
             self.scroll_to_text(read_config("APIs", "env")).click()
-
+        elif read_config("ParallelExecution", "deviceOnly") == "False":
+            self.scroll_to_text(read_config("APIs", "env")).click()
         elif read_config("APIs", "env") in self.fetch_text(self.btn_login):
             pass
         else:

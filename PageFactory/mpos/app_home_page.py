@@ -15,7 +15,7 @@ class HomePage(BasePage):
     lbl_home = (By.ID, 'com.ezetap.basicapp:id/navigation_bar_item_large_label_view')
     lbl_navigation = (By.ID, 'com.ezetap.basicapp:id/logoToolbar')
     mnu_account = (By.ID, 'com.ezetap.basicapp:id/nav_account')
-    txt_enterAmountField = (By.ID, 'com.ezetap.basicapp:id/tvAmountCard')
+    txt_enterAmountField = (By.ID, 'com.ezetap.basicapp:id/textViewAmount')
     btn_pay = (By.ID, "com.ezetap.basicapp:id/btnPay")
     btn_goToHistory = (By.ID, "com.ezetap.basicapp:id/btnHistory")
     img_companyLogo = (By.XPATH, '//android.widget.ImageView[@content-desc="Company Logo"]')
