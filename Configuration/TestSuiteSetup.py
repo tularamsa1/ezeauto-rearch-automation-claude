@@ -49,7 +49,7 @@ def prepareTestCaseDetailsDataFrame(path):
 
     df_filtered = df_overall_testcases_list[df_overall_testcases_list.Execute == 1]
 
-    # adding the extra columns that are not found in excel file. 
+    # adding the extra columns that are not found in excel file.
     # instead you could add those columns while first time writing the excel file
     for col in columns:
         if col not in df_filtered.columns:
@@ -118,19 +118,29 @@ def prepareTestCaseDetailsDataFrame(path):
 #     GlobalVariables.df_testCasesDetail.set_index(ConfigReader.read_config("TestcaseDetails_ColumnNames", "colName_TestCaseID"), inplace=True)
 #     return GlobalVariables.df_testCasesDetail
 
-
 def ssh_connection(ip_address, routerPort, username, key_filename):
     if read_config("APIs", "env").lower() == "prod":
         pass
     else:
+        # Initialize SSH client
         GlobalVariables.ssh.load_system_host_keys()
-        GlobalVariables.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-        # getting ssh private key file password if it is encrypted
+        # Get the remote host key
+        transport = paramiko.Transport(ip_address, routerPort)
+        transport.connect()
+        key = transport.get_remote_server_key()
+        transport.close()
+
+        # Add the host key to known_hosts
+        known_hosts_path = os.path.expanduser('~/.ssh/known_hosts')
+        hostfile = paramiko.HostKeys(filename=known_hosts_path)
+        hostfile.add(ip_address, key.get_name(), key)
+        hostfile.save(known_hosts_path)
+
         try:
             ssh_private_key_password = ConfigReader.read_config("SSH", "ssh_private_key_password")
         except Exception as e:
-            print(e)  # later change this is to log the warning
+            logger.warning(f"No SSH private key password found: {e}")
             ssh_private_key_password = None
 
         try:
@@ -139,8 +149,7 @@ def ssh_connection(ip_address, routerPort, username, key_filename):
                                                                                    password=ssh_private_key_password))
             return True
         except Exception as error_message:
-            print("Unable to connect")
-            print(error_message)
+            logger.error(f"Unable to connect: {error_message}")
             return False
 
 

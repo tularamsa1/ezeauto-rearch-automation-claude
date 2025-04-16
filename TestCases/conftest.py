@@ -1758,7 +1758,7 @@ def pytest_sessionstart(session):
         pass
     else:
         print("Session setup level")
-        TestSuiteSetup.ssh_connection(router_ip, router_port, router_username, key_filename)
+        TestSuiteSetup.ssh_connection(router_ip, int(router_port), router_username, key_filename)
 
         # Added on Apr 11
         updateExcel_With_Category_And_Subcategory()

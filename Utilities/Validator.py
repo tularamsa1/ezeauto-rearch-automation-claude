@@ -40,7 +40,7 @@ def validateAgainstPortal(expectedPortal, actualPortal):
                             check.equal(expectedPortal[key], actualPortal[key])
                     else:
                         lst_failed_fields.append(key)
-                        print(f"Expected field {key} is not available in the actual values list.")
+                        logger.debug(f"Expected field {key} is not available in the actual values list.")
                         check.equal(f"Expected key {key}", f"Actual key ''", f"Expected field {key} is not available in"
                                                                              f" the actual values list.")
                         GlobalVariables.str_portal_val_result = "Fail"
@@ -49,8 +49,8 @@ def validateAgainstPortal(expectedPortal, actualPortal):
             print("Number of keys in actual and expected dictionaries are different in Portal validation.")
             check.equal(len(expectedPortal), len(actualPortal), "Number of keys in actual and expected dictionaries "
                                                                 "are different in Portal validation.")
-            print("Expected dict: ", expectedPortal)
-            print("Actual dict: ", actualPortal)
+            logger.debug(f"Expected dict: {expectedPortal}")
+            logger.debug(f"Actual dict: {actualPortal}")
             GlobalVariables.str_portal_val_result = "Fail"
         print("=======   PORTAL Validation Completed  =======")
     else:
@@ -93,7 +93,7 @@ def validateAgainstAPP(expectedApp, actualApp):
                             check.equal(expectedApp[key], actualApp[key])
                     else:
                         lst_failed_fields.append(key)
-                        print(f"Expected field {key} is not available in the actual values list.")
+                        logger.debug(f"Expected field {key} is not available in the actual values list.")
                         check.equal(f"Expected key {key}", f"Actual key ''", f"Expected field {key} is not available in"
                                                                              f" the actual values list.")
                         GlobalVariables.str_app_val_result = "Fail"
@@ -102,8 +102,8 @@ def validateAgainstAPP(expectedApp, actualApp):
             print("Number of keys in actual and expected dictionaries are different in APP validation.")
             check.equal(len(expectedApp), len(actualApp), "Number of keys in actual and expected dictionaries "
                                                                 "are different in App validation.")
-            print("Expected dict: ", expectedApp)
-            print("Actual dict: ", actualApp)
+            logger.debug(f"Expected dict: {expectedApp}")
+            logger.debug(f"Actual dict: {actualApp}")
             GlobalVariables.str_app_val_result = "Fail"
         print("=======   APP Validation Completed  =======")
     else:
@@ -144,7 +144,7 @@ def validationAgainstAPI(expectedAPI, actualAPI):
                             check.equal(expectedAPI[key], actualAPI[key])
                     else:
                         lst_failed_fields.append(key)
-                        print(f"Expected field {key} is not available in the actual values list.")
+                        logger.debug(f"Expected field {key} is not available in the actual values list.")
                         check.equal(f"Expected key {key}", f"Actual key ''", f"Expected field {key} is not available in"
                                                                              f" the actual values list.")
                         GlobalVariables.str_api_val_result = "Fail"
@@ -153,8 +153,8 @@ def validationAgainstAPI(expectedAPI, actualAPI):
             print("Number of keys in actual and expected dictionaries are different in API validation.")
             check.equal(len(expectedAPI), len(actualAPI), "Number of keys in actual and expected dictionaries "
                                                           "are different in API validation.")
-            print("Expected dict: ", expectedAPI)
-            print("Actual dict: ", actualAPI)
+            logger.debug(f"Expected dict: {expectedAPI}")
+            logger.debug(f"Actual dict: {actualAPI}")
             GlobalVariables.str_api_val_result = "Fail"
         print("=======   API Validation Completed  =======")
     else:
@@ -195,7 +195,7 @@ def validateAgainstDB(expectedDB, actualDB):
                             check.equal(expectedDB[key], actualDB[key])
                     else:
                         lst_failed_fields.append(key)
-                        print(f"Expected field {key} is not available in the actual values list.")
+                        logger.debug(f"Expected field {key} is not available in the actual values list.")
                         check.equal(f"Expected key {key}", f"Actual key ''", f"Expected field {key} is not available in"
                                                                              f" the actual values list.")
                         GlobalVariables.str_db_val_result = "Fail"
@@ -204,8 +204,8 @@ def validateAgainstDB(expectedDB, actualDB):
             print("Number of keys in actual and expected dictionaries are different in DB validation.")
             check.equal(len(expectedDB), len(actualDB), "Number of keys in actual and expected dictionaries "
                                                           "are different in DB validation.")
-            print("Expected dict: ", expectedDB)
-            print("Actual dict: ", actualDB)
+            logger.debug(f"Expected dict: {expectedDB}")
+            logger.debug(f"Actual dict: {actualDB}")
             GlobalVariables.str_db_val_result = "Fail"
         print("=======   DB Validation Completed  =======")
     else:
@@ -272,25 +272,24 @@ def print_validation_result(expected_values: {}, acutal_values: {}, lst_passed_f
     print()
     if str(ConfigReader.read_config("Validations", "bool_print_val_log_pass")).lower() == "true":
         if lst_passed_fields:
-            print("Passed validations:")
+            logger.debug("Passed validations:")
             for field in lst_passed_fields:
                 try:
-                    print(f"Expected value of {field}   : {expected_values[field]}")
-                    print(f"Actual value of {field}     : {acutal_values[field]}")
-                    print()
-                except Exception:
-                    print(f"Field {field} is not available in the actual/expected values list.")
+                    logger.debug(f"Expected value of {field}     : {expected_values[field]}")
+                    logger.debug(f"Actual value of {field}     : {acutal_values[field]}")
+                    # print()
+                except Exception as e:
+                    logger.error(f"Field {field} is not available in the actual/expected values list : {e}")
     if str(ConfigReader.read_config("Validations", "bool_print_val_log_fail")).lower() == "true":
         if lst_failed_fields:
-            print("Failed validations:")
+            logger.debug("Failed validations:")
             for field in lst_failed_fields:
                 try:
-                    print(f"Expected value of {field}   : {expected_values[field]}")
-                    print(f"Actual value of {field}     : {acutal_values[field]}")
-                    print()
-                except Exception:
-                    print(f"Field {field} is not available in the actual values list.")
-
+                    logger.debug(f"Expected value of {field}   : {expected_values[field]}")
+                    logger.debug(f"Actual value of {field}     : {acutal_values[field]}")
+                    # print()
+                except Exception as e:
+                    logger.error(f"Field {field} is not available in the actual values list : {e}")
 
 def filter_values(validation_type: str, expected_values: dict, actual_values: dict) -> dict and dict:
     """

@@ -41,14 +41,14 @@ def test_sub_feature_code():  # Make sure to add the test case name as same as t
         app_username = app_cred['Username']
         app_password = app_cred['Password']
         print(f"app_username>>>>>>>>: {app_username}")
-        print(f"app_password>>>>>>>>: {app_password}")
+        logger.info(f"app_password>>>>>>>>: {app_password}")
 
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
         print(f"app_username>>>>>>>>: {portal_username}")
-        print(f"app_password>>>>>>>>: {portal_password}")
+        logger.info(f"portal_password>>>>>>>>: {portal_password}")
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -165,14 +165,14 @@ def test_sub_feature_code_1():  # Make sure to add the test case name as same as
         app_username = app_cred['Username']
         app_password = app_cred['Password']
         print(f"app_username>>>>>>>>: {app_username}")
-        print(f"app_password>>>>>>>>: {app_password}")
+        logger.info(f"app_password>>>>>>>>: {app_password}")
 
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
         print(f"app_username>>>>>>>>: {portal_username}")
-        print(f"app_password>>>>>>>>: {portal_password}")
+        logger.info(f"portal_password>>>>>>>>: {portal_password}")
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -289,14 +289,14 @@ def test_sub_feature_code_2():  # Make sure to add the test case name as same as
         app_username = app_cred['Username']
         app_password = app_cred['Password']
         print(f"app_username>>>>>>>>: {app_username}")
-        print(f"app_password>>>>>>>>: {app_password}")
+        logger.info(f"app_password>>>>>>>>: {app_password}")
 
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
         print(f"app_username>>>>>>>>: {portal_username}")
-        print(f"app_password>>>>>>>>: {portal_password}")
+        logger.info(f"portal_password>>>>>>>>: {portal_password}")
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -413,14 +413,14 @@ def test_sub_feature_code_3():  # Make sure to add the test case name as same as
         app_username = app_cred['Username']
         app_password = app_cred['Password']
         print(f"app_username>>>>>>>>: {app_username}")
-        print(f"app_password>>>>>>>>: {app_password}")
+        logger.info(f"app_password>>>>>>>>: {app_password}")
 
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
         print(f"app_username>>>>>>>>: {portal_username}")
-        print(f"app_password>>>>>>>>: {portal_password}")
+        logger.info(f"portal_password>>>>>>>>: {portal_password}")
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -537,14 +537,14 @@ def test_sub_feature_code_4():  # Make sure to add the test case name as same as
         app_username = app_cred['Username']
         app_password = app_cred['Password']
         print(f"app_username>>>>>>>>: {app_username}")
-        print(f"app_password>>>>>>>>: {app_password}")
+        logger.info(f"app_password>>>>>>>>: {app_password}")
 
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
         print(f"app_username>>>>>>>>: {portal_username}")
-        print(f"app_password>>>>>>>>: {portal_password}")
+        logger.info(f"portal_password>>>>>>>>: {portal_password}")
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------
@@ -661,14 +661,14 @@ def test_sub_feature_code_5():  # Make sure to add the test case name as same as
         app_username = app_cred['Username']
         app_password = app_cred['Password']
         print(f"app_username>>>>>>>>: {app_username}")
-        print(f"app_password>>>>>>>>: {app_password}")
+        logger.info(f"app_password>>>>>>>>: {app_password}")
 
         portal_cred = ResourceAssigner.getPortalUserCredentials(testcase_id)
         logger.debug(f"Fetched portal credentials from the ezeauto db : {portal_cred}")
         portal_username = portal_cred['Username']
         portal_password = portal_cred['Password']
         print(f"app_username>>>>>>>>: {portal_username}")
-        print(f"app_password>>>>>>>>: {portal_password}")
+        logger.info(f"portal_password>>>>>>>>: {portal_password}")
 
         logger.info(f"Reverted back all the settings that were done as preconditions : {testcase_id}")
         # -------------------------------Reset Settings to default(completed)-------------------------------------------

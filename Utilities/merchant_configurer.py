@@ -2024,7 +2024,6 @@ def configure_pg_settings_for_merchant_multi_account(merchant_code: str):
                 logger.debug(f"PG setting query of {merchant_code} is {query}")
                 if not check_if_pg_config_exists_multi_account(merchant_code, cnp_payment_gateway, tid):
                     logger.debug(f"Query for PG setting of {merchant_code} is {query}")
-                    print("query", query)
                     result = DBProcessor.setValueToDB(query)
                     if DBProcessor.set_value_to_db_query_passed(result):
                         if check_if_pg_config_exists_multi_account(merchant_code, cnp_payment_gateway, tid):
