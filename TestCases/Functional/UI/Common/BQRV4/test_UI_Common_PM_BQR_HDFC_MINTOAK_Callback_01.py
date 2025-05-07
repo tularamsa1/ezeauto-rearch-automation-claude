@@ -215,7 +215,7 @@ def test_common_100_102_356():
                 }
 
                 logger.debug(f"expectedAppValues: {expected_app_values}")
-
+                time.sleep(3)
                 payment_page.click_on_proceed_homepage()
                 home_page.wait_for_navigation_to_load()
                 home_page.wait_for_home_page_load()

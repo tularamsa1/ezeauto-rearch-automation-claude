@@ -142,7 +142,7 @@ def test_common_100_103_05_001():
                 page.goto(payment_link_url)
                 remote_pay_txn = RemotePayTxnPage(page)
                 # remote_pay_txn.enter_card_details_emi(card_number='4000 0000 0000 0119', expiry_month='12', expiry_year='24', cvv='123', name_on_card=customer_name)
-                remote_pay_txn.enter_card_details_emi(card_number='4000 0000 0000 1091', expiry_month='12',
+                remote_pay_txn.enter_card_details_emi(card_number='4000 0000 0000 2503', expiry_month='12',
                                                       expiry_year='24', cvv='123', name_on_card=customer_name)
                 remote_pay_txn.click_on_proceed()
                 remote_pay_txn.select_emi_plan(emi_plan_in_months)

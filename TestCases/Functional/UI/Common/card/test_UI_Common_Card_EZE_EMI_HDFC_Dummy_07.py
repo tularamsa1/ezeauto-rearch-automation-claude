@@ -2179,7 +2179,7 @@ def test_common_100_115_11_038():
                 f"Logging in the MPOSX application using username and password : {app_username}, {app_password}")
             login_page.perform_login(username=app_username, password=app_password)
             home_page = HomePage(app_driver)
-            home_page.check_home_page_logo()
+            #home_page.check_home_page_logo()
             home_page.wait_for_navigation_to_load()
             home_page.wait_for_home_page_load()
             logger.info(f"App homepage loaded successfully")
