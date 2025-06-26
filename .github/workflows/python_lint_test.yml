@@ -1,0 +1,49 @@
+name: Python Lint
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ "*" ]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  lint:
+    name: Python Lint and Code Quality Check
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python (Required Install Ruff)
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install Ruff
+      run: |
+        python -m pip install --upgrade pip
+        pip install ruff
+
+    - name: Fetch full Git history (for diff to work)
+      run: git fetch --prune --unshallow || true
+
+    - name: Get list of changed .py files
+      id: get_changes
+      run: |
+        git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep '\.py$' > changed_files.txt || true
+        cat changed_files.txt
+        echo "FILES_CHANGED=$(cat changed_files.txt | xargs)" >> $GITHUB_ENV
+
+    - name: Run Ruff on changed Python files
+      if: env.FILES_CHANGED != ''
+      run: |
+        echo "Running Ruff on changed Python files:"
+        echo "$FILES_CHANGED"
+        ruff check $FILES_CHANGED --output-format=github
+
+    - name: Skip Ruff - No Python files changed
+      if: env.FILES_CHANGED == ''
+      run: echo "No Python files changed. Skipping code quality check."
