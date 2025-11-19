@@ -135,7 +135,7 @@ def test_common_400_401_033():  # Make sure to add the test case name as same as
                                                               "nonce": card_details['Nonce'],
                                                               "externalRefNumber": str(
                                                                   card_details['External Ref']) + str(
-                                                                  random.randint(0, 9))})
+                                                                  random.randint(1000, 9999))})
 
                 response = APIProcessor.send_request(card_txn_api_details)
                 card_payment_success = response['success']
@@ -545,7 +545,7 @@ def test_common_400_401_035():  # Make sure to add the test case name as same as
                                                               "nonce": card_details['Nonce'],
                                                               "externalRefNumber": str(
                                                                   card_details['External Ref']) + str(
-                                                                  random.randint(0, 9))})
+                                                                  random.randint(1000, 9999))})
 
                 response = APIProcessor.send_request(card_txn_api_details)
                 card_payment_success = response['success']

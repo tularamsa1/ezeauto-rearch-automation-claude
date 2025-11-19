@@ -372,7 +372,7 @@ def test_common_100_104_164():
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
-                                                                    "externalRefNumber": str(card_details['External Ref']) + str(random.randint(0, 9))})
+                                                                    "externalRefNumber": str(card_details['External Ref']) + str(random.randint(1000, 9999))})
 
             #
             response = APIProcessor.send_request(api_details)
@@ -677,7 +677,7 @@ def test_common_100_104_165():
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
-                                                                    "externalRefNumber": str(card_details['External Ref']) + str(random.randint(0, 9))})
+                                                                    "externalRefNumber": str(card_details['External Ref']) + str(random.randint(1000, 9999))})
 
             #
             response = APIProcessor.send_request(api_details)
@@ -982,7 +982,7 @@ def test_common_100_104_166():
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
-                                                                    "externalRefNumber": str(card_details['External Ref']) + str(random.randint(0, 9))})
+                                                                    "externalRefNumber": str(card_details['External Ref']) + str(random.randint(1000, 9999))})
 
             #
             response = APIProcessor.send_request(api_details)
@@ -1287,7 +1287,7 @@ def test_common_100_104_167():
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
-                                                                    "externalRefNumber": str(card_details['External Ref']) + str(random.randint(0, 9))})
+                                                                    "externalRefNumber": str(card_details['External Ref']) + str(random.randint(1000, 9999))})
 
             #
             response = APIProcessor.send_request(api_details)
@@ -1592,7 +1592,7 @@ def test_common_100_104_168():
                                                                     "amount": str(original_amount),
                                                                     "ezetapDeviceData": card_details['Ezetap Device Data'],
                                                                     "nonce": card_details['Nonce'],
-                                                                    "externalRefNumber": str(card_details['External Ref']) + str(random.randint(0, 9))})
+                                                                    "externalRefNumber": str(card_details['External Ref']) + str(random.randint(1000, 9999))})
 
             #
             response = APIProcessor.send_request(api_details)
