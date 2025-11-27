@@ -27,7 +27,7 @@ def create_merchants():
     sqlite_processor.update_acquisitions_to_db()
     if create_merchant_required == "true" or create_merchant_with_multi_account_required == "true":
         if check_if_username_exists() > 0:
-            os.system("pkill python3.8")
+            os.system("pkill python3.9")
             os.system("pkill -9 -f appium")
             os.system('adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done')
         create_merchants_with_users()

@@ -394,10 +394,10 @@ def calculateTestCasesCountForParallelExecution():
 
 
 def prepareTestExecutionCommand(testCasesDetailDataFrame):
-    commandString = "python3.8 -m pytest -v -s "
+    commandString = "python3.9 -m pytest -v -s "
     for ind in testCasesDetailDataFrame.index:
         commandString = commandString + testCasesDetailDataFrame['File Name'][ind] + ".py" + "::" + ind + " "
-    if commandString == "python3.8 -m pytest -v -s ":
+    if commandString == "python3.9 -m pytest -v -s ":
         return None
     else:
         commandString = commandString + getValidationConfig() +" "+calculateTestCasesCountForParallelExecution()+'--alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport") + ' --capture=tee-sys'
