@@ -95,7 +95,7 @@ def rerunTestAtTheEnd():
     else:
         number_of_threads = ""
 
-    print("python3.8 -m pytest -v " + listToStr + " " + number_of_threads + ' --alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport"))
+    print("python3.9 -m pytest -v " + listToStr + " " + number_of_threads + ' --alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport"))
     print(list(setOfTest))
     print("List of exe tcs failed", exeFail)
     print("List of apiVal tcs failed", apiValFail)
@@ -111,7 +111,7 @@ def rerunTestAtTheEnd():
         ls_TestCasesForRerun = list(setOfRerunTest)
         changeOverallStatusToEmpty(ls_TestCasesForRerun)
         os.system(
-            "python3.8 -m pytest -v " + listToStr + " " + number_of_threads +' --alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport"))
+            "python3.9 -m pytest -v " + listToStr + " " + number_of_threads +' --alluredir=' + DirectoryCreator.getDirectoryPath("AllureReport"))
 
     return len(listToStr.strip())
 
@@ -171,7 +171,7 @@ def rerunTestImmediately(testCaseID, testCaseFileName, rerunCount, request):
     print("Starting the immediate rerun")
     if setRerunCount(testCaseID, rerunCount):
         # make status empty
-        rerunCommand = "python3.8 -m pytest -v " + testCaseFileName + ".py::" + testCaseID + ' --alluredir=' + DirectoryCreator.getDirectoryPath(
+        rerunCommand = "python3.9 -m pytest -v " + testCaseFileName + ".py::" + testCaseID + ' --alluredir=' + DirectoryCreator.getDirectoryPath(
             "AllureReport")
         print(rerunCommand)
 
