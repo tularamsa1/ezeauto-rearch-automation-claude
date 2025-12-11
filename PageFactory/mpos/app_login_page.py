@@ -21,6 +21,12 @@ class LoginPage(BasePage):
     btn_settings = (AppiumBy.ID, "android:id/button1")
     btn_allow_access = (AppiumBy.ID, "android:id/switch_widget")
     btn_click_on_back = (AppiumBy.XPATH, "//android.widget.ImageButton[@index='0']")
+    
+    # Login error message popup elements
+    img_error_dummy = (AppiumBy.ID, 'com.ezetap.basicapp:id/imgDummy')
+    lyt_error_message = (AppiumBy.ID, 'com.ezetap.basicapp:id/layout_message')
+    lbl_error_message = (AppiumBy.ID, 'com.ezetap.basicapp:id/tv_message')    
+    btn_error_close = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnClose')
     txt_login_failed_msg = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvTitle')
 
     btn_settings_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/btnSettings')
@@ -59,8 +65,8 @@ class LoginPage(BasePage):
                 self.perform_click(self.btn_click_on_back)
                 self.perform_click(self.btn_login)
 
-        except Exception as e:
-            logger.info(f"Settings popup is not displayed")
+        except Exception:
+            logger.info("Settings popup is not displayed")
 
     def prod_app_login(self, username, password):
         """ Loging into the prod app """
@@ -87,8 +93,88 @@ class LoginPage(BasePage):
         fetches text from login failed pop tab in the login page
         return:txt_login_failed_msg:str
         """
-        self.wait_for_element(self.txt_login_failed_msg)
-        return self.fetch_text(self.txt_login_failed_msg)
+        try:
+            logger.info("Fetching login failed message title")
+            self.wait_for_element(self.txt_login_failed_msg)
+            error_title = self.fetch_text(self.txt_login_failed_msg)
+            logger.info(f"Fetched login failed message title: {error_title}")
+            return error_title
+        except Exception as e:
+            logger.error(f"Failed to fetch login failed message title: {str(e)}")
+            raise
+
+    def is_error_layout_displayed(self):
+        """
+        Checks if the error message layout is displayed.
+        :return: True if error layout is displayed, False otherwise
+        """
+        try:
+            logger.info("Checking if error layout is displayed")
+            element = self.wait_for_element(self.lyt_error_message)
+            is_displayed = element.is_displayed()
+            logger.info(f"Error layout displayed: {is_displayed}")
+            return is_displayed
+        except Exception as e:
+            logger.warning(f"Error layout not found or not displayed: {str(e)}")
+            return False
+
+    def is_error_image_displayed(self):
+        """
+        Checks if the error dummy image is displayed.
+        :return: True if image is displayed, False otherwise
+        """
+        try:
+            logger.info("Checking if error image is displayed")
+            element = self.wait_for_element(self.img_error_dummy)
+            is_displayed = element.is_displayed()
+            logger.info(f"Error image displayed: {is_displayed}")
+            return is_displayed
+        except Exception as e:
+            logger.warning(f"Error image not found or not displayed: {str(e)}")
+            return False
+
+    def fetch_error_title(self):
+        """
+        Fetches the title text from the error popup.
+        :return: Error title as a string
+        """
+        try:
+            logger.info("Fetching error title from popup")
+            self.wait_for_element(self.txt_login_failed_msg)
+            error_title = str(self.fetch_text(self.txt_login_failed_msg))
+            logger.info(f"Fetched error title: {error_title}")
+            return error_title
+        except Exception as e:
+            logger.error(f"Failed to fetch error title: {str(e)}")
+            raise
+
+    def fetch_error_message(self):
+        """
+        Fetches the message text from the error popup.
+        :return: Error message as a string
+        """
+        try:
+            logger.info("Fetching error message from popup")
+            self.wait_for_element(self.lbl_error_message)
+            error_message = str(self.fetch_text(self.lbl_error_message))
+            logger.info(f"Fetched error message: {error_message}")
+            return error_message
+        except Exception as e:
+            logger.error(f"Failed to fetch error message: {str(e)}")
+            raise
+
+    def close_error_popup(self):
+        """
+        Clicks the close button to dismiss the error popup.
+        """
+        try:
+            logger.info("Closing error popup")
+            self.wait_for_element(self.btn_error_close)
+            self.perform_click(self.btn_error_close)
+            logger.info("Error popup closed successfully")
+        except Exception as e:
+            logger.error(f"Failed to close error popup: {str(e)}")
+            raise
 
     def config_merchant_for_sample_app(self, org_code: str, username: str, password: str):
         """
@@ -117,6 +203,7 @@ class LoginPage(BasePage):
         Checks device type and manages battery optimize settings popup
         """
 
+
         if read_config("ParallelExecution", "deviceOnly") == "True":
             self.scroll_to_text(read_config("APIs", "env")).click()
         elif read_config("APIs", "env") in self.fetch_text(self.btn_login):
@@ -127,8 +214,8 @@ class LoginPage(BasePage):
 
         try:
             txt_username_val = self.visibility_of_elements(self.txt_username, time=10)
-            if Pax_Device == None and len(txt_username_val) < 0:
-                logger.info(f"Pax_Device is None and txt_username_val is null")
+            if Pax_Device is None and len(txt_username_val) < 0:
+                logger.info("Pax_Device is None and txt_username_val is null")
                 pass
             else:
                 self.wait_for_element(self.txt_username).clear()
@@ -136,18 +223,18 @@ class LoginPage(BasePage):
                 self.wait_for_element(self.txt_password).clear()
                 self.perform_sendkeys(self.txt_password, password)
                 self.perform_click(self.btn_login)
-                logger.info(f"Pax_Device is True and txt_username_val is not null")
-        except Exception as e:
-            logger.info(f"Pax_Device is null and txt_username_val is not displayed")
+                logger.info("Pax_Device is True and txt_username_val is not null")
+        except Exception:
+            logger.info("Pax_Device is null and txt_username_val is not displayed")
 
         try:
             setting_btn_val = self.visibility_of_elements(self.btn_settings, time=10)
-            if Pax_Device == None and len(setting_btn_val) < 0:
-                logger.info(f"Pax_Device is False and setting_btn_val is zero to click on battery optimize settings")
+            if Pax_Device is None and len(setting_btn_val) < 0:
+                logger.info("Pax_Device is False and setting_btn_val is zero to click on battery optimize settings")
                 pass
-            elif Pax_Device == True and len(setting_btn_val) > 0:
+            elif Pax_Device and len(setting_btn_val) > 0:
                 # click on battery optimize settings
                 self.perform_click(self.btn_settings)
-                logger.info(f"Pax_Device is True and setting_btn_val is not null to click on battery optimize settings")
-        except Exception as e:
-            logger.info(f"battery optimize settings popup is not displayed for pax device")
+                logger.info("Pax_Device is True and setting_btn_val is not null to click on battery optimize settings")
+        except Exception:
+            logger.info("battery optimize settings popup is not displayed for pax device")
