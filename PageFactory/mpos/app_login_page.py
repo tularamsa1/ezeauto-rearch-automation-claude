@@ -28,6 +28,15 @@ class LoginPage(BasePage):
     lbl_error_message = (AppiumBy.ID, 'com.ezetap.basicapp:id/tv_message')    
     btn_error_close = (AppiumBy.ID, 'com.ezetap.basicapp:id/btnClose')
     txt_login_failed_msg = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvTitle')
+    
+    # Show password button
+    btn_show_password = (AppiumBy.XPATH, '//android.widget.ImageButton[@content-desc="Show password"]')
+    
+    # Login page UI elements
+    lbl_login_issue = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvTextLabel1')
+    lbl_missed_call = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvTextLabel2')
+    lbl_support_contact = (AppiumBy.ID, 'com.ezetap.basicapp:id/tvSupportContactNo')
+    img_whatsapp = (AppiumBy.ID, 'com.ezetap.basicapp:id/imgWhatsapp')
 
     btn_settings_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/btnSettings')
     txt_merchant_name_sample = (AppiumBy.ID, 'com.ezeapi.sample:id/merchant_name')
@@ -196,6 +205,139 @@ class LoginPage(BasePage):
         This is used to select environment in PAXs devices for executing autologin
         """
         self.scroll_to_text(read_config("APIs", "env")).click()
+
+    def is_login_button_enabled(self):
+        """
+        Checks if the login button is enabled/clickable.
+        :return: True if enabled, False otherwise
+        """
+        try:
+            logger.info("Checking if login button is enabled")
+            element = self.wait_for_element(self.btn_login)
+            is_enabled = element.is_enabled()
+            logger.info(f"Login button enabled: {is_enabled}")
+            return is_enabled
+        except Exception as e:
+            logger.error(f"Failed to check login button state: {str(e)}")
+            raise
+
+    def click_show_password_button(self):
+        """
+        Clicks on the show password button to toggle password visibility.
+        """
+        try:
+            logger.info("Clicking on show password button")
+            self.wait_for_element(self.btn_show_password)
+            self.perform_click(self.btn_show_password)
+            logger.info("Clicked on show password button successfully")
+        except Exception as e:
+            logger.error(f"Failed to click show password button: {str(e)}")
+            raise
+
+    def get_password_field_text(self):
+        """
+        Gets the text from the password field.
+        :return: Password field text as a string
+        """
+        try:
+            logger.info("Getting password field text")
+            element = self.wait_for_element(self.txt_password)
+            text = element.text
+            logger.info("Password field text retrieved")
+            return text
+        except Exception as e:
+            logger.error(f"Failed to get password field text: {str(e)}")
+            raise
+
+    def is_logo_displayed(self):
+        """
+        Checks if the logo image is displayed on login page.
+        :return: True if displayed, False otherwise
+        """
+        try:
+            logger.info("Checking if logo is displayed")
+            element = self.wait_for_element(self.img_ezetaplogo)
+            is_displayed = element.is_displayed()
+            logger.info(f"Logo displayed: {is_displayed}")
+            return is_displayed
+        except Exception as e:
+            logger.warning(f"Logo not found: {str(e)}")
+            return False
+
+    def fetch_login_hint_text(self):
+        """
+        Fetches the login hint text from login page.
+        :return: Login hint text as a string
+        """
+        try:
+            logger.info("Fetching login hint text")
+            self.wait_for_element(self.lbl_login)
+            text = str(self.fetch_text(self.lbl_login))
+            logger.info(f"Login hint text: {text}")
+            return text
+        except Exception as e:
+            logger.error(f"Failed to fetch login hint text: {str(e)}")
+            raise
+
+    def fetch_login_issue_text(self):
+        """
+        Fetches the 'Having issue with login?' text.
+        :return: Login issue text as a string
+        """
+        try:
+            logger.info("Fetching login issue text")
+            self.wait_for_element(self.lbl_login_issue)
+            text = str(self.fetch_text(self.lbl_login_issue))
+            logger.info(f"Login issue text: {text}")
+            return text
+        except Exception as e:
+            logger.error(f"Failed to fetch login issue text: {str(e)}")
+            raise
+
+    def fetch_missed_call_text(self):
+        """
+        Fetches the 'Give missed call on this number' text.
+        :return: Missed call text as a string
+        """
+        try:
+            logger.info("Fetching missed call text")
+            self.wait_for_element(self.lbl_missed_call)
+            text = str(self.fetch_text(self.lbl_missed_call))
+            logger.info(f"Missed call text: {text}")
+            return text
+        except Exception as e:
+            logger.error(f"Failed to fetch missed call text: {str(e)}")
+            raise
+
+    def fetch_support_contact_number(self):
+        """
+        Fetches the support contact number.
+        :return: Support contact number as a string
+        """
+        try:
+            logger.info("Fetching support contact number")
+            self.wait_for_element(self.lbl_support_contact)
+            text = str(self.fetch_text(self.lbl_support_contact))
+            logger.info(f"Support contact number: {text}")
+            return text
+        except Exception as e:
+            logger.error(f"Failed to fetch support contact number: {str(e)}")
+            raise
+
+    def is_whatsapp_icon_displayed(self):
+        """
+        Checks if the WhatsApp icon is displayed on login page.
+        :return: True if displayed, False otherwise
+        """
+        try:
+            logger.info("Checking if WhatsApp icon is displayed")
+            element = self.wait_for_element(self.img_whatsapp)
+            is_displayed = element.is_displayed()
+            logger.info(f"WhatsApp icon displayed: {is_displayed}")
+            return is_displayed
+        except Exception as e:
+            logger.warning(f"WhatsApp icon not found: {str(e)}")
+            return False
 
     def perform_login_for_auto_login_functionality(self, username, password, Pax_Device=None):
         """

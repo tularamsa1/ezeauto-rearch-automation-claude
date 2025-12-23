@@ -7,18 +7,38 @@ logger = EzeAutoLogger(__name__)
 
 class HomePage(BasePage):
 
-    btn_proceed = (By.ID, "com.ezetap.basicapp:id/btnProceedLMS")
+    # ============== PAGE HEADER / TOOLBAR ==============
     lbl_navigation = (By.ID, 'com.ezetap.basicapp:id/logoToolbar')
-    btn_increment = (By.ID, "com.ezetap.basicapp:id/btnIncrement")
-    btn_decrement = (By.ID, "com.ezetap.basicapp:id/btnDecrement")
+    btn_help = (By.ID, "com.ezetap.basicapp:id/rlHelp")
+
+    # ============== MERCHANT & USER INFO ==============
     lbl_merchant_name = (By.ID, "com.ezetap.basicapp:id/tvMerchantName")
     lbl_username_label = (By.ID, "com.ezetap.basicapp:id/tvUsernameLabel")
     lbl_username = (By.ID, "com.ezetap.basicapp:id/tvUsername")
+    img_razorpay = (By.XPATH, '//android.widget.ImageView[@content-desc="Razorpay Payments"]')
+
+    # ============== GUEST COUNTER SECTION ==============
     lbl_additional_guest = (By.ID, "com.ezetap.basicapp:id/tvAdditionalGuest")
     lbl_guest_number = (By.ID, "com.ezetap.basicapp:id/tvGuestNumber")
-    img_razorpay = (By.XPATH, '//android.widget.ImageView[@content-desc="Razorpay Payments"]')
+    btn_increment = (By.ID, "com.ezetap.basicapp:id/btnIncrement")
+    btn_decrement = (By.ID, "com.ezetap.basicapp:id/btnDecrement")
     img_chair_list = (By.XPATH, '//android.widget.LinearLayout[@resource-id="com.ezetap.basicapp:id/chairList"]/android.widget.ImageView')
-    btn_help = (By.ID, "com.ezetap.basicapp:id/rlHelp")
+
+    # ============== ACTION BUTTONS ==============
+    btn_proceed = (By.ID, "com.ezetap.basicapp:id/btnProceedLMS")
+
+    # ============== BOTTOM NAVIGATION BAR ==============
+    nav_home = (By.XPATH, '(//android.widget.ImageView[@resource-id="com.ezetap.basicapp:id/navigation_bar_item_icon_view"])[1]')
+    nav_history = (By.XPATH, '(//android.widget.ImageView[@resource-id="com.ezetap.basicapp:id/navigation_bar_item_icon_view"])[2]')
+    nav_account = (By.XPATH, '(//android.widget.ImageView[@resource-id="com.ezetap.basicapp:id/navigation_bar_item_icon_view"])[3]')
+    nav_settings = (By.XPATH, '(//android.widget.ImageView[@resource-id="com.ezetap.basicapp:id/navigation_bar_item_icon_view"])[4]')
+
+    # ============== NAVIGATION BACK BUTTONS ==============
+    btn_history_back = (By.ID, "com.ezetap.service.demo:id/iVBackArrow")
+    btn_navigate_up = (By.XPATH, '//android.widget.ImageButton[@content-desc="Navigate up"]')
+
+    # ============== PAGE TITLES (for navigation verification) ==============
+    lbl_transactions_title = (By.XPATH, '//android.widget.TextView[@text="Transactions"]')
 
 
     def __init__(self, driver):
@@ -231,3 +251,114 @@ class HomePage(BasePage):
         except Exception as e:
             logger.error(f"Failed to click on help button: {str(e)}")
             raise
+
+    def is_nav_tab_selected(self, tab_name: str):
+        """
+        Checks if the specified navigation tab is selected.
+        :param tab_name: 'home', 'history', 'account', or 'settings'
+        :return: True if selected, False otherwise
+        """
+        try:
+            logger.info(f"Checking if {tab_name} tab is selected")
+            tab_locators = {
+                'home': self.nav_home,
+                'history': self.nav_history,
+                'account': self.nav_account,
+                'settings': self.nav_settings
+            }
+            locator = tab_locators.get(tab_name.lower())
+            if locator is None:
+                raise ValueError(f"Invalid tab_name: {tab_name}. Use 'home', 'history', 'account', or 'settings'.")
+            element = self.wait_for_element(locator)
+            is_selected = element.get_attribute('selected') == 'true'
+            logger.info(f"{tab_name} tab selected: {is_selected}")
+            return is_selected
+        except ValueError as ve:
+            logger.error(f"Invalid tab name: {str(ve)}")
+            raise
+        except Exception as e:
+            logger.error(f"Failed to check if {tab_name} tab is selected: {str(e)}")
+            raise
+
+    def click_on_nav_tab(self, tab_name: str):
+        """
+        Clicks on the specified navigation tab.
+        :param tab_name: 'home', 'history', 'account', or 'settings'
+        """
+        try:
+            logger.info(f"Clicking on {tab_name} tab")
+            tab_locators = {
+                'home': self.nav_home,
+                'history': self.nav_history,
+                'account': self.nav_account,
+                'settings': self.nav_settings
+            }
+            locator = tab_locators.get(tab_name.lower())
+            if locator is None:
+                raise ValueError(f"Invalid tab_name: {tab_name}. Use 'home', 'history', 'account', or 'settings'.")
+            self.wait_for_element(locator)
+            self.perform_click(locator)
+            logger.info(f"Clicked on {tab_name} tab successfully")
+        except ValueError as ve:
+            logger.error(f"Invalid tab name: {str(ve)}")
+            raise
+        except Exception as e:
+            logger.error(f"Failed to click on {tab_name} tab: {str(e)}")
+            raise
+
+    def click_history_back_button(self):
+        """
+        Clicks the back arrow on the history/transactions page.
+        """
+        try:
+            logger.info("Clicking on history back button")
+            self.wait_for_element(self.btn_history_back)
+            self.perform_click(self.btn_history_back)
+            logger.info("Clicked on history back button successfully")
+        except Exception as e:
+            logger.error(f"Failed to click history back button: {str(e)}")
+            raise
+
+    def click_navigate_up_button(self):
+        """
+        Clicks the Navigate up button on account/settings pages.
+        """
+        try:
+            logger.info("Clicking on navigate up button")
+            self.wait_for_element(self.btn_navigate_up)
+            self.perform_click(self.btn_navigate_up)
+            logger.info("Clicked on navigate up button successfully")
+        except Exception as e:
+            logger.error(f"Failed to click navigate up button: {str(e)}")
+            raise
+
+    def is_history_back_button_displayed(self):
+        """
+        Checks if the history back button is displayed (indicates we're on transactions page).
+        :return: True if displayed, False otherwise
+        """
+        try:
+            logger.info("Checking if history back button is displayed")
+            element = self.wait_for_element(self.btn_history_back)
+            is_displayed = element.is_displayed()
+            logger.info(f"History back button displayed: {is_displayed}")
+            return is_displayed
+        except Exception as e:
+            logger.warning(f"History back button not found: {str(e)}")
+            return False
+
+    def is_transactions_page_displayed(self):
+        """
+        Checks if the Transactions page is displayed by verifying the title.
+        :return: True if displayed, False otherwise
+        """
+        try:
+            logger.info("Checking if Transactions page is displayed")
+            element = self.wait_for_element(self.lbl_transactions_title)
+            is_displayed = element.is_displayed()
+            logger.info(f"Transactions page displayed: {is_displayed}")
+            return is_displayed
+        except Exception as e:
+            logger.warning(f"Transactions title not found: {str(e)}")
+            return False
+

@@ -4,6 +4,7 @@ from Configuration import Configuration, TestSuiteSetup
 from DataProvider import GlobalVariables
 
 from PageFactory.LMS.app_home_page import HomePage
+from PageFactory.LMS.app_help_page import HelpPage
 from PageFactory.mpos.app_login_page import LoginPage
 
 from Utilities import ResourceAssigner, DBProcessor
@@ -14,12 +15,13 @@ logger = EzeAutoLogger(__name__)
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.appVal
-def test_common_100_1010_004():
+def test_common_100_1010_007():
     """
-    Sub Feature Code: UI_LMS_Home_Page_UI_Elements_Verification
+    sub_feature_code: UI_Common_PM_LMS_Home_Page_UI_Elements_Verification
+    file_name: test_UI_Common_LMS_Home.py
     Sub Feature Description: Verify all UI elements are displayed correctly on the LMS home page
                             including merchant name, username, labels, images and buttons
-    TC naming code description: 100: Payment Method, 1010: LMS, 004: TC004
+    TC naming code description: 100: Payment Method, 1010: LMS, 007: TC007
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -122,12 +124,13 @@ def test_common_100_1010_004():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.appVal
-def test_common_100_1010_005():
+def test_common_100_1010_008():
     """
-    Sub Feature Code: UI_LMS_Home_Page_Guest_Counter_Functionality
+    sub_feature_code: UI_Common_PM_LMS_Home_Page_Guest_Counter_Functionality
+    file_name: test_UI_Common_LMS_Home.py
     Sub Feature Description: Verify the guest counter increment/decrement functionality and chair image count
                             on the LMS home page with boundary validations (min: 1, max: 10)
-    TC naming code description: 100: Payment Method, 1010: LMS, 005: TC005
+    TC naming code description: 100: Payment Method, 1010: LMS, 008: TC008
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -252,11 +255,80 @@ def test_common_100_1010_005():
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.appVal
-def test_common_100_1010_006():
+def test_common_100_1010_009():
     """
-    Sub Feature Code: UI_LMS_Home_Page_Help_Button_Verification
+    sub_feature_code: UI_Common_PM_LMS_Home_Page_Help_Button_Verification
+    file_name: test_UI_Common_LMS_Home.py
     Sub Feature Description: Verify the Help button is displayed and clickable on the LMS home page
-    TC naming code description: 100: Payment Method, 1010: LMS, 006: TC006
+    TC naming code description: 100: Payment Method, 1010: LMS, 009: TC009
+    """
+    try:
+        testcase_id = sys._getframe().f_code.co_name
+        GlobalVariables.time_calc.setup.resume()
+        logger.debug(f"Setup Timer resumed in testcase function : {testcase_id}")
+
+        # -----------------------------PreConditions--------------------------------
+        logger.info(f"Starting Precondition setup for the test case : {testcase_id}")
+
+        # Get app credentials
+        app_cred = ResourceAssigner.getAppUserCredentials(testCaseID=testcase_id)
+        logger.debug(f"Fetched app credentials from the ezeauto db : {app_cred}")
+        app_username = app_cred['Username']
+        app_password = app_cred['Password']
+
+        GlobalVariables.setupCompletedSuccessfully = True
+        logger.info(f"Completed Precondition setup for the test case : {testcase_id}")
+        # -----------------------------PreConditions(Completed)---------------------
+
+        # -----------------------------------------Start of Test Execution----------
+        try:
+            logger.info(f"Starting execution for the test case : {testcase_id}")
+            GlobalVariables.time_calc.execution.start()
+            logger.debug(f"Execution Timer started in testcase function : {testcase_id}")
+
+            # Initialize app driver
+            app_driver = TestSuiteSetup.initialize_app_driver(testcase_id, no_reset=True)
+            home_page = HomePage(driver=app_driver)
+            help_page = HelpPage(driver=app_driver)
+            login_page = LoginPage(driver=app_driver)
+
+            # Check if already logged in, if not perform login
+            try:
+                home_page.wait_for_navigation_to_load()
+                logger.info("Already logged in - Home page loaded directly")
+            except Exception:
+                logger.info(f"Not logged in - Performing login with username : {app_username}")
+                login_page.perform_login_for_auto_login_functionality(app_username, app_password, Pax_Device=True)
+                home_page.wait_for_navigation_to_load()
+                logger.info("App homepage loaded successfully after login")
+
+            # Step 1: Click on Help button
+            home_page.click_on_help_button()
+            logger.info("Clicked on Help button")
+
+            # Step 2: Verify Help page is displayed
+            assert help_page.is_help_page_displayed(), "Help page should be displayed after clicking Help button"
+            logger.info("Verified: Help page loaded successfully")
+
+            logger.info(f"Test case {testcase_id} completed successfully - Help button navigation verified")
+            GlobalVariables.EXCEL_TC_Execution = "Pass"
+        except Exception as e:
+            Configuration.perform_exe_exception(testcase_id)
+            pytest.fail("Test case execution failed due to the exception -" + str(e))
+        # -----------------------------------------End of Test Execution----------
+    finally:
+        Configuration.executeFinallyBlock(testcase_id)
+
+
+@pytest.mark.usefixtures("log_on_success", "method_setup")
+@pytest.mark.appVal
+def test_common_100_1010_010():
+    """
+    sub_feature_code: UI_Common_PM_LMS_Home_Page_Bottom_Navigation_Bar
+    file_name: test_UI_Common_LMS_Home.py
+    Sub Feature Description: Verify bottom navigation bar functionality including Home, History,
+                            Account and Settings tabs with selection states and navigation
+    TC naming code description: 100: Payment Method, 1010: LMS, 010: TC010
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
@@ -297,11 +369,40 @@ def test_common_100_1010_006():
                 home_page.wait_for_navigation_to_load()
                 logger.info("App homepage loaded successfully after login")
 
-            # Step 1: Click on Help button
-            home_page.click_on_help_button()
-            logger.info("Clicked on Help button successfully")
+            # Step 1: Verify Home tab is selected initially
+            assert home_page.is_nav_tab_selected('home'), "Home tab should be selected initially"
+            logger.info("Verified: Home tab is selected")
 
-            logger.info(f"Test case {testcase_id} completed successfully - Help button verified")
+            # Step 2: Click on History tab and verify navigation to transactions page
+            home_page.click_on_nav_tab('history')
+            logger.info("Clicked on History tab")
+            assert home_page.is_transactions_page_displayed(), "Transactions title should be displayed"
+            logger.info("Verified: Navigated to Transactions page")
+
+            # Step 3: Click back to return to home
+            home_page.click_history_back_button()
+            home_page.wait_for_navigation_to_load()
+            logger.info("Returned to home page from History")
+
+            # Step 4: Click on Account tab and navigate back
+            home_page.click_on_nav_tab('account')
+            logger.info("Clicked on Account tab")
+            home_page.click_navigate_up_button()
+            home_page.wait_for_navigation_to_load()
+            logger.info("Returned to home page from Account")
+
+            # Step 5: Click on Settings tab and navigate back
+            home_page.click_on_nav_tab('settings')
+            logger.info("Clicked on Settings tab")
+            home_page.click_navigate_up_button()
+            home_page.wait_for_navigation_to_load()
+            logger.info("Returned to home page from Settings")
+
+            # Step 6: Verify Home tab is selected after all navigations
+            assert home_page.is_nav_tab_selected('home'), "Home tab should be selected after returning"
+            logger.info("Verified: Home tab is selected after navigation")
+
+            logger.info(f"Test case {testcase_id} completed successfully - Bottom navigation bar verified")
             GlobalVariables.EXCEL_TC_Execution = "Pass"
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
