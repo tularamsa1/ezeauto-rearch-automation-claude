@@ -1,16 +1,12 @@
-from PageFactory.ReArch.rearch_base_page import ReArchBasePage
-from PageFactory.ReArch.rearch_locators import LoginLocators
+from PageFactory.ReArch.rearch_native_base_page import ReArchNativeBasePage
+from PageFactory.ReArch.rearch_native_locators import LoginLocators
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
 
 
-class ReArchLoginPage(ReArchBasePage):
-    """
-    Page object for the ReArch Login screen.
-    Sources: pos/web/src/pages/login/LoginPage.svelte
-             pos/web/src/pages/login/LoginForm.svelte
-    """
+class ReArchLoginPage(ReArchNativeBasePage):
+    """Page object for the ReArch Login screen (native context)."""
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -44,7 +40,7 @@ class ReArchLoginPage(ReArchBasePage):
         logger.info("Clicked Login button.")
 
     def perform_login(self, username: str, password: str):
-        """Full login flow: wait for form → enter credentials → submit."""
+        """Full login flow: wait for form -> enter credentials -> submit."""
         logger.info(f"Performing login for user: {username}")
         self.wait_for_element(LoginLocators.txt_username)
         self.enter_username(username)

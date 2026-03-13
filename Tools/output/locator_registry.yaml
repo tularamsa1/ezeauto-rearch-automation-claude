@@ -1,0 +1,47 @@
+package: com.razorpay.pos
+generated_at: 2026-03-13 16:00
+screens:
+  catalog:
+    source_xml: catalog.xml
+    captured_at: 2026-03-12 18:56
+    element_count: 7
+    elements:
+      lbl_view:
+        by: AppiumBy.XPATH
+        value: //android.view.View[@index='0']
+        type: action
+        android_class: android.view.View
+      lbl_page:
+        by: AppiumBy.ID
+        value: page
+        type: label
+        android_class: android.view.View
+      btn_button:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@index='0']
+        type: action
+        android_class: android.widget.Button
+      lbl_catalog:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='Catalog']
+        type: label
+        android_class: android.widget.TextView
+        text: Catalog
+      btn_search_for_products:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Search for products...']
+        type: action
+        android_class: android.widget.Button
+        text: Search for products...
+      lbl_brands:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='Brands']
+        type: label
+        android_class: android.widget.TextView
+        text: Brands
+      btn_brandui_brandui:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='BRAND_UI BRAND_UI']
+        type: action
+        android_class: android.widget.Button
+        text: BRAND_UI BRAND_UI

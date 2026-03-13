@@ -1,0 +1,407 @@
+# action_registry.yaml
+# --------------------
+# Maps natural language test step patterns to PageFactory method calls.
+# Used by Claude (via the nl_test_generator skill) to convert human-readable
+# test steps into executable Python automation code.
+#
+# Pattern syntax:
+#   - Literal text is matched case-insensitively
+#   - {param_name} captures a value to pass as a method argument
+#   - Multiple patterns per action allow flexible phrasing
+#
+# To extend: add new entries when new PageFactory methods are created.
+
+package: com.razorpay.pos
+app_name: ReArch
+
+page_objects:
+  ReArchLoginPage:
+    import: "from PageFactory.ReArch.rearch_login_page import ReArchLoginPage"
+    init: "login_page = ReArchLoginPage(driver)"
+  ReArchHomePage:
+    import: "from PageFactory.ReArch.rearch_home_page import ReArchHomePage"
+    init: "home_page = ReArchHomePage(driver)"
+  ReArchQRPage:
+    import: "from PageFactory.ReArch.rearch_qr_page import ReArchQRPage"
+    init: "qr_page = ReArchQRPage(driver)"
+  ReArchCompletePage:
+    import: "from PageFactory.ReArch.rearch_complete_page import ReArchCompletePage"
+    init: "complete_page = ReArchCompletePage(driver)"
+  ReArchTxnHistoryPage:
+    import: "from PageFactory.ReArch.rearch_txn_history_page import ReArchTxnHistoryPage"
+    init: "txn_history_page = ReArchTxnHistoryPage(driver)"
+  ReArchTxnDetailPage:
+    import: "from PageFactory.ReArch.rearch_txn_detail_page import ReArchTxnDetailPage"
+    init: "txn_detail_page = ReArchTxnDetailPage(driver)"
+
+actions:
+
+  # ── App launch / login ──────────────────────────────────────────────────
+
+  - patterns:
+      - "open rearch"
+      - "launch rearch"
+      - "open app"
+      - "launch app"
+      - "start app"
+    page: ReArchLoginPage
+    method: wait_for_login_page
+    code: "login_page.wait_for_login_page()"
+    description: "Wait for the ReArch app login page to be ready"
+
+  - patterns:
+      - "login"
+      - "login with credentials"
+      - "enter credentials"
+      - "sign in"
+      - "perform login"
+    page: ReArchLoginPage
+    method: perform_login
+    params: [username, password]
+    code: "login_page.perform_login(username, password)"
+    description: "Enter username and password, then click Login"
+
+  - patterns:
+      - "enter username {username}"
+      - "type username {username}"
+    page: ReArchLoginPage
+    method: enter_username
+    params: [username]
+    code: "login_page.enter_username(\"{username}\")"
+
+  - patterns:
+      - "enter password {password}"
+      - "type password {password}"
+    page: ReArchLoginPage
+    method: enter_password
+    params: [password]
+    code: "login_page.enter_password(\"{password}\")"
+
+  - patterns:
+      - "click login"
+      - "tap login"
+      - "press login"
+    page: ReArchLoginPage
+    method: click_login
+    code: "login_page.click_login()"
+
+  - patterns:
+      - "validate login page"
+      - "verify login page"
+      - "check login page"
+    page: ReArchLoginPage
+    method: validate_login_page
+    code: "login_page.validate_login_page()"
+
+  # ── Home / Amount page ──────────────────────────────────────────────────
+
+  - patterns:
+      - "wait for home page"
+      - "wait for amount page"
+      - "home page loaded"
+    page: ReArchHomePage
+    method: wait_for_home_page_load
+    code: "home_page.wait_for_home_page_load()"
+
+  - patterns:
+      - "enter amount {amount}"
+      - "type amount {amount}"
+      - "key in {amount}"
+      - "input amount {amount}"
+      - "enter {amount}"
+    page: ReArchHomePage
+    method: enter_amount
+    params: [amount]
+    code: "home_page.enter_amount(\"{amount}\")"
+    description: "Enter an amount using the on-screen numpad"
+
+  - patterns:
+      - "clear amount"
+      - "reset amount"
+    page: ReArchHomePage
+    method: clear_amount
+    code: "home_page.clear_amount()"
+
+  - patterns:
+      - "click upi"
+      - "select upi"
+      - "pay by upi"
+      - "upi payment"
+      - "tap upi"
+    page: ReArchHomePage
+    method: click_pay_by_upi
+    code: "home_page.click_pay_by_upi()"
+
+  - patterns:
+      - "click card"
+      - "select card"
+      - "pay by card"
+      - "card payment"
+      - "tap card"
+    page: ReArchHomePage
+    method: click_pay_by_card
+    code: "home_page.click_pay_by_card()"
+
+  - patterns:
+      - "click add tip"
+      - "add tip"
+      - "tap add tip"
+    page: ReArchHomePage
+    method: click_add_tip
+    code: "home_page.click_add_tip()"
+
+  - patterns:
+      - "click menu"
+      - "open menu"
+      - "tap menu"
+    page: ReArchHomePage
+    method: click_menu
+    code: "home_page.click_menu()"
+
+  - patterns:
+      - "go to transaction history"
+      - "open transactions"
+      - "view transactions"
+      - "click transaction history"
+      - "open transaction history"
+    page: ReArchHomePage
+    method: click_txn_history
+    code: "home_page.click_txn_history()"
+
+  - patterns:
+      - "enter amount {amount} and pay by upi"
+      - "enter {amount} and select upi"
+    page: ReArchHomePage
+    method: enter_amount_and_proceed_upi
+    params: [amount]
+    code: "home_page.enter_amount_and_proceed_upi(\"{amount}\")"
+
+  - patterns:
+      - "enter amount {amount} and pay by card"
+      - "enter {amount} and select card"
+    page: ReArchHomePage
+    method: enter_amount_and_proceed_card
+    params: [amount]
+    code: "home_page.enter_amount_and_proceed_card(\"{amount}\")"
+
+  # ── QR / UPI payment screen ────────────────────────────────────────────
+
+  - patterns:
+      - "wait for qr screen"
+      - "qr screen displayed"
+      - "verify qr screen"
+      - "qr code visible"
+    page: ReArchQRPage
+    method: wait_for_qr_screen
+    code: "qr_page.wait_for_qr_screen()"
+
+  - patterns:
+      - "validate qr screen"
+      - "verify qr page"
+    page: ReArchQRPage
+    method: validate_qr_screen
+    code: "qr_page.validate_qr_screen()"
+
+  - patterns:
+      - "cancel payment"
+      - "cancel the payment"
+      - "abort payment"
+    page: ReArchQRPage
+    method: cancel_payment
+    code: "qr_page.cancel_payment()"
+
+  # ── Payment result screen ──────────────────────────────────────────────
+
+  - patterns:
+      - "verify success"
+      - "verify payment success"
+      - "payment successful"
+      - "check success screen"
+      - "wait for success"
+      - "verify success screen"
+    page: ReArchCompletePage
+    method: wait_for_success_screen
+    code: "complete_page.wait_for_success_screen()"
+
+  - patterns:
+      - "verify failure"
+      - "verify payment failed"
+      - "payment failed"
+      - "check failure screen"
+      - "wait for failure"
+    page: ReArchCompletePage
+    method: wait_for_failure_screen
+    code: "complete_page.wait_for_failure_screen()"
+
+  - patterns:
+      - "is payment successful"
+      - "check if successful"
+    page: ReArchCompletePage
+    method: is_payment_successful
+    code: "assert complete_page.is_payment_successful(), \"Payment was not successful\""
+    returns: bool
+
+  - patterns:
+      - "is payment failed"
+      - "check if failed"
+    page: ReArchCompletePage
+    method: is_payment_failed
+    code: "assert complete_page.is_payment_failed(), \"Payment did not fail as expected\""
+    returns: bool
+
+  - patterns:
+      - "view payment details"
+      - "open view details"
+      - "click view details"
+    page: ReArchCompletePage
+    method: open_view_details
+    code: "complete_page.open_view_details()"
+
+  - patterns:
+      - "fetch all payment details"
+      - "get payment details"
+    page: ReArchCompletePage
+    method: fetch_all_details
+    code: "payment_details = complete_page.fetch_all_details()"
+    returns: dict
+
+  - patterns:
+      - "go back to home"
+      - "accept more payments"
+      - "proceed to home"
+      - "click accept more payments"
+      - "back to home"
+    page: ReArchCompletePage
+    method: click_proceed_to_home
+    code: "complete_page.click_proceed_to_home()"
+
+  - patterns:
+      - "retry payment"
+      - "click retry"
+    page: ReArchCompletePage
+    method: click_retry
+    code: "complete_page.click_retry()"
+
+  - patterns:
+      - "print receipt"
+      - "click print receipt"
+    page: ReArchCompletePage
+    method: click_print_receipt
+    code: "complete_page.click_print_receipt()"
+
+  - patterns:
+      - "send e-receipt"
+      - "send ereceipt"
+      - "click send e-receipt"
+    page: ReArchCompletePage
+    method: click_send_e_receipt
+    code: "complete_page.click_send_e_receipt()"
+
+  # ── Transaction history ────────────────────────────────────────────────
+
+  - patterns:
+      - "wait for transaction list"
+      - "transaction list loaded"
+      - "verify transaction history"
+    page: ReArchTxnHistoryPage
+    method: wait_for_txn_list
+    code: "txn_history_page.wait_for_txn_list()"
+
+  - patterns:
+      - "click transaction with {method} and amount {amount}"
+      - "select {method} transaction for {amount}"
+    page: ReArchTxnHistoryPage
+    method: click_txn_by_method_and_amount
+    params: [method, amount]
+    code: "txn_history_page.click_txn_by_method_and_amount(\"{method}\", \"{amount}\")"
+
+  - patterns:
+      - "click first transaction"
+      - "select first transaction"
+      - "open first transaction"
+    page: ReArchTxnHistoryPage
+    method: click_first_transaction
+    code: "txn_history_page.click_first_transaction()"
+
+  - patterns:
+      - "click search in history"
+      - "search transactions"
+      - "open search"
+    page: ReArchTxnHistoryPage
+    method: click_search
+    code: "txn_history_page.click_search()"
+
+  - patterns:
+      - "click my dashboard"
+      - "open dashboard"
+    page: ReArchTxnHistoryPage
+    method: click_my_dashboard
+    code: "txn_history_page.click_my_dashboard()"
+
+  # ── Transaction detail ─────────────────────────────────────────────────
+
+  - patterns:
+      - "wait for transaction detail"
+      - "transaction detail loaded"
+      - "verify transaction detail page"
+    page: ReArchTxnDetailPage
+    method: wait_for_detail_page
+    code: "txn_detail_page.wait_for_detail_page()"
+
+  - patterns:
+      - "fetch transaction status"
+      - "get transaction status"
+    page: ReArchTxnDetailPage
+    method: fetch_status
+    code: "txn_status = txn_detail_page.fetch_status()"
+    returns: str
+
+  - patterns:
+      - "fetch payment id"
+      - "get payment id"
+    page: ReArchTxnDetailPage
+    method: fetch_payment_id
+    code: "payment_id = txn_detail_page.fetch_payment_id()"
+    returns: str
+
+  - patterns:
+      - "fetch rrn"
+      - "get rrn"
+      - "get rrn number"
+    page: ReArchTxnDetailPage
+    method: fetch_rrn
+    code: "rrn = txn_detail_page.fetch_rrn()"
+    returns: str
+
+  - patterns:
+      - "fetch all transaction details"
+      - "get all transaction fields"
+    page: ReArchTxnDetailPage
+    method: fetch_all_detail_fields
+    code: "txn_details = txn_detail_page.fetch_all_detail_fields()"
+    returns: dict
+
+  - patterns:
+      - "click refund"
+      - "initiate refund"
+      - "refund transaction"
+    page: ReArchTxnDetailPage
+    method: click_refund
+    code: "txn_detail_page.click_refund()"
+
+  - patterns:
+      - "print chargeslip"
+      - "click print chargeslip"
+    page: ReArchTxnDetailPage
+    method: click_print_chargeslip
+    code: "txn_detail_page.click_print_chargeslip()"
+
+  # ── Generic navigation ─────────────────────────────────────────────────
+
+  - patterns:
+      - "go back"
+      - "press back"
+      - "navigate back"
+    page: ReArchNativeBasePage
+    method: go_back
+    code: "# go_back() is available on any page object\n        login_page.go_back()"
