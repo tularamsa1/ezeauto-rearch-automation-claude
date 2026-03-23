@@ -542,6 +542,42 @@ def initialize_app_driver(request, no_reset="false", app_package="com.ezetap.bas
     return GlobalVariables.appDriver
 
 
+def initialize_rearch_driver(request, no_reset="true"):
+    """
+    Initialize the Appium driver for the ReArch app (com.razorpay.pos).
+
+    Uses noReset=true by default since ReArch typically shouldn't be cleared
+    between runs. The app package and activity are fixed to the ReArch app.
+    """
+    function_start_time = datetime.datetime.now()
+    test_case_id = request
+    device_details = ResourceAssigner.getDeviceFromDB(test_case_id)
+    GlobalVariables.str_device_id = device_details['DeviceId']
+    appium_server_details = ResourceAssigner.getAppiumServerFromDB(test_case_id)
+    logger.info(f"{test_case_id} will be using the device {device_details['DeviceId']}")
+    logger.info(f"{test_case_id} will be running on the appium server port {appium_server_details['PortNumber']}")
+
+    desired_cap = {
+        "platformName": "Android",
+        "deviceName": device_details['DeviceId'],
+        "udid": device_details['DeviceId'],
+        "appPackage": "com.razorpay.pos",
+        "appActivity": "com.razorpay.pos.app.MainActivity",
+        "ignoreHiddenApiPolicyError": "true",
+        "noReset": no_reset,
+        "autoGrantPermissions": "true",
+        "newCommandTimeout": 7000,
+        "MobileCapabilityType.AUTOMATION_NAME": "AutomationName.ANDROID_UIAUTOMATOR2",
+        "MobileCapabilityType.NEW_COMMAND_TIMEOUT": "300"
+    }
+    appium_url = 'http://127.0.0.1:' + appium_server_details['PortNumber'] + '/wd/hub'
+    logger.info(f"Appium server url: {appium_url}")
+    GlobalVariables.appDriver = app_webdriver.Remote(appium_url, desired_cap)
+    function_end_time = datetime.datetime.now()
+    logger.info(f"ReArch driver initialized in {function_end_time - function_start_time}")
+    return GlobalVariables.appDriver
+
+
 def launch_browser_and_context_initialize(browser_type: str = "chromium"):
     if browser_type == "firefox":
         GlobalVariables.browser = GlobalVariables.play_wright.firefox.launch(headless=False)

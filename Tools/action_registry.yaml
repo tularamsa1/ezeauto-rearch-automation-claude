@@ -33,6 +33,12 @@ page_objects:
   ReArchTxnDetailPage:
     import: "from PageFactory.ReArch.rearch_txn_detail_page import ReArchTxnDetailPage"
     init: "txn_detail_page = ReArchTxnDetailPage(driver)"
+  ReArchPaymentMethodPage:
+    import: "from PageFactory.ReArch.rearch_payment_method_page import ReArchPaymentMethodPage"
+    init: "payment_method_page = ReArchPaymentMethodPage(driver)"
+  ReArchCashConfirmPage:
+    import: "from PageFactory.ReArch.rearch_cash_confirm_page import ReArchCashConfirmPage"
+    init: "cash_confirm_page = ReArchCashConfirmPage(driver)"
 
 actions:
 
@@ -183,6 +189,120 @@ actions:
     method: enter_amount_and_proceed_card
     params: [amount]
     code: "home_page.enter_amount_and_proceed_card(\"{amount}\")"
+
+  - patterns:
+      - "click cash"
+      - "select cash"
+      - "pay by cash"
+      - "cash payment"
+      - "tap cash"
+    page: ReArchHomePage
+    method: click_pay_by_cash
+    code: "home_page.click_pay_by_cash()"
+
+  - patterns:
+      - "enter amount {amount} and pay by cash"
+      - "enter {amount} and select cash"
+    page: ReArchHomePage
+    method: enter_amount_and_proceed_cash
+    params: [amount]
+    code: "home_page.enter_amount_and_proceed_cash(\"{amount}\")"
+
+  # ── Payment method overlay ───────────────────────────────────────────────
+
+  - patterns:
+      - "wait for payment methods"
+      - "payment methods displayed"
+      - "verify payment method overlay"
+    page: ReArchPaymentMethodPage
+    method: wait_for_payment_methods
+    code: "payment_method_page.wait_for_payment_methods()"
+
+  - patterns:
+      - "select cash from payment methods"
+      - "click cash in overlay"
+      - "choose cash"
+    page: ReArchPaymentMethodPage
+    method: click_cash
+    code: "payment_method_page.click_cash()"
+
+  - patterns:
+      - "select upi from payment methods"
+      - "click upi in overlay"
+    page: ReArchPaymentMethodPage
+    method: click_upi
+    code: "payment_method_page.click_upi()"
+
+  - patterns:
+      - "select card from payment methods"
+      - "click card in overlay"
+    page: ReArchPaymentMethodPage
+    method: click_card
+    code: "payment_method_page.click_card()"
+
+  - patterns:
+      - "select payment link"
+      - "click payment link"
+    page: ReArchPaymentMethodPage
+    method: click_payment_link
+    code: "payment_method_page.click_payment_link()"
+
+  - patterns:
+      - "select bharat qr"
+      - "click bharat qr"
+    page: ReArchPaymentMethodPage
+    method: click_bharat_qr
+    code: "payment_method_page.click_bharat_qr()"
+
+  - patterns:
+      - "select cheque"
+      - "click cheque"
+      - "pay by cheque"
+    page: ReArchPaymentMethodPage
+    method: click_cheque
+    code: "payment_method_page.click_cheque()"
+
+  - patterns:
+      - "select demand draft"
+      - "click demand draft"
+      - "pay by demand draft"
+    page: ReArchPaymentMethodPage
+    method: click_demand_draft
+    code: "payment_method_page.click_demand_draft()"
+
+  - patterns:
+      - "is cash available"
+      - "check if cash is available"
+    page: ReArchPaymentMethodPage
+    method: is_cash_available
+    code: "assert payment_method_page.is_cash_available(), \"Cash payment method is not available\""
+    returns: bool
+
+  # ── Cash confirmation screen ─────────────────────────────────────────────
+
+  - patterns:
+      - "wait for cash confirm"
+      - "cash confirm screen displayed"
+      - "verify cash confirmation"
+    page: ReArchCashConfirmPage
+    method: wait_for_cash_confirm_screen
+    code: "cash_confirm_page.wait_for_cash_confirm_screen()"
+
+  - patterns:
+      - "confirm cash payment"
+      - "click confirm payment"
+      - "tap confirm payment"
+      - "confirm cash"
+    page: ReArchCashConfirmPage
+    method: click_confirm_payment
+    code: "cash_confirm_page.click_confirm_payment()"
+
+  - patterns:
+      - "wait and confirm cash"
+      - "confirm cash payment flow"
+    page: ReArchCashConfirmPage
+    method: wait_and_confirm_cash_payment
+    code: "cash_confirm_page.wait_and_confirm_cash_payment()"
 
   # ── QR / UPI payment screen ────────────────────────────────────────────
 
@@ -359,6 +479,8 @@ actions:
   - patterns:
       - "fetch payment id"
       - "get payment id"
+      - "fetch txn id"
+      - "get txn id"
     page: ReArchTxnDetailPage
     method: fetch_payment_id
     code: "payment_id = txn_detail_page.fetch_payment_id()"
@@ -374,12 +496,119 @@ actions:
     returns: str
 
   - patterns:
+      - "fetch date time"
+      - "fetch transaction time"
+      - "get date time"
+      - "get transaction time"
+      - "fetch date and time"
+    page: ReArchTxnDetailPage
+    method: fetch_date_time
+    code: "txn_date_time = txn_detail_page.fetch_date_time()"
+    returns: str
+
+  - patterns:
+      - "fetch payment mode"
+      - "get payment mode"
+      - "fetch transaction mode"
+      - "get transaction mode"
+    page: ReArchTxnDetailPage
+    method: fetch_payment_mode
+    code: "txn_payment_mode = txn_detail_page.fetch_payment_mode()"
+    returns: str
+
+  - patterns:
+      - "fetch auth code"
+      - "get auth code"
+    page: ReArchTxnDetailPage
+    method: fetch_auth_code
+    code: "txn_auth_code = txn_detail_page.fetch_auth_code()"
+    returns: str
+
+  - patterns:
       - "fetch all transaction details"
       - "get all transaction fields"
     page: ReArchTxnDetailPage
     method: fetch_all_detail_fields
     code: "txn_details = txn_detail_page.fetch_all_detail_fields()"
     returns: dict
+
+  # ── Transaction detail: validate actions ─────────────────────────────
+
+  - patterns:
+      - "validate txn status is {expected}"
+      - "verify txn status is {expected}"
+      - "validate status is {expected}"
+      - "verify status is {expected}"
+      - "check status is {expected}"
+    page: ReArchTxnDetailPage
+    method: fetch_status
+    params: [expected]
+    code: "assert txn_detail_page.fetch_status() == \"{expected}\", f\"Expected status '{expected}', got '{txn_detail_page.fetch_status()}'\""
+    description: "Assert the transaction status matches expected value"
+
+  - patterns:
+      - "validate payment id is {expected}"
+      - "verify payment id is {expected}"
+      - "validate txn id is {expected}"
+      - "verify txn id is {expected}"
+    page: ReArchTxnDetailPage
+    method: fetch_payment_id
+    params: [expected]
+    code: "assert txn_detail_page.fetch_payment_id() == \"{expected}\", f\"Expected payment ID '{expected}', got '{txn_detail_page.fetch_payment_id()}'\""
+    description: "Assert the payment ID matches expected value"
+
+  - patterns:
+      - "validate payment mode is {expected}"
+      - "verify payment mode is {expected}"
+      - "validate txn mode is {expected}"
+      - "verify txn mode is {expected}"
+    page: ReArchTxnDetailPage
+    method: fetch_payment_mode
+    params: [expected]
+    code: "assert txn_detail_page.fetch_payment_mode() == \"{expected}\", f\"Expected payment mode '{expected}', got '{txn_detail_page.fetch_payment_mode()}'\""
+    description: "Assert the payment mode matches expected value"
+
+  - patterns:
+      - "validate date time is {expected}"
+      - "verify date time is {expected}"
+      - "validate txn time is {expected}"
+      - "verify txn time is {expected}"
+      - "validate transaction time is {expected}"
+    page: ReArchTxnDetailPage
+    method: fetch_date_time
+    params: [expected]
+    code: "assert txn_detail_page.fetch_date_time() == \"{expected}\", f\"Expected date/time '{expected}', got '{txn_detail_page.fetch_date_time()}'\""
+    description: "Assert the transaction date & time matches expected value"
+
+  - patterns:
+      - "validate rrn is {expected}"
+      - "verify rrn is {expected}"
+      - "validate rrn number is {expected}"
+    page: ReArchTxnDetailPage
+    method: fetch_rrn
+    params: [expected]
+    code: "assert txn_detail_page.fetch_rrn() == \"{expected}\", f\"Expected RRN '{expected}', got '{txn_detail_page.fetch_rrn()}'\""
+    description: "Assert the RRN matches expected value"
+
+  - patterns:
+      - "validate payment id is not empty"
+      - "verify payment id is not empty"
+      - "validate txn id is not empty"
+    page: ReArchTxnDetailPage
+    method: fetch_payment_id
+    code: "assert txn_detail_page.fetch_payment_id(), \"Payment ID should not be empty\""
+    description: "Assert that the payment ID is non-empty"
+
+  - patterns:
+      - "validate date time is not empty"
+      - "verify date time is not empty"
+      - "validate txn time is not empty"
+    page: ReArchTxnDetailPage
+    method: fetch_date_time
+    code: "assert txn_detail_page.fetch_date_time(), \"Date & Time should not be empty\""
+    description: "Assert that the date/time is non-empty"
+
+  # ── Transaction detail: action buttons ───────────────────────────────
 
   - patterns:
       - "click refund"

@@ -68,6 +68,13 @@ class ReArchHomePage(ReArchNativeBasePage):
         self.perform_click(HomeAmountLocators.btn_upi)
         logger.info("Clicked UPI payment button.")
 
+    def click_pay_by_cash(self):
+        """Click Cash on the home screen (triggers payment method overlay if not directly visible)."""
+        from PageFactory.ReArch.rearch_native_locators import PaymentMethodLocators
+        if self.is_element_visible(PaymentMethodLocators.btn_cash, time=3):
+            self.perform_click(PaymentMethodLocators.btn_cash)
+
+
     # ── Navigation helpers ────────────────────────────────────────────────────
 
     def click_menu(self):
@@ -104,3 +111,10 @@ class ReArchHomePage(ReArchNativeBasePage):
         self.enter_amount(amount)
         self.click_pay_by_card()
         logger.info(f"Initiated Card payment for amount: {amount}")
+
+    def enter_amount_and_proceed_cash(self, amount):
+        """Enter the given amount and initiate a Cash payment."""
+        self.wait_for_home_page_load()
+        self.enter_amount(amount)
+        self.click_pay_by_cash()
+        logger.info(f"Initiated Cash payment for amount: {amount}")

@@ -76,6 +76,8 @@ EXISTING PAGE OBJECTS (do not duplicate)
   - ReArchCompletePage (rearch_complete_page.py)
   - ReArchTxnHistoryPage (rearch_txn_history_page.py)
   - ReArchTxnDetailPage (rearch_txn_detail_page.py)
+  - ReArchPaymentMethodPage (rearch_payment_method_page.py)
+  - ReArchCashConfirmPage (rearch_cash_confirm_page.py)
 
 VALIDATION
 After creating a page object:
