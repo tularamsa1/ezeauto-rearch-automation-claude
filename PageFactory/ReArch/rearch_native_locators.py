@@ -71,16 +71,16 @@ class HomeAmountLocators:
     btn_numpad_8           = (AppiumBy.XPATH, "//android.widget.Button[@text='8']")
     btn_numpad_9           = (AppiumBy.XPATH, "//android.widget.Button[@text='9']")
     btn_numpad_dot         = (AppiumBy.XPATH, "//android.widget.Button[@text='\u2022']")
-    btn_numpad_back        = (AppiumBy.XPATH, "//android.widget.Button[@index='18']")
+    btn_numpad_back        = (AppiumBy.XPATH, "//android.widget.Button[@index='18']")  # TODO: needs stable locator (no text/id on backspace key)
 
     # Payment method buttons (visible directly on home page)
     btn_card               = (AppiumBy.XPATH, "//android.widget.Button[@text='Card']")
     btn_upi                = (AppiumBy.XPATH, "//android.widget.Button[@text='UPI']")
     btn_add_tip            = (AppiumBy.XPATH, "//android.widget.Button[@text='Add Tip']")
 
-    # Header navigation (index-based since no text/id on these buttons)
-    btn_menu               = (AppiumBy.XPATH, "//android.widget.Button[@index='0']")
-    btn_txn_history        = (AppiumBy.XPATH, "//android.widget.Button[@index='2']")
+    # Header navigation — TODO: needs stable locators (no text/id on icon-only buttons)
+    btn_menu               = (AppiumBy.XPATH, "//android.widget.Button[@index='0']")  # TODO: needs stable locator
+    btn_txn_history        = (AppiumBy.XPATH, "//android.widget.Button[@index='2']")  # TODO: needs stable locator
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -123,7 +123,7 @@ class QRPaymentLocators:
     lbl_scan_and_pay       = (AppiumBy.XPATH, "//android.widget.TextView[@text='Scan & Pay']")
     lbl_payment_amount     = (AppiumBy.XPATH, "//android.widget.TextView[@text='Payment Amount']")
     lbl_amount_value       = (AppiumBy.XPATH, "//android.widget.TextView[contains(@text,'\u20b9')]")
-    btn_back               = (AppiumBy.XPATH, "//android.widget.Button[@index='0']")
+    btn_back               = (AppiumBy.XPATH, "//android.widget.Button[@index='0']")  # TODO: needs stable locator
     btn_confirm_cancel     = (AppiumBy.XPATH, "//android.widget.Button[@text='Yes, Cancel']")
     lbl_cancel_dialog_title = (AppiumBy.XPATH, "//android.widget.TextView[@text='Cancel the Payment?']")
 
@@ -178,9 +178,9 @@ class TxnHistoryLocators:
     btn_filter_date        = (AppiumBy.XPATH, "//android.widget.Button[@text='Date']")
     btn_filter_method      = (AppiumBy.XPATH, "//android.widget.Button[@text='Method']")
     btn_filter_status      = (AppiumBy.XPATH, "//android.widget.Button[@text='Status']")
-    btn_back               = (AppiumBy.XPATH, "//android.widget.Button[@index='0']")
-    btn_search             = (AppiumBy.XPATH, "//android.widget.Button[@index='2']")
-    btn_more_options       = (AppiumBy.XPATH, "//android.widget.Button[@index='3']")
+    btn_back               = (AppiumBy.XPATH, "//android.widget.Button[@index='0']")  # TODO: needs stable locator
+    btn_search             = (AppiumBy.XPATH, "//android.widget.Button[@index='2']")  # TODO: needs stable locator
+    btn_more_options       = (AppiumBy.XPATH, "//android.widget.Button[@index='3']")  # TODO: needs stable locator
 
     # Transaction row buttons contain the full text: "transaction logo UPI 4:07 PM ₹389 Settled"
     # Use contains(@text, ...) to match partial content
@@ -205,8 +205,8 @@ class TxnSearchLocators:
     btn_rrn_number         = (AppiumBy.XPATH, "//android.widget.Button[@text='RRN Number']")
     btn_amount             = (AppiumBy.XPATH, "//android.widget.Button[@text='Amount']")
     btn_auth_code          = (AppiumBy.XPATH, "//android.widget.Button[@text='Auth Code']")
-    txt_search_input       = (AppiumBy.XPATH, "//android.widget.EditText[@index='3']")
-    btn_back               = (AppiumBy.XPATH, "//android.widget.Button[@index='0']")
+    txt_search_input       = (AppiumBy.XPATH, "//android.widget.EditText[@index='3']")  # TODO: needs stable locator
+    btn_back               = (AppiumBy.XPATH, "//android.widget.Button[@index='0']")  # TODO: needs stable locator
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -215,7 +215,7 @@ class TxnSearchLocators:
 
 class TxnDetailLocators:
     lbl_page               = (AppiumBy.ID,    "page")
-    btn_back               = (AppiumBy.XPATH, "//android.widget.Button[@index='0']")
+    btn_back               = (AppiumBy.XPATH, "//android.widget.Button[@index='0']")  # TODO: needs stable locator
 
     # Key-value fields displayed as adjacent TextViews
     lbl_status_label       = (AppiumBy.XPATH, "//android.widget.TextView[@text='Status']")

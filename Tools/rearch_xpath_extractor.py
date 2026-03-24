@@ -50,6 +50,7 @@ try:
     import yaml
     HAS_YAML = True
 except ImportError:
+    yaml = None
     HAS_YAML = False
 
 # ── Config ──────────────────────────────────────────────────────────────────
@@ -128,6 +129,21 @@ _registry = ScreenRegistry()
 
 # ── ADB helpers ─────────────────────────────────────────────────────────────
 
+def get_app_version(device_id: str) -> str:
+    """Return the installed versionName of PACKAGE from adb dumpsys."""
+    try:
+        result = subprocess.run(
+            ["adb", "-s", device_id, "shell", "dumpsys", "package", PACKAGE],
+            capture_output=True, text=True, timeout=10,
+        )
+        for line in result.stdout.splitlines():
+            if "versionName=" in line:
+                return line.strip().split("versionName=")[1].strip()
+    except (subprocess.SubprocessError, OSError, ValueError):
+        pass
+    return "unknown"
+
+
 def get_connected_devices() -> list[str]:
     result = subprocess.run(["adb", "devices"], capture_output=True, text=True)
     devices = []
@@ -166,12 +182,16 @@ def _clean_name(text: str) -> str:
     return text[:40]
 
 
-def _best_xpath(elem: ET.Element) -> tuple[str, str]:
+def _best_xpath(elem: ET.Element) -> "tuple[Optional[str], str]":
     """
     Return (by_strategy, locator_value) choosing the most stable selector:
       1. resource-id  → AppiumBy.ID
       2. @text        → AppiumBy.XPATH with exact text match
-      3. class + index fallback  → AppiumBy.XPATH
+      3. No stable locator → (None, human-readable TODO description)
+
+    @index is intentionally NOT used as a fallback because index-based
+    locators break silently when the UI reorders elements.  Elements with no
+    resource-id and no text are flagged as TODO for human annotation.
     """
     rid = elem.attrib.get("resource-id", "").strip()
     text = elem.attrib.get("text", "").strip()
@@ -187,10 +207,8 @@ def _best_xpath(elem: ET.Element) -> tuple[str, str]:
     if text and cls:
         return "AppiumBy.XPATH", f"//{cls}[@text='{text}']"
 
-    if cls:
-        return "AppiumBy.XPATH", f"//{cls}[@index='{index}']"
-
-    return "AppiumBy.XPATH", "//*"
+    # No stable locator available — require human annotation
+    return None, f"no resource-id or text; class={cls} index={index}"
 
 
 def _locator_name(elem: ET.Element, seen: set[str]) -> str:
@@ -296,6 +314,11 @@ def render_locator_class(screen_name: str, elements: list[ET.Element]) -> str:
         name = _locator_name(elem, seen_names)
         by, value = _best_xpath(elem)
 
+        if by is None:
+            # No stable locator — emit TODO comment, skip the assignment
+            lines.append(f'    # TODO: {name} — needs stable locator ({value})')
+            continue
+
         comment_parts = []
         if cls:
             comment_parts.append(cls.split(".")[-1])
@@ -323,10 +346,20 @@ def build_registry_entry(screen_name: str, elements: list[ET.Element], xml_path:
         cls = elem.attrib.get("class", "")
         text = elem.attrib.get("text", "").strip()
         clickable = elem.attrib.get("clickable", "false") == "true"
-        focusable = elem.attrib.get("focusable", "false") == "true"
 
         name = _locator_name(elem, seen_names)
         by, value = _best_xpath(elem)
+
+        if by is None:
+            # No stable locator — record as TODO in the registry
+            entry["elements"][name] = {
+                "by": "TODO",
+                "value": value,
+                "type": "unknown",
+                "android_class": cls,
+                "needs_annotation": True,
+            }
+            continue
 
         el_type = "label"
         if clickable or "Button" in cls:
@@ -398,12 +431,15 @@ def write_to_output(class_code: str, screen_name: str):
     print(f"  -> Appended {screen_name} to {GENERATED_LOCATORS_FILE}")
 
 
-def write_registry(all_screens: dict):
-    """Write the locator_registry.yaml file."""
+def write_registry(all_screens: dict, app_version: str = "unknown"):
+    """Write the locator_registry.yaml file with app version metadata."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     registry_data = {
-        "package": PACKAGE,
-        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "metadata": {
+            "package": PACKAGE,
+            "app_version": app_version,
+            "captured_at": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+        },
         "screens": all_screens,
     }
     if HAS_YAML:
@@ -496,7 +532,9 @@ def cmd_interactive():
         choice = int(input("Select device index [0]: ") or "0")
         device_id = devices[choice]
 
+    app_version = get_app_version(device_id)
     print(f"\nUsing device: {device_id}")
+    print(f"App version : {PACKAGE} {app_version}")
     print("=" * 60)
     print("INTERACTIVE XPath Extraction -- single pass through all screens")
     print("=" * 60)
@@ -529,13 +567,14 @@ def cmd_interactive():
         dump_and_process(device_id, class_name)
 
     if _all_registry_entries:
-        write_registry(_all_registry_entries)
+        write_registry(_all_registry_entries, app_version=app_version)
 
     print("\n" + "=" * 60)
     print(f"DONE -- Review output files:")
     print(f"  Locators : {GENERATED_LOCATORS_FILE}")
     print(f"  Registry : {LOCATOR_REGISTRY_FILE}")
     print(f"  Screens captured: {len(_all_registry_entries)}")
+    print(f"  App version: {app_version}")
     print("=" * 60)
 
 
@@ -617,6 +656,8 @@ def cmd_validate():
         from appium import webdriver as appium_webdriver
         from appium.webdriver.common.appiumby import AppiumBy as _AB
     except ImportError:
+        appium_webdriver = None
+        _AB = None
         print("[ERROR] Appium-Python-Client is required. Install: pip install Appium-Python-Client")
         sys.exit(1)
 

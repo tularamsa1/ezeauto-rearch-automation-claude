@@ -26,6 +26,13 @@ Locator strategy:
                         to the WEBVIEW context via ReArchBasePage.switch_to_webview().
 """
 
+import warnings
+warnings.warn(
+    "rearch_locators is deprecated. Use rearch_native_locators instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
 from appium.webdriver.common.appiumby import AppiumBy
 from selenium.webdriver.common.by import By
 

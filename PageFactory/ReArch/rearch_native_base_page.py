@@ -6,9 +6,15 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from PageFactory.ReArch.rearch_native_locators import REARCH_PACKAGE
+from Utilities import ConfigReader
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
+
+try:
+    DEFAULT_TIMEOUT = int(ConfigReader.read_config("Appium", "element_wait_timeout"))
+except Exception:
+    DEFAULT_TIMEOUT = 45
 
 
 class ReArchNativeBasePage:
@@ -28,17 +34,17 @@ class ReArchNativeBasePage:
 
     # ── Core wait / interaction helpers ──────────────────────────────────────
 
-    def wait_for_element(self, locator, time: int = 45):
+    def wait_for_element(self, locator, time: int = DEFAULT_TIMEOUT):
         return WebDriverWait(self.driver, time).until(
             EC.visibility_of_element_located(locator)
         )
 
-    def wait_for_element_to_be_clickable(self, locator, time: int = 45):
+    def wait_for_element_to_be_clickable(self, locator, time: int = DEFAULT_TIMEOUT):
         return WebDriverWait(self.driver, time).until(
             EC.element_to_be_clickable(locator)
         )
 
-    def wait_for_all_elements(self, locator, time: int = 45):
+    def wait_for_all_elements(self, locator, time: int = DEFAULT_TIMEOUT):
         return WebDriverWait(self.driver, time).until(
             EC.presence_of_all_elements_located(locator)
         )
@@ -48,19 +54,19 @@ class ReArchNativeBasePage:
             EC.invisibility_of_element_located(locator)
         )
 
-    def perform_click(self, locator, time: int = 45):
+    def perform_click(self, locator, time: int = DEFAULT_TIMEOUT):
         WebDriverWait(self.driver, time).until(
             EC.element_to_be_clickable(locator)
         ).click()
 
-    def perform_sendkeys(self, locator, value: str, time: int = 45):
+    def perform_sendkeys(self, locator, value: str, time: int = DEFAULT_TIMEOUT):
         element = WebDriverWait(self.driver, time).until(
             EC.visibility_of_element_located(locator)
         )
         element.clear()
         element.send_keys(value)
 
-    def fetch_text(self, locator, time: int = 45) -> str:
+    def fetch_text(self, locator, time: int = DEFAULT_TIMEOUT) -> str:
         return WebDriverWait(self.driver, time).until(
             EC.presence_of_element_located(locator)
         ).text
@@ -83,12 +89,12 @@ class ReArchNativeBasePage:
         except (TimeoutException, NoSuchElementException):
             return False
 
-    def fetch_elements(self, locator, time: int = 45):
+    def fetch_elements(self, locator, time: int = DEFAULT_TIMEOUT):
         return WebDriverWait(self.driver, time).until(
             EC.presence_of_all_elements_located(locator)
         )
 
-    def perform_click_index(self, locator, index: int, time: int = 45):
+    def perform_click_index(self, locator, index: int, time: int = DEFAULT_TIMEOUT):
         """Click the nth element matching the locator (0-based)."""
         elements = WebDriverWait(self.driver, time).until(
             EC.presence_of_all_elements_located(locator)

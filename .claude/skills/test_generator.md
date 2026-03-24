@@ -12,6 +12,11 @@ IMPORTANT RULE
 Always modify or add code ONLY inside the eze-EzeAuto repository.
 Other repositories are reference-only and must NEVER be modified.
 
+PRE-CONDITION CHECK
+If the user has NOT yet provided numbered NL steps (e.g. they say "I just ran the flow
+on device" or ask how to start), invoke `.claude/skills/device_walkthrough.md` first
+to capture the walk-through. Return here only after Phase 3 NL steps are approved.
+
 INPUT FORMAT
 The user provides numbered steps in plain English, optionally with preconditions:
 
@@ -38,22 +43,41 @@ NL-TO-CODE WORKFLOW
 Step 1: Read the action registry
   File: Tools/action_registry.yaml
   This maps natural language patterns to PageFactory method calls.
+  Also check the synonyms section for alternate phrasings.
 
 Step 2: Match each user step to an action
   For each step, find the best matching pattern in the action registry.
   - Match is case-insensitive
   - Extract parameters from {param_name} placeholders
+  - Use the synonyms block to expand pattern coverage
+  - If multiple patterns match, prefer the higher priority entry
   - If no exact match, use the closest semantic match
   - If ambiguous, ask the user for clarification
 
 Step 3: Determine required page objects
   Based on matched actions, collect:
-  - All unique page object imports
-  - All page object initializations
+  - All unique page object imports (from the page_objects section)
+  - All page object initializations (emit each only ONCE)
+  - Any preconditions declared on matched actions
 
 Step 4: Generate the test case
-  Use the test template structure (see below).
+  Use the test template structure (see test_template.md or below).
   Place the generated code in: TestCases/Functional/UI/ReArch/
+  Embed the original NL steps as a structured docstring (see template).
+
+Step 5: Verify the generated file
+  After generating, perform these checks before presenting output:
+  1. Syntax check:
+       python -m py_compile <generated_file>
+  2. Wrong driver (must be empty for ReArch):
+       grep "initialize_app_driver" <generated_file>
+  3. WebView locators (must be empty for ReArch):
+       grep "By\.CSS_SELECTOR" <generated_file>
+  4. Wrong global variable (must be empty):
+       grep "appium_driver" <generated_file>
+  5. Forbidden validations (must be empty for ReArch):
+       grep "validateAgainstDB\|validateAgainstPortal" <generated_file>
+  Fix any violations before presenting the output to the user.
 
 LOCATOR SOURCE
 For ReArch (com.razorpay.pos) tests:
@@ -122,55 +146,7 @@ All ReArch test files go directly inside the ReArch/ folder.
 Naming: test_UI_ReArch_PM_<METHOD>_<FLOW>_<VARIANT>_<NUMBER>.py
 
 PRECONDITIONS (org_settings_update)
-To enable or disable any setting at the merchant level, use the
-org_settings_update endpoint. This is the ONLY way to configure
-merchant-level settings as preconditions for a test.
-
-Pattern:
-1. Fetch API details using DBProcessor.get_api_details with portal
-   credentials and org_code.
-2. Set the desired settings on api_details["RequestBody"]["settings"].
-3. Send the request via APIProcessor.send_request.
-4. If the test modifies settings, REVERT them in the finally block
-   before executeFinallyBlock.
-
-```python
-# ── Preconditions: enable/disable merchant settings ──
-api_details = DBProcessor.get_api_details('org_settings_update', request_body={
-    "username": portal_username,
-    "password": portal_password,
-    "entityName": "org",
-    "settingForOrgCode": org_code
-})
-api_details["RequestBody"]["settings"]["settingKeyHere"] = "true"
-logger.debug(f"API details  : {api_details} ")
-response = APIProcessor.send_request(api_details=api_details)
-logger.debug(f"Response received for setting preconditions: {response}")
-```
-
-Revert in finally block:
-```python
-finally:
-    try:
-        api_details = DBProcessor.get_api_details('org_settings_update', request_body={
-            "username": portal_username,
-            "password": portal_password,
-            "entityName": "org",
-            "settingForOrgCode": org_code
-        })
-        api_details["RequestBody"]["settings"]["settingKeyHere"] = "false"
-        response = APIProcessor.send_request(api_details=api_details)
-    except Exception as e:
-        logger.exception(f"org setting updation failed due to exception : {e}")
-    Configuration.executeFinallyBlock(testcase_id)
-```
-
-Common setting keys:
-  EMI:        emiEnabled, instantEmiEnabled, emiEnabledForClient, offeringEmiCashback
-  Cash:       addlAuthReqdForCash, customerAuthDataCaptureEnabled, amountCutOffForCustomerAuth
-  Remote Pay: remotePaymentEnabled
-  Time-based: timeBasedTxnRestrictionEnabled, timeBasedTxnRestrictionPaymentMode,
-              txnRestrictionStartTime, txnRestrictionEndTime
+See: .claude/skills/test_preconditions.md — full patterns, key table, and revert template.
 
 MAPPING RULES
 
@@ -196,30 +172,14 @@ PARAMETER HANDLING
 - Transaction fields: Status, Payment ID, RRN, Auth Code, etc.
 
 DEFAULT APP VALIDATION
-When generating a test that navigates to the transaction detail page (i.e. the
-test includes steps like "wait for transaction detail", "fetch all transaction
-details", or any "validate" step on the detail page), ALWAYS include assertions
-for these three fields UNLESS the user explicitly says "skip default validation":
+See: .claude/skills/test_validations.md — full app and API validation patterns.
 
-  1. Payment ID — assert it is not empty
-     Code: assert txn_detail_page.fetch_payment_id(), "Payment ID should not be empty"
-  2. Amount — compare against the amount entered during the EXECUTION phase
-     Code: The amount entered in "enter amount {N}" must be stored in a variable
-           (e.g. amount = "45") and validated in the VALIDATION section.
-           Note: Amount may not appear on the txn detail page for all payment
-           methods. If the detail page does not show Amount, skip this assertion
-           and log a warning instead.
-  3. Date & Time — assert it is not empty (transaction time was recorded)
-     Code: assert txn_detail_page.fetch_date_time(), "Date & Time should not be empty"
-
-These three assertions are added IN ADDITION TO any explicit validate steps the
-user provides. Place them in the VALIDATION section after the user's explicit
-assertions.
-
-If the user writes "skip default validation" anywhere in their steps, do NOT
-generate these three automatic assertions.
+Short rule: when test navigates to TxnDetail, always assert payment_id non-empty,
+amount matches, and date non-empty. Skip only if user says "skip default validation".
 
 TEST TEMPLATE
+Full template with all sections: see .claude/skills/test_template.md
+Condensed reference below:
 
 ```python
 import sys
@@ -247,10 +207,11 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 class TestReArch<FlowName>:
     """
-    Generated from natural language steps:
+    NL Source Steps:
       1. <step 1>
       2. <step 2>
       ...
+    Generated by: test_generator.md, action_registry.yaml
     """
 
     @allure.sub_suite("UI_ReArch_<FlowDescription>")
@@ -293,6 +254,9 @@ class TestReArch<FlowName>:
 
                 home_page = ReArchHomePage(app_driver)
                 home_page.wait_for_home_page_load()
+
+                # order_id suffix from testcase_id ensures uniqueness within the same second
+                order_id = f"{datetime.now().strftime('%m%d%H%M%S')}{testcase_id[-4:]}"
 
                 # ... additional steps mapped from action_registry ...
 

@@ -1,7 +1,7 @@
 # action_registry.yaml
 # --------------------
 # Maps natural language test step patterns to PageFactory method calls.
-# Used by Claude (via the nl_test_generator skill) to convert human-readable
+# Used by Claude (via the test_generator.md skill) to convert human-readable
 # test steps into executable Python automation code.
 #
 # Pattern syntax:
@@ -13,6 +13,18 @@
 
 package: com.razorpay.pos
 app_name: ReArch
+
+# ── Synonyms ─────────────────────────────────────────────────────────────────
+# Expands NL pattern coverage without adding duplicate pattern entries.
+# The test_generator.md workflow uses these to match step phrasings that don't
+# appear verbatim in the patterns lists above.
+synonyms:
+  enter:  [input, type, key in, set, fill, put, add, specify]
+  click:  [tap, press, select, choose, hit]
+  verify: [validate, check, assert, confirm, ensure]
+  amount: [price, value, sum, figure, total]
+  go_to:  [navigate to, open, visit, access]
+  wait:   [wait for, expect, ensure loaded]
 
 page_objects:
   ReArchLoginPage:
@@ -137,6 +149,7 @@ actions:
     page: ReArchHomePage
     method: click_pay_by_upi
     code: "home_page.click_pay_by_upi()"
+    priority: 1
 
   - patterns:
       - "click card"
@@ -199,6 +212,12 @@ actions:
     page: ReArchHomePage
     method: click_pay_by_cash
     code: "home_page.click_pay_by_cash()"
+    priority: 1
+    preconditions:
+      org_settings:
+        cashEnabled: "true"
+      revert_on_finally:
+        cashEnabled: "false"
 
   - patterns:
       - "enter amount {amount} and pay by cash"
@@ -225,6 +244,12 @@ actions:
     page: ReArchPaymentMethodPage
     method: click_cash
     code: "payment_method_page.click_cash()"
+    priority: 2
+    preconditions:
+      org_settings:
+        cashEnabled: "true"
+      revert_on_finally:
+        cashEnabled: "false"
 
   - patterns:
       - "select upi from payment methods"

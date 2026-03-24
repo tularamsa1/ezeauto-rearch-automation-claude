@@ -68,6 +68,14 @@ Step 4: Register actions in action_registry.yaml
     - Include at least 2-3 pattern variants per action
     - Include params list for methods that take arguments
     - Use {param_name} in patterns for captured parameters
+    - Add preconditions block if the action requires org settings (see test_preconditions.md)
+
+Step 5: Validate the registry
+  Run: python Tools/validate_registry.py
+  This confirms all code: snippets reference methods that actually exist on
+  the declared page object class. Fix any failures before committing.
+  If the validator cannot import your new page object (e.g. missing from
+  PAGE_CLASS_MAP), add it to the PAGE_CLASS_MAP in validate_registry.py first.
 
 EXISTING PAGE OBJECTS (do not duplicate)
   - ReArchLoginPage (rearch_login_page.py)

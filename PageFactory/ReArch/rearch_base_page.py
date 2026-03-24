@@ -1,3 +1,10 @@
+import warnings
+warnings.warn(
+    "rearch_base_page is deprecated. Use rearch_native_base_page instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
 from appium.webdriver.common.appiumby import AppiumBy
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait

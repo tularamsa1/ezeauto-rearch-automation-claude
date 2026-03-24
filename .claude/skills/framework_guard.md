@@ -23,8 +23,21 @@ Reuse APIs for merchant setup.
 
 4. DATABASE OPERATIONS
 Preserve dual DB architecture:
-- SQLite
-- MySQL
+
+  Database/ezeauto.db (SQLite) — test framework only:
+    - API request templates: DBProcessor.get_api_details("apiName", ...)
+    - Resource management: app_users, portal_users, devices, appium_servers
+    - NEVER use ezeauto.db for application state (txns, merchant configs, etc.)
+
+  MySQL — all application data:
+    - DBProcessor.getValueFromDB("select * from txn ...")
+    - Tables: txn, upi_merchant_config, org_employee, terminal_info, org_code, etc.
+    - NEVER route application DB queries to ezeauto.db
+
+  Rule: if you need to know a txn status, merchant config, or org setting →
+  query MySQL. If you need an API endpoint/request template → use ezeauto.db
+  via get_api_details().
+
 Maintain DBProcessor.py functionality.
 
 5. THREAD RESOURCE MANAGEMENT

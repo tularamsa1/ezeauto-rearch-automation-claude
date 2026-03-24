@@ -1,12 +1,18 @@
 ---
 name: ReArch Test Generation Architecture
-overview: Design a complete end-to-end workflow for generating ReArch automation test cases from natural language, starting with native locator extraction via uiautomator, building a native-only PageFactory, creating a semantic action mapping layer, and updating Claude skills for test generation.
+overview: End-to-end workflow for generating ReArch automation test cases from natural language. Covers native locator extraction via uiautomator, a native-only PageFactory, a semantic action mapping layer, and Claude skills for test generation.
 todos:
   - id: phase1-fix-extractor
     content: "Improve rearch_xpath_extractor.py: fix duplicate class names, add screen registry, output locator_registry.yaml, add --validate flag"
     status: completed
   - id: phase1-capture-screens
     content: Define complete screen list (12 screens) in INTERACTIVE_SCREENS and run full extraction pass on device
+    status: completed
+  - id: phase1-remove-index-fallback
+    content: "Eliminate @index XPath fallback from extractor; emit TODO comment instead; annotate existing @index locators in rearch_native_locators.py"
+    status: completed
+  - id: phase1-app-version-metadata
+    content: "Record app versionName in locator_registry.yaml metadata at capture time via adb dumpsys"
     status: completed
   - id: phase2-native-locators
     content: Create rearch_native_locators.py with curated native-only AppiumBy locators from extraction output
@@ -17,33 +23,56 @@ todos:
   - id: phase2-page-objects
     content: Update all ReArch page objects (login, home, qr, complete, txn_history, txn_detail) to use native locators
     status: completed
+  - id: phase2-deprecate-webview-files
+    content: "Add DeprecationWarning to rearch_base_page.py and rearch_locators.py on import"
+    status: completed
+  - id: phase2-configurable-timeout
+    content: "Extract hardcoded 45s timeout to config.ini [Appium] element_wait_timeout; read as DEFAULT_TIMEOUT in rearch_native_base_page.py"
+    status: completed
   - id: phase3-action-registry
     content: Create action_registry.yaml mapping natural language patterns to PageFactory methods
+    status: completed
+  - id: phase3-synonyms
+    content: "Add synonyms block to action_registry.yaml to expand NL pattern coverage without duplicating entries"
+    status: completed
+  - id: phase3-preconditions
+    content: "Add preconditions and priority fields to cash/UPI actions for machine-readable org settings config"
+    status: completed
+  - id: phase3-validate-registry
+    content: "Create Tools/validate_registry.py to verify all code: snippets reference real page object methods"
     status: completed
   - id: phase4-update-xpath-skill
     content: Update xpath_extractor.md skill to reference native extraction instead of POS frontend repo
     status: completed
   - id: phase4-update-test-gen-skill
-    content: Update test_generator.md skill with action_registry reference, native locator source, and test template
+    content: "Update test_generator.md: add Step 5 verification, NL source docstring, order_id idempotency fix, references to sub-docs"
+    status: completed
+  - id: phase4-split-test-gen-skill
+    content: "Split monolithic test_generator.md into focused sub-documents: test_template.md, test_preconditions.md, test_validations.md"
     status: completed
   - id: phase4-new-pagefactory-skill
-    content: Create page_factory_builder.md skill for Claude to extend PageFactory from locator registry
+    content: "Create page_factory_builder.md skill; add Step 5 validate_registry.py check"
     status: completed
   - id: phase4-new-nl-test-skill
-    content: Create nl_test_generator.md skill for natural-language-to-test-case generation workflow
+    content: "NL-to-test generation consolidated into test_generator.md (nl_test_generator.md was merged and deleted)"
+    status: completed
+  - id: phase4-ci-workflow
+    content: "Create .github/workflows/locator_health.yml: weekly registry validation + banned pattern checks + syntax checks"
+    status: completed
+  - id: fix-upi-test-driver
+    content: "Fix test_UI_ReArch_PM_UPI_QR_POS_Success_ICICI_DIRECT_01.py: initialize_app_driver → initialize_rearch_driver; remove DB and Portal validation blocks"
+    status: completed
+  - id: cleanup-stray-files
+    content: "Delete PageFactory/ReArch/test.py scratch file"
     status: completed
 isProject: false
 ---
 
 # ReArch Native Test Generation Architecture
 
-## Problem Analysis
+## Current State
 
-The current [rearch_locators.py](PageFactory/ReArch/rearch_locators.py) is a **hybrid WebView/Native** locator file. Most page locators use `By.CSS_SELECTOR` and `By.XPATH` against the **HTML DOM** (WebView context), which only work after switching to `WEBVIEW_com.razorpay.pos` context. However, the ReArch app renders its UI through a WebView that exposes native Android widgets to uiautomator -- meaning the **same elements are accessible as native widgets** without any context switching.
-
-The [rearch_xpath_extractor.py](Tools/rearch_xpath_extractor.py) already proves this: it successfully extracts locators like `(AppiumBy.XPATH, "//android.widget.Button[@text='UPI']")` from `uiautomator dump`, which work directly in `NATIVE_APP` context.
-
-**Conclusion: The native-only approach is correct and superior** -- it eliminates WebView context switching entirely, making tests faster and more reliable.
+All four phases are **fully implemented and operational**. The pipeline converts numbered natural language steps into executable pytest + Appium test cases for the ReArch POS app (`com.razorpay.pos`) without any WebView context switching.
 
 ---
 
@@ -54,223 +83,235 @@ flowchart TD
     subgraph extraction [Phase 1: Locator Extraction]
         A[Launch ReArch on Device] --> B[uiautomator XML Dump per Screen]
         B --> C[rearch_xpath_extractor.py]
-        C --> D[locator_registry.yaml]
-        D --> E[Human Review and Curation]
+        C --> D["locator_registry.yaml\n(with app_version metadata)"]
+        D --> E[Human Review & TODO Annotation]
     end
 
     subgraph pagefactory [Phase 2: Native PageFactory]
         E --> F[rearch_native_locators.py]
         F --> G[Page Objects: LoginPage, HomePage, etc.]
-        G --> H[rearch_native_base_page.py]
+        G --> H["rearch_native_base_page.py\n(DEFAULT_TIMEOUT from config.ini)"]
     end
 
     subgraph mapping [Phase 3: Action Mapping Layer]
-        G --> I[action_registry.yaml]
-        I --> J[Maps NL phrases to PageFactory methods]
+        G --> I["action_registry.yaml\n(patterns + synonyms + priority + preconditions)"]
+        I --> V[validate_registry.py]
+        V -->|"CI: locator_health.yml"| CI[Weekly Health Check]
     end
 
     subgraph generation [Phase 4: Test Generation]
-        K[Natural Language Steps] --> L[Claude + test_generator skill]
+        K[Natural Language Steps] --> L["Claude + test_generator.md\n(5-step workflow)"]
         L --> I
         L --> G
-        L --> M[Generated pytest Test Case]
+        L --> M["Generated pytest Test Case\n(NL docstring embedded)"]
+        M --> S["Step 5: Verify\npy_compile + grep checks"]
     end
 ```
 
-
-
 ---
 
-## Phase 1: Improve Locator Extraction Pipeline
+## Phase 1: Locator Extraction
 
-The current [rearch_xpath_extractor.py](Tools/rearch_xpath_extractor.py) is a solid foundation but needs these improvements:
+**Files:** `Tools/rearch_xpath_extractor.py`, `Tools/output/xml_dumps/`, `Tools/output/locator_registry.yaml`
 
-### 1a. Fix duplicate class names in output
+### What is implemented
 
-The current [rearch_locators_generated.py](Tools/output/rearch_locators_generated.py) has **4 duplicate `payment_flow` classes** and **2 duplicate `transaction_details` classes**. The script appends blindly without tracking which screens have been captured.
+- **Interactive screen capture** (`--interactive`): walks through 12 defined screens, dumps uiautomator XML per screen, generates `rearch_locators_generated.py` and `locator_registry.yaml`.
+- **Screen registry** prevents duplicate class names across sessions.
+- **Three-tier locator priority**: resource-id (`AppiumBy.ID`) → `@text` XPath → **TODO annotation** (no `@index` fallback).
+- **App version metadata**: at capture time, `adb dumpsys package com.razorpay.pos` is called to record `versionName` in the registry.
+- **`--validate` mode**: connects to Appium, walks each screen interactively, tests every locator, outputs a CSV report.
+- **`--regenerate` mode**: re-processes all saved XML dumps without needing a connected device.
 
-**Fix**: Add a screen registry that prevents duplicate class names and uses distinct names per screen state (e.g., `HomeAmountLocators`, `PaymentMethodLocators`, `CashConfirmLocators`, `PaymentSuccessLocators`).
-
-### 1b. Output a machine-readable locator registry
-
-In addition to the Python file, output a `locator_registry.yaml` that Claude can reference:
+### locator_registry.yaml format
 
 ```yaml
+metadata:
+  package: com.razorpay.pos
+  app_version: "2.3.1"
+  captured_at: "2026-03-15T10:22:00"
 screens:
   HomeAmountLocators:
-    source_xml: xml_dumps/rearch_home.xml
-    captured_at: "2026-03-11 20:06"
+    source_xml: HomeAmountLocators.xml
+    captured_at: "2026-03-15 10:22"
+    element_count: 18
     elements:
-      btn_1: { by: "AppiumBy.XPATH", value: "//android.widget.Button[@text='1']", type: "numpad_digit" }
-      btn_upi: { by: "AppiumBy.XPATH", value: "//android.widget.Button[@text='UPI']", type: "payment_method" }
-      btn_card: { by: "AppiumBy.XPATH", value: "//android.widget.Button[@text='Card']", type: "payment_method" }
-      btn_add_tip: { by: "AppiumBy.XPATH", value: "//android.widget.Button[@text='Add Tip']", type: "action" }
+      btn_1: { by: "AppiumBy.XPATH", value: "//android.widget.Button[@text='1']", type: "action" }
+      btn_menu: { by: "TODO", value: "no resource-id or text; class=android.widget.Button index=0", type: "unknown", needs_annotation: true }
 ```
 
-### 1c. Add a locator validation mode
+### @index locator policy
 
-A `--validate` flag that launches Appium, navigates to each screen, and verifies that every extracted locator can actually find an element. Outputs a pass/fail report.
+`@index`-based XPaths are **not generated**. When the extractor cannot find a resource-id or `@text` for an element, it emits a `# TODO: needs stable locator` comment instead. Existing `@index` locators in `rearch_native_locators.py` are annotated with `# TODO:` inline comments for human follow-up.
 
-### 1d. Recommended screen capture sequence
+### Defined screens
 
-Update `INTERACTIVE_SCREENS` to cover all critical flows:
-
-
-| Screen Name              | Navigation Instruction                                  |
-| ------------------------ | ------------------------------------------------------- |
-| `LoginLocators`          | Login screen (username/password fields)                 |
-| `HomeAmountLocators`     | Home page with numpad                                   |
-| `PaymentMethodLocators`  | After entering amount, payment method selection overlay |
-| `OrderDetailsLocators`   | Order details overlay (order ID, device serial)         |
-| `QRPaymentLocators`      | UPI QR code display screen                              |
-| `CashConfirmLocators`    | Cash payment confirmation screen                        |
-| `PaymentSuccessLocators` | Payment successful result screen                        |
-| `PaymentFailedLocators`  | Payment failed result screen                            |
-| `TxnHistoryLocators`     | Transaction history list                                |
-| `TxnSearchLocators`      | Transaction search screen                               |
-| `TxnDetailLocators`      | Single transaction detail view                          |
-| `MenuLocators`           | Menu / dashboard page                                   |
-
+| Screen Name              | Navigation Instruction                                          |
+|--------------------------|-----------------------------------------------------------------|
+| `LoginLocators`          | Login screen (username/password fields visible)                 |
+| `HomeAmountLocators`     | Home page with numpad                                           |
+| `PaymentMethodLocators`  | Payment method selection overlay after entering amount          |
+| `OrderDetailsLocators`   | Order details overlay (Order ID / Device Serial fields)         |
+| `QRPaymentLocators`      | UPI QR code display screen                                      |
+| `CashConfirmLocators`    | Cash payment confirmation screen                                |
+| `PaymentSuccessLocators` | Payment successful result screen                                |
+| `PaymentFailedLocators`  | Payment failed result screen                                    |
+| `TxnHistoryLocators`     | Transaction history list                                        |
+| `TxnSearchLocators`      | Transaction search screen                                       |
+| `TxnDetailLocators`      | Single transaction detail view                                  |
+| `MenuLocators`           | Menu / dashboard page                                           |
 
 ---
 
-## Phase 2: Build Native-Only PageFactory
+## Phase 2: Native PageFactory
 
-### 2a. New locators file: `rearch_native_locators.py`
+**Files:** `PageFactory/ReArch/rearch_native_locators.py`, `PageFactory/ReArch/rearch_native_base_page.py`, `PageFactory/ReArch/rearch_*.py`
 
-Replace the current hybrid [rearch_locators.py](PageFactory/ReArch/rearch_locators.py) with a **native-only** version. All locators use `AppiumBy` -- no `By.CSS_SELECTOR`, no `By.XPATH` against HTML DOM. This file is curated from the `locator_registry.yaml` output.
+### What is implemented
 
-Key structure:
+- **`rearch_native_locators.py`**: all AppiumBy locators, grouped by screen class. No `By.CSS_SELECTOR`. Existing `@index` locators annotated with `# TODO:`.
+- **`rearch_native_base_page.py`**: base page with `wait_for_element`, `perform_click`, `fetch_text`, scroll/swipe helpers. Stays in `NATIVE_APP` context permanently. Reads `DEFAULT_TIMEOUT` from `config.ini [Appium]`.
+- **Page objects** (login, home, qr, complete, txn_history, txn_detail, payment_method, cash_confirm): all inherit from `ReArchNativeBasePage`, import from `rearch_native_locators`.
+- **Old WebView files deprecated**: `rearch_base_page.py` and `rearch_locators.py` emit `DeprecationWarning` on import; they must not be used in new tests.
 
-```python
-from appium.webdriver.common.appiumby import AppiumBy
+### Configurable timeout
 
-class LoginLocators:
-    txt_username = (AppiumBy.ID, "username")
-    txt_password = (AppiumBy.ID, "password")
-    btn_login    = (AppiumBy.XPATH, "//android.widget.Button[@text='Login']")
-
-class HomeAmountLocators:
-    btn_0 = (AppiumBy.XPATH, "//android.widget.Button[@text='0']")
-    # ... btn_1 through btn_9
-    btn_upi  = (AppiumBy.XPATH, "//android.widget.Button[@text='UPI']")
-    btn_card = (AppiumBy.XPATH, "//android.widget.Button[@text='Card']")
-    btn_add_tip = (AppiumBy.XPATH, "//android.widget.Button[@text='Add Tip']")
-
-class PaymentSuccessLocators:
-    lbl_thank_you = (AppiumBy.XPATH, "//android.widget.TextView[@text='Thank you!']")
-    lbl_payment_successful = (AppiumBy.XPATH, "//android.widget.TextView[@text='Payment Successful']")
-    btn_view_details = (AppiumBy.XPATH, "//android.widget.Button[@text='View Details']")
-    btn_accept_more = (AppiumBy.XPATH, "//android.widget.Button[@text='Accept more payments']")
+```ini
+# Configuration/config.ini
+[Appium]
+element_wait_timeout = 45
 ```
 
-### 2b. Simplified base page: `rearch_native_base_page.py`
+```python
+# rearch_native_base_page.py
+DEFAULT_TIMEOUT = int(ConfigReader.read_config("Appium", "element_wait_timeout"))
 
-Remove all WebView context switching from [rearch_base_page.py](PageFactory/ReArch/rearch_base_page.py). The native approach stays in `NATIVE_APP` context permanently.
+def wait_for_element(self, locator, time: int = DEFAULT_TIMEOUT):
+    ...
+```
 
-Key changes:
+### File reference
 
-- Remove `switch_to_webview()`, `switch_to_native()`, `scroll_to_element_webview()`
-- Keep all `wait_for_element`, `perform_click`, `perform_sendkeys`, `fetch_text` methods
-- Add native-specific helpers: `scroll_to_text_native()`, `swipe_up()`, `swipe_down()`
-
-### 2c. Page objects remain the same structure
-
-Keep the existing pattern from [rearch_home_page.py](PageFactory/ReArch/rearch_home_page.py), [rearch_login_page.py](PageFactory/ReArch/rearch_login_page.py), etc. but:
-
-- Import from `rearch_native_locators` instead of `rearch_locators`
-- Remove all `self.switch_to_webview()` calls
-- Update locator references to the native equivalents
-
-This is consistent with the mpos pattern where all locators are native `AppiumBy.ID` tuples and no context switching exists.
+| File | Purpose |
+|------|---------|
+| `rearch_native_locators.py` | All AppiumBy locators, grouped by screen |
+| `rearch_native_base_page.py` | Base class: waits, clicks, scrolls, app lifecycle |
+| `rearch_login_page.py` | Login screen interactions |
+| `rearch_home_page.py` | Amount entry, payment method selection |
+| `rearch_qr_page.py` | UPI QR screen validation |
+| `rearch_complete_page.py` | Payment result screen |
+| `rearch_txn_history_page.py` | Transaction history list |
+| `rearch_txn_detail_page.py` | Transaction detail view |
+| `rearch_payment_method_page.py` | Payment method overlay |
+| `rearch_cash_confirm_page.py` | Cash confirmation screen |
+| `rearch_base_page.py` | **DEPRECATED** — WebView base page |
+| `rearch_locators.py` | **DEPRECATED** — WebView/HTML locators |
 
 ---
 
 ## Phase 3: Action Mapping Layer
 
-This is the **key enabler** for natural-language-to-code generation. Create a `Tools/action_registry.yaml` that maps human-readable phrases to PageFactory method calls:
+**Files:** `Tools/action_registry.yaml`, `Tools/validate_registry.py`
+
+### What is implemented
+
+`action_registry.yaml` is the semantic bridge between natural language steps and PageFactory method calls. It contains:
+
+- **`page_objects`** section: centralised import + init snippets per page class (emitted once per test).
+- **`synonyms`** block: extends NL pattern coverage without duplicating entries.
+- **`actions`** list: each entry has `patterns`, `page`, `method`, `code`, and optionally `priority` and `preconditions`.
+
+### Key structural additions
 
 ```yaml
+synonyms:
+  enter:  [input, type, key in, set, fill, put, add, specify]
+  click:  [tap, press, select, choose, hit]
+  verify: [validate, check, assert, confirm, ensure]
+  amount: [price, value, sum, figure, total]
+
 actions:
-  - patterns: ["open rearch", "launch rearch", "open app", "launch app"]
-    page: ReArchLoginPage
-    method: wait_for_login_page
-    import: "from PageFactory.ReArch.rearch_login_page import ReArchLoginPage"
-
-  - patterns: ["login", "enter credentials", "sign in"]
-    page: ReArchLoginPage
-    method: perform_login
-    params: [username, password]
-    import: "from PageFactory.ReArch.rearch_login_page import ReArchLoginPage"
-
-  - patterns: ["enter amount {amount}", "type amount {amount}", "key in {amount}"]
+  - patterns: ["click cash", "select cash", "pay by cash"]
     page: ReArchHomePage
-    method: enter_amount
-    params: [amount]
-    import: "from PageFactory.ReArch.rearch_home_page import ReArchHomePage"
-
-  - patterns: ["click upi", "select upi", "pay by upi", "upi payment"]
-    page: ReArchHomePage
-    method: click_pay_by_upi
-    import: "from PageFactory.ReArch.rearch_home_page import ReArchHomePage"
-
-  - patterns: ["verify success", "payment successful", "check success screen"]
-    page: ReArchCompletePage
-    method: wait_for_success_screen
-    import: "from PageFactory.ReArch.rearch_complete_page import ReArchCompletePage"
-
-  - patterns: ["verify failure", "payment failed", "check failure screen"]
-    page: ReArchCompletePage
-    method: wait_for_failure_screen
-    import: "from PageFactory.ReArch.rearch_complete_page import ReArchCompletePage"
-
-  - patterns: ["go to transaction history", "open transactions", "view transactions"]
-    page: ReArchHomePage
-    method: click_txn_history
-    import: "from PageFactory.ReArch.rearch_home_page import ReArchHomePage"
+    method: click_pay_by_cash
+    code: "home_page.click_pay_by_cash()"
+    priority: 1
+    preconditions:
+      org_settings:
+        cashEnabled: "true"
+      revert_on_finally:
+        cashEnabled: "false"
 ```
 
-Claude reads this registry when generating tests and uses it to map each natural-language step to the correct PageFactory call.
+When multiple patterns match the same NL step, the entry with the highest `priority` value wins. The `preconditions` block is read by the test generator to auto-emit `org_settings_update` calls in SETUP and revert calls in `finally`.
+
+### Registry validation
+
+`Tools/validate_registry.py` statically validates every `code:` snippet:
+1. Parses the `method` field from each action.
+2. Imports the declared page object class.
+3. Uses `inspect.getmembers()` to verify the method exists.
+4. Exits with code 1 if any method is missing — catches registry drift immediately.
+
+```bash
+python Tools/validate_registry.py
+```
 
 ---
 
-## Phase 4: Update Skills Architecture
+## Phase 4: Test Generation Skills
 
-### 4a. Update `xpath_extractor.md` skill
+**Files:** `.claude/skills/test_generator.md`, `test_template.md`, `test_preconditions.md`, `test_validations.md`, `page_factory_builder.md`
 
-Current skill tells Claude to extract locators from the **POS frontend repo** -- this is the root cause of the WebView mismatch. Update it to:
+### What is implemented
 
-- Instruct Claude to use `rearch_xpath_extractor.py` for native locator extraction
-- Reference `locator_registry.yaml` as the source of truth
-- Never generate `By.CSS_SELECTOR` locators for ReArch
+`test_generator.md` is the entry point skill with a **5-step workflow**:
 
-### 4b. Update `test_generator.md` skill
+1. **Read** `Tools/action_registry.yaml` (patterns + synonyms).
+2. **Match** each NL step (case-insensitive; use synonyms to expand coverage; use priority to resolve conflicts).
+3. **Collect** unique page objects (imports/inits emitted once each).
+4. **Generate** the test file using `test_template.md`; embed NL steps as structured docstring.
+5. **Verify** before presenting:
+   - `python -m py_compile <file>` — syntax OK
+   - `grep "initialize_app_driver"` — must be empty
+   - `grep "By\.CSS_SELECTOR"` — must be empty
+   - `grep "appium_driver"` — must be empty
+   - `grep "validateAgainstDB\|validateAgainstPortal"` — must be empty for ReArch tests
 
-Current skill references "pos repository" for XPaths. Update to:
+### Sub-documents
 
-- Reference `action_registry.yaml` for step-to-method mapping
-- Reference `rearch_native_locators.py` for available locators
-- Include a test template that follows the pattern in the existing test file (`test_UI_ReArch_PM_UPI_QR_POS_Success_ICICI_DIRECT_01.py`)
-- Specify the test structure: SETUP (ResourceAssigner, DB, config) -> EXECUTION (page object calls) -> VALIDATION (DB, API, Portal) -> TEARDOWN
+| File | Content |
+|------|---------|
+| `test_generator.md` | Entry point: role, 5-step workflow, locator rules, driver rules |
+| `test_template.md` | Complete Python test file template with all sections |
+| `test_preconditions.md` | `org_settings_update` pattern, setting key table, revert template |
+| `test_validations.md` | App validation pattern, API validation pattern, forbidden types |
+| `page_factory_builder.md` | 5-step workflow to build new page objects + Step 5 registry validation |
 
-### 4c. New skill: `page_factory_builder.md`
+### Test generation rules (enforced)
 
-A new skill for Claude to build/extend the PageFactory when new screens are captured:
+| Rule | Detail |
+|------|--------|
+| Driver | Always `TestSuiteSetup.initialize_rearch_driver(testcase_id)` |
+| Locators | Native `AppiumBy` only — no `By.CSS_SELECTOR` |
+| Validations | App + API + Charge slip only — no DB, no Portal |
+| Markers | `@pytest.mark.appVal`, `@pytest.mark.apiVal`, `@pytest.mark.chargeSlipVal` — no `dbVal`, `portalVal` |
+| `order_id` | `f"{datetime.now().strftime('%m%d%H%M%S')}{testcase_id[-4:]}"` for uniqueness |
+| NL docstring | Embed original steps as `NL Source Steps:` class docstring |
+| File location | `TestCases/Functional/UI/ReArch/` (no payment-method subdirectories) |
 
-- Read `locator_registry.yaml` entries for a screen
-- Generate a locator class in `rearch_native_locators.py`
-- Generate a page object class with business-level methods
-- Register new actions in `action_registry.yaml`
+---
 
-### 4d. New skill: `nl_test_generator.md` (Natural Language Test Generator)
+## CI Health Check
 
-The primary skill for the end-goal workflow:
+**File:** `.github/workflows/locator_health.yml`
 
-- Input: numbered natural language steps
-- Process: match each step against `action_registry.yaml`
-- Output: complete pytest test case with proper imports, fixtures, page object calls
-- Handles ambiguity by asking clarifying questions
-- Includes DB validation stubs based on `db_validation_generator.md`
+Runs every Monday at 09:00 UTC (and on manual dispatch). Single job (`validate-registry`) with these steps:
+
+1. **Registry validation** — `python Tools/validate_registry.py`
+2. **Banned pattern scan** — greps all ReArch tests for `initialize_app_driver`, `By.CSS_SELECTOR`, `appium_driver`, `validateAgainstDB`, `validateAgainstPortal`
+3. **Syntax check** — `python -m py_compile` on every `TestCases/Functional/UI/ReArch/*.py`
+4. **@index locator warning** — warns if any `@index=` remains in `rearch_native_locators.py`
 
 ---
 
@@ -279,55 +320,56 @@ The primary skill for the end-goal workflow:
 **Input to Claude:**
 
 ```
-1. Open ReArch
-2. Login with credentials
-3. Enter amount 100
-4. Click UPI
-5. Verify QR screen is displayed
-6. Verify payment success
-7. Go to transaction history
-8. Verify transaction is listed
+1. launch reArch app
+2. login with credentials
+3. enter amount 45
+4. select cash from payment methods
+5. confirm cash payment
+6. verify payment success
+7. go to transaction history
+8. click first transaction
+9. wait for transaction detail
+10. validate txn status is Captured
+11. validate payment mode is Cash
 ```
 
-**Claude generates:**
+**Claude workflow:**
+1. Reads `action_registry.yaml` — matches each step to a method.
+2. Detects `cashEnabled` precondition from the cash actions.
+3. Collects unique page objects: `ReArchLoginPage`, `ReArchHomePage`, `ReArchPaymentMethodPage`, `ReArchCashConfirmPage`, `ReArchCompletePage`, `ReArchTxnHistoryPage`, `ReArchTxnDetailPage`.
+4. Generates `TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Cash_POS_Success_01.py` using `test_template.md`.
+5. Runs syntax check + banned pattern grep before presenting.
+
+**Key generated structure:**
 
 ```python
-@pytest.mark.usefixtures("log_on_success", "method_setup")
-@pytest.mark.appVal
-class TestReArchUPIPayment:
-    def test_rearch_upi_100(self, appium_driver):
-        login_page = ReArchLoginPage(appium_driver)
-        home_page = ReArchHomePage(appium_driver)
-        qr_page = ReArchQRPage(appium_driver)
-        complete_page = ReArchCompletePage(appium_driver)
-        txn_history_page = ReArchTxnHistoryPage(appium_driver)
+class TestReArchCashPaymentSuccess:
+    """
+    NL Source Steps:
+      1. launch reArch app
+      2. login with credentials
+      ...
+    Generated by: test_generator.md, action_registry.yaml
+    """
 
-        login_page.wait_for_login_page()
-        login_page.perform_login(username, password)
-
-        home_page.wait_for_home_page_load()
-        home_page.enter_amount(100)
-        home_page.click_pay_by_upi()
-
-        qr_page.wait_for_qr_screen()
-        qr_page.validate_qr_screen()
-
-        complete_page.wait_for_success_screen()
-        assert complete_page.is_payment_successful()
-
-        complete_page.click_proceed_to_home()
-        home_page.click_txn_history()
-        # ... transaction verification
+    def test_rearch_cash_success_01(self, request):
+        try:
+            # SETUP: credentials, org_code, cashEnabled precondition
+            # EXECUTION: initialize_rearch_driver → login → amount → cash → confirm → verify
+            # VALIDATION: App (TxnDetail) + API (txnlist)
+        finally:
+            # Revert cashEnabled → executeFinallyBlock
 ```
 
 ---
 
-## Migration Strategy
+## Deprecation & Migration Status
 
-To avoid breaking the existing test that uses WebView locators:
+| Old File | Status | Replacement |
+|----------|--------|-------------|
+| `rearch_locators.py` | Deprecated (DeprecationWarning on import) | `rearch_native_locators.py` |
+| `rearch_base_page.py` | Deprecated (DeprecationWarning on import) | `rearch_native_base_page.py` |
+| `nl_test_generator.md` | Deleted — merged into `test_generator.md` | `test_generator.md` |
+| `PageFactory/ReArch/test.py` | Deleted (was a scratch file) | — |
 
-1. Create new files (`rearch_native_locators.py`, `rearch_native_base_page.py`) alongside the old ones
-2. New page objects import from native locators
-3. Once native PageFactory is validated, deprecate the WebView-based files
-4. Existing test (`test_UI_ReArch_PM_UPI_QR_POS_Success_ICICI_DIRECT_01.py`) is migrated last
-
+The existing UPI test (`test_UI_ReArch_PM_UPI_QR_POS_Success_ICICI_DIRECT_01.py`) has been migrated: driver call fixed to `initialize_rearch_driver`, DB validation and Portal validation blocks removed.
