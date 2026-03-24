@@ -123,9 +123,12 @@ class QRPaymentLocators:
     lbl_scan_and_pay       = (AppiumBy.XPATH, "//android.widget.TextView[@text='Scan & Pay']")
     lbl_payment_amount     = (AppiumBy.XPATH, "//android.widget.TextView[@text='Payment Amount']")
     lbl_amount_value       = (AppiumBy.XPATH, "//android.widget.TextView[contains(@text,'\u20b9')]")
-    btn_back               = (AppiumBy.XPATH, "//android.widget.Button[@index='0']")  # TODO: needs stable locator
+    btn_back               = (AppiumBy.XPATH, '//android.view.View[@resource-id="page"]/android.view.View[1]/android.view.View/android.widget.Button')
     btn_confirm_cancel     = (AppiumBy.XPATH, "//android.widget.Button[@text='Yes, Cancel']")
     lbl_cancel_dialog_title = (AppiumBy.XPATH, "//android.widget.TextView[@text='Cancel the Payment?']")
+    btn_card               = (AppiumBy.XPATH, "//android.widget.Button[@text='Card']")
+    btn_link               = (AppiumBy.XPATH, "//android.widget.Button[@text='Link']")
+    btn_others             = (AppiumBy.XPATH, "//android.widget.Button[@text='Others']")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -179,7 +182,7 @@ class TxnHistoryLocators:
     btn_filter_method      = (AppiumBy.XPATH, "//android.widget.Button[@text='Method']")
     btn_filter_status      = (AppiumBy.XPATH, "//android.widget.Button[@text='Status']")
     btn_back               = (AppiumBy.XPATH, "//android.widget.Button[@index='0']")  # TODO: needs stable locator
-    btn_search             = (AppiumBy.XPATH, "//android.widget.Button[@index='2']")  # TODO: needs stable locator
+    btn_search             = (AppiumBy.XPATH, "//android.widget.Button[@index='3']")
     btn_more_options       = (AppiumBy.XPATH, "//android.widget.Button[@index='3']")  # TODO: needs stable locator
 
     # Transaction row buttons contain the full text: "transaction logo UPI 4:07 PM ₹389 Settled"
@@ -242,7 +245,7 @@ class TxnDetailLocators:
 # MENU / DASHBOARD PAGE
 # ══════════════════════════════════════════════════════════════════════════════
 
-class MenuLocators:
+class HomeScreen:
     btn_collect_payment    = (AppiumBy.XPATH, "//android.widget.Button[@text='Collect Payment']")
     btn_transactions       = (AppiumBy.XPATH, "//android.widget.Button[@text='Transactions']")
     btn_settings           = (AppiumBy.XPATH, "//android.widget.Button[@text='Settings']")

@@ -51,6 +51,9 @@ page_objects:
   ReArchCashConfirmPage:
     import: "from PageFactory.ReArch.rearch_cash_confirm_page import ReArchCashConfirmPage"
     init: "cash_confirm_page = ReArchCashConfirmPage(driver)"
+  ReArchOrderDetailsPage:
+    import: "from PageFactory.ReArch.rearch_order_details_page import ReArchOrderDetailsPage"
+    init: "order_details_page = ReArchOrderDetailsPage(driver)"
 
 actions:
 
@@ -110,6 +113,27 @@ actions:
     page: ReArchLoginPage
     method: validate_login_page
     code: "login_page.validate_login_page()"
+
+  # ── Initial home screen (post-login dashboard) ───────────────────────────
+
+  - patterns:
+      - "wait for initial home screen"
+      - "wait for home screen"
+      - "initial home screen loaded"
+    page: ReArchHomePage
+    method: wait_for_initial_home_screen
+    code: "home_page.wait_for_initial_home_screen()"
+    description: "Wait for the post-login home screen (Collect Payment button visible)"
+
+  - patterns:
+      - "click collect payment"
+      - "tap collect payment"
+      - "select collect payment"
+    page: ReArchHomePage
+    method: click_collect_payment
+    code: "home_page.click_collect_payment()"
+    priority: 1
+    description: "Tap the Collect Payment button on the initial home screen"
 
   # ── Home / Amount page ──────────────────────────────────────────────────
 
@@ -226,6 +250,42 @@ actions:
     method: enter_amount_and_proceed_cash
     params: [amount]
     code: "home_page.enter_amount_and_proceed_cash(\"{amount}\")"
+
+  # ── Order Details overlay ────────────────────────────────────────────────
+
+  - patterns:
+      - "wait for order details"
+      - "order details screen displayed"
+      - "verify order details screen"
+    page: ReArchOrderDetailsPage
+    method: wait_for_order_details_screen
+    code: "order_details_page.wait_for_order_details_screen()"
+    description: "Wait for the Order Details overlay to appear"
+
+  - patterns:
+      - "enter order id {order_id}"
+      - "type order id {order_id}"
+    page: ReArchOrderDetailsPage
+    method: enter_order_id
+    params: [order_id]
+    code: "order_details_page.enter_order_id(\"{order_id}\")"
+
+  - patterns:
+      - "click proceed on order details"
+      - "click proceed"
+      - "tap proceed"
+      - "proceed with order details"
+    page: ReArchOrderDetailsPage
+    method: click_proceed
+    code: "order_details_page.click_proceed()"
+    priority: 1
+
+  - patterns:
+      - "cancel order details"
+      - "click cancel on order details"
+    page: ReArchOrderDetailsPage
+    method: click_cancel
+    code: "order_details_page.click_cancel()"
 
   # ── Payment method overlay ───────────────────────────────────────────────
 
@@ -467,6 +527,16 @@ actions:
     page: ReArchTxnHistoryPage
     method: click_first_transaction
     code: "txn_history_page.click_first_transaction()"
+
+  - patterns:
+      - "click transaction by txn id {txn_id}"
+      - "open transaction by txn id {txn_id}"
+      - "search and open transaction {txn_id}"
+    page: ReArchTxnHistoryPage
+    method: click_on_transaction_by_txn_id
+    params: [txn_id]
+    code: "txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)"
+    description: "Search by Payment ID and open the matching transaction row"
 
   - patterns:
       - "click search in history"

@@ -1,5 +1,5 @@
 from PageFactory.ReArch.rearch_native_base_page import ReArchNativeBasePage
-from PageFactory.ReArch.rearch_native_locators import HomeAmountLocators
+from PageFactory.ReArch.rearch_native_locators import HomeAmountLocators, HomeScreen
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -95,6 +95,18 @@ class ReArchHomePage(ReArchNativeBasePage):
 
     def is_add_tip_visible(self) -> bool:
         return self.is_element_visible(HomeAmountLocators.btn_add_tip, time=5)
+
+    # ── Initial home screen (post-login dashboard) ────────────────────────────
+
+    def wait_for_initial_home_screen(self, timeout: int = 45):
+        """Wait until the post-login home screen (Collect Payment button) is visible."""
+        self.wait_for_element(HomeScreen.btn_collect_payment, timeout)
+        logger.info("ReArch initial home screen is ready.")
+
+    def click_collect_payment(self):
+        """Tap the Collect Payment button on the initial home screen."""
+        self.perform_click(HomeScreen.btn_collect_payment)
+        logger.info("Clicked Collect Payment button.")
 
     # ── Compound flows ────────────────────────────────────────────────────────
 

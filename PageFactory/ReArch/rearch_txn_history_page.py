@@ -1,7 +1,9 @@
 import time as _time
 
+from appium.webdriver.common.appiumby import AppiumBy
+
 from PageFactory.ReArch.rearch_native_base_page import ReArchNativeBasePage
-from PageFactory.ReArch.rearch_native_locators import TxnHistoryLocators
+from PageFactory.ReArch.rearch_native_locators import TxnHistoryLocators, TxnSearchLocators
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -48,6 +50,21 @@ class ReArchTxnHistoryPage(ReArchNativeBasePage):
         locator = TxnHistoryLocators.txn_row_by_status("")
         self.perform_click(locator)
         logger.info("Clicked first transaction row.")
+
+    def click_on_transaction_by_txn_id(self, txn_id: str):
+        """Search by Payment ID and open the matching transaction.
+
+        Flow: Search button → Payment ID filter → type txn_id → tap result row.
+        """
+        self.perform_click(TxnHistoryLocators.btn_search)
+        # self.wait_for_element(TxnSearchLocators.lbl_search)
+        self.perform_click(TxnSearchLocators.txt_search_input)
+        self.perform_sendkeys(TxnSearchLocators.txt_search_input, txn_id)
+
+        txn_row = (AppiumBy.XPATH, f"//android.widget.Button[contains(@text,'{txn_id}')]")
+        self.wait_for_element(txn_row, timeout=15)
+        self.perform_click(txn_row)
+        logger.info(f"Opened transaction with txn_id: {txn_id}")
 
     # ── Navigation ────────────────────────────────────────────────────────────
 

@@ -31,3 +31,98 @@ class catalog:
     btn_search_for_products        = (AppiumBy.XPATH, "//android.widget.Button[@text='Search for products...']")  # Button · "Search for products..."
     lbl_brands                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='Brands']")  # TextView · "Brands"
     btn_brandui_brandui            = (AppiumBy.XPATH, "//android.widget.Button[@text='BRAND_UI BRAND_UI']")  # Button · "BRAND_UI BRAND_UI"
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# OrderDetailsScreen
+# ════════════════════════════════════════════════════════════════════════════
+
+class OrderDetailsScreen:
+    lbl_order_details              = (AppiumBy.XPATH, "//android.widget.TextView[@text='Order Details']")  # TextView · "Order Details"
+    lbl_order_id                   = (AppiumBy.XPATH, "//android.view.View[@text='Order ID']")  # View · "Order ID"
+    txt_ordernumberinput           = (AppiumBy.ID, "order-number-input")  # EditText · [order-number-input]
+    lbl_device_serial              = (AppiumBy.XPATH, "//android.view.View[@text='Device Serial']")  # View · "Device Serial"
+    txt_additionalfieldinput       = (AppiumBy.ID, "additional-field-input")  # EditText · [additional-field-input]
+    btn_cancel                     = (AppiumBy.XPATH, "//android.widget.Button[@text='Cancel']")  # Button · "Cancel"
+    btn_proceed                    = (AppiumBy.XPATH, "//android.widget.Button[@text='Proceed']")  # Button · "Proceed"
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# QrScreen
+# ════════════════════════════════════════════════════════════════════════════
+
+class QrScreen:
+    btn_back = (AppiumBy.XPATH, '//android.view.View[@resource-id="page"]/android.view.View[1]/android.view.View/android.widget.Button')
+    lbl_scan_pay                   = (AppiumBy.XPATH, "//android.widget.TextView[@text='Scan & Pay']")  # TextView · "Scan & Pay"
+    lbl_textview                   = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹']")  # TextView · "₹"
+    img_qr                         = (AppiumBy.XPATH, "//android.widget.Image[@text='QR']")  # Image · "QR"  # TextView · "56278a48@upi"
+    img_upi                        = (AppiumBy.XPATH, "//android.widget.Image[@text='UPI']")  # Image · "UPI"
+    img_bhim                       = (AppiumBy.XPATH, "//android.widget.Image[@text='BHIM']")  # Image · "BHIM"
+    img_razorpay                   = (AppiumBy.XPATH, "//android.widget.Image[@text='Razorpay']")  # Image · "Razorpay"
+    btn_card                       = (AppiumBy.XPATH, "//android.widget.Button[@text='Card']")  # Button · "Card"
+    btn_link                       = (AppiumBy.XPATH, "//android.widget.Button[@text='Link']")  # Button · "Link"
+    btn_others                     = (AppiumBy.XPATH, "//android.widget.Button[@text='Others']")  # Button · "Others"
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# CancelPayment
+# ════════════════════════════════════════════════════════════════════════════
+
+class CancelPayment:
+    # TODO: btn_button_2 — needs stable locator (no resource-id or text; class=android.widget.Button index=0)
+    img_ff3d456781414a7c936b       = (AppiumBy.XPATH, "//android.widget.Image[@text='ff3d456781414a7c936b']")  # Image · "ff3d456781414a7c936b"
+    lbl_cancel_the_payment         = (AppiumBy.XPATH, "//android.widget.TextView[@text='Cancel the Payment?']")  # TextView · "Cancel the Payment?"
+    lbl_your_payment_is_in_progress_cancelling_n = (AppiumBy.XPATH, "//android.widget.TextView[@text='Your payment is in progress. Cancelling now will stop the transaction.']")  # TextView · "Your payment is in progress. Cancelling now will stop the transaction."
+    btn_yes_cancel                 = (AppiumBy.XPATH, "//android.widget.Button[@text='Yes, Cancel']")  # Button · "Yes, Cancel"
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# search
+# ════════════════════════════════════════════════════════════════════════════
+
+class search:
+    """Auto-generated from uiautomator dump — review and adjust as needed."""
+    # TODO: lbl_view — needs stable locator (no resource-id or text; class=android.view.View index=0)
+    lbl_page                       = (AppiumBy.ID, "page")  # View · [page]
+    # TODO: btn_button — needs stable locator (no resource-id or text; class=android.widget.Button index=0)
+    lbl_search                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='Search']")  # TextView · "Search"
+    btn_payment_id                 = (AppiumBy.XPATH, "//android.widget.Button[@text='Payment ID']")  # Button · "Payment ID"
+    btn_rrn_number                 = (AppiumBy.XPATH, "//android.widget.Button[@text='RRN Number']")  # Button · "RRN Number"
+    btn_amount                     = (AppiumBy.XPATH, "//android.widget.Button[@text='Amount']")  # Button · "Amount"
+    btn_auth_code                  = (AppiumBy.XPATH, "//android.widget.Button[@text='Auth Code']")  # Button · "Auth Code"
+    # TODO: txt_edittext — needs stable locator (no resource-id or text; class=android.widget.EditText index=3)
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# cardDetails
+# ════════════════════════════════════════════════════════════════════════════
+
+class cardDetails:
+    """Auto-generated from uiautomator dump — review and adjust as needed."""
+    lbl_select_test_card           = (AppiumBy.XPATH, "//android.widget.TextView[@text='Select Test Card']")  # TextView · "Select Test Card"
+    btn_visa_debit_emv_visa_debit  = (AppiumBy.XPATH, "//android.widget.Button[@text='Visa Debit (EMV) VISA Debit']")  # Button · "Visa Debit (EMV) VISA Debit"
+    btn_visa_debit_with_pin_emv_visa_debit = (AppiumBy.XPATH, "//android.widget.Button[@text='Visa Debit with PIN (EMV) VISA Debit']")  # Button · "Visa Debit with PIN (EMV) VISA Debit"
+    btn_visa_debit_contactless_visa_debit = (AppiumBy.XPATH, "//android.widget.Button[@text='Visa Debit (Contactless) VISA Debit']")  # Button · "Visa Debit (Contactless) VISA Debit"
+    btn_visa_debit_with_pin_contactless_visa_deb = (AppiumBy.XPATH, "//android.widget.Button[@text='Visa Debit with PIN (Contactless) VISA Debit']")  # Button · "Visa Debit with PIN (Contactless) VISA Debit"
+    btn_visa_credit_emv_visa_credit = (AppiumBy.XPATH, "//android.widget.Button[@text='Visa Credit (EMV) VISA Credit']")  # Button · "Visa Credit (EMV) VISA Credit"
+    btn_visa_credit_with_pin_emv_visa_credit = (AppiumBy.XPATH, "//android.widget.Button[@text='Visa Credit with PIN (EMV) VISA Credit']")  # Button · "Visa Credit with PIN (EMV) VISA Credit"
+    btn_visa_credit_contactless_visa_credit = (AppiumBy.XPATH, "//android.widget.Button[@text='Visa Credit (Contactless) VISA Credit']")  # Button · "Visa Credit (Contactless) VISA Credit"
+    btn_mastercard_debit_emv_master_debit = (AppiumBy.XPATH, "//android.widget.Button[@text='MasterCard Debit (EMV) MASTER Debit']")  # Button · "MasterCard Debit (EMV) MASTER Debit"
+    btn_mastercard_debit_contactless_master_debi = (AppiumBy.XPATH, "//android.widget.Button[@text='MasterCard Debit (Contactless) MASTER Debit']")  # Button · "MasterCard Debit (Contactless) MASTER Debit"
+    btn_mastercard_debit_with_pin_contactless_ma = (AppiumBy.XPATH, "//android.widget.Button[@text='MasterCard Debit with PIN (Contactless) MASTER Debit']")  # Button · "MasterCard Debit with PIN (Contactless) MASTER Debit"
+    btn_mastercard_credit_emv_master_credit = (AppiumBy.XPATH, "//android.widget.Button[@text='MasterCard Credit (EMV) MASTER Credit']")  # Button · "MasterCard Credit (EMV) MASTER Credit"
+    btn_mastercard_credit_with_pin_emv_master_cr = (AppiumBy.XPATH, "//android.widget.Button[@text='MasterCard Credit with PIN (EMV) MASTER Credit']")  # Button · "MasterCard Credit with PIN (EMV) MASTER Credit"
+    btn_mastercard_credit_contactless_master_cre = (AppiumBy.XPATH, "//android.widget.Button[@text='MasterCard Credit (Contactless) MASTER Credit']")  # Button · "MasterCard Credit (Contactless) MASTER Credit"
+    btn_mastercard_credit_with_pin_contactless_m = (AppiumBy.XPATH, "//android.widget.Button[@text='MasterCard Credit with PIN (Contactless) MASTER Credit']")  # Button · "MasterCard Credit with PIN (Contactless) MASTER Credit"
+    btn_rupay_debit_emv_rupay_debit = (AppiumBy.XPATH, "//android.widget.Button[@text='RuPay Debit (EMV) RUPAY Debit']")  # Button · "RuPay Debit (EMV) RUPAY Debit"
+    btn_rupay_debit_with_pin_emv_rupay_debit = (AppiumBy.XPATH, "//android.widget.Button[@text='RuPay Debit with PIN (EMV) RUPAY Debit']")  # Button · "RuPay Debit with PIN (EMV) RUPAY Debit"
+    btn_rupay_prepaid_contactless_rupay_prepaid = (AppiumBy.XPATH, "//android.widget.Button[@text='RuPay Prepaid (Contactless) RUPAY Prepaid']")  # Button · "RuPay Prepaid (Contactless) RUPAY Prepaid"
+    btn_rupay_prepaid_with_pin_contactless_rupay = (AppiumBy.XPATH, "//android.widget.Button[@text='RuPay Prepaid with PIN (Contactless) RUPAY Prepaid']")  # Button · "RuPay Prepaid with PIN (Contactless) RUPAY Prepaid"
+    btn_visa_credit_gbp_contactless_visa_credit_ = (AppiumBy.XPATH, "//android.widget.Button[@text='Visa Credit GBP (Contactless) VISA Credit • GBP']")  # Button · "Visa Credit GBP (Contactless) VISA Credit • GBP"
+    btn_mastercard_kwd_emv_master_debit_kwd = (AppiumBy.XPATH, "//android.widget.Button[@text='MasterCard KWD (EMV) MASTER Debit • KWD']")  # Button · "MasterCard KWD (EMV) MASTER Debit • KWD"
+    btn_mastercard_jpy_emv_master_debit_jpy = (AppiumBy.XPATH, "//android.widget.Button[@text='MasterCard JPY (EMV) MASTER Debit • JPY']")  # Button · "MasterCard JPY (EMV) MASTER Debit • JPY"
+    btn_visa_bhd_emv_visa_debit_bhd = (AppiumBy.XPATH, "//android.widget.Button[@text='Visa BHD (EMV) VISA Debit • BHD']")  # Button · "Visa BHD (EMV) VISA Debit • BHD"
+    btn_mastercard_usd_contactless_master_debit_ = (AppiumBy.XPATH, "//android.widget.Button[@text='MasterCard USD (Contactless) MASTER Debit • USD']")  # Button · "MasterCard USD (Contactless) MASTER Debit • USD"
+    btn_mastercard_bhd_emv_master_debit_bhd = (AppiumBy.XPATH, "//android.widget.Button[@text='MasterCard BHD (EMV) MASTER Debit • BHD']")  # Button · "MasterCard BHD (EMV) MASTER Debit • BHD"
+    btn_visa_jpy_emv_visa_debit_jpy = (AppiumBy.XPATH, "//android.widget.Button[@text='Visa JPY (EMV) VISA Debit • JPY']")  # Button · "Visa JPY (EMV) VISA Debit • JPY"
+    btn_visa_jpy_contactless_visa_credit_jpy = (AppiumBy.XPATH, "//android.widget.Button[@text='Visa JPY (Contactless) VISA Credit • JPY']")  # Button · "Visa JPY (Contactless) VISA Credit • JPY"
