@@ -113,6 +113,8 @@ def test_UI_ReArch_<test_id>():
             GlobalVariables.time_calc.validation.start()
 
             # ── App Validation ──
+            # IMPORTANT: use to_rearch_app_format(), NOT to_app_format() (that is for the old mpos app)
+            # DO NOT call wait_for_detail_page() — go straight to fetch_* methods (each has its own WebDriverWait)
             if ConfigReader.read_config("Validations", "app_validation") == "True":
                 try:
                     # Navigate to TxnHistory → TxnDetail

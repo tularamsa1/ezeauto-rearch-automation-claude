@@ -84,6 +84,12 @@ Step 5: Verify the generated file
        grep "appium_driver" <generated_file>
   5. Forbidden validations (must be empty for ReArch):
        grep "validateAgainstDB\|validateAgainstPortal" <generated_file>
+  6. Wrong date format (must be empty for ReArch):
+       grep "to_app_format" <generated_file> | grep -v "to_rearch_app_format"
+       → If any line is returned, replace to_app_format() with to_rearch_app_format()
+  7. Forbidden wait call (must be empty for ReArch):
+       grep "wait_for_detail_page" <generated_file>
+       → If found, remove the call. Each fetch_* method has its own WebDriverWait.
   Fix any violations before presenting the output to the user.
 
 LOCATOR SOURCE
