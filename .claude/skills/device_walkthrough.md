@@ -1,7 +1,14 @@
+---
+version: 1.1.0
+last-updated: 2026-03-25
+status: active
+invoked-by: orchestrator.md (Intent B)
+---
+
 SKILL: device_walkthrough
 PURPOSE
 Capture a live device walk-through from the user and produce verified, registry-aligned
-NL steps that can be handed off directly to test_generator.md for code generation.
+NL steps that can be handed back to orchestrator.md for handoff to test_generator.md.
 
 USE THIS SKILL WHEN
 - The user has NOT yet provided numbered NL steps
@@ -10,13 +17,13 @@ USE THIS SKILL WHEN
 - Multiple scenarios need to be captured in one session
 
 DO NOT USE THIS SKILL WHEN
-- The user already provides complete numbered NL steps → go directly to test_generator.md
+- The user already provides complete numbered NL steps → orchestrator routes to test_generator.md directly
 - The new test is a trivial variation of an already-generated test (e.g., same Cash flow,
   different amount) → parameterise the existing test instead
 
-─────────────────────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────────────────
 PHASE 1 — PRE-FLIGHT
-─────────────────────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────────────────
 Ask the following questions BEFORE asking the user to narrate screens.
 Present them all at once (not one-by-one) to avoid back-and-forth.
 
@@ -42,9 +49,9 @@ After the user answers, summarise a PRE-FLIGHT CARD:
 
 Confirm with the user ("Does this look right?") then move to Phase 2.
 
-─────────────────────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────────────────
 PHASE 2 — SCREEN-BY-SCREEN CAPTURE
-─────────────────────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────────────────
 MANDATORY — never skip this phase, even if pre-flight answers seem detailed enough.
 Pre-flight answers describe intent; Phase 2 captures what actually happened on device.
 Skipping Phase 2 leads to missed wait states, intermediate screens, and wrong step ordering.
@@ -61,91 +68,7 @@ PROBING QUESTION TEMPLATES (use the most relevant ones):
   - "After tapping Confirm, did the app show a loading/spinner state before success?"
   - "What exact fields are visible on the transaction detail screen?"
     (payment id / status / amount / date / RRN / auth code / payment mode — list all)
-  - "Was there an intermediate screen between A and BDevice Screen (real Android)
-           ↓
-      [ADB command]
-           ↓
-  UIAutomator XML Dump
-  (hierarchy + attributes)
-           ↓
-  [rearch_xpath_extractor.py]
-      ↓           ↓
-    ✅ Auto-generates     ✅ Builds YAML
-    rearch_locators_      locator_
-    generated.py          registry.yaml
-           ↓
-      [YOU REVIEW]
-      ✅ Check each locator works
-      ✅ Fix TODOs manually
-      ✅ Merge into rearch_native_locators.py
-           ↓
-  [YOU CREATE]
-  rearch_<screen>_page.py
-  (business-level methods)
-           ↓
-  [YOU REGISTER]
-  action_registry.yaml
-  (NL pattern → method mapping)
-           ↓
-      [test_generator.md]
-      Uses the registry to
-      convert NL steps → Python test codeDevice Screen (real Android)
-               ↓
-          [ADB command]
-               ↓
-      UIAutomator XML Dump
-      (hierarchy + attributes)
-               ↓
-      [rearch_xpath_extractor.py]
-          ↓           ↓
-        ✅ Auto-generates     ✅ Builds YAML
-        rearch_locators_      locator_
-        generated.py          registry.yaml
-               ↓
-          [YOU REVIEW]
-          ✅ Check each locator works
-          ✅ Fix TODOs manually
-          ✅ Merge into rearch_native_locators.py
-               ↓
-      [YOU CREATE]
-      rearch_<screen>_page.py
-      (business-level methods)
-               ↓
-      [YOU REGISTER]
-      action_registry.yaml
-      (NL pattern → method mapping)
-               ↓
-          [test_generator.md]
-          Uses the registry to
-          convert NL steps → Python test codeDevice Screen (real Android)
-                   ↓
-              [ADB command]
-                   ↓
-          UIAutomator XML Dump
-          (hierarchy + attributes)
-                   ↓
-          [rearch_xpath_extractor.py]
-              ↓           ↓
-            ✅ Auto-generates     ✅ Builds YAML
-            rearch_locators_      locator_
-            generated.py          registry.yaml
-                   ↓
-              [YOU REVIEW]
-              ✅ Check each locator works
-              ✅ Fix TODOs manually
-              ✅ Merge into rearch_native_locators.py
-                   ↓
-          [YOU CREATE]
-          rearch_<screen>_page.py
-          (business-level methods)
-                   ↓
-          [YOU REGISTER]
-          action_registry.yaml
-          (NL pattern → method mapping)
-                   ↓
-              [test_generator.md]
-              Uses the registry to
-              convert NL steps → Python test code?"
+  - "Was there an intermediate screen between A and B?"
   - "Did the app require you to re-enter or confirm anything at that point?"
   - "What did the success screen show — just a checkmark, or a summary with amount?"
 
@@ -156,9 +79,9 @@ vocabulary in Tools/action_registry.yaml (synonyms block included).
 Flag any step where no registry pattern clearly matches — ask the user for more
 detail on that screen before proceeding to Phase 3.
 
-─────────────────────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────────────────
 PHASE 3 — NL STEP REVIEW
-─────────────────────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────────────────
 Present the derived steps using registry vocabulary (not the user's raw words).
 Format exactly as shown below so test_generator.md can consume it directly.
 
@@ -189,28 +112,27 @@ Then ask: "Do these steps match what you observed on device? Correct any step be
 WAIT for explicit user approval ("yes", "looks good", "LGTM", or corrected steps)
 before moving to Phase 4. Do NOT generate code before approval is received.
 
-─────────────────────────────────────────────────────────────────────────────────
-PHASE 4 — TEST GENERATION HAND-OFF
-─────────────────────────────────────────────────────────────────────────────────
-Once the user approves the NL steps in Phase 3, run the standard test_generator.md
-5-step workflow using those approved steps as the INPUT.
+─────────────────────────────────────────────────────────────────────────────
+PHASE 4 — HAND-OFF TO ORCHESTRATOR
+─────────────────────────────────────────────────────────────────────────────
+Once the user approves the NL steps in Phase 3, return the approved steps to
+orchestrator.md. Do NOT run test_generator.md directly from here — orchestrator
+owns the handoff.
 
-Carry forward from Phase 1:
-  - Pre-setup answers → org_settings_update preconditions (see test_preconditions.md)
-  - Bank/acquirer/issuer → used in testcase_id suffix and file name
-  - Validation fields confirmed in Phase 3 → app validation assertions
+Return to orchestrator with:
+  - The approved numbered NL steps (Phase 3 output)
+  - Pre-flight context (from Phase 1):
+      payment_method  → file name suffix (e.g. _PM_Card_)
+      scenario        → flow name (Success / Failure / etc.)
+      bank_acquirer   → variant suffix (e.g. _HDFC_01)
+      pre_setup       → org_settings precondition key (see PRECONDITION MAPPING below)
 
-Verification checklist (from test_generator.md Step 5) MUST pass before presenting
-the generated file to the user:
-  1. python -m py_compile <generated_file>          (no syntax errors)
-  2. grep "initialize_app_driver" <generated_file>  (must be empty)
-  3. grep "By\.CSS_SELECTOR" <generated_file>       (must be empty)
-  4. grep "appium_driver" <generated_file>           (must be empty)
-  5. grep "validateAgainstDB\|validateAgainstPortal" <generated_file>  (must be empty)
+Orchestrator will then proceed as Intent A → read test_generator.md with the
+approved steps as INPUT. The Step-5 verification gate is owned by orchestrator.
 
-─────────────────────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────────────────
 PRECONDITION MAPPING (Phase 1 Q5 → org_settings_update key)
-─────────────────────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────────────────
 Pre-setup answer                    → Precondition key
 "enabled cash"                      → cashEnabled = true
 "disabled cash"                     → cashEnabled = false
@@ -222,18 +144,18 @@ Pre-setup answer                    → Precondition key
 See .claude/skills/test_preconditions.md for the full key table and revert template.
 Always revert preconditions in the finally block.
 
-─────────────────────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────────────────
 MULTI-SCENARIO SESSIONS
-─────────────────────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────────────────
 If the user ran through more than one flow in the same device session:
-- Complete Phases 1–3 for scenario A, get approval, generate test A.
+- Complete Phases 1–3 for scenario A, get approval, hand off to orchestrator for test A.
 - Then ask: "Ready to capture the next scenario?" and restart from Phase 1.
 - Each scenario produces one independent test file.
 - Do NOT batch multiple scenarios into a single test method.
 
-─────────────────────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────────────────
 VALIDATION FIELDS REFERENCE
-─────────────────────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────────────────
 Common fields visible on ReArch txn detail screen (confirm with user in Phase 2):
   payment_id    → non-empty string assertion
   status        → "Captured" / "Failed" / "Refunded"

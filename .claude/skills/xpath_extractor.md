@@ -1,3 +1,10 @@
+---
+version: 1.0.0
+last-updated: 2026-03-25
+status: active
+invoked-by: orchestrator.md (Intent C)
+---
+
 ROLE
 You extract native UI locators from the ReArch Android app using uiautomator XML dumps.
 

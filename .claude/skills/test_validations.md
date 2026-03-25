@@ -1,3 +1,10 @@
+---
+version: 1.1.0
+last-updated: 2026-03-25
+status: active
+invoked-by: test_generator.md (pattern library — not chained directly)
+---
+
 ## ReArch Test Validations
 
 ### Allowed Validation Types (ReArch ONLY)

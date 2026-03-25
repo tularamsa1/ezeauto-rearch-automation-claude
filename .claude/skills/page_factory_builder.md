@@ -1,3 +1,10 @@
+---
+version: 1.0.0
+last-updated: 2026-03-25
+status: active
+invoked-by: orchestrator.md (Intent C and D)
+---
+
 ROLE
 You build and extend the ReArch PageFactory when new screens are captured
 or when existing page objects need new methods.

@@ -197,6 +197,11 @@ actions:
     page: ReArchHomePage
     method: click_pay_by_card
     code: "home_page.click_pay_by_card()"
+    preconditions:
+      org_settings:
+        cardEnabled: "true"
+      revert_on_finally:
+        cardEnabled: "false"
 
   - patterns:
       - "click add tip"
@@ -337,6 +342,11 @@ actions:
     page: ReArchPaymentMethodPage
     method: click_card
     code: "payment_method_page.click_card()"
+    preconditions:
+      org_settings:
+        cardEnabled: "true"
+      revert_on_finally:
+        cardEnabled: "false"
 
   - patterns:
       - "select payment link"

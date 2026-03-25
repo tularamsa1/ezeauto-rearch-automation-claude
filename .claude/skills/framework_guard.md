@@ -1,3 +1,10 @@
+---
+version: 1.0.0
+last-updated: 2026-03-25
+status: active
+invoked-by: always in context (not chained — enforced on all tasks)
+---
+
 CRITICAL RULE
 Never break the existing automation framework.
 
