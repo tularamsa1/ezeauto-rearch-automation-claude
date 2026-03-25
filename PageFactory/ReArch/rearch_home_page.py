@@ -68,6 +68,11 @@ class ReArchHomePage(ReArchNativeBasePage):
         self.perform_click(HomeAmountLocators.btn_upi)
         logger.info("Clicked UPI payment button.")
 
+    def click_more_payment_options(self):
+        """Tap the ⋯ button beside UPI to open the full payment method overlay."""
+        self.perform_click(HomeAmountLocators.btn_more_payment_options)
+        logger.info("Clicked More Payment Options (⋯) button.")
+
     def click_pay_by_cash(self):
         """Click Cash on the home screen (triggers payment method overlay if not directly visible)."""
         from PageFactory.ReArch.rearch_native_locators import PaymentMethodLocators

@@ -52,3 +52,15 @@ Preserve existing reports:
 
 Keep directory structure:
 Reports/ExecutionDate_[DATE]/ExecutionTime_[TIME]/[ReportType]/
+
+7. REARCH APP VALIDATION — DATE FORMAT
+Use `date_time_converter.to_rearch_app_format(created_time)` for the expected date
+in ReArch App Validation.
+NEVER use `date_time_converter.to_app_format()` for ReArch tests — that is for the
+old mpos app and produces the wrong format.
+
+8. REARCH TXNDETAIL — NO wait_for_detail_page()
+NEVER call `txn_detail_page.wait_for_detail_page()` in ReArch tests.
+It fails in practice. Every `fetch_*` method (fetch_status, fetch_payment_id, etc.)
+has its own internal WebDriverWait. Navigate to the detail page and call fetch_*
+directly — no explicit wait needed.

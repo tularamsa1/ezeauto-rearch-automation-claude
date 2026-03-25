@@ -14,7 +14,7 @@ class ReArchTxnDetailPage(ReArchNativeBasePage):
     # ── Waits ─────────────────────────────────────────────────────────────────
 
     def wait_for_detail_page(self, timeout: int = 45):
-        """Wait until the detail page status field is visible."""
+        """Wait until the detail page is visible."""
         self.wait_for_element(TxnDetailLocators.lbl_status_label, timeout)
         logger.info("ReArch transaction detail page is ready.")
 
@@ -22,6 +22,9 @@ class ReArchTxnDetailPage(ReArchNativeBasePage):
 
     def fetch_status(self, amount: str) -> str:
         return self.fetch_text(TxnDetailLocators.field_value_by_amount(amount))
+
+    def fetch_amount(self, amount: str) -> str:
+        return self.fetch_text(TxnDetailLocators.lbl_amount(amount))
 
     def fetch_payment_id(self) -> str:
         return self.fetch_text(TxnDetailLocators.field_value_after("Payment ID"))
@@ -34,6 +37,10 @@ class ReArchTxnDetailPage(ReArchNativeBasePage):
 
     def fetch_date_time(self) -> str:
         return self.fetch_text(TxnDetailLocators.field_value_after("From", 2))
+
+    def fetch_date_time_failure(self) -> str:
+        """Use for failure/cancel flows — only 'From' label present (no 'To' range)."""
+        return self.fetch_text(TxnDetailLocators.field_value_after("From", 1))
 
     def fetch_payment_mode(self) -> str:
         return self.fetch_text(TxnDetailLocators.field_value_after("Payment Mode"))

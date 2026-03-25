@@ -45,7 +45,14 @@ Confirm with the user ("Does this look right?") then move to Phase 2.
 ─────────────────────────────────────────────────────────────────────────────────
 PHASE 2 — SCREEN-BY-SCREEN CAPTURE
 ─────────────────────────────────────────────────────────────────────────────────
-Ask the user to narrate what they did on device, one screen at a time.
+MANDATORY — never skip this phase, even if pre-flight answers seem detailed enough.
+Pre-flight answers describe intent; Phase 2 captures what actually happened on device.
+Skipping Phase 2 leads to missed wait states, intermediate screens, and wrong step ordering.
+
+Open with this exact prompt:
+  "Now walk me through each screen you saw on device, one at a time — starting from
+   the moment you launched the app. Describe what was visible and what you tapped."
+
 For each screen the user describes, ask 1–2 targeted follow-up questions if anything
 is ambiguous. Keep follow-ups short and precise.
 

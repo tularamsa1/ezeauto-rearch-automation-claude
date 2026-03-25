@@ -168,6 +168,16 @@ actions:
     code: "home_page.clear_amount()"
 
   - patterns:
+      - "click more payment options"
+      - "tap more payment options"
+      - "click overlay button"
+      - "tap ellipsis"
+    page: ReArchHomePage
+    method: click_more_payment_options
+    code: "home_page.click_more_payment_options()"
+    description: "Tap the ⋯ button beside UPI to open the full payment method overlay"
+
+  - patterns:
       - "click upi"
       - "select upi"
       - "pay by upi"

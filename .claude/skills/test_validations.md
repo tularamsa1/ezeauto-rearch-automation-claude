@@ -35,10 +35,17 @@ These assertions go in the App Validation section AFTER any user-specified asser
 
 ### Full App Validation Pattern
 
+> **ReArch date format rule:** Always use `date_time_converter.to_rearch_app_format(created_time)`
+> — NOT `to_app_format()`. The ReArch app displays dates in a different format than mpos.
+
+> **`wait_for_detail_page()` is BANNED in ReArch tests.** It fails in practice because the
+> detail page locator it polls is unreliable. Each `fetch_*` method already has its own
+> `WebDriverWait` internally. Do NOT call `wait_for_detail_page()` — ever.
+
 ```python
 if ConfigReader.read_config("Validations", "app_validation") == "True":
     try:
-        date_and_time = date_time_converter.to_app_format(created_time)
+        date_and_time = date_time_converter.to_rearch_app_format(created_time)  # NOT to_app_format()
         expected_app_values = {
             "pmt_status":    "Payment Successful",
             "pmt_mode":      "UPI",          # or Cash, Card, etc.
@@ -57,7 +64,8 @@ if ConfigReader.read_config("Validations", "app_validation") == "True":
         txn_history_page.click_first_transaction()
 
         txn_detail_page = ReArchTxnDetailPage(app_driver)
-        txn_detail_page.wait_for_detail_page()
+        # DO NOT call txn_detail_page.wait_for_detail_page() — it fails in practice.
+        # Each fetch_* method has its own WebDriverWait. Go straight to fetching fields.
 
         actual_app_values = {
             "pmt_status":    payment_status_ui,

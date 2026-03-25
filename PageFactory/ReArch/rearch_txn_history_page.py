@@ -45,11 +45,11 @@ class ReArchTxnHistoryPage(ReArchNativeBasePage):
         self.perform_click(locator)
         logger.info(f"Clicked transaction with status: {status}")
 
-    def click_first_transaction(self):
-        """Click the first transaction row visible on the page."""
-        locator = TxnHistoryLocators.txn_row_by_status("")
-        self.perform_click(locator)
-        logger.info("Clicked first transaction row.")
+    # def click_first_transaction(self):
+    #     """Click the first transaction row visible on the page."""
+    #     locator = TxnHistoryLocators.txn_row_by_status("")
+    #     self.perform_click(locator)
+    #     logger.info("Clicked first transaction row.")
 
     def click_on_transaction_by_txn_id(self, txn_id: str):
         """Search by Payment ID and open the matching transaction.

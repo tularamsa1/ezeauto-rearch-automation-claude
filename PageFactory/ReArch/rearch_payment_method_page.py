@@ -48,6 +48,7 @@ class ReArchPaymentMethodPage(ReArchNativeBasePage):
         logger.info("Selected Pre Auth from payment methods.")
 
     def click_bharat_qr(self):
+        self.scroll_to_text("Bharat QR")
         self.perform_click(PaymentMethodLocators.btn_bharat_qr)
         logger.info("Selected Bharat QR from payment methods.")
 

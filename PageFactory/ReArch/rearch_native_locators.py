@@ -76,6 +76,7 @@ class HomeAmountLocators:
     # Payment method buttons (visible directly on home page)
     btn_card               = (AppiumBy.XPATH, "//android.widget.Button[@text='Card']")
     btn_upi                = (AppiumBy.XPATH, "//android.widget.Button[@text='UPI']")
+    btn_more_payment_options = (AppiumBy.XPATH, "//android.widget.Button[@text='UPI']/following-sibling::android.widget.Button[1]")
     btn_add_tip            = (AppiumBy.XPATH, "//android.widget.Button[@text='Add Tip']")
 
     # Header navigation — TODO: needs stable locators (no text/id on icon-only buttons)
@@ -262,6 +263,11 @@ class TxnDetailLocators:
         """Get the status value that is an immediate sibling of the given amount."""
         return (AppiumBy.XPATH,
                 f"//android.widget.TextView[@text='{amount}']/following-sibling::android.widget.TextView[1]")
+
+    @staticmethod
+    def lbl_amount(amount: str):
+        """Locate the amount TextView on the detail page by its displayed text."""
+        return (AppiumBy.XPATH, f"//android.widget.TextView[@text='{amount}']")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
