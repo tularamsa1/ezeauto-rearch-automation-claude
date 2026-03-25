@@ -42,7 +42,7 @@ class ReArchQRPage(ReArchNativeBasePage):
 
     def initiate_cancel_payment(self):
         """Press the device back button to trigger the cancel confirmation dialog."""
-        self.go_back()
+        self.perform_click(QRPaymentLocators.btn_back)
         logger.info("Triggered payment cancel via back navigation.")
 
     def confirm_cancel_payment(self):

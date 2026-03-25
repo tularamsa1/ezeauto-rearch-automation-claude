@@ -20,8 +20,8 @@ class ReArchTxnDetailPage(ReArchNativeBasePage):
 
     # ── Field fetchers (using the dynamic following-sibling locator) ──────────
 
-    def fetch_status(self) -> str:
-        return self.fetch_text(TxnDetailLocators.field_value_after("Status"))
+    def fetch_status(self, amount: str) -> str:
+        return self.fetch_text(TxnDetailLocators.field_value_by_amount(amount))
 
     def fetch_payment_id(self) -> str:
         return self.fetch_text(TxnDetailLocators.field_value_after("Payment ID"))
@@ -33,7 +33,7 @@ class ReArchTxnDetailPage(ReArchNativeBasePage):
         return self.fetch_text(TxnDetailLocators.field_value_after("Auth Code"))
 
     def fetch_date_time(self) -> str:
-        return self.fetch_text(TxnDetailLocators.field_value_after("Date & Time"))
+        return self.fetch_text(TxnDetailLocators.field_value_after("From", 2))
 
     def fetch_payment_mode(self) -> str:
         return self.fetch_text(TxnDetailLocators.field_value_after("Payment Mode"))

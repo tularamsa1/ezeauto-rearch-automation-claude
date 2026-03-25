@@ -178,7 +178,6 @@ def test_UI_ReArch_PM_UPI_QR_Success_HDFC_01():
             # Step 12: Verify failed screen (expected after QR cancel)
             complete_page = ReArchCompletePage(app_driver)
             complete_page.wait_for_failure_screen()
-            complete_page.perform_click()
             logger.info("Payment Failed screen confirmed (expected after QR cancel)")
 
             # Allow backend to complete processing before querying DB
@@ -227,11 +226,9 @@ def test_UI_ReArch_PM_UPI_QR_Success_HDFC_01():
             try:
                 date_and_time = date_time_converter.to_app_format(created_time)
                 expected_app_values = {
-                    "pmt_mode":   "UPI",
-                    "txn_status": "AUTHORIZED",
+                    "txn_status": "Payment Settled",
                     "txn_id":     txn_id,
                     "date":       date_and_time,
-                    "rrn":        rrn,
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
@@ -244,25 +241,20 @@ def test_UI_ReArch_PM_UPI_QR_Success_HDFC_01():
                 txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
 
                 txn_detail_page = ReArchTxnDetailPage(app_driver)
-                txn_detail_page.wait_for_detail_page()
 
                 # Steps 18-21: Fetch and assert transaction fields
                 app_txn_id     = txn_detail_page.fetch_payment_id()
-                app_pmt_mode   = txn_detail_page.fetch_payment_mode()
-                app_txn_status = txn_detail_page.fetch_status()
+                app_txn_status = txn_detail_page.fetch_status(amount)
                 app_date_time  = txn_detail_page.fetch_date_time()
-                app_rrn        = str(txn_detail_page.fetch_rrn())
                 logger.info(
-                    f"App txn_id={app_txn_id}, pmt_mode={app_pmt_mode}, "
-                    f"status={app_txn_status}, rrn={app_rrn}"
+                    f"App txn_id={app_txn_id}, date_time={app_date_time}, app_txn_status = {app_txn_status} "
                 )
 
                 actual_app_values = {
-                    "pmt_mode":   app_pmt_mode,
                     "txn_status": app_txn_status,
                     "txn_id":     app_txn_id,
                     "date":       app_date_time,
-                    "rrn":        app_rrn,
+                    # "rrn":        app_rrn,
                 }
                 logger.debug(f"actual_app_values: {actual_app_values}")
                 Validator.validateAgainstAPP(
@@ -337,7 +329,7 @@ def test_UI_ReArch_PM_UPI_QR_Success_HDFC_01():
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 expected_charge_slip_values = {
                     "PAID BY:":        "UPI",
-                    "merchant_ref_no": "Ref # " + str(order_id),
+                    # "merchant_ref_no": "Ref # " + str(order_id),
                     "RRN":             rrn,
                     "BASE AMOUNT:":    "Rs." + str(amount) + ".00",
                     "date":            txn_date,

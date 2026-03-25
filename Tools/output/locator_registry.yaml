@@ -1,47 +1,316 @@
-package: com.razorpay.pos
-generated_at: 2026-03-13 16:00
+metadata:
+  package: com.razorpay.pos
+  app_version: unknown
+  captured_at: '2026-03-24T17:57:57'
 screens:
-  catalog:
-    source_xml: catalog.xml
-    captured_at: 2026-03-12 18:56
-    element_count: 7
+  cardDetails:
+    source_xml: cardDetails.xml
+    captured_at: 2026-03-24 17:57
+    element_count: 49
     elements:
       lbl_view:
-        by: AppiumBy.XPATH
-        value: //android.view.View[@index='0']
-        type: action
+        by: TODO
+        value: no resource-id or text; class=android.view.View index=0
+        type: unknown
         android_class: android.view.View
+        needs_annotation: true
+      lbl_please_enter_pin_to_proceed_with_payment:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='Please enter PIN to proceed with payment']
+        type: label
+        android_class: android.widget.TextView
+        text: Please enter PIN to proceed with payment
+      lbl_textview:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='₹']
+        type: label
+        android_class: android.widget.TextView
+        text: ₹
+      lbl_96:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='96']
+        type: label
+        android_class: android.widget.TextView
+        text: '96'
+      lbl_enter_pin:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='Enter PIN']
+        type: label
+        android_class: android.widget.TextView
+        text: Enter PIN
+      btn_0:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='0']
+        type: action
+        android_class: android.widget.Button
+        text: '0'
+      btn_1:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='1']
+        type: action
+        android_class: android.widget.Button
+        text: '1'
+      btn_2:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='2']
+        type: action
+        android_class: android.widget.Button
+        text: '2'
+      btn_3:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='3']
+        type: action
+        android_class: android.widget.Button
+        text: '3'
+      btn_4:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='4']
+        type: action
+        android_class: android.widget.Button
+        text: '4'
+      btn_5:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='5']
+        type: action
+        android_class: android.widget.Button
+        text: '5'
+      btn_6:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='6']
+        type: action
+        android_class: android.widget.Button
+        text: '6'
+      btn_7:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='7']
+        type: action
+        android_class: android.widget.Button
+        text: '7'
+      btn_8:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='8']
+        type: action
+        android_class: android.widget.Button
+        text: '8'
+      btn_button:
+        by: TODO
+        value: no resource-id or text; class=android.widget.Button index=11
+        type: unknown
+        android_class: android.widget.Button
+        needs_annotation: true
+      btn_9:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='9']
+        type: action
+        android_class: android.widget.Button
+        text: '9'
+      btn_button_2:
+        by: TODO
+        value: no resource-id or text; class=android.widget.Button index=13
+        type: unknown
+        android_class: android.widget.Button
+        needs_annotation: true
       lbl_page:
         by: AppiumBy.ID
         value: page
         type: label
         android_class: android.view.View
-      btn_button:
-        by: AppiumBy.XPATH
-        value: //android.widget.Button[@index='0']
-        type: action
+      btn_button_3:
+        by: TODO
+        value: no resource-id or text; class=android.widget.Button index=0
+        type: unknown
         android_class: android.widget.Button
-      lbl_catalog:
+        needs_annotation: true
+      lbl_payment_amount:
         by: AppiumBy.XPATH
-        value: //android.widget.TextView[@text='Catalog']
+        value: //android.widget.TextView[@text='Payment Amount']
         type: label
         android_class: android.widget.TextView
-        text: Catalog
-      btn_search_for_products:
+        text: Payment Amount
+      lbl_textview_2:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='Search for products...']
-        type: action
-        android_class: android.widget.Button
-        text: Search for products...
-      lbl_brands:
-        by: AppiumBy.XPATH
-        value: //android.widget.TextView[@text='Brands']
+        value: //android.widget.TextView[@text='₹']
         type: label
         android_class: android.widget.TextView
-        text: Brands
-      btn_brandui_brandui:
+        text: ₹
+      lbl_96_2:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='BRAND_UI BRAND_UI']
+        value: //android.widget.TextView[@text='96']
+        type: label
+        android_class: android.widget.TextView
+        text: '96'
+      lbl_select_test_card:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='Select Test Card']
+        type: label
+        android_class: android.widget.TextView
+        text: Select Test Card
+      btn_visa_debit_emv_visa_debit:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Visa Debit (EMV) VISA Debit']
         type: action
         android_class: android.widget.Button
-        text: BRAND_UI BRAND_UI
+        text: Visa Debit (EMV) VISA Debit
+      btn_visa_debit_with_pin_emv_visa_debit:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Visa Debit with PIN (EMV) VISA Debit']
+        type: action
+        android_class: android.widget.Button
+        text: Visa Debit with PIN (EMV) VISA Debit
+      btn_visa_debit_contactless_visa_debit:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Visa Debit (Contactless) VISA Debit']
+        type: action
+        android_class: android.widget.Button
+        text: Visa Debit (Contactless) VISA Debit
+      btn_visa_debit_with_pin_contactless_visa_deb:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Visa Debit with PIN (Contactless) VISA
+          Debit']
+        type: action
+        android_class: android.widget.Button
+        text: Visa Debit with PIN (Contactless) VISA Debit
+      btn_visa_credit_emv_visa_credit:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Visa Credit (EMV) VISA Credit']
+        type: action
+        android_class: android.widget.Button
+        text: Visa Credit (EMV) VISA Credit
+      btn_visa_credit_with_pin_emv_visa_credit:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Visa Credit with PIN (EMV) VISA Credit']
+        type: action
+        android_class: android.widget.Button
+        text: Visa Credit with PIN (EMV) VISA Credit
+      btn_visa_credit_contactless_visa_credit:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Visa Credit (Contactless) VISA Credit']
+        type: action
+        android_class: android.widget.Button
+        text: Visa Credit (Contactless) VISA Credit
+      btn_mastercard_debit_emv_master_debit:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='MasterCard Debit (EMV) MASTER Debit']
+        type: action
+        android_class: android.widget.Button
+        text: MasterCard Debit (EMV) MASTER Debit
+      btn_mastercard_debit_contactless_master_debi:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='MasterCard Debit (Contactless) MASTER
+          Debit']
+        type: action
+        android_class: android.widget.Button
+        text: MasterCard Debit (Contactless) MASTER Debit
+      btn_mastercard_debit_with_pin_contactless_ma:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='MasterCard Debit with PIN (Contactless)
+          MASTER Debit']
+        type: action
+        android_class: android.widget.Button
+        text: MasterCard Debit with PIN (Contactless) MASTER Debit
+      btn_mastercard_credit_emv_master_credit:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='MasterCard Credit (EMV) MASTER Credit']
+        type: action
+        android_class: android.widget.Button
+        text: MasterCard Credit (EMV) MASTER Credit
+      btn_mastercard_credit_with_pin_emv_master_cr:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='MasterCard Credit with PIN (EMV) MASTER
+          Credit']
+        type: action
+        android_class: android.widget.Button
+        text: MasterCard Credit with PIN (EMV) MASTER Credit
+      btn_mastercard_credit_contactless_master_cre:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='MasterCard Credit (Contactless) MASTER
+          Credit']
+        type: action
+        android_class: android.widget.Button
+        text: MasterCard Credit (Contactless) MASTER Credit
+      btn_mastercard_credit_with_pin_contactless_m:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='MasterCard Credit with PIN (Contactless)
+          MASTER Credit']
+        type: action
+        android_class: android.widget.Button
+        text: MasterCard Credit with PIN (Contactless) MASTER Credit
+      btn_rupay_debit_emv_rupay_debit:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='RuPay Debit (EMV) RUPAY Debit']
+        type: action
+        android_class: android.widget.Button
+        text: RuPay Debit (EMV) RUPAY Debit
+      btn_rupay_debit_with_pin_emv_rupay_debit:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='RuPay Debit with PIN (EMV) RUPAY Debit']
+        type: action
+        android_class: android.widget.Button
+        text: RuPay Debit with PIN (EMV) RUPAY Debit
+      btn_rupay_prepaid_contactless_rupay_prepaid:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='RuPay Prepaid (Contactless) RUPAY Prepaid']
+        type: action
+        android_class: android.widget.Button
+        text: RuPay Prepaid (Contactless) RUPAY Prepaid
+      btn_rupay_prepaid_with_pin_contactless_rupay:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='RuPay Prepaid with PIN (Contactless)
+          RUPAY Prepaid']
+        type: action
+        android_class: android.widget.Button
+        text: RuPay Prepaid with PIN (Contactless) RUPAY Prepaid
+      btn_visa_credit_gbp_contactless_visa_credit_:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Visa Credit GBP (Contactless) VISA Credit
+          • GBP']
+        type: action
+        android_class: android.widget.Button
+        text: Visa Credit GBP (Contactless) VISA Credit • GBP
+      btn_mastercard_kwd_emv_master_debit_kwd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='MasterCard KWD (EMV) MASTER Debit •
+          KWD']
+        type: action
+        android_class: android.widget.Button
+        text: MasterCard KWD (EMV) MASTER Debit • KWD
+      btn_mastercard_jpy_emv_master_debit_jpy:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='MasterCard JPY (EMV) MASTER Debit •
+          JPY']
+        type: action
+        android_class: android.widget.Button
+        text: MasterCard JPY (EMV) MASTER Debit • JPY
+      btn_visa_bhd_emv_visa_debit_bhd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Visa BHD (EMV) VISA Debit • BHD']
+        type: action
+        android_class: android.widget.Button
+        text: Visa BHD (EMV) VISA Debit • BHD
+      btn_mastercard_usd_contactless_master_debit_:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='MasterCard USD (Contactless) MASTER
+          Debit • USD']
+        type: action
+        android_class: android.widget.Button
+        text: MasterCard USD (Contactless) MASTER Debit • USD
+      btn_mastercard_bhd_emv_master_debit_bhd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='MasterCard BHD (EMV) MASTER Debit •
+          BHD']
+        type: action
+        android_class: android.widget.Button
+        text: MasterCard BHD (EMV) MASTER Debit • BHD
+      btn_visa_jpy_emv_visa_debit_jpy:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Visa JPY (EMV) VISA Debit • JPY']
+        type: action
+        android_class: android.widget.Button
+        text: Visa JPY (EMV) VISA Debit • JPY
+      btn_visa_jpy_contactless_visa_credit_jpy:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Visa JPY (Contactless) VISA Credit •
+          JPY']
+        type: action
+        android_class: android.widget.Button
+        text: Visa JPY (Contactless) VISA Credit • JPY

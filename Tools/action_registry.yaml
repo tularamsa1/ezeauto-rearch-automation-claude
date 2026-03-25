@@ -54,6 +54,9 @@ page_objects:
   ReArchOrderDetailsPage:
     import: "from PageFactory.ReArch.rearch_order_details_page import ReArchOrderDetailsPage"
     init: "order_details_page = ReArchOrderDetailsPage(driver)"
+  ReArchCardTypePage:
+    import: "from PageFactory.ReArch.rearch_card_type_page import ReArchCardTypePage"
+    init: "card_type_page = ReArchCardTypePage(driver)"
 
 actions:
 
@@ -388,6 +391,64 @@ actions:
     page: ReArchCashConfirmPage
     method: wait_and_confirm_cash_payment
     code: "cash_confirm_page.wait_and_confirm_cash_payment()"
+
+  # ── Card type selection screen ────────────────────────────────────────────
+
+  - patterns:
+      - "wait for card type screen"
+      - "card type selection screen displayed"
+      - "verify card type selection screen"
+    page: ReArchCardTypePage
+    method: wait_for_card_type_screen
+    code: "card_type_page.wait_for_card_type_screen()"
+    description: "Wait for the card type selection (DUMMY simulator) screen to appear"
+
+  - patterns:
+      - "select card type {card_name}"
+      - "click card type {card_name}"
+      - "choose card type {card_name}"
+    page: ReArchCardTypePage
+    method: select_card_type
+    params: [card_name]
+    code: "card_type_page.select_card_type(\"{card_name}\")"
+    description: "Select a specific card type by display name (e.g. 'Visa Debit (EMV)')"
+
+  - patterns:
+      - "select visa debit emv"
+      - "click visa debit emv"
+      - "choose visa debit emv"
+    page: ReArchCardTypePage
+    method: click_visa_debit_emv
+    code: "card_type_page.click_visa_debit_emv()"
+    description: "Select Visa Debit (EMV) from the card type list"
+
+  - patterns:
+      - "select visa debit contactless"
+      - "click visa debit contactless"
+    page: ReArchCardTypePage
+    method: click_visa_debit_contactless
+    code: "card_type_page.click_visa_debit_contactless()"
+
+  - patterns:
+      - "select visa credit emv"
+      - "click visa credit emv"
+    page: ReArchCardTypePage
+    method: click_visa_credit_emv
+    code: "card_type_page.click_visa_credit_emv()"
+
+  - patterns:
+      - "select mastercard debit emv"
+      - "click mastercard debit emv"
+    page: ReArchCardTypePage
+    method: click_mastercard_debit_emv
+    code: "card_type_page.click_mastercard_debit_emv()"
+
+  - patterns:
+      - "select rupay debit emv"
+      - "click rupay debit emv"
+    page: ReArchCardTypePage
+    method: click_rupay_debit_emv
+    code: "card_type_page.click_rupay_debit_emv()"
 
   # ── QR / UPI payment screen ────────────────────────────────────────────
 

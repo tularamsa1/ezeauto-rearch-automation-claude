@@ -142,6 +142,21 @@ class CashConfirmLocators:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# CARD TYPE SELECTION SCREEN (DUMMY / test simulator)
+# ══════════════════════════════════════════════════════════════════════════════
+
+class CardTypeSelectionLocators:
+    lbl_select_test_card   = (AppiumBy.XPATH, "//android.widget.TextView[@text='Select Test Card']")
+    lbl_payment_amount     = (AppiumBy.XPATH, "//android.widget.TextView[@text='Payment Amount']")
+    btn_back               = (AppiumBy.XPATH, '//android.view.View[@resource-id="page"]/android.view.View[1]/android.view.View/android.widget.Button')
+
+    @staticmethod
+    def card_type_btn(card_name: str):
+        """Locate a card type button by its display name prefix (e.g. 'Visa Debit (EMV)')."""
+        return (AppiumBy.XPATH, f"//android.widget.Button[starts-with(@text,'{card_name}')]")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # PAYMENT SUCCESS SCREEN
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -210,6 +225,8 @@ class TxnSearchLocators:
     btn_auth_code          = (AppiumBy.XPATH, "//android.widget.Button[@text='Auth Code']")
     txt_search_input       = (AppiumBy.XPATH, "//android.widget.EditText[@index='3']")  # TODO: needs stable locator
     btn_back               = (AppiumBy.XPATH, "//android.widget.Button[@index='0']")  # TODO: needs stable locator
+    txn_row = (AppiumBy.XPATH,
+               "(//*[@class='android.widget.Button'][2])[2]")  # TODO: index-based locator — needs stable resource-id or @text
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -235,10 +252,16 @@ class TxnDetailLocators:
     btn_send_receipt       = (AppiumBy.XPATH, "//android.widget.Button[@text='Send E-Receipt']")
 
     @staticmethod
-    def field_value_after(label_text: str):
+    def field_value_after(label_text: str, sibling_index: int = 1):
         """Get the value TextView that follows a label TextView."""
         return (AppiumBy.XPATH,
-                f"//android.widget.TextView[@text='{label_text}']/following-sibling::android.widget.TextView[1]")
+                f"//android.widget.TextView[@text='{label_text}']/following-sibling::android.widget.TextView[{sibling_index}]")
+
+    @staticmethod
+    def field_value_by_amount(amount: str):
+        """Get the status value that is an immediate sibling of the given amount."""
+        return (AppiumBy.XPATH,
+                f"//android.widget.TextView[@text='{amount}']/following-sibling::android.widget.TextView[1]")
 
 
 # ══════════════════════════════════════════════════════════════════════════════

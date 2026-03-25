@@ -13,11 +13,8 @@ logger = EzeAutoLogger(__name__)
 # From below use only the markers that are applicable for the test case and remove the rest.
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
-@pytest.mark.dbVal
-@pytest.mark.portalVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-@pytest.mark.uiVal
 def test_sub_feature_code():  # Make sure to add the test case name as same as the sub feature code.
     """
     Sub Feature Code: write the sub feature code here

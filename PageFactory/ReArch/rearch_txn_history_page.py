@@ -60,10 +60,11 @@ class ReArchTxnHistoryPage(ReArchNativeBasePage):
         # self.wait_for_element(TxnSearchLocators.lbl_search)
         self.perform_click(TxnSearchLocators.txt_search_input)
         self.perform_sendkeys(TxnSearchLocators.txt_search_input, txn_id)
+        self.driver.press_keycode(66)   # Android Enter/Search key
 
-        txn_row = (AppiumBy.XPATH, f"//android.widget.Button[contains(@text,'{txn_id}')]")
-        self.wait_for_element(txn_row, timeout=15)
-        self.perform_click(txn_row)
+
+        self.wait_for_element(TxnSearchLocators.txn_row)
+        self.perform_click(TxnSearchLocators.txn_row)
         logger.info(f"Opened transaction with txn_id: {txn_id}")
 
     # ── Navigation ────────────────────────────────────────────────────────────
