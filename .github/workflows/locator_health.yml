@@ -1,0 +1,82 @@
+name: Locator Health Check
+
+on:
+  schedule:
+    # Every Monday at 09:00 UTC
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Reason for manual trigger"
+        required: false
+        default: "Manual validation run"
+
+jobs:
+  validate-registry:
+    name: Validate action_registry.yaml code snippets
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml appium-python-client selenium
+
+      - name: Run registry validation
+        run: |
+          python Tools/validate_registry.py
+
+      - name: Check for banned patterns in ReArch tests
+        run: |
+          echo "--- Checking for initialize_app_driver in ReArch tests ---"
+          if grep -rn "initialize_app_driver" TestCases/Functional/UI/ReArch/; then
+            echo "FAIL: initialize_app_driver found in ReArch tests. Use initialize_rearch_driver."
+            exit 1
+          fi
+          echo "PASS: No initialize_app_driver found."
+
+          echo "--- Checking for CSS selectors in ReArch tests ---"
+          if grep -rn "By\.CSS_SELECTOR" TestCases/Functional/UI/ReArch/; then
+            echo "FAIL: By.CSS_SELECTOR found in ReArch tests. Use AppiumBy locators only."
+            exit 1
+          fi
+          echo "PASS: No CSS selectors found."
+
+          echo "--- Checking for wrong global variable name ---"
+          if grep -rn "GlobalVariables\.appium_driver" TestCases/Functional/UI/ReArch/; then
+            echo "FAIL: GlobalVariables.appium_driver does not exist. Use initialize_rearch_driver return value."
+            exit 1
+          fi
+          echo "PASS: No GlobalVariables.appium_driver found."
+
+          echo "--- Checking for forbidden DB/Portal validations in ReArch tests ---"
+          if grep -rn "validateAgainstDB\|validateAgainstPortal" TestCases/Functional/UI/ReArch/; then
+            echo "FAIL: DB/Portal validation found in ReArch tests. Only App and API validations are allowed."
+            exit 1
+          fi
+          echo "PASS: No DB/Portal validations found in ReArch tests."
+
+      - name: Check syntax of ReArch test files
+        run: |
+          echo "--- Syntax-checking ReArch test files ---"
+          FAIL=0
+          for f in $(find TestCases/Functional/UI/ReArch/ -name "*.py"); do
+            python -m py_compile "$f" && echo "  OK  $f" || { echo "  FAIL $f"; FAIL=1; }
+          done
+          exit $FAIL
+
+      - name: Check for stale index-based locators
+        run: |
+          echo "--- Checking for @index locators in native locators file ---"
+          if grep -n "@index=" PageFactory/ReArch/rearch_native_locators.py; then
+            echo "WARN: @index locators found — these are fragile and should be replaced."
+          else
+            echo "PASS: No @index locators found."
+          fi
