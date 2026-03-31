@@ -26,7 +26,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_02():
+def test_common_rearch_0004():
     """
     Sub Feature Code: UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY
     Sub Feature Description:
@@ -164,7 +164,7 @@ def test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_02():
             query = (
                 f"select id, created_time, posting_date, rr_number, auth_code "
                 f"from txn "
-                f"where org_code='{org_code}' "
+                f"where org_code='{org_code}' AND username='{app_username}' "
                 f"AND payment_mode='CARD' "
                 f"order by created_time desc limit 1;"
             )
@@ -266,6 +266,9 @@ def test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_02():
                     "org_code":      org_code,
                     "rrn":           rrn,
                     "date":          date,
+                    "pmt_card_brand": "VISA",
+                    "pmt_card_type":  "DEBIT",
+                    "card_txn_type":  "EMV",
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -295,6 +298,9 @@ def test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_02():
                     "date":          date_time_converter.from_api_to_datetime_format(
                                          txn_data["createdTime"]
                                      ),
+                    "pmt_card_brand": txn_data["paymentCardBrand"],
+                    "pmt_card_type":  txn_data["paymentCardType"],
+                    "card_txn_type":  txn_data["cardTxnTypeDesc"],
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(
@@ -333,15 +339,4 @@ def test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_02():
         logger.info(f"Completed Validation for the test case: {testcase_id}")
 
     finally:
-        try:
-            api_details = DBProcessor.get_api_details('org_settings_update', request_body={
-                "username": portal_username,
-                "password": portal_password,
-                "entityName": "org",
-                "settingForOrgCode": org_code,
-            })
-            api_details["RequestBody"]["settings"]["cardEnabled"] = "false"
-            APIProcessor.send_request(api_details=api_details)
-        except Exception as e:
-            logger.exception(f"Precondition revert failed: {e}")
         Configuration.executeFinallyBlock(testcase_id)

@@ -38,6 +38,9 @@ class ReArchTxnDetailPage(ReArchNativeBasePage):
     def fetch_date_time(self) -> str:
         return self.fetch_text(TxnDetailLocators.field_value_after("From", 2))
 
+    def fetch_date_time_bqr(self) -> str:
+        return self.fetch_text(TxnDetailLocators.field_value_after("From", 1))
+
     def fetch_date_time_failure(self) -> str:
         """Use for failure/cancel flows — only 'From' label present (no 'To' range)."""
         return self.fetch_text(TxnDetailLocators.field_value_after("From", 1))

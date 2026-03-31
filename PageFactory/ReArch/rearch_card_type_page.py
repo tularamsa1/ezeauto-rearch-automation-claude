@@ -53,6 +53,10 @@ class ReArchCardTypePage(ReArchNativeBasePage):
         """Select Visa Debit with PIN (EMV) from the card type list."""
         self.select_card_type("Visa Debit with PIN (EMV)")
 
+    def click_visa_debit_with_pin_contactless(self):
+        """Select Visa Debit with PIN (Contactless) from the card type list."""
+        self.select_card_type("Visa Debit with PIN (Contactless)")
+
     def click_visa_debit_contactless(self):
         """Select Visa Debit (Contactless) from the card type list."""
         self.select_card_type("Visa Debit (Contactless)")
@@ -62,8 +66,9 @@ class ReArchCardTypePage(ReArchNativeBasePage):
         self.select_card_type("Visa Credit (EMV)")
 
     def click_mastercard_debit_emv(self):
-        """Select MasterCard Debit (EMV) from the card type list."""
-        self.select_card_type("MasterCard Debit (EMV)")
+        """Scroll to and select MasterCard Debit (EMV) from the card type list."""
+        self.scroll_to_text("MasterCard Debit (EMV)")
+        self.perform_click(CardTypeSelectionLocators.card_type_btn("MasterCard Debit (EMV)"))
 
     def click_rupay_debit_emv(self):
         """Select RuPay Debit (EMV) from the card type list."""

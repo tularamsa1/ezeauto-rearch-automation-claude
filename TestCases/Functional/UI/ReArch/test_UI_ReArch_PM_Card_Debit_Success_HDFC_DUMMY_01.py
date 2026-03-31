@@ -26,7 +26,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_01():
+def test_common_rearch_0003():
     """
     Sub Feature Code: UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY
     Sub Feature Description:
@@ -175,7 +175,7 @@ def test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_01():
             query = (
                 f"select id, created_time, posting_date, rr_number, auth_code "
                 f"from txn "
-                f"where org_code='{org_code}' "
+                f"where org_code='{org_code}' AND username='{app_username}' "
                 f"AND payment_mode='CARD' "
                 f"order by created_time desc limit 1;"
             )
@@ -275,6 +275,9 @@ def test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_01():
                     "org_code":      org_code,
                     "rrn":           rrn,
                     "date":          date,
+                    "pmt_card_brand": "VISA",
+                    "pmt_card_type":  "DEBIT",
+                    "card_txn_type":  "EMV",
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -304,6 +307,9 @@ def test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_01():
                     "date":          date_time_converter.from_api_to_datetime_format(
                                          txn_data["createdTime"]
                                      ),
+                    "pmt_card_brand": txn_data["paymentCardBrand"],
+                    "pmt_card_type":  txn_data["paymentCardType"],
+                    "card_txn_type":  txn_data["cardTxnTypeDesc"],
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(

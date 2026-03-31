@@ -151,6 +151,30 @@ if ConfigReader.read_config("Validations", "api_validation") == "True":
         Configuration.perform_api_val_exception(testcase_id, e)
 ```
 
+#### Card-Specific API Fields (REQUIRED for all Card tests)
+
+When `pmt_mode` is `"CARD"`, always add these 3 fields to **both** `expected_api_values`
+and `actual_api_values`. Omitting them means the test does not verify the card brand,
+card type, or transaction type — which are key differentiators between card variants.
+
+| Key | Expected value | API response field |
+|-----|---------------|-------------------|
+| `pmt_card_brand` | `"VISA"` / `"MASTERCARD"` / etc. | `txn_data["paymentCardBrand"]` |
+| `pmt_card_type` | `"DEBIT"` / `"CREDIT"` | `txn_data["paymentCardType"]` |
+| `card_txn_type` | `"EMV"` / `"SWIPE"` / `"CONTACTLESS"` | `txn_data["cardTxnTypeDesc"]` |
+
+```python
+# In expected_api_values — add after "rrn" and "date":
+"pmt_card_brand": "VISA",    # adjust to card brand under test
+"pmt_card_type":  "DEBIT",   # DEBIT or CREDIT
+"card_txn_type":  "EMV",     # EMV, SWIPE, CONTACTLESS, etc.
+
+# In actual_api_values — add matching entries:
+"pmt_card_brand": txn_data["paymentCardBrand"],
+"pmt_card_type":  txn_data["paymentCardType"],
+"card_txn_type":  txn_data["cardTxnTypeDesc"],
+```
+
 ---
 
 ### Charge Slip Validation Pattern

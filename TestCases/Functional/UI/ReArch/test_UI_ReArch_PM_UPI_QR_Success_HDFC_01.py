@@ -27,7 +27,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_UI_ReArch_PM_UPI_QR_Success_HDFC_01():
+def test_common_rearch_0006():
     """
     Sub Feature Code: UI_ReArch_PM_UPI_QR_Success_HDFC
     Sub Feature Description:
@@ -187,7 +187,7 @@ def test_UI_ReArch_PM_UPI_QR_Success_HDFC_01():
             query = (
                 f"select id, created_time, posting_date, rr_number "
                 f"from txn "
-                f"where org_code='{org_code}' "
+                f"where org_code='{org_code}' AND username='{app_username}' "
                 f"AND payment_mode='UPI' "
                 f"order by created_time desc limit 1;"
             )

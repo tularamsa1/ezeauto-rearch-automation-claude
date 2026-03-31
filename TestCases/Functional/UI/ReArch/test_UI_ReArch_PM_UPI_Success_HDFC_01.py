@@ -23,7 +23,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.appVal
-def test_UI_ReArch_PM_UPI_Success_HDFC_01():
+def test_common_rearch_0007():
     """
     Sub Feature Code: UI_ReArch_PM_UPI_Success_HDFC
     Sub Feature Description:
@@ -173,7 +173,7 @@ def test_UI_ReArch_PM_UPI_Success_HDFC_01():
             query = (
                 f"select id, created_time, rr_number "
                 f"from txn "
-                f"where org_code='{org_code}' "
+                f"where org_code='{org_code}' AND username='{app_username}' "
                 f"AND payment_mode='UPI' "
                 f"order by created_time desc limit 1;"
             )

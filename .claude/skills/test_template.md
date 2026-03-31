@@ -1,6 +1,6 @@
 ---
-version: 1.1.0
-last-updated: 2026-03-25
+version: 1.2.0
+last-updated: 2026-03-31
 status: active
 invoked-by: test_generator.md (pattern library — not chained directly)
 ---
@@ -36,7 +36,9 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
 @allure.sub_suite("UI_ReArch_<FlowDescription>")
-def test_UI_ReArch_<test_id>():
+def test_common_rearch_<NNNN>():
+    # NNNN = zero-padded 4-digit sequence number (e.g. 0001, 0002, ...)
+    # Check existing tests in TestCases/Functional/UI/ReArch/ for the next available number.
     """
     Sub Feature Code: UI_ReArch_<FlowDescription>
     Sub Feature Description: <one-line description>
@@ -99,6 +101,14 @@ def test_UI_ReArch_<test_id>():
                 home_page.wait_for_home_page_load()
 
                 # ... additional steps mapped from action_registry ...
+
+                # DB txn resolution — always filter by BOTH org_code AND username
+                # query = (
+                #     f"select id, created_time, rr_number "   # add posting_date for charge slip flows
+                #     f"from txn "
+                #     f"where org_code='{org_code}' AND username='{app_username}' "
+                #     f"order by created_time desc limit 1;"
+                # )
 
                 GlobalVariables.EXCEL_TC_Execution = "Pass"
                 GlobalVariables.time_calc.execution.pause()

@@ -24,7 +24,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.appVal
-def test_UI_ReArch_PM_BharatQR_Failure_HDFC_01():
+def test_common_rearch_0001():
     """
     Sub Feature Code: UI_ReArch_PM_BharatQR_Failure_HDFC
     Sub Feature Description:
@@ -161,7 +161,7 @@ def test_UI_ReArch_PM_BharatQR_Failure_HDFC_01():
             query = (
                 f"select id, created_time "
                 f"from txn "
-                f"where org_code='{org_code}' "
+                f"where org_code='{org_code}' AND username='{app_username}' "
                 f"order by created_time desc limit 1;"
             )
             logger.debug(f"Query to resolve txn_id: {query}")
@@ -186,7 +186,7 @@ def test_UI_ReArch_PM_BharatQR_Failure_HDFC_01():
         if ConfigReader.read_config("Validations", "app_validation") == "True":
             logger.info(f"Started APP validation: {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(created_time)
+                date_and_time = date_time_converter.to_rearch_app_format(created_time)
                 expected_app_values = {
                     "txn_status": "Payment Failed",
                     "txn_id":     txn_id,
