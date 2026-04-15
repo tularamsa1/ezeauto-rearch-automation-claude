@@ -6,6 +6,7 @@ from datetime import datetime
 
 from Configuration import Configuration, TestSuiteSetup
 from DataProvider import GlobalVariables
+from PageFactory.ReArch.rearch_login_page import ReArchLoginPage
 from PageFactory.ReArch.rearch_home_page import ReArchHomePage
 from PageFactory.ReArch.rearch_order_details_page import ReArchOrderDetailsPage
 from PageFactory.ReArch.rearch_card_type_page import ReArchCardTypePage
@@ -25,24 +26,24 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_rearch_0011():
+def test_common_rearch_0018():
     """
     Sub Feature Code: UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY
     Sub Feature Description:
-        Launch ReArch app, enter a random amount between 550 and 600, select Card,
-        proceed through the Order Details overlay, select RuPay Debit (EMV) on the
-        DUMMY card type selection screen, verify Payment Successful screen, then
-        navigate to transaction history from the collect payment screen, click the
-        transaction and verify amount and Payment Authorized status.
-    TC naming code description:
-        100: Payment Method, 102: Card, 005: TC005
+        Launch ReArch app (handle login only if Select Environment screen
+        appears), enter a random amount between 550 and 600, select Card,
+        proceed through the Order Details overlay, select RuPay Debit (EMV)
+        on the DUMMY card type selection screen, verify Payment Successful
+        screen, then navigate to transaction history from the collect payment
+        screen, search the transaction by Auth Code (scroll horizontally to
+        reach the tab), click it and verify amount and Payment Authorized status.
 
     NL Source Steps:
       Preconditions:
         1. update org_settings: cardEnabled = true
 
       Test Steps:
-        1.  launch rearch app and login
+        1.  launch rearch app and login if present
         2.  click on collect payment
         3.  enter any amount between 550 to 600
         4.  select card
@@ -50,12 +51,13 @@ def test_common_rearch_0011():
         6.  select RuPay Debit (EMV)
         7.  validate if payment successful message is displayed on the screen
         8.  click on history button on the collect payment screen
-        9.  click on the transaction for the amount entered in step 3
-        10. verify if amount is correct and payment authorized string is seen
+        9.  search transaction using Auth Code (scroll horizontally to reach tab)
+        10. do app, api and chargeslip validation
 
       App Validation:
-        8-10. navigate to history from collect payment screen → click transaction
-              by txn_id → verify amount matches and status is "Payment Authorized"
+        8-10. navigate to history from collect payment screen → search transaction
+              by Auth Code → click transaction → verify amount matches and status
+              is "Payment Authorized"
 
       API Validation:
         pmt_status=AUTHORIZED, txn_amt, pmt_mode=CARD, txn_type=CHARGE,
@@ -103,9 +105,7 @@ def test_common_rearch_0011():
             "entityName": "org",
             "settingForOrgCode": org_code,
         })
-        api_details["RequestBody"]["settings"]["cardEnabled"] = "true",
-        api_details["RequestBody"]["settings"]["mqttEnabled"] = "true",
-
+        api_details["RequestBody"]["settings"]["cardEnabled"] = "true"
         logger.debug(f"Precondition API details: {api_details}")
         response = APIProcessor.send_request(api_details=api_details)
         logger.debug(f"Precondition response: {response}")
@@ -130,8 +130,11 @@ def test_common_rearch_0011():
             amount = str(random.randint(550, 600))
             logger.debug(f"amount={amount}")
 
-            # Step 1: Launch ReArch app and log in
+            # Step 1: Launch ReArch app and login if required
             app_driver = TestSuiteSetup.initialize_rearch_driver(testcase_id)
+            login_page = ReArchLoginPage(app_driver)
+            login_page.perform_login_if_required(app_username, app_password)
+            logger.debug("Login flow handled")
 
             # Step 2: Wait for initial home screen and tap Collect Payment
             home_page = ReArchHomePage(app_driver)
@@ -139,7 +142,7 @@ def test_common_rearch_0011():
             home_page.click_collect_payment()
             logger.debug("Collect Payment tapped")
 
-            # Step 3: Wait for amount screen and enter amount (550–600)
+            # Step 3: Wait for amount screen and enter amount (550-600)
             home_page.wait_for_home_page_load()
             home_page.enter_amount(amount)
             logger.debug(f"Amount {amount} entered")
@@ -148,13 +151,13 @@ def test_common_rearch_0011():
             home_page.click_pay_by_card()
             logger.debug("Card payment method selected")
 
-            # Step 5: Order Details overlay → click Proceed
+            # Step 5: Order Details overlay -> click Proceed
             order_details_page = ReArchOrderDetailsPage(app_driver)
             order_details_page.wait_for_order_details_screen()
             order_details_page.click_proceed()
             logger.debug("Order Details: clicked Proceed")
 
-            # Step 6: Card type selection → RuPay Debit (EMV)
+            # Step 6: Card type selection -> RuPay Debit (EMV)
             card_type_page = ReArchCardTypePage(app_driver)
             card_type_page.wait_for_card_type_screen()
             card_type_page.click_rupay_debit_emv()
@@ -185,7 +188,7 @@ def test_common_rearch_0011():
                 f"posting_date={posting_date}, rrn={rrn}, auth_code={auth_code}"
             )
 
-            # Step 8 (part 1): Navigate back to the collect payment screen
+            # Step 8: Navigate back to the collect payment screen
             complete_page.click_proceed_to_home()
             logger.debug("Clicked Accept More Payments — back to collect payment screen")
 
@@ -204,7 +207,7 @@ def test_common_rearch_0011():
         logger.debug(f"Validation Timer started in testcase function: {testcase_id}")
 
         # ── App Validation ────────────────────────────────────────────────────
-        # Steps 8-10: Click history → click transaction → verify amount + "Payment Authorized"
+        # Steps 8-10: Click history → search by Auth Code → click transaction → verify
         if ConfigReader.read_config("Validations", "app_validation") == "True":
             logger.info(f"Started APP validation for the test case: {testcase_id}")
             try:
@@ -217,14 +220,14 @@ def test_common_rearch_0011():
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
-                # Step 8 (part 2): Click history button on the collect payment screen
+                # Step 8: Click history button on the collect payment screen
                 home_page.wait_for_home_page_load()
                 home_page.click_txn_history()
 
-                # Step 9: Click on the transaction for the amount entered
+                # Step 9: Search transaction by Auth Code (scroll horizontally to tab)
                 txn_history_page = ReArchTxnHistoryPage(app_driver)
                 txn_history_page.wait_for_txn_list()
-                txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
+                txn_history_page.click_on_transaction_by_auth_code(auth_code=auth_code)
 
                 txn_detail_page = ReArchTxnDetailPage(app_driver)
 
@@ -267,11 +270,11 @@ def test_common_rearch_0011():
                     "pmt_mode":      "CARD",
                     "txn_type":      "CHARGE",
                     "acquirer_code": "HDFC",
-                    "issuer_code":   "HDFC",   # TODO: verify issuer_code for RuPay on first run
+                    "issuer_code":   "HDFC",       # TODO: verify issuer_code for RuPay on first run
                     "org_code":      org_code,
                     "rrn":           rrn,
                     "date":          date,
-                    "pmt_card_brand": "RUPAY",  # TODO: verify exact brand string on first run
+                    "pmt_card_brand": "RUPAY",     # TODO: verify exact brand string on first run
                     "pmt_card_type":  "DEBIT",
                     "card_txn_type":  "EMV",
                 }

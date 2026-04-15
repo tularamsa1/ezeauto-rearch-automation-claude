@@ -70,6 +70,10 @@ class ReArchCardTypePage(ReArchNativeBasePage):
         self.scroll_to_text("MasterCard Debit (EMV)")
         self.perform_click(CardTypeSelectionLocators.card_type_btn("MasterCard Debit (EMV)"))
 
+    def click_mastercard_debit_contactless(self):
+        """Select MasterCard Debit (Contactless) from the card type list."""
+        self.select_card_type("MasterCard Debit (Contactless)")
+
     def click_rupay_debit_emv(self):
         """Select RuPay Debit (EMV) from the card type list."""
         self.select_card_type("RuPay Debit (EMV)")

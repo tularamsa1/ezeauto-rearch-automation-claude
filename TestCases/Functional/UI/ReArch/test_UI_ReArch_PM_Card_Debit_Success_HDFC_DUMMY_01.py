@@ -348,15 +348,4 @@ def test_common_rearch_0003():
         logger.info(f"Completed Validation for the test case: {testcase_id}")
 
     finally:
-        try:
-            api_details = DBProcessor.get_api_details('org_settings_update', request_body={
-                "username": portal_username,
-                "password": portal_password,
-                "entityName": "org",
-                "settingForOrgCode": org_code,
-            })
-            api_details["RequestBody"]["settings"]["cardEnabled"] = "false"
-            APIProcessor.send_request(api_details=api_details)
-        except Exception as e:
-            logger.exception(f"Precondition revert failed: {e}")
         Configuration.executeFinallyBlock(testcase_id)

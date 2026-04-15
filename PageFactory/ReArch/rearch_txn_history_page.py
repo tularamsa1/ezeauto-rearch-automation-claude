@@ -67,6 +67,53 @@ class ReArchTxnHistoryPage(ReArchNativeBasePage):
         self.perform_click(TxnSearchLocators.txn_row)
         logger.info(f"Opened transaction with txn_id: {txn_id}")
 
+    def click_on_transaction_by_amount(self, amount: str):
+        """Search by Amount and open the matching transaction.
+
+        Flow: Search button → Amount tab → type amount → tap result row.
+        """
+        self.perform_click(TxnHistoryLocators.btn_search)
+        self.perform_click(TxnSearchLocators.btn_amount)
+        self.perform_click(TxnSearchLocators.txt_search_input)
+        self.perform_sendkeys(TxnSearchLocators.txt_search_input, amount)
+        self.driver.press_keycode(66)   # Android Enter/Search key
+
+        self.wait_for_element(TxnSearchLocators.txn_row)
+        self.perform_click(TxnSearchLocators.txn_row)
+        logger.info(f"Opened transaction with amount: {amount}")
+
+    def click_on_transaction_by_rrn(self, rrn: str):
+        """Search by RRN Number and open the matching transaction.
+
+        Flow: Search button → RRN Number tab → type rrn → tap result row.
+        """
+        self.perform_click(TxnHistoryLocators.btn_search)
+        self.perform_click(TxnSearchLocators.btn_rrn_number)
+        self.perform_click(TxnSearchLocators.txt_search_input)
+        self.perform_sendkeys(TxnSearchLocators.txt_search_input, rrn)
+        self.driver.press_keycode(66)   # Android Enter/Search key
+
+        self.wait_for_element(TxnSearchLocators.txn_row)
+        self.perform_click(TxnSearchLocators.txn_row)
+        logger.info(f"Opened transaction with rrn: {rrn}")
+
+    def click_on_transaction_by_auth_code(self, auth_code: str):
+        """Search by Auth Code and open the matching transaction.
+
+        Flow: Search button → scroll to Auth Code tab → type auth_code → tap result row.
+        Auth Code tab is off-screen to the right, so a horizontal scroll is needed.
+        """
+        self.perform_click(TxnHistoryLocators.btn_search)
+        self.scroll_to_text("Auth Code")
+        self.perform_click(TxnSearchLocators.btn_auth_code)
+        self.perform_click(TxnSearchLocators.txt_search_input)
+        self.perform_sendkeys(TxnSearchLocators.txt_search_input, auth_code)
+        self.driver.press_keycode(66)   # Android Enter/Search key
+
+        self.wait_for_element(TxnSearchLocators.txn_row)
+        self.perform_click(TxnSearchLocators.txn_row)
+        logger.info(f"Opened transaction with auth_code: {auth_code}")
+
     # ── Navigation ────────────────────────────────────────────────────────────
 
     def click_search(self):

@@ -25,7 +25,7 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_rearch_0011():
+def test_common_rearch_0026():
     """
     Sub Feature Code: UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY
     Sub Feature Description:
@@ -34,12 +34,13 @@ def test_common_rearch_0011():
         DUMMY card type selection screen, verify Payment Successful screen, then
         navigate to transaction history from the collect payment screen, click the
         transaction and verify amount and Payment Authorized status.
+        Same as test_common_rearch_0011 but with mqttEnabled = false.
     TC naming code description:
-        100: Payment Method, 102: Card, 005: TC005
+        100: Payment Method, 102: Card, 011: TC011
 
     NL Source Steps:
       Preconditions:
-        1. update org_settings: cardEnabled = true
+        1. update org_settings: cardEnabled = true, mqttEnabled = false
 
       Test Steps:
         1.  launch rearch app and login
@@ -104,7 +105,7 @@ def test_common_rearch_0011():
             "settingForOrgCode": org_code,
         })
         api_details["RequestBody"]["settings"]["cardEnabled"] = "true",
-        api_details["RequestBody"]["settings"]["mqttEnabled"] = "true",
+        api_details["RequestBody"]["settings"]["mqttEnabled"] = "false",
 
         logger.debug(f"Precondition API details: {api_details}")
         response = APIProcessor.send_request(api_details=api_details)

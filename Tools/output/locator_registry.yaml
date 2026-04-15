@@ -1,12 +1,12 @@
 metadata:
   package: com.razorpay.pos
   app_version: unknown
-  captured_at: '2026-03-24T17:57:57'
+  captured_at: '2026-04-14T14:21:57'
 screens:
-  cardDetails:
-    source_xml: cardDetails.xml
-    captured_at: 2026-03-24 17:57
-    element_count: 49
+  DemandDraft_BankDropDown:
+    source_xml: DemandDraft_BankDropDown.xml
+    captured_at: 2026-04-14 14:21
+    element_count: 205
     elements:
       lbl_view:
         by: TODO
@@ -14,108 +14,12 @@ screens:
         type: unknown
         android_class: android.view.View
         needs_annotation: true
-      lbl_please_enter_pin_to_proceed_with_payment:
-        by: AppiumBy.XPATH
-        value: //android.widget.TextView[@text='Please enter PIN to proceed with payment']
-        type: label
-        android_class: android.widget.TextView
-        text: Please enter PIN to proceed with payment
-      lbl_textview:
-        by: AppiumBy.XPATH
-        value: //android.widget.TextView[@text='₹']
-        type: label
-        android_class: android.widget.TextView
-        text: ₹
-      lbl_96:
-        by: AppiumBy.XPATH
-        value: //android.widget.TextView[@text='96']
-        type: label
-        android_class: android.widget.TextView
-        text: '96'
-      lbl_enter_pin:
-        by: AppiumBy.XPATH
-        value: //android.widget.TextView[@text='Enter PIN']
-        type: label
-        android_class: android.widget.TextView
-        text: Enter PIN
-      btn_0:
-        by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='0']
-        type: action
-        android_class: android.widget.Button
-        text: '0'
-      btn_1:
-        by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='1']
-        type: action
-        android_class: android.widget.Button
-        text: '1'
-      btn_2:
-        by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='2']
-        type: action
-        android_class: android.widget.Button
-        text: '2'
-      btn_3:
-        by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='3']
-        type: action
-        android_class: android.widget.Button
-        text: '3'
-      btn_4:
-        by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='4']
-        type: action
-        android_class: android.widget.Button
-        text: '4'
-      btn_5:
-        by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='5']
-        type: action
-        android_class: android.widget.Button
-        text: '5'
-      btn_6:
-        by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='6']
-        type: action
-        android_class: android.widget.Button
-        text: '6'
-      btn_7:
-        by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='7']
-        type: action
-        android_class: android.widget.Button
-        text: '7'
-      btn_8:
-        by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='8']
-        type: action
-        android_class: android.widget.Button
-        text: '8'
-      btn_button:
-        by: TODO
-        value: no resource-id or text; class=android.widget.Button index=11
-        type: unknown
-        android_class: android.widget.Button
-        needs_annotation: true
-      btn_9:
-        by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='9']
-        type: action
-        android_class: android.widget.Button
-        text: '9'
-      btn_button_2:
-        by: TODO
-        value: no resource-id or text; class=android.widget.Button index=13
-        type: unknown
-        android_class: android.widget.Button
-        needs_annotation: true
       lbl_page:
         by: AppiumBy.ID
         value: page
         type: label
         android_class: android.view.View
-      btn_button_3:
+      btn_button:
         by: TODO
         value: no resource-id or text; class=android.widget.Button index=0
         type: unknown
@@ -127,190 +31,1213 @@ screens:
         type: label
         android_class: android.widget.TextView
         text: Payment Amount
-      lbl_textview_2:
+      lbl_textview:
         by: AppiumBy.XPATH
         value: //android.widget.TextView[@text='₹']
         type: label
         android_class: android.widget.TextView
         text: ₹
-      lbl_96_2:
+      lbl_563:
         by: AppiumBy.XPATH
-        value: //android.widget.TextView[@text='96']
+        value: //android.widget.TextView[@text='563']
         type: label
         android_class: android.widget.TextView
-        text: '96'
-      lbl_select_test_card:
+        text: '563'
+      lbl_dd_number:
         by: AppiumBy.XPATH
-        value: //android.widget.TextView[@text='Select Test Card']
+        value: //android.view.View[@text='DD Number *']
+        type: label
+        android_class: android.view.View
+        text: DD Number *
+      txt_enter_dd_number:
+        by: AppiumBy.XPATH
+        value: //android.widget.EditText[@text='Enter DD Number']
+        type: action
+        android_class: android.widget.EditText
+        text: Enter DD Number
+      lbl_dd_number_should_be_6_digits:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='DD number should be 6 digits']
         type: label
         android_class: android.widget.TextView
-        text: Select Test Card
-      btn_visa_debit_emv_visa_debit:
+        text: DD number should be 6 digits
+      lbl_bank:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='Visa Debit (EMV) VISA Debit']
+        value: //android.view.View[@text='Bank *']
+        type: label
+        android_class: android.view.View
+        text: Bank *
+      btn_select_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Select Bank']
         type: action
         android_class: android.widget.Button
-        text: Visa Debit (EMV) VISA Debit
-      btn_visa_debit_with_pin_emv_visa_debit:
+        text: Select Bank
+      lbl_branch_name:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='Visa Debit with PIN (EMV) VISA Debit']
+        value: //android.view.View[@text='Branch Name *']
+        type: label
+        android_class: android.view.View
+        text: Branch Name *
+      txt_edittext:
+        by: TODO
+        value: no resource-id or text; class=android.widget.EditText index=7
+        type: unknown
+        android_class: android.widget.EditText
+        needs_annotation: true
+      lbl_dd_dated:
+        by: AppiumBy.XPATH
+        value: //android.view.View[@text='DD Dated *']
+        type: label
+        android_class: android.view.View
+        text: DD Dated *
+      btn_ddmmyyyy:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='dd/mm/yyyy']
         type: action
         android_class: android.widget.Button
-        text: Visa Debit with PIN (EMV) VISA Debit
-      btn_visa_debit_contactless_visa_debit:
+        text: dd/mm/yyyy
+      lbl_payer_name_optional:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='Visa Debit (Contactless) VISA Debit']
+        value: //android.view.View[@text='Payer Name (optional)']
+        type: label
+        android_class: android.view.View
+        text: Payer Name (optional)
+      txt_edittext_2:
+        by: TODO
+        value: no resource-id or text; class=android.widget.EditText index=11
+        type: unknown
+        android_class: android.widget.EditText
+        needs_annotation: true
+      btn_confirm_payment:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Confirm Payment']
         type: action
         android_class: android.widget.Button
-        text: Visa Debit (Contactless) VISA Debit
-      btn_visa_debit_with_pin_contactless_visa_deb:
+        text: Confirm Payment
+      btn_close_overlay:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='Visa Debit with PIN (Contactless) VISA
-          Debit']
+        value: //android.widget.Button[@text='Close overlay']
         type: action
         android_class: android.widget.Button
-        text: Visa Debit with PIN (Contactless) VISA Debit
-      btn_visa_credit_emv_visa_credit:
+        text: Close overlay
+      lbl_bank_2:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='Visa Credit (EMV) VISA Credit']
+        value: //android.view.View[@text='Bank']
+        type: label
+        android_class: android.view.View
+        text: Bank
+      lbl_bank_3:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='Bank']
+        type: label
+        android_class: android.widget.TextView
+        text: Bank
+      btn_button_2:
+        by: TODO
+        value: no resource-id or text; class=android.widget.Button index=1
+        type: unknown
+        android_class: android.widget.Button
+        needs_annotation: true
+      txt_edittext_3:
+        by: TODO
+        value: no resource-id or text; class=android.widget.EditText index=1
+        type: unknown
+        android_class: android.widget.EditText
+        needs_annotation: true
+      btn_pallavan_gramma_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Pallavan Gramma Bank']
         type: action
         android_class: android.widget.Button
-        text: Visa Credit (EMV) VISA Credit
-      btn_visa_credit_with_pin_emv_visa_credit:
+        text: Pallavan Gramma Bank
+      btn_mashreq:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='Visa Credit with PIN (EMV) VISA Credit']
+        value: //android.widget.Button[@text='Mashreq']
         type: action
         android_class: android.widget.Button
-        text: Visa Credit with PIN (EMV) VISA Credit
-      btn_visa_credit_contactless_visa_credit:
+        text: Mashreq
+      btn_delhi_nagrik_sehkari_bank_ltd:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='Visa Credit (Contactless) VISA Credit']
+        value: //android.widget.Button[@text='Delhi Nagrik Sehkari Bank Ltd']
         type: action
         android_class: android.widget.Button
-        text: Visa Credit (Contactless) VISA Credit
-      btn_mastercard_debit_emv_master_debit:
+        text: Delhi Nagrik Sehkari Bank Ltd
+      btn_dhanalakshmi_bank_ltd:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='MasterCard Debit (EMV) MASTER Debit']
+        value: //android.widget.Button[@text='Dhanalakshmi Bank Ltd']
         type: action
         android_class: android.widget.Button
-        text: MasterCard Debit (EMV) MASTER Debit
-      btn_mastercard_debit_contactless_master_debi:
+        text: Dhanalakshmi Bank Ltd
+      btn_benares_state_bank_limited:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='MasterCard Debit (Contactless) MASTER
-          Debit']
+        value: //android.widget.Button[@text='Benares State Bank Limited']
         type: action
         android_class: android.widget.Button
-        text: MasterCard Debit (Contactless) MASTER Debit
-      btn_mastercard_debit_with_pin_contactless_ma:
+        text: Benares State Bank Limited
+      btn_saurashtra_bank_ltd:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='MasterCard Debit with PIN (Contactless)
-          MASTER Debit']
+        value: //android.widget.Button[@text='Saurashtra Bank Ltd']
         type: action
         android_class: android.widget.Button
-        text: MasterCard Debit with PIN (Contactless) MASTER Debit
-      btn_mastercard_credit_emv_master_credit:
+        text: Saurashtra Bank Ltd
+      btn_sangli_bank_limited:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='MasterCard Credit (EMV) MASTER Credit']
+        value: //android.widget.Button[@text='Sangli Bank Limited']
         type: action
         android_class: android.widget.Button
-        text: MasterCard Credit (EMV) MASTER Credit
-      btn_mastercard_credit_with_pin_emv_master_cr:
+        text: Sangli Bank Limited
+      btn_credit_agricole_indosuez:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='MasterCard Credit with PIN (EMV) MASTER
-          Credit']
+        value: //android.widget.Button[@text='Credit Agricole Indosuez']
         type: action
         android_class: android.widget.Button
-        text: MasterCard Credit with PIN (EMV) MASTER Credit
-      btn_mastercard_credit_contactless_master_cre:
+        text: Credit Agricole Indosuez
+      btn_dresdner_bank_ag:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='MasterCard Credit (Contactless) MASTER
-          Credit']
+        value: //android.widget.Button[@text='Dresdner Bank Ag']
         type: action
         android_class: android.widget.Button
-        text: MasterCard Credit (Contactless) MASTER Credit
-      btn_mastercard_credit_with_pin_contactless_m:
+        text: Dresdner Bank Ag
+      btn_development_credit_bank_ltd:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='MasterCard Credit with PIN (Contactless)
-          MASTER Credit']
+        value: //android.widget.Button[@text='Development Credit Bank Ltd']
         type: action
         android_class: android.widget.Button
-        text: MasterCard Credit with PIN (Contactless) MASTER Credit
-      btn_rupay_debit_emv_rupay_debit:
+        text: Development Credit Bank Ltd
+      btn_city_union_bank_ltd:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='RuPay Debit (EMV) RUPAY Debit']
+        value: //android.widget.Button[@text='City Union Bank Ltd']
         type: action
         android_class: android.widget.Button
-        text: RuPay Debit (EMV) RUPAY Debit
-      btn_rupay_debit_with_pin_emv_rupay_debit:
+        text: City Union Bank Ltd
+      btn_indraprastha_sekari_bank_ltd:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='RuPay Debit with PIN (EMV) RUPAY Debit']
+        value: //android.widget.Button[@text='Indraprastha Sekari Bank Ltd']
         type: action
         android_class: android.widget.Button
-        text: RuPay Debit with PIN (EMV) RUPAY Debit
-      btn_rupay_prepaid_contactless_rupay_prepaid:
+        text: Indraprastha Sekari Bank Ltd
+      btn_nedungadi_bank_limited:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='RuPay Prepaid (Contactless) RUPAY Prepaid']
+        value: //android.widget.Button[@text='Nedungadi Bank Limited']
         type: action
         android_class: android.widget.Button
-        text: RuPay Prepaid (Contactless) RUPAY Prepaid
-      btn_rupay_prepaid_with_pin_contactless_rupay:
+        text: Nedungadi Bank Limited
+      btn_ing_bank_nv:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='RuPay Prepaid with PIN (Contactless)
-          RUPAY Prepaid']
+        value: //android.widget.Button[@text='Ing Bank N.v.']
         type: action
         android_class: android.widget.Button
-        text: RuPay Prepaid with PIN (Contactless) RUPAY Prepaid
-      btn_visa_credit_gbp_contactless_visa_credit_:
+        text: Ing Bank N.v.
+      btn_karnavati_cooperative_bank_ltd:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='Visa Credit GBP (Contactless) VISA Credit
-          • GBP']
+        value: //android.widget.Button[@text='Karnavati Co-operative Bank Ltd']
         type: action
         android_class: android.widget.Button
-        text: Visa Credit GBP (Contactless) VISA Credit • GBP
-      btn_mastercard_kwd_emv_master_debit_kwd:
+        text: Karnavati Co-operative Bank Ltd
+      btn_khattri_cooperative_urban_bank_ltd:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='MasterCard KWD (EMV) MASTER Debit •
-          KWD']
+        value: //android.widget.Button[@text='Khattri Co-operative Urban Bank Ltd']
         type: action
         android_class: android.widget.Button
-        text: MasterCard KWD (EMV) MASTER Debit • KWD
-      btn_mastercard_jpy_emv_master_debit_jpy:
+        text: Khattri Co-operative Urban Bank Ltd
+      btn_standard_chartered_grindlays:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='MasterCard JPY (EMV) MASTER Debit •
-          JPY']
+        value: //android.widget.Button[@text='Standard Chartered Grindlays']
         type: action
         android_class: android.widget.Button
-        text: MasterCard JPY (EMV) MASTER Debit • JPY
-      btn_visa_bhd_emv_visa_debit_bhd:
+        text: Standard Chartered Grindlays
+      btn_jai_lakshmi_cooperative_bank_ltd:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='Visa BHD (EMV) VISA Debit • BHD']
+        value: //android.widget.Button[@text='Jai Lakshmi Co-operative Bank Ltd']
         type: action
         android_class: android.widget.Button
-        text: Visa BHD (EMV) VISA Debit • BHD
-      btn_mastercard_usd_contactless_master_debit_:
+        text: Jai Lakshmi Co-operative Bank Ltd
+      btn_bnp_paribas:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='MasterCard USD (Contactless) MASTER
-          Debit • USD']
+        value: //android.widget.Button[@text='Bnp Paribas']
         type: action
         android_class: android.widget.Button
-        text: MasterCard USD (Contactless) MASTER Debit • USD
-      btn_mastercard_bhd_emv_master_debit_bhd:
+        text: Bnp Paribas
+      btn_vaish_cooperative_new_bank_ltd:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='MasterCard BHD (EMV) MASTER Debit •
-          BHD']
+        value: //android.widget.Button[@text='Vaish Co-operative New Bank Ltd']
         type: action
         android_class: android.widget.Button
-        text: MasterCard BHD (EMV) MASTER Debit • BHD
-      btn_visa_jpy_emv_visa_debit_jpy:
+        text: Vaish Co-operative New Bank Ltd
+      btn_sumitono_mitsui_banking_corporation:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='Visa JPY (EMV) VISA Debit • JPY']
+        value: //android.widget.Button[@text='Sumitono Mitsui Banking Corporation']
         type: action
         android_class: android.widget.Button
-        text: Visa JPY (EMV) VISA Debit • JPY
-      btn_visa_jpy_contactless_visa_credit_jpy:
+        text: Sumitono Mitsui Banking Corporation
+      btn_keshav_sehkari_bank_ltd:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='Visa JPY (Contactless) VISA Credit •
-          JPY']
+        value: //android.widget.Button[@text='Keshav Sehkari Bank Ltd']
         type: action
         android_class: android.widget.Button
-        text: Visa JPY (Contactless) VISA Credit • JPY
+        text: Keshav Sehkari Bank Ltd
+      btn_ufj_bank_limited:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Ufj Bank Limited']
+        type: action
+        android_class: android.widget.Button
+        text: Ufj Bank Limited
+      btn_gurgaon_gramin_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Gurgaon Gramin Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Gurgaon Gramin Bank
+      btn_kotak_mahindra_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Kotak Mahindra Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Kotak Mahindra Bank
+      btn_yes_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Yes Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Yes Bank
+      btn_ing_vysya_bank_limited:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Ing Vysya Bank Limited']
+        type: action
+        android_class: android.widget.Button
+        text: Ing Vysya Bank Limited
+      btn_axis_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Axis Bank Ltd.']
+        type: action
+        android_class: android.widget.Button
+        text: Axis Bank Ltd.
+      btn_mizuho_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Mizuho Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Mizuho Bank Ltd
+      btn_shinhan_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Shinhan Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Shinhan Bank
+      btn_emirates_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Emirates Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Emirates Bank
+      btn_ratnakar_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Ratnakar Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Ratnakar Bank Ltd
+      btn_calyon_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Calyon Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Calyon Bank
+      btn_dbs_bank_limited:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Dbs Bank Limited']
+        type: action
+        android_class: android.widget.Button
+        text: Dbs Bank Limited
+      btn_jamia_cooperative_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Jamia Co-operative Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Jamia Co-operative Bank Ltd
+      btn_centurian_bank_of_punjab_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Centurian Bank Of Punjab Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Centurian Bank Of Punjab Ltd
+      btn_bharti_sahakari_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Bharti Sahakari Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Bharti Sahakari Bank Ltd
+      btn_faridabad_central_coop_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Faridabad Central Co-op Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Faridabad Central Co-op Bank Ltd
+      btn_ghaziabad_urban_coop_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Ghaziabad Urban Co-op Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Ghaziabad Urban Co-op Bank
+      btn_ghaziabad_zila_sahakari_bank_noida:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Ghaziabad Zila Sahakari Bank Noida']
+        type: action
+        android_class: android.widget.Button
+        text: Ghaziabad Zila Sahakari Bank Noida
+      btn_g_p_o:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='G P O']
+        type: action
+        android_class: android.widget.Button
+        text: G P O
+      btn_gurgaon_central_coop_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Gurgaon Central Co-op Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Gurgaon Central Co-op Bank Ltd
+      btn_h_p_state_coop_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='H P State Co-op Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: H P State Co-op Bank Ltd
+      btn_indian_mechantile_coop_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Indian Mechantile Co-op Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Indian Mechantile Co-op Bank Ltd
+      btn_innovative_coop_urban_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Innovative Co-op Urban Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Innovative Co-op Urban Bank Ltd
+      btn_mahamedha_urban_coop_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Mahamedha Urban Co-op Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Mahamedha Urban Co-op Bank Ltd
+      btn_sonepat_central_coop_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Sonepat Central Co-op Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Sonepat Central Co-op Bank Ltd
+      btn_sonepat_head_post_office:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Sonepat Head Post Office']
+        type: action
+        android_class: android.widget.Button
+        text: Sonepat Head Post Office
+      btn_tamilnad_mercantile_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Tamilnad Mercantile Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Tamilnad Mercantile Bank Ltd
+      btn_ufg_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Ufg Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Ufg Bank Ltd
+      btn_uttar_pradesh_coop_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Uttar Pradesh Co-op Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Uttar Pradesh Co-op Bank Ltd
+      btn_vaish_coop_commercial_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Vaish Co-op Commercial Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Vaish Co-op Commercial Bank Ltd
+      btn_american_express_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='American Express Bank']
+        type: action
+        android_class: android.widget.Button
+        text: American Express Bank
+      btn_punjab_and_maharashtra_coop_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Punjab And Maharashtra Co-op Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Punjab And Maharashtra Co-op Bank Ltd
+      btn_the_saraswat_cooperative_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='The Saraswat Co-operative Bank Ltd.']
+        type: action
+        android_class: android.widget.Button
+        text: The Saraswat Co-operative Bank Ltd.
+      btn_royal_bank_of_scotland:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Royal Bank Of Scotland']
+        type: action
+        android_class: android.widget.Button
+        text: Royal Bank Of Scotland
+      btn_chennai_central_cooperative_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Chennai Central Co-operative Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Chennai Central Co-operative Bank
+      btn_tamil_nadu_state_apex_cooperative_bank_l:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Tamil Nadu State Apex Co-operative Bank
+          Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Tamil Nadu State Apex Co-operative Bank Ltd
+      btn_barelly_corp_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Barelly Corp. Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Barelly Corp. Bank
+      btn_post_office_saving_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Post Office Saving Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Post Office Saving Bank
+      btn_barclays_bank_p_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Barclays Bank P Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Barclays Bank P Ltd
+      btn_janta_cooprative_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Janta Cooprative Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Janta Cooprative Bank
+      btn_bank_of_tokyo_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Bank Of Tokyo Ltd.']
+        type: action
+        android_class: android.widget.Button
+        text: Bank Of Tokyo Ltd.
+      btn_larsen_toubro_limited:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Larsen Toubro Limited']
+        type: action
+        android_class: android.widget.Button
+        text: Larsen Toubro Limited
+      btn_commercial_bank_of_korea:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Commercial Bank Of Korea']
+        type: action
+        android_class: android.widget.Button
+        text: Commercial Bank Of Korea
+      btn_citizen_cooperative_bank_ltd_noida:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Citizen Co-operative Bank Ltd Noida']
+        type: action
+        android_class: android.widget.Button
+        text: Citizen Co-operative Bank Ltd Noida
+      btn_ramgarhia_cooprative_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Ramgarhia Co-oprative Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Ramgarhia Co-oprative Bank
+      btn_hp_state_cooperative_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='H.p. State Co-operative Bank Ltd.']
+        type: action
+        android_class: android.widget.Button
+        text: H.p. State Co-operative Bank Ltd.
+      btn_jain_cooperative_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Jain Co-operative Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Jain Co-operative Bank Ltd
+      btn_bhagyodaya_urban_coop_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Bhagyodaya Urban Co-op Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Bhagyodaya Urban Co-op Bank Ltd
+      btn_vaish_cooperative_adarsh_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Vaish Co-operative Adarsh Bank Ltd.']
+        type: action
+        android_class: android.widget.Button
+        text: Vaish Co-operative Adarsh Bank Ltd.
+      btn_noida_cooperative_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Noida Co-operative Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Noida Co-operative Bank Ltd
+      btn_coimbatore_district_central_cooperative_:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Coimbatore District Central Co-operative
+          Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Coimbatore District Central Co-operative Bank Ltd
+      btn_purasawalkam_cooperative_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Purasawalkam Co-operative Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Purasawalkam Co-operative Bank Ltd
+      btn_tamilnadu_state_cooperative_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Tamilnadu State Cooperative Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Tamilnadu State Cooperative Bank
+      btn_tamilnadu_industrial_cooperative_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Tamilnadu Industrial Co-operative Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Tamilnadu Industrial Co-operative Bank
+      btn_vellala_cooperative_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Vellala Co-operative Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Vellala Co-operative Bank
+      btn_bank_of_ceylon:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Bank Of Ceylon']
+        type: action
+        android_class: android.widget.Button
+        text: Bank Of Ceylon
+      btn_other_banks:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Other Banks']
+        type: action
+        android_class: android.widget.Button
+        text: Other Banks
+      btn_vellalar_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Vellalar Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Vellalar Bank
+      btn_tamilnadu_circle_postal_cooperative_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Tamilnadu Circle Postal Cooperative
+          Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Tamilnadu Circle Postal Cooperative Bank
+      btn_thiyagarayanagar_cooperative_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Thiyagarayanagar Co-operative Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Thiyagarayanagar Co-operative Bank Ltd
+      btn_the_shamrao_vithal_coop_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='The Shamrao Vithal Co-op Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: The Shamrao Vithal Co-op Bank Ltd
+      btn_state_bank_of_mauritius:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='State Bank Of Mauritius']
+        type: action
+        android_class: android.widget.Button
+        text: State Bank Of Mauritius
+      btn_kancheepuram_central_cooperative_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Kancheepuram Central Co-operative Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Kancheepuram Central Co-operative Bank
+      btn_george_town_cooperative_bank_ltdgtc:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='George Town Co-operative Bank Ltd.(gtc)']
+        type: action
+        android_class: android.widget.Button
+        text: George Town Co-operative Bank Ltd.(gtc)
+      btn_bharat_heavy_electricals_employees_coope:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Bharat Heavy Electricals Employees Co-operative
+          Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Bharat Heavy Electricals Employees Co-operative Bank Ltd
+      btn_chintadripet_cooperative_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Chintadripet Co-operative Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Chintadripet Co-operative Bank Ltd
+      btn_the_madura_sourashtra_coop_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='The Madura Sourashtra Coop. Bank Ltd.']
+        type: action
+        android_class: android.widget.Button
+        text: The Madura Sourashtra Coop. Bank Ltd.
+      btn_allahabad_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Allahabad Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Allahabad Bank
+      btn_state_bank_of_india:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='State Bank Of India']
+        type: action
+        android_class: android.widget.Button
+        text: State Bank Of India
+      btn_andhra_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Andhra Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Andhra Bank
+      btn_anz_grindlays_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Anz Grindlays Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Anz Grindlays Bank
+      btn_bank_of_america:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Bank Of America']
+        type: action
+        android_class: android.widget.Button
+        text: Bank Of America
+      btn_bank_of_baroda:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Bank Of Baroda']
+        type: action
+        android_class: android.widget.Button
+        text: Bank Of Baroda
+      btn_bank_of_india:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Bank Of India']
+        type: action
+        android_class: android.widget.Button
+        text: Bank Of India
+      btn_bank_of_maharastra:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Bank Of Maharastra']
+        type: action
+        android_class: android.widget.Button
+        text: Bank Of Maharastra
+      btn_bank_of_punjab_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Bank Of Punjab Ltd.']
+        type: action
+        android_class: android.widget.Button
+        text: Bank Of Punjab Ltd.
+      btn_bank_of_rajasthan:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Bank Of Rajasthan']
+        type: action
+        android_class: android.widget.Button
+        text: Bank Of Rajasthan
+      btn_canara_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Canara Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Canara Bank
+      btn_central_bank_of_india:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Central Bank Of India']
+        type: action
+        android_class: android.widget.Button
+        text: Central Bank Of India
+      btn_citi_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Citi Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Citi Bank
+      btn_corporation_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Corporation Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Corporation Bank
+      btn_delhi_state_cooperative_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Delhi State Co-operative Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Delhi State Co-operative Bank Ltd
+      btn_dena_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Dena Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Dena Bank
+      btn_federal_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Federal Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Federal Bank
+      btn_hdfc_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Hdfc Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Hdfc Bank
+      btn_hongkong_shanghai_banking_corp_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Hongkong Shanghai Banking Corp Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Hongkong Shanghai Banking Corp Ltd
+      btn_icici_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Icici Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Icici Bank
+      btn_indian_overseas_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Indian Overseas Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Indian Overseas Bank
+      btn_oriental_bank_of_commerce:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Oriental Bank Of Commerce']
+        type: action
+        android_class: android.widget.Button
+        text: Oriental Bank Of Commerce
+      btn_punjab_sind_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Punjab Sind Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Punjab Sind Bank
+      btn_punjab_national_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Punjab National Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Punjab National Bank
+      btn_reserve_bank_of_india:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Reserve Bank Of India']
+        type: action
+        android_class: android.widget.Button
+        text: Reserve Bank Of India
+      btn_south_indian_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='South Indian Bank']
+        type: action
+        android_class: android.widget.Button
+        text: South Indian Bank
+      btn_standard_chartered_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Standard Chartered Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Standard Chartered Bank
+      btn_state_bank_of_bikaner_and_jaipur:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='State Bank Of Bikaner And Jaipur']
+        type: action
+        android_class: android.widget.Button
+        text: State Bank Of Bikaner And Jaipur
+      btn_state_bank_of_hyderabad:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='State Bank Of Hyderabad']
+        type: action
+        android_class: android.widget.Button
+        text: State Bank Of Hyderabad
+      btn_state_bank_of_karnataka:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='State Bank Of Karnataka']
+        type: action
+        android_class: android.widget.Button
+        text: State Bank Of Karnataka
+      btn_state_bank_of_patiala:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='State Bank Of Patiala']
+        type: action
+        android_class: android.widget.Button
+        text: State Bank Of Patiala
+      btn_state_bank_of_travancore:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='State Bank Of Travancore']
+        type: action
+        android_class: android.widget.Button
+        text: State Bank Of Travancore
+      btn_syndicate_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Syndicate Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Syndicate Bank
+      btn_times_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Times Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Times Bank
+      btn_uco_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Uco Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Uco Bank
+      btn_vijaya_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Vijaya Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Vijaya Bank
+      btn_deutsche:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Deutsche']
+        type: action
+        android_class: android.widget.Button
+        text: Deutsche
+      btn_catholic_syrian:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Catholic Syrian']
+        type: action
+        android_class: android.widget.Button
+        text: Catholic Syrian
+      btn_global_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Global Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Global Bank
+      btn_jammu_kashmir_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Jammu Kashmir Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Jammu Kashmir Bank
+      btn_union_bank_of_india:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Union Bank Of India']
+        type: action
+        android_class: android.widget.Button
+        text: Union Bank Of India
+      btn_banaras_state_banking_corp:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Banaras State Banking Corp']
+        type: action
+        android_class: android.widget.Button
+        text: Banaras State Banking Corp
+      btn_abn_amro:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Abn Amro']
+        type: action
+        android_class: android.widget.Button
+        text: Abn Amro
+      btn_karur_vysya_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Karur Vysya Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Karur Vysya Bank
+      btn_state_bank_of_mysore:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='State Bank Of Mysore']
+        type: action
+        android_class: android.widget.Button
+        text: State Bank Of Mysore
+      btn_uti_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Uti Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Uti Bank
+      btn_united_bank_of_india:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='United Bank Of India']
+        type: action
+        android_class: android.widget.Button
+        text: United Bank Of India
+      btn_indian_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Indian Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Indian Bank
+      btn_bank_of_madura_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Bank Of Madura Ltd.']
+        type: action
+        android_class: android.widget.Button
+        text: Bank Of Madura Ltd.
+      btn_bank_of_nova_scotia:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Bank Of Nova Scotia']
+        type: action
+        android_class: android.widget.Button
+        text: Bank Of Nova Scotia
+      btn_state_bank_of_saurashtra:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='State Bank Of Saurashtra']
+        type: action
+        android_class: android.widget.Button
+        text: State Bank Of Saurashtra
+      btn_sanwa_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Sanwa Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Sanwa Bank Ltd
+      btn_kangra_coop_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Kangra Co-op Bank Ltd.']
+        type: action
+        android_class: android.widget.Button
+        text: Kangra Co-op Bank Ltd.
+      btn_bank_national_de_paris:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Bank National De Paris']
+        type: action
+        android_class: android.widget.Button
+        text: Bank National De Paris
+      btn_indus_ind_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Indus Ind Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Indus Ind Bank
+      btn_centurion_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Centurion Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Centurion Bank Ltd
+      btn_bombay_mercantile_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Bombay Mercantile Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Bombay Mercantile Bank
+      btn_karnataka_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Karnataka Bank Ltd.']
+        type: action
+        android_class: android.widget.Button
+        text: Karnataka Bank Ltd.
+      btn_bharat_overseas_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Bharat Overseas Bank Ltd.']
+        type: action
+        android_class: android.widget.Button
+        text: Bharat Overseas Bank Ltd.
+      btn_lakshmi_vilas_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Lakshmi Vilas Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Lakshmi Vilas Bank Ltd
+      btn_nainital_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Nainital Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Nainital Bank
+      btn_inter_continental_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Inter Continental Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Inter Continental Bank
+      btn_kangra_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Kangra Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Kangra Bank
+      btn_united_western:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='United Western']
+        type: action
+        android_class: android.widget.Button
+        text: United Western
+      btn_idbi_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Idbi Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Idbi Bank
+      btn_vaish_coop_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Vaish Co-op Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Vaish Co-op Bank Ltd
+      btn_utcommbank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Ut.comm.bank']
+        type: action
+        android_class: android.widget.Button
+        text: Ut.comm.bank
+      btn_bank_of_tokyo_and_mitsubishi:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Bank Of Tokyo And Mitsubishi']
+        type: action
+        android_class: android.widget.Button
+        text: Bank Of Tokyo And Mitsubishi
+      btn_sikkim_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Sikkim Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Sikkim Bank
+      btn_lord_krishna_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Lord Krishna Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Lord Krishna Bank
+      btn_sakura_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Sakura Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Sakura Bank Ltd
+      btn_state_bank_of_indore:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='State Bank Of Indore']
+        type: action
+        android_class: android.widget.Button
+        text: State Bank Of Indore
+      btn_vyasa_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Vyasa Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Vyasa Bank Ltd
+      btn_china_trust_commercial_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='China Trust Commercial Bank']
+        type: action
+        android_class: android.widget.Button
+        text: China Trust Commercial Bank
+      btn_banque_indosuez:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Banque Indosuez']
+        type: action
+        android_class: android.widget.Button
+        text: Banque Indosuez
+      btn_credit_lyonnais:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Credit Lyonnais']
+        type: action
+        android_class: android.widget.Button
+        text: Credit Lyonnais
+      btn_societe_generale:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Societe Generale']
+        type: action
+        android_class: android.widget.Button
+        text: Societe Generale
+      btn_citizen_cooprative_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Citizen Co-oprative Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Citizen Co-oprative Bank Ltd
+      btn_state_bank_of_coimbtore:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='State Bank Of Coimbtore']
+        type: action
+        android_class: android.widget.Button
+        text: State Bank Of Coimbtore
+      btn_hanil_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Hanil Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Hanil Bank
+      btn_jp_morgan_chase_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='J.p. Morgan Chase Bank']
+        type: action
+        android_class: android.widget.Button
+        text: J.p. Morgan Chase Bank
+      btn_saidapet_cooperative_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Saidapet Co-operative Bank Ltd']
+        type: action
+        android_class: android.widget.Button
+        text: Saidapet Co-operative Bank Ltd
+      btn_idfc_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Idfc Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Idfc Bank
+      btn_bandhan_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Bandhan Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Bandhan Bank
+      btn_dcb_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Dcb Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Dcb Bank
+      btn_woori_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Woori Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Woori Bank
+      btn_svc_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Svc Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Svc Bank
+      btn_equitas:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Equitas']
+        type: action
+        android_class: android.widget.Button
+        text: Equitas
+      btn_the_cosmos_cooperative_bank_ltd:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='The Cosmos Cooperative Bank Ltd.,']
+        type: action
+        android_class: android.widget.Button
+        text: The Cosmos Cooperative Bank Ltd.,
+      btn_equitas_small_finance_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Equitas Small Finance Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Equitas Small Finance Bank
+      btn_ujjivan_small_finanace_bank:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Ujjivan Small Finanace Bank']
+        type: action
+        android_class: android.widget.Button
+        text: Ujjivan Small Finanace Bank
+      btn_clear_all:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Clear all']
+        type: action
+        android_class: android.widget.Button
+        text: Clear all
+      btn_apply:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Apply']
+        type: action
+        android_class: android.widget.Button
+        text: Apply

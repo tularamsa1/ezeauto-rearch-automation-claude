@@ -113,6 +113,16 @@ class ReArchHomePage(ReArchNativeBasePage):
         self.perform_click(HomeScreen.btn_collect_payment)
         logger.info("Clicked Collect Payment button.")
 
+    def click_transactions(self):
+        """Tap the Transactions button on the initial home screen to navigate to Payment History."""
+        self.perform_click(HomeScreen.btn_transactions)
+        logger.info("Clicked Transactions button.")
+
+    def click_help(self):
+        """Tap the Help button on the initial home screen to navigate to Help Center."""
+        self.perform_click(HomeScreen.btn_help)
+        logger.info("Clicked Help button.")
+
     # ── Compound flows ────────────────────────────────────────────────────────
 
     def enter_amount_and_proceed_upi(self, amount):

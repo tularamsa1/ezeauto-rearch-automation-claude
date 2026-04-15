@@ -131,6 +131,14 @@ class ReArchNativeBasePage:
         end_y = int(size["height"] * 0.7)
         self.driver.swipe(start_x, start_y, start_x, end_y, duration_ms)
 
+    def swipe_left(self, duration_ms: int = 800):
+        """Swipe left on the screen (scroll content right / reveal items to the right)."""
+        size = self.driver.get_window_size()
+        start_x = int(size["width"] * 0.8)
+        end_x = int(size["width"] * 0.2)
+        start_y = size["height"] // 2
+        self.driver.swipe(start_x, start_y, end_x, start_y, duration_ms)
+
     def swipe_up_multiple(self, count: int = 3, duration_ms: int = 800):
         for _ in range(count):
             self.swipe_up(duration_ms)

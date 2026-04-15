@@ -39,9 +39,9 @@ class NativeLocators:
 
 class LoginLocators:
     img_razorpay_logo      = (AppiumBy.XPATH, "//android.widget.Image[@text='Razorpay']")
-    txt_username           = (AppiumBy.ID,    "username")
+    txt_username           = (AppiumBy.XPATH,    "//android.widget.EditText[@resource-id='username']")
     lbl_username           = (AppiumBy.XPATH, "//android.view.View[@text='Username']")
-    txt_password           = (AppiumBy.ID,    "password")
+    txt_password           = (AppiumBy.XPATH,    "//android.widget.EditText[@resource-id='password']")
     lbl_password           = (AppiumBy.XPATH, "//android.view.View[@text='Password']")
     btn_toggle_password    = (AppiumBy.XPATH, "//android.view.View[.//android.widget.EditText[@resource-id='password']]//android.widget.Button")
     btn_login              = (AppiumBy.XPATH, "//android.widget.Button[@text='Login']")
@@ -140,6 +140,42 @@ class CashConfirmLocators:
     lbl_payment_amount     = (AppiumBy.XPATH, "//android.widget.TextView[@text='Payment Amount']")
     lbl_tap_confirm        = (AppiumBy.XPATH, "//android.widget.TextView[contains(@text,'Tap confirm to record')]")
     btn_confirm_payment    = (AppiumBy.XPATH, "//android.widget.Button[@text='Confirm Payment']")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CHEQUE PAYMENT FORM
+# ══════════════════════════════════════════════════════════════════════════════
+
+class ChequePaymentLocators:
+    txt_enter_cheque_number = (AppiumBy.XPATH, "//android.widget.EditText[@text='Enter Cheque Number']")
+    btn_select_bank         = (AppiumBy.XPATH, "//android.widget.Button[@text='Select Bank']")
+    btn_ddmmyyyy            = (AppiumBy.XPATH, "//android.widget.Button[@text='dd/mm/yyyy']")
+    txt_enter_ifsc_code     = (AppiumBy.XPATH, "//android.widget.EditText[@text='Enter IFSC Code']")  # TODO: verify placeholder text on first run
+    btn_confirm_payment     = (AppiumBy.XPATH, "//android.widget.Button[@text='Confirm Payment']")
+    btn_apply               = (AppiumBy.XPATH, "//android.widget.Button[@text='Apply']")  # TODO: verify on first run — shared by bank dropdown and date picker
+
+    @staticmethod
+    def bank_btn(bank_name: str):
+        """Locate a bank button by its display name (e.g. 'Abn Amro Bank')."""
+        return (AppiumBy.XPATH, f"//android.widget.Button[@text='{bank_name}']")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# DEMAND DRAFT PAYMENT FORM
+# ══════════════════════════════════════════════════════════════════════════════
+
+class DemandDraftLocators:
+    txt_enter_dd_number     = (AppiumBy.XPATH, "//android.widget.EditText[@text='Enter DD Number']")
+    btn_select_bank         = (AppiumBy.XPATH, "//android.widget.Button[@text='Select Bank']")
+    txt_enter_branch_name   = (AppiumBy.XPATH, "//android.widget.EditText[@text='Enter Branch Name']")  # TODO: verify placeholder text on first run
+    btn_ddmmyyyy            = (AppiumBy.XPATH, "//android.widget.Button[@text='dd/mm/yyyy']")
+    btn_confirm_payment     = (AppiumBy.XPATH, "//android.widget.Button[@text='Confirm Payment']")
+    btn_apply               = (AppiumBy.XPATH, "//android.widget.Button[@text='Apply']")  # TODO: verify on first run
+
+    @staticmethod
+    def bank_btn(bank_name: str):
+        """Locate a bank button by its display name (e.g. 'Pallavan Gramma Bank')."""
+        return (AppiumBy.XPATH, f"//android.widget.Button[@text='{bank_name}']")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -280,3 +316,22 @@ class HomeScreen:
     btn_settings           = (AppiumBy.XPATH, "//android.widget.Button[@text='Settings']")
     btn_help               = (AppiumBy.XPATH, "//android.widget.Button[@text='Help']")
     btn_khaata             = (AppiumBy.XPATH, "//android.widget.Button[@text='Khaata']")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# HELP CENTER PAGE
+# ══════════════════════════════════════════════════════════════════════════════
+
+class HelpCenterLocators:
+    lbl_support_numbers    = (AppiumBy.XPATH, "//android.widget.TextView[@text='1800 212 212 212 / 1800 313 313 313']")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ONBOARDING / SELECT ENVIRONMENT (post-install first launch)
+# ══════════════════════════════════════════════════════════════════════════════
+
+class OnboardingLocators:
+    lbl_select_environment = (AppiumBy.XPATH, "//android.widget.TextView[@text='Select Environment']")  # TODO: verify text on first run
+    chk_dont_show_again    = (AppiumBy.XPATH, "//android.widget.CheckBox[contains(@text,\"Don't show\")]")  # TODO: verify locator — may be View or Button
+    btn_next               = (AppiumBy.XPATH, "//android.widget.Button[@text='Next']")
+    btn_start              = (AppiumBy.XPATH, "//android.widget.Button[@text='Start']")

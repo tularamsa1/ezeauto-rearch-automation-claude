@@ -1,5 +1,5 @@
 from PageFactory.ReArch.rearch_native_base_page import ReArchNativeBasePage
-from PageFactory.ReArch.rearch_native_locators import LoginLocators
+from PageFactory.ReArch.rearch_native_locators import LoginLocators, OnboardingLocators
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -77,3 +77,45 @@ class ReArchLoginPage(ReArchNativeBasePage):
 
     def fetch_support_number(self) -> str:
         return self.fetch_text(LoginLocators.lbl_support_number)
+
+    # ── Conditional login (handles auto-login vs manual login) ───────────────
+
+    def is_select_environment_displayed(self, timeout: int = 10) -> bool:
+        """Check if the Select Environment screen appears (manual login flow)."""
+        return self.is_element_visible(OnboardingLocators.lbl_select_environment, time=timeout)
+
+    def perform_login_if_required(self, username: str, password: str):
+        """Handle login only if the Select Environment screen appears.
+
+        Auto-login flow: app lands directly on the home screen — nothing to do.
+        Manual login flow: Select Environment → Login → onboarding (Next, Next, Start).
+        """
+        if not self.is_select_environment_displayed():
+            logger.info("Select Environment not displayed — auto-login flow, skipping login")
+            return
+
+        logger.info("Select Environment screen detected — performing manual login flow")
+
+        # Step 1: Select environment (screen is already displayed)
+        # TODO: add environment selection logic once locator is confirmed
+        logger.debug("Select Environment screen acknowledged")
+
+        # Step 2: Enter credentials and tap Login
+        self.wait_for_element(LoginLocators.txt_username)
+        self.enter_username(username)
+        self.enter_password(password)
+        self.click_login()
+
+        # Step 3: Check "Don't show me again" checkbox
+        self.perform_click(OnboardingLocators.chk_dont_show_again)
+        logger.debug("Checked 'Don't show me again'")
+
+        # Step 4: Tap Next twice
+        self.perform_click(OnboardingLocators.btn_next)
+        logger.debug("Clicked Next (1/2)")
+        self.perform_click(OnboardingLocators.btn_next)
+        logger.debug("Clicked Next (2/2)")
+
+        # Step 5: Tap Start
+        self.perform_click(OnboardingLocators.btn_start)
+        logger.info("Clicked Start — manual login flow completed")
