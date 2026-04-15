@@ -143,6 +143,15 @@ class CashConfirmLocators:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# CUSTOMER AUTH / PAN ENTRY SCREEN
+# ══════════════════════════════════════════════════════════════════════════════
+
+class CustomerAuthLocators:
+    txt_pan_number         = (AppiumBy.XPATH, "//android.widget.EditText[@text='Ex: ABCDE1234A']")
+    btn_confirm_payment    = (AppiumBy.XPATH, "//android.widget.Button[@text='Confirm Payment']")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # CHEQUE PAYMENT FORM
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -316,6 +325,23 @@ class HomeScreen:
     btn_settings           = (AppiumBy.XPATH, "//android.widget.Button[@text='Settings']")
     btn_help               = (AppiumBy.XPATH, "//android.widget.Button[@text='Help']")
     btn_khaata             = (AppiumBy.XPATH, "//android.widget.Button[@text='Khaata']")
+    btn_other_apps         = (AppiumBy.XPATH, "//android.widget.Button[@text='Other Apps']")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# OTHER APPS PAGE
+# ══════════════════════════════════════════════════════════════════════════════
+
+class OtherAppsLocators:
+    btn_calculator         = (AppiumBy.XPATH, "//android.widget.Button[@text='Calculator Calculator']")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CALCULATOR PAGE
+# ══════════════════════════════════════════════════════════════════════════════
+
+class CalculatorLocators:
+    btn_7                  = (AppiumBy.XPATH, "//android.widget.Button[@text='7']")
 
 
 # ══════════════════════════════════════════════════════════════════════════════

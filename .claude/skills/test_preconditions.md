@@ -44,6 +44,40 @@ finally:
     Configuration.executeFinallyBlock(testcase_id)
 ```
 
+### Settings Refresh After Auto-Login
+
+When a test uses `autoLoginByTokenEnabled = true` (auto-login) AND applies new
+org_settings preconditions, the app won't pick up the changed settings because
+auto-login bypasses the fresh login flow that triggers a settings re-fetch.
+
+**Fix:** After landing on the Collect Payment page, navigate to Payment History,
+wait until the Dashboard is visible, then go back. This forces the app to
+re-fetch org settings.
+
+**When to add this block:** Whenever the test has org_settings preconditions
+AND the login step uses `perform_login_if_required()` (auto-login path).
+
+**Code (insert after `click_collect_payment()` + `wait_for_home_page_load()`,
+before entering any amount):**
+```python
+# Refresh settings: navigate to Payment History, wait for Dashboard, then back
+# (auto-login bypasses fresh login, so preconditions aren't picked up without this)
+home_page.click_txn_history()
+txn_history_page = ReArchTxnHistoryPage(app_driver)
+txn_history_page.wait_for_txn_list()
+assert home_page.is_element_visible(TxnHistoryLocators.btn_my_dashboard, time=10), \
+    "My Dashboard button should be visible on Payment History"
+logger.debug("Payment History loaded with Dashboard visible — settings refreshed")
+home_page.go_back()
+logger.debug("Navigated back from Payment History")
+```
+
+**Required imports (add if not already present):**
+```python
+from PageFactory.ReArch.rearch_txn_history_page import ReArchTxnHistoryPage
+from PageFactory.ReArch.rearch_native_locators import TxnHistoryLocators
+```
+
 ### Reading Preconditions from action_registry.yaml
 
 The `action_registry.yaml` declares preconditions on relevant actions:

@@ -188,6 +188,16 @@ Naming: test_UI_ReArch_PM_<METHOD>_<FLOW>_<VARIANT>_<NUMBER>.py
 PRECONDITIONS (org_settings_update)
 See: .claude/skills/test_preconditions.md — full patterns, key table, and revert template.
 
+SETTINGS REFRESH RULE (auto-login + preconditions)
+When a test has BOTH of these conditions:
+  1. Uses `perform_login_if_required()` (auto-login path)
+  2. Has org_settings preconditions (any org_settings_update call in SETUP)
+Then you MUST emit the settings refresh block after `click_collect_payment()` +
+`wait_for_home_page_load()` and BEFORE entering the amount. This navigates to
+Payment History → waits for Dashboard → goes back, which forces the app to
+re-fetch the updated org settings.
+See: .claude/skills/test_preconditions.md § "Settings Refresh After Auto-Login"
+
 MAPPING RULES
 
 1. Steps containing "open" or "launch" → wait_for_login_page()

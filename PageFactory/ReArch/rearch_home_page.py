@@ -123,6 +123,11 @@ class ReArchHomePage(ReArchNativeBasePage):
         self.perform_click(HomeScreen.btn_help)
         logger.info("Clicked Help button.")
 
+    def click_other_apps(self):
+        """Tap the Other Apps button on the initial home screen."""
+        self.perform_click(HomeScreen.btn_other_apps)
+        logger.info("Clicked Other Apps button.")
+
     # ── Compound flows ────────────────────────────────────────────────────────
 
     def enter_amount_and_proceed_upi(self, amount):

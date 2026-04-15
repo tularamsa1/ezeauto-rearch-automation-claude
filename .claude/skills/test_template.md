@@ -100,6 +100,15 @@ def test_common_rearch_<NNNN>():
                 home_page = ReArchHomePage(app_driver)
                 home_page.wait_for_home_page_load()
 
+                # ── Settings refresh (emit ONLY when test uses auto-login
+                #    via perform_login_if_required AND has org_settings preconditions) ──
+                # home_page.click_txn_history()
+                # txn_history_page = ReArchTxnHistoryPage(app_driver)
+                # txn_history_page.wait_for_txn_list()
+                # assert home_page.is_element_visible(TxnHistoryLocators.btn_my_dashboard, time=10)
+                # home_page.go_back()
+                # home_page.wait_for_home_page_load()
+
                 # ... additional steps mapped from action_registry ...
 
                 # DB txn resolution — always filter by BOTH org_code AND username
