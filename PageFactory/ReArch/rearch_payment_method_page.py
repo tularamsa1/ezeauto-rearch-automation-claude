@@ -60,6 +60,16 @@ class ReArchPaymentMethodPage(ReArchNativeBasePage):
         self.perform_click(PaymentMethodLocators.btn_demand_draft)
         logger.info("Selected Demand Draft from payment methods.")
 
+    def click_emi(self):
+        self.scroll_to_text("EMI")
+        self.perform_click(PaymentMethodLocators.btn_emi)
+        logger.info("Selected EMI from payment methods.")
+
+    def click_my_discount_emi(self):
+        self.scroll_to_text("My Discount EMI")
+        self.perform_click(PaymentMethodLocators.btn_my_discount_emi)
+        logger.info("Selected My Discount EMI from payment methods.")
+
     # ── Availability checks ───────────────────────────────────────────────────
 
     def is_cash_available(self) -> bool:

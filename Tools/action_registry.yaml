@@ -57,6 +57,21 @@ page_objects:
   ReArchCardTypePage:
     import: "from PageFactory.ReArch.rearch_card_type_page import ReArchCardTypePage"
     init: "card_type_page = ReArchCardTypePage(driver)"
+  ReArchChequePage:
+    import: "from PageFactory.ReArch.rearch_cheque_page import ReArchChequePage"
+    init: "cheque_page = ReArchChequePage(driver)"
+  ReArchDemandDraftPage:
+    import: "from PageFactory.ReArch.rearch_demand_draft_page import ReArchDemandDraftPage"
+    init: "dd_page = ReArchDemandDraftPage(driver)"
+  ReArchTipPage:
+    import: "from PageFactory.ReArch.rearch_tip_page import ReArchTipPage"
+    init: "tip_page = ReArchTipPage(driver)"
+  ReArchEMIPage:
+    import: "from PageFactory.ReArch.rearch_emi_page import ReArchEMIPage"
+    init: "emi_page = ReArchEMIPage(driver)"
+  ReArchAccountDetailsPage:
+    import: "from PageFactory.ReArch.rearch_account_details_page import ReArchAccountDetailsPage"
+    init: "account_page = ReArchAccountDetailsPage(driver)"
 
 actions:
 
@@ -634,6 +649,65 @@ actions:
     method: click_my_dashboard
     code: "txn_history_page.click_my_dashboard()"
 
+  # ── Transaction history filters ──────────────────────────────────────────
+
+  - patterns:
+      - "click method filter"
+      - "click filter method"
+      - "tap method filter"
+    page: ReArchTxnHistoryPage
+    method: click_filter_method
+    code: "txn_history_page.click_filter_method()"
+    description: "Click the Method filter chip on the transaction history page"
+
+  - patterns:
+      - "click status filter"
+      - "click filter status"
+      - "tap status filter"
+    page: ReArchTxnHistoryPage
+    method: click_filter_status
+    code: "txn_history_page.click_filter_status()"
+    description: "Click the Status filter chip on the transaction history page"
+
+  - patterns:
+      - "click date filter"
+      - "click filter date"
+      - "tap date filter"
+    page: ReArchTxnHistoryPage
+    method: click_filter_date
+    code: "txn_history_page.click_filter_date()"
+    description: "Click the Date filter chip on the transaction history page"
+
+  - patterns:
+      - "select filter option {option}"
+      - "click filter option {option}"
+      - "choose filter {option}"
+    page: ReArchTxnHistoryPage
+    method: select_filter_option
+    params: [option]
+    code: "txn_history_page.select_filter_option(\"{option}\")"
+    description: "Select a filter option from the filter dropdown (e.g., 'Cash', 'Settled')"
+
+  - patterns:
+      - "click apply filter"
+      - "tap apply filter"
+      - "apply filter"
+    page: ReArchTxnHistoryPage
+    method: click_apply_filter
+    code: "txn_history_page.click_apply_filter()"
+    description: "Click the Apply button in the filter dropdown"
+
+  - patterns:
+      - "verify filter text {text} is displayed"
+      - "check filter text {text} is present"
+      - "is filter {text} visible"
+    page: ReArchTxnHistoryPage
+    method: is_filter_text_displayed
+    params: [text]
+    code: "assert txn_history_page.is_filter_text_displayed(\"{text}\"), \"Expected filter text '{text}' not displayed\""
+    returns: bool
+    description: "Verify a filter text/chip is displayed on the transaction history page"
+
   # ── Transaction detail ─────────────────────────────────────────────────
 
   - patterns:
@@ -800,6 +874,417 @@ actions:
     page: ReArchTxnDetailPage
     method: click_print_chargeslip
     code: "txn_detail_page.click_print_chargeslip()"
+
+  - patterns:
+      - "click settings"
+      - "tap settings"
+      - "open settings"
+    page: ReArchHomePage
+    method: click_settings
+    code: "home_page.click_settings()"
+    description: "Tap the Settings button on the initial home screen"
+
+  - patterns:
+      - "select emi"
+      - "click emi"
+      - "pay by emi"
+    page: ReArchPaymentMethodPage
+    method: click_emi
+    code: "payment_method_page.click_emi()"
+
+  # ── EMI Plan Selection screen ──────────────────────────────────────────
+
+  - patterns:
+      - "wait for emi screen"
+      - "emi screen displayed"
+    page: ReArchEMIPage
+    method: wait_for_emi_screen
+    code: "emi_page.wait_for_emi_screen()"
+
+  - patterns:
+      - "wait for bank button"
+      - "bank button visible"
+    page: ReArchEMIPage
+    method: wait_for_bank_button
+    code: "emi_page.wait_for_bank_button()"
+
+  - patterns:
+      - "click hdfc bank credit card"
+      - "select hdfc bank credit card"
+    page: ReArchEMIPage
+    method: click_hdfc_bank_credit_card
+    code: "emi_page.click_hdfc_bank_credit_card()"
+
+  - patterns:
+      - "click debit card tab"
+      - "select debit card tab"
+    page: ReArchEMIPage
+    method: click_debit_card_tab
+    code: "emi_page.click_debit_card_tab()"
+
+  - patterns:
+      - "click hdfc bank debit card"
+      - "select hdfc bank debit card"
+    page: ReArchEMIPage
+    method: click_hdfc_bank_debit_card
+    code: "emi_page.click_hdfc_bank_debit_card()"
+
+  - patterns:
+      - "click sbi bank credit card"
+      - "select sbi bank credit card"
+    page: ReArchEMIPage
+    method: click_sbi_bank_credit_card
+    code: "emi_page.click_sbi_bank_credit_card()"
+
+  - patterns:
+      - "select my discount emi"
+      - "click my discount emi"
+    page: ReArchPaymentMethodPage
+    method: click_my_discount_emi
+    code: "payment_method_page.click_my_discount_emi()"
+
+  - patterns:
+      - "click 3 month emi plan"
+      - "select 3m emi plan"
+    page: ReArchEMIPage
+    method: click_3m_plan
+    code: "emi_page.click_3m_plan()"
+
+  - patterns:
+      - "click 3 month no cost emi plan"
+      - "select 3m no cost emi plan"
+    page: ReArchEMIPage
+    method: click_3m_no_cost_plan
+    code: "emi_page.click_3m_no_cost_plan()"
+
+  - patterns:
+      - "click view breakup"
+      - "tap view breakup"
+    page: ReArchEMIPage
+    method: click_view_breakup
+    code: "emi_page.click_view_breakup()"
+
+  - patterns:
+      - "click proceed on emi"
+      - "proceed on emi screen"
+    page: ReArchEMIPage
+    method: click_proceed
+    code: "emi_page.click_proceed()"
+
+  # ── Account Details / Settings screen ──────────────────────────────────
+
+  - patterns:
+      - "wait for account screen"
+      - "account details displayed"
+      - "verify account screen"
+    page: ReArchAccountDetailsPage
+    method: wait_for_account_screen
+    code: "account_page.wait_for_account_screen()"
+    description: "Wait for the account details screen to be ready"
+
+  - patterns:
+      - "click org code {org_code}"
+      - "tap org code {org_code}"
+      - "select org code {org_code}"
+    page: ReArchAccountDetailsPage
+    method: click_org_code
+    params: [org_code]
+    code: "account_page.click_org_code(\"{org_code}\")"
+
+  - patterns:
+      - "click relaunch app"
+      - "tap relaunch app"
+      - "relaunch app"
+    page: ReArchAccountDetailsPage
+    method: click_relaunch_app
+    code: "account_page.click_relaunch_app()"
+    description: "Scroll down and tap the Relaunch App button on the settings screen"
+
+  - patterns:
+      - "click delete cache and relaunch"
+      - "tap delete cache and relaunch"
+      - "delete cache and relaunch"
+      - "click delete cache & relaunch app"
+    page: ReArchAccountDetailsPage
+    method: click_delete_cache_and_relaunch
+    code: "account_page.click_delete_cache_and_relaunch()"
+    description: "Scroll down and tap the Delete Cache & Relaunch App button on the settings screen"
+
+  - patterns:
+      - "confirm delete and relaunch"
+      - "click yes delete and relaunch"
+      - "tap yes delete & relaunch"
+    page: ReArchAccountDetailsPage
+    method: click_confirm_delete_relaunch
+    code: "account_page.click_confirm_delete_relaunch()"
+    description: "Tap 'Yes, Delete & Relaunch' on the confirmation dialog"
+
+  - patterns:
+      - "verify mid is displayed"
+      - "check mid is present"
+    page: ReArchAccountDetailsPage
+    method: is_mid_displayed
+    code: "assert account_page.is_mid_displayed(), \"Expected 'MID' text not displayed\""
+    returns: bool
+
+  - patterns:
+      - "verify tid is displayed"
+      - "check tid is present"
+    page: ReArchAccountDetailsPage
+    method: is_tid_displayed
+    code: "assert account_page.is_tid_displayed(), \"Expected 'TID' text not displayed\""
+    returns: bool
+
+  - patterns:
+      - "verify text {text} is displayed"
+      - "check text {text} is present"
+    page: ReArchAccountDetailsPage
+    method: is_text_displayed
+    params: [text]
+    code: "assert account_page.is_text_displayed(\"{text}\"), \"Expected text '{text}' not displayed\""
+    returns: bool
+
+  # ── Cheque payment form ──────────────────────────────────────────────────
+
+  - patterns:
+      - "wait for cheque form"
+      - "cheque form displayed"
+      - "verify cheque form"
+    page: ReArchChequePage
+    method: wait_for_cheque_form
+    code: "cheque_page.wait_for_cheque_form()"
+    description: "Wait for the cheque payment form to be ready"
+
+  - patterns:
+      - "enter cheque number {cheque_number}"
+      - "type cheque number {cheque_number}"
+    page: ReArchChequePage
+    method: enter_cheque_number
+    params: [cheque_number]
+    code: "cheque_page.enter_cheque_number(\"{cheque_number}\")"
+
+  - patterns:
+      - "click select bank on cheque"
+      - "select bank on cheque form"
+    page: ReArchChequePage
+    method: click_select_bank
+    code: "cheque_page.click_select_bank()"
+
+  - patterns:
+      - "select bank {bank_name} on cheque"
+      - "choose bank {bank_name} on cheque"
+    page: ReArchChequePage
+    method: select_bank
+    params: [bank_name]
+    code: "cheque_page.select_bank(\"{bank_name}\")"
+
+  - patterns:
+      - "click apply on cheque"
+      - "tap apply on cheque form"
+    page: ReArchChequePage
+    method: click_apply
+    code: "cheque_page.click_apply()"
+
+  - patterns:
+      - "click cheque date picker"
+      - "select cheque date"
+      - "click dd/mm/yyyy on cheque"
+    page: ReArchChequePage
+    method: click_date_picker
+    code: "cheque_page.click_date_picker()"
+
+  - patterns:
+      - "enter ifsc code {ifsc_code}"
+      - "type ifsc code {ifsc_code}"
+    page: ReArchChequePage
+    method: enter_ifsc_code
+    params: [ifsc_code]
+    code: "cheque_page.enter_ifsc_code(\"{ifsc_code}\")"
+
+  - patterns:
+      - "confirm cheque payment"
+      - "click confirm payment on cheque"
+    page: ReArchChequePage
+    method: click_confirm_payment
+    code: "cheque_page.click_confirm_payment()"
+
+  - patterns:
+      - "verify cheque number error"
+      - "check cheque number should be 6 digits"
+    page: ReArchChequePage
+    method: is_error_cheque_number_displayed
+    code: "assert cheque_page.is_error_cheque_number_displayed(), \"Expected error 'Cheque number should be 6 digits' not displayed\""
+    returns: bool
+
+  - patterns:
+      - "verify select bank error on cheque"
+      - "check please select a bank error on cheque"
+    page: ReArchChequePage
+    method: is_error_select_bank_displayed
+    code: "assert cheque_page.is_error_select_bank_displayed(), \"Expected error 'Please select a bank' not displayed\""
+    returns: bool
+
+  - patterns:
+      - "verify cheque date error"
+      - "check please select cheque date error"
+    page: ReArchChequePage
+    method: is_error_cheque_date_displayed
+    code: "assert cheque_page.is_error_cheque_date_displayed(), \"Expected error 'Please select Cheque Date' not displayed\""
+    returns: bool
+
+  - patterns:
+      - "verify invalid ifsc error"
+      - "check invalid bank ifsc code error"
+    page: ReArchChequePage
+    method: is_error_invalid_ifsc_displayed
+    code: "assert cheque_page.is_error_invalid_ifsc_displayed(), \"Expected error 'Invalid Bank IFSC Code' not displayed\""
+    returns: bool
+
+  # ── Demand Draft payment form ──────────────────────────────────────────
+
+  - patterns:
+      - "wait for dd form"
+      - "demand draft form displayed"
+      - "verify dd form"
+    page: ReArchDemandDraftPage
+    method: wait_for_dd_form
+    code: "dd_page.wait_for_dd_form()"
+    description: "Wait for the demand draft payment form to be ready"
+
+  - patterns:
+      - "enter dd number {dd_number}"
+      - "type dd number {dd_number}"
+    page: ReArchDemandDraftPage
+    method: enter_dd_number
+    params: [dd_number]
+    code: "dd_page.enter_dd_number(\"{dd_number}\")"
+
+  - patterns:
+      - "click select bank on dd"
+      - "select bank on dd form"
+    page: ReArchDemandDraftPage
+    method: click_select_bank
+    code: "dd_page.click_select_bank()"
+
+  - patterns:
+      - "select bank {bank_name} on dd"
+      - "choose bank {bank_name} on dd"
+    page: ReArchDemandDraftPage
+    method: select_bank
+    params: [bank_name]
+    code: "dd_page.select_bank(\"{bank_name}\")"
+
+  - patterns:
+      - "click apply on dd"
+      - "tap apply on dd form"
+    page: ReArchDemandDraftPage
+    method: click_apply
+    code: "dd_page.click_apply()"
+
+  - patterns:
+      - "enter branch name {branch_name}"
+      - "type branch name {branch_name}"
+    page: ReArchDemandDraftPage
+    method: enter_branch_name
+    params: [branch_name]
+    code: "dd_page.enter_branch_name(\"{branch_name}\")"
+
+  - patterns:
+      - "click dd date picker"
+      - "select dd date"
+      - "click dd/mm/yyyy on dd"
+    page: ReArchDemandDraftPage
+    method: click_date_picker
+    code: "dd_page.click_date_picker()"
+
+  - patterns:
+      - "confirm dd payment"
+      - "click confirm payment on dd"
+    page: ReArchDemandDraftPage
+    method: click_confirm_payment
+    code: "dd_page.click_confirm_payment()"
+
+  - patterns:
+      - "verify dd number error"
+      - "check dd number should be 6 digits"
+    page: ReArchDemandDraftPage
+    method: is_error_dd_number_displayed
+    code: "assert dd_page.is_error_dd_number_displayed(), \"Expected error 'DD number should be 6 digits' not displayed\""
+    returns: bool
+
+  - patterns:
+      - "verify select bank error on dd"
+      - "check please select a bank error on dd"
+    page: ReArchDemandDraftPage
+    method: is_error_select_bank_displayed
+    code: "assert dd_page.is_error_select_bank_displayed(), \"Expected error 'Please select a bank' not displayed\""
+    returns: bool
+
+  - patterns:
+      - "verify branch name error"
+      - "check please provide branch name error"
+    page: ReArchDemandDraftPage
+    method: is_error_branch_name_displayed
+    code: "assert dd_page.is_error_branch_name_displayed(), \"Expected error 'Please provide Branch Name' not displayed\""
+    returns: bool
+
+  - patterns:
+      - "verify dd date error"
+      - "check please enter dd date error"
+    page: ReArchDemandDraftPage
+    method: is_error_dd_date_displayed
+    code: "assert dd_page.is_error_dd_date_displayed(), \"Expected error 'Please enter DD Date' not displayed\""
+    returns: bool
+
+  # ── Tip details screen ─────────────────────────────────────────────────
+
+  - patterns:
+      - "wait for tip screen"
+      - "tip screen displayed"
+      - "verify tip screen"
+    page: ReArchTipPage
+    method: wait_for_tip_screen
+    code: "tip_page.wait_for_tip_screen()"
+    description: "Wait for the tip details screen to be ready"
+
+  - patterns:
+      - "verify 6 percent tip"
+      - "check 6% tip is displayed"
+      - "is 6% tip visible"
+    page: ReArchTipPage
+    method: is_6_percent_displayed
+    code: "assert tip_page.is_6_percent_displayed(), \"Expected 6% tip button not displayed\""
+    returns: bool
+
+  - patterns:
+      - "verify 11 percent tip"
+      - "check 11% tip is displayed"
+      - "is 11% tip visible"
+    page: ReArchTipPage
+    method: is_11_percent_displayed
+    code: "assert tip_page.is_11_percent_displayed(), \"Expected 11% tip button not displayed\""
+    returns: bool
+
+  - patterns:
+      - "click 6 percent tip"
+      - "select 6% tip"
+    page: ReArchTipPage
+    method: click_6_percent
+    code: "tip_page.click_6_percent()"
+
+  - patterns:
+      - "click 11 percent tip"
+      - "select 11% tip"
+    page: ReArchTipPage
+    method: click_11_percent
+    code: "tip_page.click_11_percent()"
+
+  - patterns:
+      - "click done on tip"
+      - "tap done on tip screen"
+    page: ReArchTipPage
+    method: click_done
+    code: "tip_page.click_done()"
 
   # ── Generic navigation ─────────────────────────────────────────────────
 

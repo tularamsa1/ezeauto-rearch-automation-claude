@@ -79,3 +79,388 @@ class panDetails:
     lbl_pan_number                 = (AppiumBy.XPATH, "//android.view.View[@text='PAN Number *']")
     pan_text_field =  (AppiumBy.XPATH, "//android.widget.EditText[@index='5']")                # View · "PAN Number *"
     btn_confirm_payment            = (AppiumBy.XPATH, "//android.widget.Button[@text='Confirm Payment']")  # Button · "Confirm Payment"
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# tip_details_with_customised_tip_percentage
+# ════════════════════════════════════════════════════════════════════════════
+
+class tip_details_with_customised_tip_percentage:
+    """Auto-generated from uiautomator dump — review and adjust as needed."""
+    # TODO: lbl_view — needs stable locator (no resource-id or text; class=android.view.View index=0)
+    # TODO: btn_button — needs stable locator (no resource-id or text; class=android.widget.Button index=0)
+    img_e91cc2003e6491b7f659       = (AppiumBy.XPATH, "//android.widget.Image[@text='e91cc2003e6491b7f659']")  # Image · "e91cc2003e6491b7f659"
+    # TODO: btn_button_2 — needs stable locator (no resource-id or text; class=android.widget.Button index=2)
+    lbl_textview                   = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹']")  # TextView · "₹"
+    lbl_0                          = (AppiumBy.XPATH, "//android.widget.TextView[@text='0']")  # TextView · "0"
+    btn_add_tip                    = (AppiumBy.XPATH, "//android.widget.Button[@text='Add Tip']")  # Button · "Add Tip"
+    btn_card                       = (AppiumBy.XPATH, "//android.widget.Button[@text='Card']")  # Button · "Card"
+    btn_upi                        = (AppiumBy.XPATH, "//android.widget.Button[@text='UPI']")  # Button · "UPI"
+    # TODO: btn_button_3 — needs stable locator (no resource-id or text; class=android.widget.Button index=6)
+    btn_1                          = (AppiumBy.XPATH, "//android.widget.Button[@text='1']")  # Button · "1"
+    btn_2                          = (AppiumBy.XPATH, "//android.widget.Button[@text='2']")  # Button · "2"
+    btn_3                          = (AppiumBy.XPATH, "//android.widget.Button[@text='3']")  # Button · "3"
+    btn_4                          = (AppiumBy.XPATH, "//android.widget.Button[@text='4']")  # Button · "4"
+    btn_5                          = (AppiumBy.XPATH, "//android.widget.Button[@text='5']")  # Button · "5"
+    btn_6                          = (AppiumBy.XPATH, "//android.widget.Button[@text='6']")  # Button · "6"
+    btn_7                          = (AppiumBy.XPATH, "//android.widget.Button[@text='7']")  # Button · "7"
+    btn_8                          = (AppiumBy.XPATH, "//android.widget.Button[@text='8']")  # Button · "8"
+    btn_9                          = (AppiumBy.XPATH, "//android.widget.Button[@text='9']")  # Button · "9"
+    btn_button_4                   = (AppiumBy.XPATH, "//android.widget.Button[@text='•']")  # Button · "•"
+    btn_0                          = (AppiumBy.XPATH, "//android.widget.Button[@text='0']")  # Button · "0"
+    # TODO: btn_button_5 — needs stable locator (no resource-id or text; class=android.widget.Button index=18)
+    btn_close_overlay              = (AppiumBy.XPATH, "//android.widget.Button[@text='Close overlay']")  # Button · "Close overlay"
+    # TODO: btn_button_6 — needs stable locator (no resource-id or text; class=android.widget.Button index=0)
+    lbl_moneyicon_want_to_leave_a_tip = (AppiumBy.XPATH, "//android.view.View[@text='moneyicon Want to leave a tip?']")  # View · "moneyicon Want to leave a tip?"
+    btn_31_6                       = (AppiumBy.XPATH, "//android.widget.Button[@text='₹31 6%']")  # Button · "₹31 6%"
+    btn_57_11                      = (AppiumBy.XPATH, "//android.widget.Button[@text='₹57 11%']")  # Button · "₹57 11%"
+    txt_0_custom_amount            = (AppiumBy.XPATH, "//android.widget.EditText[@text='0, Custom Amount']")  # EditText · "0, Custom Amount"
+    lbl_payment_details            = (AppiumBy.XPATH, "//android.widget.TextView[@text='Payment Details']")  # TextView · "Payment Details"
+    lbl_amount                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='Amount']")  # TextView · "Amount"
+    lbl_515                        = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹515']")  # TextView · "₹515"
+    lbl_tip_amount                 = (AppiumBy.XPATH, "//android.widget.TextView[@text='Tip Amount']")  # TextView · "Tip Amount"
+    lbl_0_2                        = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹0']")  # TextView · "₹0"
+    lbl_to_pay                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='To Pay']")  # TextView · "To Pay"
+    lbl_515_2                      = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹515']")  # TextView · "₹515"
+    btn_done                       = (AppiumBy.XPATH, "//android.widget.Button[@text='Done']")  # Button · "Done"
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# account_details
+# ════════════════════════════════════════════════════════════════════════════
+
+class account_details:
+    """Auto-generated from uiautomator dump — review and adjust as needed."""
+    # TODO: lbl_view — needs stable locator (no resource-id or text; class=android.view.View index=0)
+    lbl_page                       = (AppiumBy.ID, "page")  # View · [page]
+    # TODO: btn_button — needs stable locator (no resource-id or text; class=android.widget.Button index=0)
+    lbl_account                    = (AppiumBy.XPATH, "//android.widget.TextView[@text='Account']")  # TextView · "Account"
+    lbl_carduidev169               = (AppiumBy.XPATH, "//android.widget.TextView[@text='CARDUIDEV16_9']")  # TextView · "CARDUIDEV16_9"
+    lbl_5556278415                 = (AppiumBy.XPATH, "//android.widget.TextView[@text='5556278415']")  # TextView · "5556278415"
+    lbl_textview                   = (AppiumBy.XPATH, "//android.widget.TextView[@text='•']")  # TextView · "•"
+    lbl_mid                        = (AppiumBy.XPATH, "//android.widget.TextView[@text='MID']")  # TextView · "MID"
+    lbl_na                         = (AppiumBy.XPATH, "//android.widget.TextView[@text='NA']")  # TextView · "NA"
+    lbl_tid                        = (AppiumBy.XPATH, "//android.widget.TextView[@text='TID']")  # TextView · "TID"
+    lbl_na_2                       = (AppiumBy.XPATH, "//android.widget.TextView[@text='NA']")  # TextView · "NA"
+    lbl_app_version                = (AppiumBy.XPATH, "//android.widget.TextView[@text='App Version']")  # TextView · "App Version"
+    lbl_1018221                    = (AppiumBy.XPATH, "//android.widget.TextView[@text='10.18.221']")  # TextView · "10.18.221"
+    lbl_web_app_version            = (AppiumBy.XPATH, "//android.widget.TextView[@text='Web App Version']")  # TextView · "Web App Version"
+    lbl_107                        = (AppiumBy.XPATH, "//android.widget.TextView[@text='107']")  # TextView · "107"
+    lbl_devices                    = (AppiumBy.XPATH, "//android.widget.TextView[@text='Devices']")  # TextView · "Devices"
+    btn_a910_1492856010_battery_30_paired = (AppiumBy.XPATH, "//android.widget.Button[@text='A910 - 1492856010 Battery 30% Paired']")  # Button · "A910 - 1492856010 Battery 30% Paired"
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# hande_location_pop_up
+# ════════════════════════════════════════════════════════════════════════════
+
+class hande_location_pop_up:
+    """Auto-generated from uiautomator dump — review and adjust as needed."""
+    lbl_no_location_access         = (AppiumBy.XPATH, "//android.widget.TextView[@text='No location access']")  # TextView · "No location access"
+    lbl_device_location_for_all_apps_is_turned_o = (AppiumBy.XPATH, "//android.widget.TextView[@text='Device location for all apps is turned off, and you may not be able to locate your device if it’s lost.']")  # TextView · "Device location for all apps is turned off, and you may not be able to locate your device if it’s lost."
+    btn_close                      = (AppiumBy.XPATH, "//android.widget.Button[@text='CLOSE']")  # Button · "CLOSE"
+    btn_turn_on_location           = (AppiumBy.XPATH, "//android.widget.Button[@text='TURN ON LOCATION']")  # Button · "TURN ON LOCATION"
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# bank_emi_credit_card
+# ════════════════════════════════════════════════════════════════════════════
+
+class bank_emi_credit_card:
+    """Auto-generated from uiautomator dump — review and adjust as needed."""
+    # TODO: lbl_view — needs stable locator (no resource-id or text; class=android.view.View index=0)
+    lbl_page                       = (AppiumBy.ID, "page")  # View · [page]
+    # TODO: btn_button — needs stable locator (no resource-id or text; class=android.widget.Button index=0)
+    lbl_choose_emi_plans           = (AppiumBy.XPATH, "//android.widget.TextView[@text='Choose EMI Plans']")  # TextView · "Choose EMI Plans"
+    lbl_5959                       = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,959']")  # TextView · "₹5,959"
+    btn_bank                       = (AppiumBy.XPATH, "//android.widget.Button[@text='Bank']")  # Button · "Bank"
+    btn_credit_card                = (AppiumBy.XPATH, "//android.widget.Button[@text='Credit Card']")  # Button · "Credit Card"
+    btn_debit_card                 = (AppiumBy.XPATH, "//android.widget.Button[@text='Debit Card']")  # Button · "Debit Card"
+    btn_hdfc_bank_credit_card      = (AppiumBy.XPATH, "//android.widget.Button[@text='HDFC Bank Credit Card']")  # Button · "HDFC Bank Credit Card"
+    rdb_202286_3m_606858_interest_of_10958_11_pa = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='₹2,022.86 × 3m ₹6,068.58 Interest of ₹109.58 @ 11% p.a.']")  # RadioButton · "₹2,022.86 × 3m ₹6,068.58 Interest of ₹109.58 @ 11% p.a."
+    lbl_202286_3m                  = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹2,022.86 × 3m']")  # TextView · "₹2,022.86 × 3m"
+    lbl_606858                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹6,068.58']")  # TextView · "₹6,068.58"
+    lbl_interest_of_10958_11_pa    = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest of ₹109.58 @ 11% p.a.']")  # TextView · "Interest of ₹109.58 @ 11% p.a."
+    rdb_102527_6m_615162_interest_of_19262_11_pa = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='₹1,025.27 × 6m ₹6,151.62 Interest of ₹192.62 @ 11% p.a.']")  # RadioButton · "₹1,025.27 × 6m ₹6,151.62 Interest of ₹192.62 @ 11% p.a."
+    lbl_102527_6m                  = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹1,025.27 × 6m']")  # TextView · "₹1,025.27 × 6m"
+    lbl_615162                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹6,151.62']")  # TextView · "₹6,151.62"
+    lbl_interest_of_19262_11_pa    = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest of ₹192.62 @ 11% p.a.']")  # TextView · "Interest of ₹192.62 @ 11% p.a."
+    rdb_69283_9m_623547_interest_of_27647_11_pa = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='₹692.83 × 9m ₹6,235.47 Interest of ₹276.47 @ 11% p.a.']")  # RadioButton · "₹692.83 × 9m ₹6,235.47 Interest of ₹276.47 @ 11% p.a."
+    lbl_69283_9m                   = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹692.83 × 9m']")  # TextView · "₹692.83 × 9m"
+    lbl_623547                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹6,235.47']")  # TextView · "₹6,235.47"
+    lbl_interest_of_27647_11_pa    = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest of ₹276.47 @ 11% p.a.']")  # TextView · "Interest of ₹276.47 @ 11% p.a."
+    rdb_52667_12m_632004_interest_of_36104_11_pa = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='₹526.67 × 12m ₹6,320.04 Interest of ₹361.04 @ 11% p.a.']")  # RadioButton · "₹526.67 × 12m ₹6,320.04 Interest of ₹361.04 @ 11% p.a."
+    lbl_52667_12m                  = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹526.67 × 12m']")  # TextView · "₹526.67 × 12m"
+    lbl_632004                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹6,320.04']")  # TextView · "₹6,320.04"
+    lbl_interest_of_36104_11_pa    = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest of ₹361.04 @ 11% p.a.']")  # TextView · "Interest of ₹361.04 @ 11% p.a."
+    rdb_pay_in_full_5959           = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='Pay in Full ₹5,959']")  # RadioButton · "Pay in Full ₹5,959"
+    lbl_pay_in_full                = (AppiumBy.XPATH, "//android.widget.TextView[@text='Pay in Full']")  # TextView · "Pay in Full"
+    lbl_5959_2                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,959']")  # TextView · "₹5,959"
+    btn_view_breakup =               (AppiumBy.XPATH, "// android.widget.Button[ @ text = 'View Breakup']")
+    btn_bob_bank_credit_card_emi_starts_52945m = (AppiumBy.XPATH, "//android.widget.Button[@text='BOB Bank Credit Card EMI starts @ ₹529.45/m']")  # Button · "BOB Bank Credit Card EMI starts @ ₹529.45/m"
+    btn_indusind_bank_credit_card_emi_starts_529 = (AppiumBy.XPATH, "//android.widget.Button[@text='INDUSIND Bank Credit Card EMI starts @ ₹529.45/m']")  # Button · "INDUSIND Bank Credit Card EMI starts @ ₹529.45/m"
+    btn_citi_bank_credit_card_emi_starts_53224m = (AppiumBy.XPATH, "//android.widget.Button[@text='CITI Bank Credit Card EMI starts @ ₹532.24/m']")  # Button · "CITI Bank Credit Card EMI starts @ ₹532.24/m"
+    btn_icici_bank_credit_card_emi_starts_53224m = (AppiumBy.XPATH, "//android.widget.Button[@text='ICICI Bank Credit Card EMI starts @ ₹532.24/m']")  # Button · "ICICI Bank Credit Card EMI starts @ ₹532.24/m"
+    btn_kotak_bank_credit_card_emi_starts_53224m = (AppiumBy.XPATH, "//android.widget.Button[@text='KOTAK Bank Credit Card EMI starts @ ₹532.24/m']")  # Button · "KOTAK Bank Credit Card EMI starts @ ₹532.24/m"
+    btn_yes_bank_credit_card_emi_starts_53224m = (AppiumBy.XPATH, "//android.widget.Button[@text='YES Bank Credit Card EMI starts @ ₹532.24/m']")  # Button · "YES Bank Credit Card EMI starts @ ₹532.24/m"
+    btn_rbl_bank_credit_card_emi_starts_53224m = (AppiumBy.XPATH, "//android.widget.Button[@text='RBL Bank Credit Card EMI starts @ ₹532.24/m']")  # Button · "RBL Bank Credit Card EMI starts @ ₹532.24/m"
+    btn_amex_bank_credit_card_emi_starts_53785m = (AppiumBy.XPATH, "//android.widget.Button[@text='AMEX Bank Credit Card EMI starts @ ₹537.85/m']")  # Button · "AMEX Bank Credit Card EMI starts @ ₹537.85/m"
+    btn_sbi_bank_credit_card_emi_starts_54067m = (AppiumBy.XPATH, "//android.widget.Button[@text='SBI Bank Credit Card EMI starts @ ₹540.67/m']")  # Button · "SBI Bank Credit Card EMI starts @ ₹540.67/m"
+    btn_stanchart_bank_credit_card_emi_starts_54 = (AppiumBy.XPATH, "//android.widget.Button[@text='STANCHART Bank Credit Card EMI starts @ ₹540.67/m']")  # Button · "STANCHART Bank Credit Card EMI starts @ ₹540.67/m"
+    btn_axis_bank_credit_card_emi_starts_70703m = (AppiumBy.XPATH, "//android.widget.Button[@text='AXIS Bank Credit Card EMI starts @ ₹707.03/m']")  # Button · "AXIS Bank Credit Card EMI starts @ ₹707.03/m"
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# bank_emi_credit_card_3_month_view_breakup
+# ════════════════════════════════════════════════════════════════════════════
+
+class bank_emi_credit_card_3_month_view_breakup:
+    """Auto-generated from uiautomator dump — review and adjust as needed."""
+    # TODO: lbl_view — needs stable locator (no resource-id or text; class=android.view.View index=0)
+    lbl_page                       = (AppiumBy.ID, "page")  # View · [page]
+    # TODO: btn_button — needs stable locator (no resource-id or text; class=android.widget.Button index=0)
+    lbl_choose_emi_plans           = (AppiumBy.XPATH, "//android.widget.TextView[@text='Choose EMI Plans']")  # TextView · "Choose EMI Plans"
+    lbl_5959                       = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,959']")  # TextView · "₹5,959"
+    btn_bank                       = (AppiumBy.XPATH, "//android.widget.Button[@text='Bank']")  # Button · "Bank"
+    btn_credit_card                = (AppiumBy.XPATH, "//android.widget.Button[@text='Credit Card']")  # Button · "Credit Card"
+    btn_debit_card                 = (AppiumBy.XPATH, "//android.widget.Button[@text='Debit Card']")  # Button · "Debit Card"
+    btn_hdfc_bank_credit_card      = (AppiumBy.XPATH, "//android.widget.Button[@text='HDFC Bank Credit Card']")  # Button · "HDFC Bank Credit Card"
+    rdb_202286_3m_606858_interest_of_10958_11_pa = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='₹2,022.86 × 3m ₹6,068.58 Interest of ₹109.58 @ 11% p.a.']")  # RadioButton · "₹2,022.86 × 3m ₹6,068.58 Interest of ₹109.58 @ 11% p.a."
+    lbl_202286_3m                  = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹2,022.86 × 3m']")  # TextView · "₹2,022.86 × 3m"
+    lbl_606858                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹6,068.58']")  # TextView · "₹6,068.58"
+    lbl_interest_of_10958_11_pa    = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest of ₹109.58 @ 11% p.a.']")  # TextView · "Interest of ₹109.58 @ 11% p.a."
+    rdb_102527_6m_615162_interest_of_19262_11_pa = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='₹1,025.27 × 6m ₹6,151.62 Interest of ₹192.62 @ 11% p.a.']")  # RadioButton · "₹1,025.27 × 6m ₹6,151.62 Interest of ₹192.62 @ 11% p.a."
+    lbl_102527_6m                  = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹1,025.27 × 6m']")  # TextView · "₹1,025.27 × 6m"
+    lbl_615162                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹6,151.62']")  # TextView · "₹6,151.62"
+    lbl_interest_of_19262_11_pa    = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest of ₹192.62 @ 11% p.a.']")  # TextView · "Interest of ₹192.62 @ 11% p.a."
+    rdb_69283_9m_623547_interest_of_27647_11_pa = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='₹692.83 × 9m ₹6,235.47 Interest of ₹276.47 @ 11% p.a.']")  # RadioButton · "₹692.83 × 9m ₹6,235.47 Interest of ₹276.47 @ 11% p.a."
+    lbl_69283_9m                   = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹692.83 × 9m']")  # TextView · "₹692.83 × 9m"
+    lbl_623547                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹6,235.47']")  # TextView · "₹6,235.47"
+    lbl_interest_of_27647_11_pa    = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest of ₹276.47 @ 11% p.a.']")  # TextView · "Interest of ₹276.47 @ 11% p.a."
+    rdb_52667_12m_632004_interest_of_36104_11_pa = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='₹526.67 × 12m ₹6,320.04 Interest of ₹361.04 @ 11% p.a.']")  # RadioButton · "₹526.67 × 12m ₹6,320.04 Interest of ₹361.04 @ 11% p.a."
+    lbl_52667_12m                  = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹526.67 × 12m']")  # TextView · "₹526.67 × 12m"
+    lbl_632004                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹6,320.04']")  # TextView · "₹6,320.04"
+    lbl_interest_of_36104_11_pa    = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest of ₹361.04 @ 11% p.a.']")  # TextView · "Interest of ₹361.04 @ 11% p.a."
+    rdb_pay_in_full_5959           = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='Pay in Full ₹5,959']")  # RadioButton · "Pay in Full ₹5,959"
+    lbl_pay_in_full                = (AppiumBy.XPATH, "//android.widget.TextView[@text='Pay in Full']")  # TextView · "Pay in Full"
+    lbl_5959_2                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,959']")  # TextView · "₹5,959"
+    btn_bob_bank_credit_card_emi_starts_52945m = (AppiumBy.XPATH, "//android.widget.Button[@text='BOB Bank Credit Card EMI starts @ ₹529.45/m']")  # Button · "BOB Bank Credit Card EMI starts @ ₹529.45/m"
+    btn_indusind_bank_credit_card_emi_starts_529 = (AppiumBy.XPATH, "//android.widget.Button[@text='INDUSIND Bank Credit Card EMI starts @ ₹529.45/m']")  # Button · "INDUSIND Bank Credit Card EMI starts @ ₹529.45/m"
+    btn_citi_bank_credit_card_emi_starts_53224m = (AppiumBy.XPATH, "//android.widget.Button[@text='CITI Bank Credit Card EMI starts @ ₹532.24/m']")  # Button · "CITI Bank Credit Card EMI starts @ ₹532.24/m"
+    btn_icici_bank_credit_card_emi_starts_53224m = (AppiumBy.XPATH, "//android.widget.Button[@text='ICICI Bank Credit Card EMI starts @ ₹532.24/m']")  # Button · "ICICI Bank Credit Card EMI starts @ ₹532.24/m"
+    btn_kotak_bank_credit_card_emi_starts_53224m = (AppiumBy.XPATH, "//android.widget.Button[@text='KOTAK Bank Credit Card EMI starts @ ₹532.24/m']")  # Button · "KOTAK Bank Credit Card EMI starts @ ₹532.24/m"
+    btn_yes_bank_credit_card_emi_starts_53224m = (AppiumBy.XPATH, "//android.widget.Button[@text='YES Bank Credit Card EMI starts @ ₹532.24/m']")  # Button · "YES Bank Credit Card EMI starts @ ₹532.24/m"
+    btn_rbl_bank_credit_card_emi_starts_53224m = (AppiumBy.XPATH, "//android.widget.Button[@text='RBL Bank Credit Card EMI starts @ ₹532.24/m']")  # Button · "RBL Bank Credit Card EMI starts @ ₹532.24/m"
+    btn_amex_bank_credit_card_emi_starts_53785m = (AppiumBy.XPATH, "//android.widget.Button[@text='AMEX Bank Credit Card EMI starts @ ₹537.85/m']")  # Button · "AMEX Bank Credit Card EMI starts @ ₹537.85/m"
+    btn_sbi_bank_credit_card_emi_starts_54067m = (AppiumBy.XPATH, "//android.widget.Button[@text='SBI Bank Credit Card EMI starts @ ₹540.67/m']")  # Button · "SBI Bank Credit Card EMI starts @ ₹540.67/m"
+    btn_stanchart_bank_credit_card_emi_starts_54 = (AppiumBy.XPATH, "//android.widget.Button[@text='STANCHART Bank Credit Card EMI starts @ ₹540.67/m']")  # Button · "STANCHART Bank Credit Card EMI starts @ ₹540.67/m"
+    btn_axis_bank_credit_card_emi_starts_70703m = (AppiumBy.XPATH, "//android.widget.Button[@text='AXIS Bank Credit Card EMI starts @ ₹707.03/m']")  # Button · "AXIS Bank Credit Card EMI starts @ ₹707.03/m"
+    lbl_202286                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹2,022.86']")  # TextView · "₹2,022.86"
+    lbl_3m                         = (AppiumBy.XPATH, "//android.widget.TextView[@text='× 3m']")  # TextView · "× 3m"
+    btn_view_breakup               = (AppiumBy.XPATH, "//android.widget.Button[@text='View Breakup']")  # Button · "View Breakup"
+    btn_proceed                    = (AppiumBy.XPATH, "//android.widget.Button[@text='Proceed']")  # Button · "Proceed"
+    btn_close_overlay              = (AppiumBy.XPATH, "//android.widget.Button[@text='Close overlay']")  # Button · "Close overlay"
+    lbl_hdfc_bank_credit_card_202286_3_month = (AppiumBy.XPATH, "//android.view.View[@text='HDFC Bank Credit Card ₹2,022.86 × 3 month']")  # View · "HDFC Bank Credit Card ₹2,022.86 × 3 month"
+    lbl_hdfc_bank_credit_card      = (AppiumBy.XPATH, "//android.widget.TextView[@text='HDFC Bank Credit Card']")  # TextView · "HDFC Bank Credit Card"
+    lbl_202286_3_month             = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹2,022.86 × 3 month']")  # TextView · "₹2,022.86 × 3 month"
+    # TODO: btn_button_2 — needs stable locator (no resource-id or text; class=android.widget.Button index=3)
+    lbl_emibreakupbottomsheet      = (AppiumBy.ID, "emi-breakup-bottomsheet")  # View · [emi-breakup-bottomsheet]
+    lbl_summary                    = (AppiumBy.XPATH, "//android.widget.TextView[@text='Summary']")  # TextView · "Summary"
+    lbl_order_total                = (AppiumBy.XPATH, "//android.widget.TextView[@text='Order Total']")  # TextView · "Order Total"
+    lbl_5959_3                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,959']")  # TextView · "₹5,959"
+    lbl_interest_charged_by_bank   = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest charged by Bank']")  # TextView · "Interest charged by Bank"
+    lbl_10958                      = (AppiumBy.XPATH, "//android.widget.TextView[@text='+₹109.58']")  # TextView · "+₹109.58"
+    lbl_total_amount               = (AppiumBy.XPATH, "//android.widget.TextView[@text='Total Amount']")  # TextView · "Total Amount"
+    lbl_606858_2                   = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹6,068.58']")  # TextView · "₹6,068.58"
+    lbl_note                       = (AppiumBy.XPATH, "//android.widget.TextView[@text='Note:']")  # TextView · "Note:"
+    lbl_view_2                     = (AppiumBy.XPATH, "//android.view.View[@text='•']")  # View · "•"
+    lbl_5959_4                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,959']")  # TextView · "₹5,959"
+    lbl_will_be_blocked_on_your_card_it_will_be_ = (AppiumBy.XPATH, "//android.widget.TextView[@text='will be blocked on your card. It will be converted into EMI by the bank within 4-5 days.']")  # TextView · "will be blocked on your card. It will be converted into EMI by the bank within 4-5 days."
+    lbl_view_3                     = (AppiumBy.XPATH, "//android.view.View[@text='•']")  # View · "•"
+    lbl_a_processing_fee_of_199gst_will_be_appli = (AppiumBy.XPATH, "//android.widget.TextView[@text='A processing fee of ₹199+GST will be applicable on the successful EMI transactions.']")  # TextView · "A processing fee of ₹199+GST will be applicable on the successful EMI transactions."
+
+
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# my_discount_sbi_bank_credit_card
+# ════════════════════════════════════════════════════════════════════════════
+
+class my_discount_sbi_bank_credit_card:
+    """Auto-generated from uiautomator dump — review and adjust as needed."""
+    # TODO: lbl_view — needs stable locator (no resource-id or text; class=android.view.View index=0)
+    lbl_page                       = (AppiumBy.ID, "page")  # View · [page]
+    # TODO: btn_button — needs stable locator (no resource-id or text; class=android.widget.Button index=0)
+    lbl_choose_emi_plans           = (AppiumBy.XPATH, "//android.widget.TextView[@text='Choose EMI Plans']")  # TextView · "Choose EMI Plans"
+    lbl_5959                       = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,959']")  # TextView · "₹5,959"
+    btn_bank                       = (AppiumBy.XPATH, "//android.widget.Button[@text='Bank']")  # Button · "Bank"
+    btn_credit_card                = (AppiumBy.XPATH, "//android.widget.Button[@text='Credit Card']")  # Button · "Credit Card"
+    btn_debit_card                 = (AppiumBy.XPATH, "//android.widget.Button[@text='Debit Card']")  # Button · "Debit Card"
+    btn_sbi_bank_credit_card       = (AppiumBy.XPATH, "//android.widget.Button[@text='SBI Bank Credit Card']")  # Button · "SBI Bank Credit Card"
+    rdb_198628_3m_595884_interest_is_0_no_cost_e = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='₹1,986.28 × 3m ₹5,958.84 Interest is ₹0 No Cost EMI MyDiscount ₹117']")  # RadioButton · "₹1,986.28 × 3m ₹5,958.84 Interest is ₹0 No Cost EMI MyDiscount ₹117"
+    lbl_198628_3m                  = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹1,986.28 × 3m']")  # TextView · "₹1,986.28 × 3m"
+    lbl_595884                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,958.84']")  # TextView · "₹5,958.84"
+    lbl_interest_is_0              = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest is ₹0']")  # TextView · "Interest is ₹0"
+    lbl_no_cost_emi                = (AppiumBy.XPATH, "//android.widget.TextView[@text='No Cost EMI']")  # TextView · "No Cost EMI"
+    lbl_mydiscount_117             = (AppiumBy.XPATH, "//android.widget.TextView[@text='MyDiscount ₹117']")  # TextView · "MyDiscount ₹117"
+    rdb_66210_9m_595890_interest_is_0_no_cost_em = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='₹662.10 × 9m ₹5,958.90 Interest is ₹0 No Cost EMI MyDiscount ₹310']")  # RadioButton · "₹662.10 × 9m ₹5,958.90 Interest is ₹0 No Cost EMI MyDiscount ₹310"
+    lbl_66210_9m                   = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹662.10 × 9m']")  # TextView · "₹662.10 × 9m"
+    lbl_595890                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,958.90']")  # TextView · "₹5,958.90"
+    lbl_interest_is_0_2            = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest is ₹0']")  # TextView · "Interest is ₹0"
+    lbl_no_cost_emi_2              = (AppiumBy.XPATH, "//android.widget.TextView[@text='No Cost EMI']")  # TextView · "No Cost EMI"
+    lbl_mydiscount_310             = (AppiumBy.XPATH, "//android.widget.TextView[@text='MyDiscount ₹310']")  # TextView · "MyDiscount ₹310"
+    rdb_49660_12m_595920_interest_is_0_no_cost_e = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='₹496.60 × 12m ₹5,959.20 Interest is ₹0 No Cost EMI MyDiscount ₹485']")  # RadioButton · "₹496.60 × 12m ₹5,959.20 Interest is ₹0 No Cost EMI MyDiscount ₹485"
+    lbl_49660_12m                  = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹496.60 × 12m']")  # TextView · "₹496.60 × 12m"
+    lbl_595920                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,959.20']")  # TextView · "₹5,959.20"
+    lbl_interest_is_0_3            = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest is ₹0']")  # TextView · "Interest is ₹0"
+    lbl_no_cost_emi_3              = (AppiumBy.XPATH, "//android.widget.TextView[@text='No Cost EMI']")  # TextView · "No Cost EMI"
+    lbl_mydiscount_485             = (AppiumBy.XPATH, "//android.widget.TextView[@text='MyDiscount ₹485']")  # TextView · "MyDiscount ₹485"
+    rdb_pay_in_full_5959           = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='Pay in Full ₹5,959']")  # RadioButton · "Pay in Full ₹5,959"
+    lbl_pay_in_full                = (AppiumBy.XPATH, "//android.widget.TextView[@text='Pay in Full']")  # TextView · "Pay in Full"
+    lbl_5959_2                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,959']")  # TextView · "₹5,959"
+    btn_stanchart_bank_credit_card_emi_starts_49 = (AppiumBy.XPATH, "//android.widget.Button[@text='STANCHART Bank Credit Card EMI starts @ ₹496.60/m No Cost EMI MyDiscount ₹485']")  # Button · "STANCHART Bank Credit Card EMI starts @ ₹496.60/m No Cost EMI MyDiscount ₹485"
+    btn_amex_bank_credit_card_emi_starts_49660m_ = (AppiumBy.XPATH, "//android.widget.Button[@text='AMEX Bank Credit Card EMI starts @ ₹496.60/m No Cost EMI MyDiscount ₹457']")  # Button · "AMEX Bank Credit Card EMI starts @ ₹496.60/m No Cost EMI MyDiscount ₹457"
+    btn_citi_bank_credit_card_emi_starts_49658m_ = (AppiumBy.XPATH, "//android.widget.Button[@text='CITI Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399']")  # Button · "CITI Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399"
+    btn_icici_bank_credit_card_emi_starts_49658m = (AppiumBy.XPATH, "//android.widget.Button[@text='ICICI Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399']")  # Button · "ICICI Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399"
+    btn_kotak_bank_credit_card_emi_starts_49658m = (AppiumBy.XPATH, "//android.widget.Button[@text='KOTAK Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399']")  # Button · "KOTAK Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399"
+    btn_yes_bank_credit_card_emi_starts_49658m_n = (AppiumBy.XPATH, "//android.widget.Button[@text='YES Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399']")  # Button · "YES Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399"
+    btn_rbl_bank_credit_card_emi_starts_49658m_n = (AppiumBy.XPATH, "//android.widget.Button[@text='RBL Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399']")  # Button · "RBL Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399"
+    btn_axis_bank_credit_card_emi_starts_66213m_ = (AppiumBy.XPATH, "//android.widget.Button[@text='AXIS Bank Credit Card EMI starts @ ₹662.13/m No Cost EMI MyDiscount ₹378']")  # Button · "AXIS Bank Credit Card EMI starts @ ₹662.13/m No Cost EMI MyDiscount ₹378"
+    btn_bob_bank_credit_card_emi_starts_49657m_n = (AppiumBy.XPATH, "//android.widget.Button[@text='BOB Bank Credit Card EMI starts @ ₹496.57/m No Cost EMI MyDiscount ₹370']")  # Button · "BOB Bank Credit Card EMI starts @ ₹496.57/m No Cost EMI MyDiscount ₹370"
+    btn_indusind_bank_credit_card_emi_starts_496 = (AppiumBy.XPATH, "//android.widget.Button[@text='INDUSIND Bank Credit Card EMI starts @ ₹496.57/m No Cost EMI MyDiscount ₹370']")  # Button · "INDUSIND Bank Credit Card EMI starts @ ₹496.57/m No Cost EMI MyDiscount ₹370"
+    btn_hdfc_bank_credit_card_emi_starts_49659m_ = (AppiumBy.XPATH, "//android.widget.Button[@text='HDFC Bank Credit Card EMI starts @ ₹496.59/m No Cost EMI MyDiscount ₹340']")  # Button · "HDFC Bank Credit Card EMI starts @ ₹496.59/m No Cost EMI MyDiscount ₹340"
+    lbl_198628                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹1,986.28']")  # TextView · "₹1,986.28"
+    lbl_3m                         = (AppiumBy.XPATH, "//android.widget.TextView[@text='× 3m']")  # TextView · "× 3m"
+    btn_view_breakup               = (AppiumBy.XPATH, "//android.widget.Button[@text='View Breakup']")  # Button · "View Breakup"
+    btn_proceed                    = (AppiumBy.XPATH, "//android.widget.Button[@text='Proceed']")  # Button · "Proceed"
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# my_discount_sbi_bank_credit_card_3_month_price_summary
+# ════════════════════════════════════════════════════════════════════════════
+
+class my_discount_sbi_bank_credit_card_3_month_price_summary:
+    """Auto-generated from uiautomator dump — review and adjust as needed."""
+    # TODO: lbl_view — needs stable locator (no resource-id or text; class=android.view.View index=0)
+    lbl_page                       = (AppiumBy.ID, "page")  # View · [page]
+    # TODO: btn_button — needs stable locator (no resource-id or text; class=android.widget.Button index=0)
+    lbl_choose_emi_plans           = (AppiumBy.XPATH, "//android.widget.TextView[@text='Choose EMI Plans']")  # TextView · "Choose EMI Plans"
+    lbl_5959                       = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,959']")  # TextView · "₹5,959"
+    btn_bank                       = (AppiumBy.XPATH, "//android.widget.Button[@text='Bank']")  # Button · "Bank"
+    btn_credit_card                = (AppiumBy.XPATH, "//android.widget.Button[@text='Credit Card']")  # Button · "Credit Card"
+    btn_debit_card                 = (AppiumBy.XPATH, "//android.widget.Button[@text='Debit Card']")  # Button · "Debit Card"
+    btn_sbi_bank_credit_card       = (AppiumBy.XPATH, "//android.widget.Button[@text='SBI Bank Credit Card']")  # Button · "SBI Bank Credit Card"
+    rdb_198628_3m_595884_interest_is_0_no_cost_e = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='₹1,986.28 × 3m ₹5,958.84 Interest is ₹0 No Cost EMI MyDiscount ₹117']")  # RadioButton · "₹1,986.28 × 3m ₹5,958.84 Interest is ₹0 No Cost EMI MyDiscount ₹117"
+    lbl_198628_3m                  = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹1,986.28 × 3m']")  # TextView · "₹1,986.28 × 3m"
+    lbl_595884                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,958.84']")  # TextView · "₹5,958.84"
+    lbl_interest_is_0              = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest is ₹0']")  # TextView · "Interest is ₹0"
+    lbl_no_cost_emi                = (AppiumBy.XPATH, "//android.widget.TextView[@text='No Cost EMI']")  # TextView · "No Cost EMI"
+    lbl_mydiscount_117             = (AppiumBy.XPATH, "//android.widget.TextView[@text='MyDiscount ₹117']")  # TextView · "MyDiscount ₹117"
+    rdb_66210_9m_595890_interest_is_0_no_cost_em = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='₹662.10 × 9m ₹5,958.90 Interest is ₹0 No Cost EMI MyDiscount ₹310']")  # RadioButton · "₹662.10 × 9m ₹5,958.90 Interest is ₹0 No Cost EMI MyDiscount ₹310"
+    lbl_66210_9m                   = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹662.10 × 9m']")  # TextView · "₹662.10 × 9m"
+    lbl_595890                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,958.90']")  # TextView · "₹5,958.90"
+    lbl_interest_is_0_2            = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest is ₹0']")  # TextView · "Interest is ₹0"
+    lbl_no_cost_emi_2              = (AppiumBy.XPATH, "//android.widget.TextView[@text='No Cost EMI']")  # TextView · "No Cost EMI"
+    lbl_mydiscount_310             = (AppiumBy.XPATH, "//android.widget.TextView[@text='MyDiscount ₹310']")  # TextView · "MyDiscount ₹310"
+    rdb_49660_12m_595920_interest_is_0_no_cost_e = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='₹496.60 × 12m ₹5,959.20 Interest is ₹0 No Cost EMI MyDiscount ₹485']")  # RadioButton · "₹496.60 × 12m ₹5,959.20 Interest is ₹0 No Cost EMI MyDiscount ₹485"
+    lbl_49660_12m                  = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹496.60 × 12m']")  # TextView · "₹496.60 × 12m"
+    lbl_595920                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,959.20']")  # TextView · "₹5,959.20"
+    lbl_interest_is_0_3            = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest is ₹0']")  # TextView · "Interest is ₹0"
+    lbl_no_cost_emi_3              = (AppiumBy.XPATH, "//android.widget.TextView[@text='No Cost EMI']")  # TextView · "No Cost EMI"
+    lbl_mydiscount_485             = (AppiumBy.XPATH, "//android.widget.TextView[@text='MyDiscount ₹485']")  # TextView · "MyDiscount ₹485"
+    rdb_pay_in_full_5959           = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='Pay in Full ₹5,959']")  # RadioButton · "Pay in Full ₹5,959"
+    lbl_pay_in_full                = (AppiumBy.XPATH, "//android.widget.TextView[@text='Pay in Full']")  # TextView · "Pay in Full"
+    lbl_5959_2                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,959']")  # TextView · "₹5,959"
+    btn_stanchart_bank_credit_card_emi_starts_49 = (AppiumBy.XPATH, "//android.widget.Button[@text='STANCHART Bank Credit Card EMI starts @ ₹496.60/m No Cost EMI MyDiscount ₹485']")  # Button · "STANCHART Bank Credit Card EMI starts @ ₹496.60/m No Cost EMI MyDiscount ₹485"
+    btn_amex_bank_credit_card_emi_starts_49660m_ = (AppiumBy.XPATH, "//android.widget.Button[@text='AMEX Bank Credit Card EMI starts @ ₹496.60/m No Cost EMI MyDiscount ₹457']")  # Button · "AMEX Bank Credit Card EMI starts @ ₹496.60/m No Cost EMI MyDiscount ₹457"
+    btn_citi_bank_credit_card_emi_starts_49658m_ = (AppiumBy.XPATH, "//android.widget.Button[@text='CITI Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399']")  # Button · "CITI Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399"
+    btn_icici_bank_credit_card_emi_starts_49658m = (AppiumBy.XPATH, "//android.widget.Button[@text='ICICI Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399']")  # Button · "ICICI Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399"
+    btn_kotak_bank_credit_card_emi_starts_49658m = (AppiumBy.XPATH, "//android.widget.Button[@text='KOTAK Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399']")  # Button · "KOTAK Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399"
+    btn_yes_bank_credit_card_emi_starts_49658m_n = (AppiumBy.XPATH, "//android.widget.Button[@text='YES Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399']")  # Button · "YES Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399"
+    btn_rbl_bank_credit_card_emi_starts_49658m_n = (AppiumBy.XPATH, "//android.widget.Button[@text='RBL Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399']")  # Button · "RBL Bank Credit Card EMI starts @ ₹496.58/m No Cost EMI MyDiscount ₹399"
+    btn_axis_bank_credit_card_emi_starts_66213m_ = (AppiumBy.XPATH, "//android.widget.Button[@text='AXIS Bank Credit Card EMI starts @ ₹662.13/m No Cost EMI MyDiscount ₹378']")  # Button · "AXIS Bank Credit Card EMI starts @ ₹662.13/m No Cost EMI MyDiscount ₹378"
+    btn_bob_bank_credit_card_emi_starts_49657m_n = (AppiumBy.XPATH, "//android.widget.Button[@text='BOB Bank Credit Card EMI starts @ ₹496.57/m No Cost EMI MyDiscount ₹370']")  # Button · "BOB Bank Credit Card EMI starts @ ₹496.57/m No Cost EMI MyDiscount ₹370"
+    btn_indusind_bank_credit_card_emi_starts_496 = (AppiumBy.XPATH, "//android.widget.Button[@text='INDUSIND Bank Credit Card EMI starts @ ₹496.57/m No Cost EMI MyDiscount ₹370']")  # Button · "INDUSIND Bank Credit Card EMI starts @ ₹496.57/m No Cost EMI MyDiscount ₹370"
+    btn_hdfc_bank_credit_card_emi_starts_49659m_ = (AppiumBy.XPATH, "//android.widget.Button[@text='HDFC Bank Credit Card EMI starts @ ₹496.59/m No Cost EMI MyDiscount ₹340']")  # Button · "HDFC Bank Credit Card EMI starts @ ₹496.59/m No Cost EMI MyDiscount ₹340"
+    lbl_198628                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹1,986.28']")  # TextView · "₹1,986.28"
+    lbl_3m                         = (AppiumBy.XPATH, "//android.widget.TextView[@text='× 3m']")  # TextView · "× 3m"
+    btn_view_breakup               = (AppiumBy.XPATH, "//android.widget.Button[@text='View Breakup']")  # Button · "View Breakup"
+    btn_proceed                    = (AppiumBy.XPATH, "//android.widget.Button[@text='Proceed']")  # Button · "Proceed"
+    btn_close_overlay              = (AppiumBy.XPATH, "//android.widget.Button[@text='Close overlay']")  # Button · "Close overlay"
+    lbl_sbi_bank_credit_card_198628_3_month = (AppiumBy.XPATH, "//android.view.View[@text='SBI Bank Credit Card ₹1,986.28 × 3 month']")  # View · "SBI Bank Credit Card ₹1,986.28 × 3 month"
+    lbl_sbi_bank_credit_card       = (AppiumBy.XPATH, "//android.widget.TextView[@text='SBI Bank Credit Card']")  # TextView · "SBI Bank Credit Card"
+    lbl_198628_3_month             = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹1,986.28 × 3 month']")  # TextView · "₹1,986.28 × 3 month"
+    # TODO: btn_button_2 — needs stable locator (no resource-id or text; class=android.widget.Button index=3)
+    lbl_emibreakupbottomsheet      = (AppiumBy.ID, "emi-breakup-bottomsheet")  # View · [emi-breakup-bottomsheet]
+    lbl_summary                    = (AppiumBy.XPATH, "//android.widget.TextView[@text='Summary']")  # TextView · "Summary"
+    lbl_item_price                 = (AppiumBy.XPATH, "//android.widget.TextView[@text='Item Price']")  # TextView · "Item Price"
+    lbl_5959_3                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,959']")  # TextView · "₹5,959"
+    lbl_mydiscount                 = (AppiumBy.XPATH, "//android.widget.TextView[@text='MyDiscount']")  # TextView · "MyDiscount"
+    lbl_11739                      = (AppiumBy.XPATH, "//android.widget.TextView[@text='-₹117.39']")  # TextView · "-₹117.39"
+    lbl_order_total                = (AppiumBy.XPATH, "//android.widget.TextView[@text='Order Total']")  # TextView · "Order Total"
+    lbl_584161                     = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,841.61']")  # TextView · "₹5,841.61"
+    lbl_interest_charged_by_bank   = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest charged by Bank']")  # TextView · "Interest charged by Bank"
+    lbl_11723                      = (AppiumBy.XPATH, "//android.widget.TextView[@text='+₹117.23']")  # TextView · "+₹117.23"
+    lbl_total_amount               = (AppiumBy.XPATH, "//android.widget.TextView[@text='Total Amount']")  # TextView · "Total Amount"
+    lbl_595884_2                   = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,958.84']")  # TextView · "₹5,958.84"
+    lbl_note                       = (AppiumBy.XPATH, "//android.widget.TextView[@text='Note:']")  # TextView · "Note:"
+    lbl_view_2                     = (AppiumBy.XPATH, "//android.view.View[@text='•']")  # View · "•"
+    lbl_584161_2                   = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹5,841.61']")  # TextView · "₹5,841.61"
+    lbl_will_be_blocked_on_your_card_it_will_be_ = (AppiumBy.XPATH, "//android.widget.TextView[@text='will be blocked on your card. It will be converted into EMI by the bank within 4-5 days.']")  # TextView · "will be blocked on your card. It will be converted into EMI by the bank within 4-5 days."
+    lbl_view_3                     = (AppiumBy.XPATH, "//android.view.View[@text='•']")  # View · "•"
+    lbl_a_processing_fee_of_199gst_will_be_appli = (AppiumBy.XPATH, "//android.widget.TextView[@text='A processing fee of ₹199+GST will be applicable on the successful EMI transactions.']")  # TextView · "A processing fee of ₹199+GST will be applicable on the successful EMI transactions."
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# promo_enteramount_screen
+# ════════════════════════════════════════════════════════════════════════════
+
+class promo_enteramount_screen:
+    """Auto-generated from uiautomator dump — review and adjust as needed."""
+    # TODO: lbl_view — needs stable locator (no resource-id or text; class=android.view.View index=0)
+    # TODO: btn_button — needs stable locator (no resource-id or text; class=android.widget.Button index=0)
+    img_e91cc2003e6491b7f659       = (AppiumBy.XPATH, "//android.widget.Image[@text='e91cc2003e6491b7f659']")  # Image · "e91cc2003e6491b7f659"
+    # TODO: btn_button_2 — needs stable locator (no resource-id or text; class=android.widget.Button index=2)
+    lbl_textview                   = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹']")  # TextView · "₹"
+    lbl_0                          = (AppiumBy.XPATH, "//android.widget.TextView[@text='0']")  # TextView · "0"
+    btn_add_tip                    = (AppiumBy.XPATH, "//android.widget.Button[@text='Add Tip']")  # Button · "Add Tip"
+    btn_card                       = (AppiumBy.XPATH, "//android.widget.Button[@text='Card']")  # Button · "Card"
+    btn_upi                        = (AppiumBy.XPATH, "//android.widget.Button[@text='UPI']")  # Button · "UPI"
+    # TODO: btn_button_3 — needs stable locator (no resource-id or text; class=android.widget.Button index=6)
+    btn_1                          = (AppiumBy.XPATH, "//android.widget.Button[@text='1']")  # Button · "1"
+    btn_2                          = (AppiumBy.XPATH, "//android.widget.Button[@text='2']")  # Button · "2"
+    btn_3                          = (AppiumBy.XPATH, "//android.widget.Button[@text='3']")  # Button · "3"
+    btn_4                          = (AppiumBy.XPATH, "//android.widget.Button[@text='4']")  # Button · "4"
+    btn_5                          = (AppiumBy.XPATH, "//android.widget.Button[@text='5']")  # Button · "5"
+    btn_6                          = (AppiumBy.XPATH, "//android.widget.Button[@text='6']")  # Button · "6"
+    btn_7                          = (AppiumBy.XPATH, "//android.widget.Button[@text='7']")  # Button · "7"
+    btn_8                          = (AppiumBy.XPATH, "//android.widget.Button[@text='8']")  # Button · "8"
+    btn_9                          = (AppiumBy.XPATH, "//android.widget.Button[@text='9']")  # Button · "9"
+    btn_button_4                   = (AppiumBy.XPATH, "//android.widget.Button[@text='•']")  # Button · "•"
+    btn_0                          = (AppiumBy.XPATH, "//android.widget.Button[@text='0']")  # Button · "0"
+    # TODO: btn_button_5 — needs stable locator (no resource-id or text; class=android.widget.Button index=18)
+    btn_close_overlay              = (AppiumBy.XPATH, "//android.widget.Button[@text='Close overlay']")  # Button · "Close overlay"
+    # TODO: btn_button_6 — needs stable locator (no resource-id or text; class=android.widget.Button index=0)
+    img_promotional_offer          = (AppiumBy.XPATH, "//android.widget.Image[@text='Promotional offer']")  # Image · "Promotional offer"
+
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# e-receipt-signature
+# ════════════════════════════════════════════════════════════════════════════
+
+class e_receipt_signature:
+    """Auto-generated from uiautomator dump — review and adjust as needed."""
+    # TODO: lbl_view — needs stable locator (no resource-id or text; class=android.view.View index=0)
+    lbl_page                       = (AppiumBy.ID, "page")  # View · [page]
+    # TODO: btn_button — needs stable locator (no resource-id or text; class=android.widget.Button index=0)
+    lbl_payment_amount             = (AppiumBy.XPATH, "//android.widget.TextView[@text='Payment Amount']")  # TextView · "Payment Amount"
+    lbl_textview                   = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹']")  # TextView · "₹"
+    lbl_542                        = (AppiumBy.XPATH, "//android.widget.TextView[@text='542']")  # TextView · "542"
+    lbl_tap_confirm_to_record_this_payment_in_th = (AppiumBy.XPATH, "//android.widget.TextView[@text='Tap confirm to record this payment in the daily summary']")  # TextView · "Tap confirm to record this payment in the daily summary"
+    btn_confirm_payment            = (AppiumBy.XPATH, "//android.widget.Button[@text='Confirm Payment']")  # Button · "Confirm Payment"
+    btn_close_overlay              = (AppiumBy.XPATH, "//android.widget.Button[@text='Close overlay']")  # Button · "Close overlay"
+    lbl_esign_on_receipt           = (AppiumBy.XPATH, "//android.widget.TextView[@text='E-sign on Receipt']")  # TextView · "E-sign on Receipt"
+    lbl_please_sign_here           = (AppiumBy.XPATH, "//android.widget.TextView[@text='Please sign here']")  # TextView · "Please sign here"
+    lbl_i_agree_to_securely_save_my_signature_fo = (AppiumBy.XPATH, "//android.view.View[@text='I agree to securely save my signature for verifying this transaction.']")  # View · "I agree to securely save my signature for verifying this transaction."
+    btn_skip                       = (AppiumBy.XPATH, "//android.widget.Button[@text='Skip']")  # Button · "Skip"

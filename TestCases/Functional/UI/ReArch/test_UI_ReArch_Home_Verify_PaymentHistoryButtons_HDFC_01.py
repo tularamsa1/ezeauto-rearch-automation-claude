@@ -7,7 +7,7 @@ from PageFactory.ReArch.rearch_login_page import ReArchLoginPage
 from PageFactory.ReArch.rearch_home_page import ReArchHomePage
 from PageFactory.ReArch.rearch_txn_history_page import ReArchTxnHistoryPage
 from PageFactory.ReArch.rearch_native_locators import TxnHistoryLocators, TxnSearchLocators
-from Utilities import ResourceAssigner
+from Utilities import ConfigReader, ResourceAssigner, Validator
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -82,35 +82,9 @@ def test_common_rearch_0015():
             txn_history_page.wait_for_element(TxnHistoryLocators.btn_my_dashboard)
             logger.debug("My Dashboard button is present")
 
-            # Step 4: Verify Payment ID, RRN Number, Amount buttons are visible
-            payment_id_visible = txn_history_page.is_element_visible(
-                TxnSearchLocators.btn_payment_id, time=10
-            )
-            rrn_visible = txn_history_page.is_element_visible(
-                TxnSearchLocators.btn_rrn_number, time=10
-            )
-            amount_visible = txn_history_page.is_element_visible(
-                TxnSearchLocators.btn_amount, time=10
-            )
-            logger.info(
-                f"Payment ID visible: {payment_id_visible}, "
-                f"RRN Number visible: {rrn_visible}, "
-                f"Amount visible: {amount_visible}"
-            )
-
-            assert payment_id_visible, "Payment ID button should be displayed"
-            assert rrn_visible, "RRN Number button should be displayed"
-            assert amount_visible, "Amount button should be displayed"
-
-            # Scroll a little horizontally and verify Auth Code button
+            # Scroll horizontally to make Auth Code visible (UI action)
             txn_history_page.swipe_left(duration_ms=500)
-
-            auth_code_visible = txn_history_page.is_element_visible(
-                TxnSearchLocators.btn_auth_code, time=10
-            )
-            logger.info(f"Auth Code visible after horizontal scroll: {auth_code_visible}")
-
-            assert auth_code_visible, "Auth Code button should be displayed after horizontal scroll"
+            logger.debug("Horizontal scroll performed")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -120,6 +94,47 @@ def test_common_rearch_0015():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception - " + str(e))
+
+        # ── Validation ─────────────────────────────────────────────────────────
+        logger.info(f"Starting Validation for the test case: {testcase_id}")
+        GlobalVariables.time_calc.validation.start()
+        logger.debug(f"Validation Timer started in testcase function: {testcase_id}")
+
+        # ── App Validation ────────────────────────────────────────────────────
+        if ConfigReader.read_config("Validations", "app_validation") == "True":
+            logger.info(f"Started APP validation for the test case: {testcase_id}")
+            try:
+                # Step 4: Verify Payment ID, RRN Number, Amount, Auth Code buttons
+                payment_id_visible = str(txn_history_page.is_element_visible(TxnSearchLocators.btn_payment_id, time=10))
+                rrn_visible = str(txn_history_page.is_element_visible(TxnSearchLocators.btn_rrn_number, time=10))
+                amount_visible = str(txn_history_page.is_element_visible(TxnSearchLocators.btn_amount, time=10))
+                auth_code_visible = str(txn_history_page.is_element_visible(TxnSearchLocators.btn_auth_code, time=10))
+
+                expected_app_values = {
+                    "payment_id_button": "Payment ID",
+                    "rrn_number_button": "RRN Number",
+                    "amount_button": "Amount",
+                    "auth_code_button": "Auth Code",
+                }
+                actual_app_values = {
+                    "payment_id_button": "Payment ID" if payment_id_visible == "True" else "NOT DISPLAYED",
+                    "rrn_number_button": "RRN Number" if rrn_visible == "True" else "NOT DISPLAYED",
+                    "amount_button": "Amount" if amount_visible == "True" else "NOT DISPLAYED",
+                    "auth_code_button": "Auth Code" if auth_code_visible == "True" else "NOT DISPLAYED",
+                }
+                logger.debug(f"expected_app_values: {expected_app_values}")
+                logger.debug(f"actual_app_values: {actual_app_values}")
+                Validator.validateAgainstAPP(
+                    expectedApp=expected_app_values, actualApp=actual_app_values
+                )
+
+            except Exception as e:
+                Configuration.perform_app_val_exception(testcase_id, e)
+            logger.info(f"Completed APP validation for the test case: {testcase_id}")
+
+        GlobalVariables.time_calc.validation.end()
+        logger.debug(f"Validation Timer ended in testcase function: {testcase_id}")
+        logger.info(f"Completed Validation for the test case: {testcase_id}")
 
     finally:
         Configuration.executeFinallyBlock(testcase_id)

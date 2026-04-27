@@ -69,3 +69,21 @@ class ReArchDemandDraftPage(ReArchNativeBasePage):
         """Tap the Confirm Payment button to submit the DD form."""
         self.perform_click(DemandDraftLocators.btn_confirm_payment)
         logger.info("Clicked Confirm Payment on DD form.")
+
+    # ── Error message verification ───────────────────────────────────────────
+
+    def is_error_dd_number_displayed(self, timeout: int = 10) -> bool:
+        """Check if 'DD number should be 6 digits' error is visible."""
+        return self.is_element_visible(DemandDraftLocators.lbl_error_dd_number, time=timeout)
+
+    def is_error_select_bank_displayed(self, timeout: int = 10) -> bool:
+        """Check if 'Please select a bank' error is visible."""
+        return self.is_element_visible(DemandDraftLocators.lbl_error_select_bank, time=timeout)
+
+    def is_error_branch_name_displayed(self, timeout: int = 10) -> bool:
+        """Check if 'Please provide Branch Name' error is visible."""
+        return self.is_element_visible(DemandDraftLocators.lbl_error_branch_name, time=timeout)
+
+    def is_error_dd_date_displayed(self, timeout: int = 10) -> bool:
+        """Check if 'Please enter DD Date' error is visible."""
+        return self.is_element_visible(DemandDraftLocators.lbl_error_dd_date, time=timeout)

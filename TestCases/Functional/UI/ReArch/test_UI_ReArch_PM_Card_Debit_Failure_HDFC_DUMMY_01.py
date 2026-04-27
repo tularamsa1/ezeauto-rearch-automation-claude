@@ -1,5 +1,4 @@
 import sys
-import random
 import time
 import pytest
 import allure
@@ -10,15 +9,14 @@ from DataProvider import GlobalVariables
 from PageFactory.ReArch.rearch_login_page import ReArchLoginPage
 from PageFactory.ReArch.rearch_home_page import ReArchHomePage
 from PageFactory.ReArch.rearch_order_details_page import ReArchOrderDetailsPage
-from PageFactory.ReArch.rearch_payment_method_page import ReArchPaymentMethodPage
-from PageFactory.ReArch.rearch_cash_confirm_page import ReArchCashConfirmPage
+from PageFactory.ReArch.rearch_card_type_page import ReArchCardTypePage
 from PageFactory.ReArch.rearch_complete_page import ReArchCompletePage
 from PageFactory.ReArch.rearch_txn_history_page import ReArchTxnHistoryPage
 from PageFactory.ReArch.rearch_txn_detail_page import ReArchTxnDetailPage
 from PageFactory.ReArch.rearch_native_locators import TxnHistoryLocators
 from Utilities import (
     APIProcessor, ConfigReader, DBProcessor, ResourceAssigner,
-    Validator, date_time_converter, receipt_validator,
+    Validator, date_time_converter,
 )
 from Utilities.execution_log_processor import EzeAutoLogger
 
@@ -28,49 +26,64 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.apiVal
 @pytest.mark.appVal
-@pytest.mark.chargeSlipVal
-def test_common_rearch_0028():
+@allure.sub_suite("UI_ReArch_PM_Card_Debit_Failure")
+def test_common_rearch_0041():
     """
-    Sub Feature Code: UI_ReArch_PM_Cash_Success_HDFC
+    Sub Feature Code: UI_ReArch_PM_Card_Debit_Failure_HDFC_DUMMY
     Sub Feature Description:
-        Same as test_common_rearch_0020 but with additional precondition
-        orderNumberInputEnabled = true. Launch ReArch app (handle login only
-        if Select Environment screen appears), enter a random amount between
-        500 and 600, tap the overlay button, proceed through Order Details,
-        scroll down and select Cash from the payment methods overlay, confirm
-        payment, click Accept More Payments, then navigate to transaction
-        history and perform app, API and charge slip validation.
+        Launch ReArch app, apply preconditions (settings refresh via Payment
+        History), enter amount 401, select Card, proceed through Order Details
+        overlay, select RuPay Debit (EMV) on the DUMMY card type selection
+        screen. Payment fails. Navigate back to home, then to transaction
+        history, click the transaction and perform app + API validation for
+        the failed transaction.
 
     NL Source Steps:
       Preconditions:
-        1. update org_settings: autoLoginByTokenEnabled = true
-        2. update org_settings: enableWebAppRevamp = true
-        3. update org_settings: cashPaymentEnabled = true
-        4. update org_settings: brandingInfo = ""
-        5. update org_settings: orderNumberInputEnabled = true
+        1.  update org_settings: autoLoginByTokenEnabled = true
+        2.  update org_settings: enableDemandDraftDD = true
+        3.  update org_settings: preAuthOption = 1
+        4.  update org_settings: cardPaymentEnabled = true
+        5.  update org_settings: enableWebAppRevamp = true
+        6.  update org_settings: p2pEnabled = true
+        7.  update org_settings: mqttEnabled = true
+        8.  update org_settings: cashPaymentEnabled = true
+        9.  update org_settings: addlAuthReqdForCash = false
+        10. update org_settings: orderNumberInputEnabled = true
+        11. update org_settings: customerAuthDataCaptureEnabled = true
+        12. update org_settings: chequePaymentEnabled = true
+        13. update org_settings: amountCutOffForCustomerAuth = 10000
+        14. update org_settings: eSignatureForNonCardEnabled = false
+        15. update org_settings: brandingInfo = ""
+        16. update org_settings: businessDiscountEnabled = true
+        17. update org_settings: boProductsEnabled = true
+        18. update org_settings: boCashbackEnabled = true
+        19. update org_settings: boInstantDiscountEnabled = true
 
       Test Steps:
         1.  launch rearch app and login if present
-        2.  click on collect payment
-        3.  enter any amount between 500 to 600
-        4.  click on overlay button
-        5.  click on proceed button on order details screen
-        6.  scroll down and click on Cash button
-        7.  click on confirm Payment
-        8.  click on Accept More Payment
-        9.  click on history button on the collect payment screen
-        10. do app, api and chargeslip validation
+        2.  apply preconditions settings (refresh via Payment History)
+        3.  wait for home page
+        3.  enter amount as 401
+        4.  select card
+        5.  click on proceed on the next screen (order details overlay)
+        6.  select RuPay Debit (EMV)
+            (payment fails)
+        8.  click on history button on the collect payment screen
+        9.  click on the transaction for the amount entered in step 3
+        10. do app and api validation
+
+      Note: This is a FAILED scenario — no charge slip validation.
 
       App Validation:
-        9-10. navigate to history from collect payment screen → click transaction
-              by txn_id → verify amount matches and status is "Payment Settled"
+        8-10. navigate to history → click transaction by txn_id
+              → verify amount matches and status is "Payment Failed"
 
       API Validation:
-        pmt_status=AUTHORIZED, txn_amt, pmt_mode=CASH, txn_type=CHARGE,
-        acquirer_code=NONE, org_code, date
-
-      Charge Slip Validation:
-        PAID BY=CASH, BASE AMOUNT=amount, date, time
+        pmt_status=FAILED, txn_amt=401, pmt_mode=CARD, txn_type=CHARGE,
+        org_code, date,
+        pmt_card_brand=RUPAY, pmt_card_type=DEBIT, card_txn_type=EMV
+        # TODO: verify pmt_status and acquirer_code for failed RuPay on first run
 
     Generated by: test_generator.md, action_registry.yaml
     """
@@ -110,10 +123,24 @@ def test_common_rearch_0028():
             "settingForOrgCode": org_code,
         })
         api_details["RequestBody"]["settings"]["autoLoginByTokenEnabled"] = "true"
+        api_details["RequestBody"]["settings"]["enableDemandDraftDD"] = "true"
+        api_details["RequestBody"]["settings"]["preAuthOption"] = "1"
+        api_details["RequestBody"]["settings"]["cardPaymentEnabled"] = "true"
         api_details["RequestBody"]["settings"]["enableWebAppRevamp"] = "true"
+        api_details["RequestBody"]["settings"]["p2pEnabled"] = "true"
+        api_details["RequestBody"]["settings"]["mqttEnabled"] = "true"
         api_details["RequestBody"]["settings"]["cashPaymentEnabled"] = "true"
-        api_details["RequestBody"]["settings"]["brandingInfo"] = ""
+        api_details["RequestBody"]["settings"]["addlAuthReqdForCash"] = "false"
         api_details["RequestBody"]["settings"]["orderNumberInputEnabled"] = "true"
+        api_details["RequestBody"]["settings"]["customerAuthDataCaptureEnabled"] = "true"
+        api_details["RequestBody"]["settings"]["chequePaymentEnabled"] = "true"
+        api_details["RequestBody"]["settings"]["amountCutOffForCustomerAuth"] = "10000"
+        api_details["RequestBody"]["settings"]["eSignatureForNonCardEnabled"] = "false"
+        api_details["RequestBody"]["settings"]["brandingInfo"] = ""
+        api_details["RequestBody"]["settings"]["businessDiscountEnabled"] = "true"
+        api_details["RequestBody"]["settings"]["boProductsEnabled"] = "true"
+        api_details["RequestBody"]["settings"]["boCashbackEnabled"] = "true"
+        api_details["RequestBody"]["settings"]["boInstantDiscountEnabled"] = "true"
         logger.debug(f"Precondition API details: {api_details}")
         response = APIProcessor.send_request(api_details=api_details)
         logger.debug(f"Precondition response: {response}")
@@ -135,7 +162,7 @@ def test_common_rearch_0028():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
-            amount = str(random.randint(500, 600))
+            amount = "401"
             logger.debug(f"amount={amount}")
 
             # Step 1: Launch ReArch app and login if required
@@ -144,7 +171,7 @@ def test_common_rearch_0028():
             login_page.perform_login_if_required(app_username, app_password)
             logger.debug("Login flow handled")
 
-            # Step 2: Wait for initial home screen and tap Collect Payment
+            # Step 2: Apply preconditions — settings refresh via Payment History
             home_page = ReArchHomePage(app_driver)
             home_page.wait_for_initial_home_screen()
             home_page.click_collect_payment()
@@ -161,14 +188,14 @@ def test_common_rearch_0028():
             home_page.go_back()
             logger.debug("Navigated back from Payment History")
 
-            # Step 3: Wait for amount screen and enter amount (500–600)
+            # Step 3: Wait for home page and enter amount 401
             home_page.wait_for_home_page_load()
             home_page.enter_amount(amount)
             logger.debug(f"Amount {amount} entered")
 
-            # Step 4: Tap overlay button (⋯ More Payment Options)
-            home_page.click_more_payment_options()
-            logger.debug("More Payment Options (⋯) tapped")
+            # Step 4: Select Card
+            home_page.click_pay_by_card()
+            logger.debug("Card payment method selected")
 
             # Step 5: Order Details overlay → click Proceed
             order_details_page = ReArchOrderDetailsPage(app_driver)
@@ -176,45 +203,34 @@ def test_common_rearch_0028():
             order_details_page.click_proceed()
             logger.debug("Order Details: clicked Proceed")
 
-            # Step 6: Scroll down and click Cash from payment methods
-            payment_method_page = ReArchPaymentMethodPage(app_driver)
-            payment_method_page.wait_for_payment_methods()
-            payment_method_page.scroll_to_text("Cash")
-            payment_method_page.click_cash()
-            logger.debug("Cash selected from payment methods")
+            # Step 6: Card type selection → RuPay Debit (EMV)
+            card_type_page = ReArchCardTypePage(app_driver)
+            card_type_page.wait_for_card_type_screen()
+            card_type_page.click_rupay_debit_emv()
+            logger.debug("Selected RuPay Debit (EMV)")
 
-            # Step 7: Cash Confirm screen → Confirm Payment
-            cash_confirm_page = ReArchCashConfirmPage(app_driver)
-            cash_confirm_page.wait_for_cash_confirm_screen()
-            cash_confirm_page.click_confirm_payment()
-            logger.debug("Cash payment confirmed")
-
-            # Verify payment success screen
+            # Payment fails — wait for failure screen
             complete_page = ReArchCompletePage(app_driver)
-            complete_page.wait_for_success_screen()
-            logger.info("Payment Successful screen confirmed")
+            complete_page.wait_for_failure_screen()
+            logger.info("Payment Failed screen confirmed")
 
-            # Step 8: Click Accept More Payments → back to collect payment screen
+            # Navigate back from failure screen
             complete_page.click_proceed_to_home()
-            logger.debug("Clicked Accept More Payments")
+            logger.debug("Navigated back from failure screen")
 
             # Resolve txn from DB
             query = (
-                f"select id, created_time, posting_date "
+                f"select id, created_time "
                 f"from txn "
                 f"where org_code='{org_code}' AND username='{app_username}' "
-                f"AND payment_mode='CASH' "
+                f"AND payment_mode='CARD' "
                 f"order by created_time desc limit 1;"
             )
-            logger.debug(f"Query to resolve txn_id: {query}")
+            logger.debug(f"Query to resolve txn: {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id       = result["id"].values[0]
             created_time = result["created_time"].values[0]
-            posting_date = result["posting_date"].values[0]
-            logger.debug(
-                f"Resolved txn_id={txn_id}, created_time={created_time}, "
-                f"posting_date={posting_date}"
-            )
+            logger.debug(f"Resolved txn_id={txn_id}, created_time={created_time}")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -231,34 +247,39 @@ def test_common_rearch_0028():
         logger.debug(f"Validation Timer started in testcase function: {testcase_id}")
 
         # ── App Validation ────────────────────────────────────────────────────
-        # Step 9-10: Click history → click transaction → verify amount + status
+        # Steps 8-10: Click history → click transaction → verify amount + "Payment Failed"
         if ConfigReader.read_config("Validations", "app_validation") == "True":
             logger.info(f"Started APP validation for the test case: {testcase_id}")
             try:
                 date_and_time = date_time_converter.to_rearch_app_format(created_time)
                 expected_app_values = {
-                    "txn_status": "Payment Settled",  # TODO: verify exact label for Cash on first run
+                    "txn_status": "Payment Failed",  # TODO: verify exact label on first run
                     "txn_id":     txn_id,
                     "date":       date_and_time,
                     "amount":     amount,
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
-                # Step 9: Click history button on the collect payment screen
+                # Step 8: Navigate to history from the collect payment screen
+                # TODO: on first run, verify if failure "Back to Home" lands on
+                #       initial home screen or amount screen. Adjust navigation if needed.
+                home_page.wait_for_initial_home_screen()
+                home_page.click_collect_payment()
                 home_page.wait_for_home_page_load()
                 home_page.click_txn_history()
 
+                # Step 9: Click on the transaction for the amount entered
                 txn_history_page = ReArchTxnHistoryPage(app_driver)
                 txn_history_page.wait_for_txn_list()
                 txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
 
                 txn_detail_page = ReArchTxnDetailPage(app_driver)
 
-                # Step 10: Verify amount and status
+                # Step 10: Verify amount and payment failed status
                 time.sleep(2)
                 app_txn_id     = txn_detail_page.fetch_payment_id()
                 app_txn_status = txn_detail_page.fetch_status(amount)
-                app_date_time  = txn_detail_page.fetch_date_time()
+                app_date_time  = txn_detail_page.fetch_date_time_failure()  # failure uses sibling index 1
                 app_amount     = txn_detail_page.fetch_amount(amount)
                 logger.info(
                     f"App txn_id={app_txn_id}, date_time={app_date_time}, "
@@ -289,13 +310,15 @@ def test_common_rearch_0028():
             try:
                 date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
-                    "pmt_status":    "AUTHORIZED",
-                    "txn_amt":       float(amount),
-                    "pmt_mode":      "CASH",
-                    "txn_type":      "CHARGE",
-                    "acquirer_code": "NONE",
-                    "org_code":      org_code,
-                    "date":          date,
+                    "pmt_status":     "FAILED",  # TODO: verify exact status on first run (FAILED / DECLINED / etc.)
+                    "txn_amt":        float(amount),
+                    "pmt_mode":       "CARD",
+                    "txn_type":       "CHARGE",
+                    "org_code":       org_code,
+                    "date":           date,
+                    "pmt_card_brand": "RUPAY",   # TODO: verify exact brand string on first run
+                    "pmt_card_type":  "DEBIT",
+                    "card_txn_type":  "EMV",
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -314,15 +337,17 @@ def test_common_rearch_0028():
                 logger.debug(f"Filtered txn entry from txnlist: {txn_data}")
 
                 actual_api_values = {
-                    "pmt_status":    txn_data["status"],
-                    "txn_amt":       float(txn_data["amount"]),
-                    "pmt_mode":      txn_data["paymentMode"],
-                    "txn_type":      txn_data["txnType"],
-                    "acquirer_code": txn_data["acquirerCode"],
-                    "org_code":      txn_data["orgCode"],
-                    "date":          date_time_converter.from_api_to_datetime_format(
-                                         txn_data["createdTime"]
-                                     ),
+                    "pmt_status":     txn_data["status"],
+                    "txn_amt":        float(txn_data["amount"]),
+                    "pmt_mode":       txn_data["paymentMode"],
+                    "txn_type":       txn_data["txnType"],
+                    "org_code":       txn_data["orgCode"],
+                    "date":           date_time_converter.from_api_to_datetime_format(
+                                          txn_data["createdTime"]
+                                      ),
+                    "pmt_card_brand": txn_data["paymentCardBrand"],
+                    "pmt_card_type":  txn_data["paymentCardType"],
+                    "card_txn_type":  txn_data["cardTxnTypeDesc"],
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(
@@ -333,42 +358,11 @@ def test_common_rearch_0028():
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case: {testcase_id}")
 
-        # ── Charge Slip Validation ────────────────────────────────────────────
-        if ConfigReader.read_config("Validations", "charge_slip_validation") == "True":
-            logger.info(f"Started ChargeSlip validation for the test case: {testcase_id}")
-            try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
-                expected_charge_slip_values = {
-                    "PAID BY:":     "CASH",
-                    "BASE AMOUNT:": "Rs." + str(amount) + ".00",
-                    "date":         txn_date,
-                    "time":         txn_time,
-                }
-                logger.debug(f"expected_charge_slip_values: {expected_charge_slip_values}")
-                receipt_validator.perform_charge_slip_validations(
-                    txn_id=txn_id,
-                    credentials={"username": app_username, "password": app_password},
-                    expected_details=expected_charge_slip_values,
-                )
-
-            except Exception as e:
-                Configuration.perform_charge_slip_val_exception(testcase_id, e)
-            logger.info(f"Completed ChargeSlip validation for the test case: {testcase_id}")
+        # NOTE: No Charge Slip validation — failure scenario has no RRN/auth code
 
         GlobalVariables.time_calc.validation.end()
         logger.debug(f"Validation Timer ended in testcase function: {testcase_id}")
         logger.info(f"Completed Validation for the test case: {testcase_id}")
 
     finally:
-        try:
-            api_details = DBProcessor.get_api_details('org_settings_update', request_body={
-                "username": portal_username,
-                "password": portal_password,
-                "entityName": "org",
-                "settingForOrgCode": org_code,
-            })
-            api_details["RequestBody"]["settings"]["orderNumberInputEnabled"] = "false"
-            APIProcessor.send_request(api_details=api_details)
-        except Exception as e:
-            logger.exception(f"Precondition revert failed: {e}")
         Configuration.executeFinallyBlock(testcase_id)

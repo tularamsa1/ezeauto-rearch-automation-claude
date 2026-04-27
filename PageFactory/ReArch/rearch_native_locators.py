@@ -79,9 +79,54 @@ class HomeAmountLocators:
     btn_more_payment_options = (AppiumBy.XPATH, "//android.widget.Button[@text='UPI']/following-sibling::android.widget.Button[1]")
     btn_add_tip            = (AppiumBy.XPATH, "//android.widget.Button[@text='Add Tip']")
 
+    # Promo overlay (appears on amount screen when paymentPromotionEnabled=true)
+    img_promo              = (AppiumBy.XPATH, "//android.widget.Image[@text='e91cc2003e6491b7f659']")
+
     # Header navigation — TODO: needs stable locators (no text/id on icon-only buttons)
     btn_menu               = (AppiumBy.XPATH, "//android.widget.Button[@index='0']")  # TODO: needs stable locator
     btn_txn_history        = (AppiumBy.XPATH, "//android.widget.Button[@index='2']")  # TODO: needs stable locator
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ACCOUNT DETAILS / SETTINGS SCREEN
+# ══════════════════════════════════════════════════════════════════════════════
+
+class AccountDetailsLocators:
+    lbl_account            = (AppiumBy.XPATH, "//android.widget.TextView[@text='Account']")
+    lbl_mid                = (AppiumBy.XPATH, "//android.widget.TextView[@text='MID']")
+    lbl_tid                = (AppiumBy.XPATH, "//android.widget.TextView[@text='TID']")
+    lbl_app_version        = (AppiumBy.XPATH, "//android.widget.TextView[@text='App Version']")
+    lbl_web_app_version    = (AppiumBy.XPATH, "//android.widget.TextView[@text='Web App Version']")
+    lbl_devices            = (AppiumBy.XPATH, "//android.widget.TextView[@text='Devices']")
+
+    btn_relaunch_app       = (AppiumBy.XPATH, "//android.widget.Button[@text='Relaunch App Resolve issues by relaunching app']")
+    btn_delete_cache_relaunch = (AppiumBy.XPATH, "//android.widget.Button[contains(@text,'Delete Cache')]")
+    btn_yes_delete_relaunch   = (AppiumBy.XPATH, "//android.widget.Button[@text='Yes, Delete & Relaunch']")
+
+    @staticmethod
+    def lbl_text(text: str):
+        """Locate any TextView by its exact text (e.g. username, org_code value)."""
+        return (AppiumBy.XPATH, f"//android.widget.TextView[@text='{text}']")
+
+    @staticmethod
+    def btn_text(text: str):
+        """Locate any Button by its exact text (e.g. org_code button)."""
+        return (AppiumBy.XPATH, f"//android.widget.Button[contains(@text,'{text}')]")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# TIP DETAILS SCREEN (after tapping Add Tip)
+# ══════════════════════════════════════════════════════════════════════════════
+
+class TipDetailsLocators:
+    lbl_want_to_leave_a_tip = (AppiumBy.XPATH, "//android.view.View[contains(@text,'Want to leave a tip')]")
+    btn_31_6                = (AppiumBy.XPATH, "//android.widget.Button[@text='\u20b931 6%']")
+    btn_57_11               = (AppiumBy.XPATH, "//android.widget.Button[@text='\u20b957 11%']")
+    txt_custom_amount       = (AppiumBy.XPATH, "//android.widget.EditText[contains(@text,'Custom Amount')]")
+    lbl_payment_details     = (AppiumBy.XPATH, "//android.widget.TextView[@text='Payment Details']")
+    lbl_tip_amount          = (AppiumBy.XPATH, "//android.widget.TextView[@text='Tip Amount']")
+    lbl_to_pay              = (AppiumBy.XPATH, "//android.widget.TextView[@text='To Pay']")
+    btn_done                = (AppiumBy.XPATH, "//android.widget.Button[@text='Done']")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -98,6 +143,8 @@ class PaymentMethodLocators:
     btn_cash               = (AppiumBy.XPATH, "//android.widget.Button[@text='Cash']")
     btn_cheque             = (AppiumBy.XPATH, "//android.widget.Button[@text='Cheque']")
     btn_demand_draft       = (AppiumBy.XPATH, "//android.widget.Button[@text='Demand Draft']")
+    btn_emi                = (AppiumBy.XPATH, "//android.widget.Button[@text='EMI']")
+    btn_my_discount_emi    = (AppiumBy.XPATH, "//android.widget.Button[@text='My Discount EMI']")
     lbl_secured_by         = (AppiumBy.XPATH, "//android.widget.TextView[@text='Secured by']")
 
 
@@ -163,6 +210,12 @@ class ChequePaymentLocators:
     btn_confirm_payment     = (AppiumBy.XPATH, "//android.widget.Button[@text='Confirm Payment']")
     btn_apply               = (AppiumBy.XPATH, "//android.widget.Button[@text='Apply']")  # TODO: verify on first run — shared by bank dropdown and date picker
 
+    # Error messages (displayed when submitting empty/invalid cheque form)
+    lbl_error_cheque_number = (AppiumBy.XPATH, "//android.widget.TextView[@text='Cheque number should be 6 digits']")
+    lbl_error_select_bank   = (AppiumBy.XPATH, "//android.widget.TextView[@text='Please select a bank']")
+    lbl_error_cheque_date   = (AppiumBy.XPATH, "//android.widget.TextView[@text='Please select Cheque Date']")
+    lbl_error_invalid_ifsc  = (AppiumBy.XPATH, "//android.widget.TextView[@text='Invalid Bank IFSC Code']")
+
     @staticmethod
     def bank_btn(bank_name: str):
         """Locate a bank button by its display name (e.g. 'Abn Amro Bank')."""
@@ -181,10 +234,61 @@ class DemandDraftLocators:
     btn_confirm_payment     = (AppiumBy.XPATH, "//android.widget.Button[@text='Confirm Payment']")
     btn_apply               = (AppiumBy.XPATH, "//android.widget.Button[@text='Apply']")  # TODO: verify on first run
 
+    # Error messages (displayed when submitting empty/invalid DD form)
+    lbl_error_dd_number     = (AppiumBy.XPATH, "//android.widget.TextView[@text='DD number should be 6 digits']")
+    lbl_error_select_bank   = (AppiumBy.XPATH, "//android.widget.TextView[@text='Please select a bank']")
+    lbl_error_branch_name   = (AppiumBy.XPATH, "//android.widget.TextView[@text='Please provide Branch Name']")
+    lbl_error_dd_date       = (AppiumBy.XPATH, "//android.widget.TextView[@text='Please enter DD Date']")
+
     @staticmethod
     def bank_btn(bank_name: str):
         """Locate a bank button by its display name (e.g. 'Pallavan Gramma Bank')."""
         return (AppiumBy.XPATH, f"//android.widget.Button[@text='{bank_name}']")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# EMI PLAN SELECTION / BREAKUP SCREEN
+# ══════════════════════════════════════════════════════════════════════════════
+
+class EMILocators:
+    lbl_choose_emi_plans   = (AppiumBy.XPATH, "//android.widget.TextView[@text='Choose EMI Plans']")
+    btn_bank               = (AppiumBy.XPATH, "//android.widget.Button[@text='Bank']")
+    btn_credit_card        = (AppiumBy.XPATH, "//android.widget.Button[@text='Credit Card']")
+    btn_debit_card         = (AppiumBy.XPATH, "//android.widget.Button[@text='Debit Card']")
+    btn_hdfc_bank_credit   = (AppiumBy.XPATH, "//android.widget.Button[contains(@text,'HDFC Bank Credit Card')]")
+    btn_hdfc_bank_debit    = (AppiumBy.XPATH, "//android.widget.Button[contains(@text,'HDFC Bank Debit Card')]")
+    btn_sbi_bank_credit    = (AppiumBy.XPATH, "//android.widget.Button[contains(@text,'SBI Bank Credit Card')]")
+    btn_view_breakup       = (AppiumBy.XPATH, "//android.widget.Button[@text='View Breakup']")
+    btn_proceed            = (AppiumBy.XPATH, "//android.widget.Button[@text='Proceed']")
+    lbl_emi_breakup_sheet  = (AppiumBy.ID, "emi-breakup-bottomsheet")
+
+    # Breakup detail labels (Credit Card uses "Order Total", Debit Card uses "Item Price")
+    lbl_summary            = (AppiumBy.XPATH, "//android.widget.TextView[@text='Summary']")
+    lbl_order_total        = (AppiumBy.XPATH, "//android.widget.TextView[@text='Order Total']")
+    lbl_item_price         = (AppiumBy.XPATH, "//android.widget.TextView[@text='Item Price']")
+    lbl_interest_charged   = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest charged by Bank']")
+    lbl_total_amount       = (AppiumBy.XPATH, "//android.widget.TextView[@text='Total Amount']")
+
+    # Breakup detail values (following-sibling of the label)
+    val_order_total        = (AppiumBy.XPATH, "//android.widget.TextView[@text='Order Total']/following-sibling::android.widget.TextView[1]")
+    val_item_price         = (AppiumBy.XPATH, "//android.widget.TextView[@text='Item Price']/following-sibling::android.widget.TextView[1]")
+    val_mydiscount         = (AppiumBy.XPATH, "//android.widget.TextView[@text='MyDiscount']/following-sibling::android.widget.TextView[1]")
+    val_interest_charged   = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest charged by Bank']/following-sibling::android.widget.TextView[1]")
+    val_total_amount       = (AppiumBy.XPATH, "//android.widget.TextView[@text='Total Amount']/following-sibling::android.widget.TextView[1]")
+
+    # 3-month EMI plan radio buttons (amount=5959)
+    rdb_3m_plan            = (AppiumBy.XPATH, "//android.widget.RadioButton[contains(@text,'3m') and contains(@text,'6,068.58')]")
+    rdb_3m_no_cost_plan    = (AppiumBy.XPATH, "//android.widget.RadioButton[contains(@text,'3m') and contains(@text,'No Cost EMI')]")
+
+    @staticmethod
+    def lbl_text(text: str):
+        """Locate any TextView by exact text (for verifying amounts like '₹5,959')."""
+        return (AppiumBy.XPATH, f"//android.widget.TextView[@text='{text}']")
+
+    @staticmethod
+    def bank_btn(bank_name: str):
+        """Locate a bank EMI button by bank name."""
+        return (AppiumBy.XPATH, f"//android.widget.Button[contains(@text,'{bank_name}')]")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -245,6 +349,17 @@ class TxnHistoryLocators:
     btn_back               = (AppiumBy.XPATH, "//android.widget.Button[@index='0']")  # TODO: needs stable locator
     btn_search             = (AppiumBy.XPATH, "//android.widget.Button[@index='3']")
     btn_more_options       = (AppiumBy.XPATH, "//android.widget.Button[@index='3']")  # TODO: needs stable locator
+    btn_apply_filter       = (AppiumBy.XPATH, "//android.widget.Button[@text='Apply']")
+
+    @staticmethod
+    def filter_option_btn(text: str):
+        """Locate a filter option button by its text (e.g., 'Cash', 'Settled')."""
+        return (AppiumBy.XPATH, f"//android.widget.Button[@text='{text}']")
+
+    @staticmethod
+    def filter_chip_text(text: str):
+        """Locate any element with the given text (for verifying active filter chips)."""
+        return (AppiumBy.XPATH, f"//*[@text='{text}']")
 
     # Transaction row buttons contain the full text: "transaction logo UPI 4:07 PM ₹389 Settled"
     # Use contains(@text, ...) to match partial content

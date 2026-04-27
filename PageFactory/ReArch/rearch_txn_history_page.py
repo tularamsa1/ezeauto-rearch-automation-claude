@@ -142,6 +142,22 @@ class ReArchTxnHistoryPage(ReArchNativeBasePage):
         self.perform_click(TxnHistoryLocators.btn_filter_status)
         logger.info("Clicked Status filter.")
 
+    # ── Filter actions ───────────────────────────────────────────────────────
+
+    def select_filter_option(self, option_text: str):
+        """Select a filter option from the filter dropdown (e.g., 'Cash', 'Settled')."""
+        self.perform_click(TxnHistoryLocators.filter_option_btn(option_text))
+        logger.info(f"Selected filter option: {option_text}")
+
+    def click_apply_filter(self):
+        """Click the Apply button in the filter dropdown."""
+        self.perform_click(TxnHistoryLocators.btn_apply_filter)
+        logger.info("Clicked Apply filter button.")
+
+    def is_filter_text_displayed(self, text: str, timeout: int = 10) -> bool:
+        """Check if a specific text is visible on the current page (e.g., active filter chip)."""
+        return self.is_element_visible(TxnHistoryLocators.filter_chip_text(text), time=timeout)
+
     # ── Presence checks ───────────────────────────────────────────────────────
 
     def is_payments_header_visible(self) -> bool:

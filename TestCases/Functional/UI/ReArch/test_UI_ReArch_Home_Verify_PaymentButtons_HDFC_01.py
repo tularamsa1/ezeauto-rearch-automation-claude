@@ -6,7 +6,7 @@ from DataProvider import GlobalVariables
 from PageFactory.ReArch.rearch_login_page import ReArchLoginPage
 from PageFactory.ReArch.rearch_home_page import ReArchHomePage
 from PageFactory.ReArch.rearch_native_locators import HomeAmountLocators
-from Utilities import ResourceAssigner
+from Utilities import ConfigReader, ResourceAssigner, Validator
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -73,15 +73,8 @@ def test_common_rearch_0012():
             home_page.click_collect_payment()
             logger.debug("Collect Payment tapped")
 
-            # Step 3: Verify UPI and Card buttons are displayed
+            # Wait for amount page to load
             home_page.wait_for_home_page_load()
-
-            upi_visible = home_page.is_element_visible(HomeAmountLocators.btn_upi, time=10)
-            card_visible = home_page.is_element_visible(HomeAmountLocators.btn_card, time=10)
-            logger.info(f"UPI button visible: {upi_visible}, Card button visible: {card_visible}")
-
-            assert upi_visible, "UPI button should be displayed on the collect payment screen"
-            assert card_visible, "Card button should be displayed on the collect payment screen"
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -91,6 +84,42 @@ def test_common_rearch_0012():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception - " + str(e))
+
+        # ── Validation ─────────────────────────────────────────────────────────
+        logger.info(f"Starting Validation for the test case: {testcase_id}")
+        GlobalVariables.time_calc.validation.start()
+        logger.debug(f"Validation Timer started in testcase function: {testcase_id}")
+
+        # ── App Validation ────────────────────────────────────────────────────
+        if ConfigReader.read_config("Validations", "app_validation") == "True":
+            logger.info(f"Started APP validation for the test case: {testcase_id}")
+            try:
+                # Step 3: Verify UPI and Card buttons are displayed
+                upi_visible = str(home_page.is_element_visible(HomeAmountLocators.btn_upi, time=10))
+                card_visible = str(home_page.is_element_visible(HomeAmountLocators.btn_card, time=10))
+                logger.info(f"UPI button visible: {upi_visible}, Card button visible: {card_visible}")
+
+                expected_app_values = {
+                    "upi_button": "UPI",
+                    "card_button": "Card",
+                }
+                actual_app_values = {
+                    "upi_button": "UPI" if upi_visible == "True" else "NOT DISPLAYED",
+                    "card_button": "Card" if card_visible == "True" else "NOT DISPLAYED",
+                }
+                logger.debug(f"expected_app_values: {expected_app_values}")
+                logger.debug(f"actual_app_values: {actual_app_values}")
+                Validator.validateAgainstAPP(
+                    expectedApp=expected_app_values, actualApp=actual_app_values
+                )
+
+            except Exception as e:
+                Configuration.perform_app_val_exception(testcase_id, e)
+            logger.info(f"Completed APP validation for the test case: {testcase_id}")
+
+        GlobalVariables.time_calc.validation.end()
+        logger.debug(f"Validation Timer ended in testcase function: {testcase_id}")
+        logger.info(f"Completed Validation for the test case: {testcase_id}")
 
     finally:
         Configuration.executeFinallyBlock(testcase_id)

@@ -69,3 +69,21 @@ class ReArchChequePage(ReArchNativeBasePage):
         """Tap the Confirm Payment button to submit the cheque form."""
         self.perform_click(ChequePaymentLocators.btn_confirm_payment)
         logger.info("Clicked Confirm Payment on cheque form.")
+
+    # ── Error message verification ───────────────────────────────────────────
+
+    def is_error_cheque_number_displayed(self, timeout: int = 10) -> bool:
+        """Check if 'Cheque number should be 6 digits' error is visible."""
+        return self.is_element_visible(ChequePaymentLocators.lbl_error_cheque_number, time=timeout)
+
+    def is_error_select_bank_displayed(self, timeout: int = 10) -> bool:
+        """Check if 'Please select a bank' error is visible."""
+        return self.is_element_visible(ChequePaymentLocators.lbl_error_select_bank, time=timeout)
+
+    def is_error_cheque_date_displayed(self, timeout: int = 10) -> bool:
+        """Check if 'Please select Cheque Date' error is visible."""
+        return self.is_element_visible(ChequePaymentLocators.lbl_error_cheque_date, time=timeout)
+
+    def is_error_invalid_ifsc_displayed(self, timeout: int = 10) -> bool:
+        """Check if 'Invalid Bank IFSC Code' error is visible."""
+        return self.is_element_visible(ChequePaymentLocators.lbl_error_invalid_ifsc, time=timeout)

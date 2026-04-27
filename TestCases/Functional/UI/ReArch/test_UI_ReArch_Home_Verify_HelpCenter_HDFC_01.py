@@ -6,7 +6,7 @@ from DataProvider import GlobalVariables
 from PageFactory.ReArch.rearch_login_page import ReArchLoginPage
 from PageFactory.ReArch.rearch_home_page import ReArchHomePage
 from PageFactory.ReArch.rearch_native_locators import HelpCenterLocators
-from Utilities import ResourceAssigner
+from Utilities import ConfigReader, ResourceAssigner, Validator
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -74,12 +74,6 @@ def test_common_rearch_0019():
             home_page.click_help()
             logger.debug("Help Center tapped")
 
-            # Step 3: Verify support numbers are displayed
-            support_visible = home_page.is_element_visible(HelpCenterLocators.lbl_support_numbers, time=10)
-            logger.info(f"Support numbers (1800 212 212 212 / 1800 313 313 313) visible: {support_visible}")
-
-            assert support_visible, "Support numbers 1800 212 212 212 / 1800 313 313 313 should be displayed on the Help Center page"
-
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in testcase function: {testcase_id}")
@@ -88,6 +82,38 @@ def test_common_rearch_0019():
         except Exception as e:
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception - " + str(e))
+
+        # ── Validation ─────────────────────────────────────────────────────────
+        logger.info(f"Starting Validation for the test case: {testcase_id}")
+        GlobalVariables.time_calc.validation.start()
+        logger.debug(f"Validation Timer started in testcase function: {testcase_id}")
+
+        # ── App Validation ────────────────────────────────────────────────────
+        if ConfigReader.read_config("Validations", "app_validation") == "True":
+            logger.info(f"Started APP validation for the test case: {testcase_id}")
+            try:
+                # Step 3: Verify support numbers are displayed
+                support_visible = str(home_page.is_element_visible(HelpCenterLocators.lbl_support_numbers, time=10))
+
+                expected_app_values = {
+                    "support_numbers": "1800 212 212 212 / 1800 313 313 313",
+                }
+                actual_app_values = {
+                    "support_numbers": "1800 212 212 212 / 1800 313 313 313" if support_visible == "True" else "NOT DISPLAYED",
+                }
+                logger.debug(f"expected_app_values: {expected_app_values}")
+                logger.debug(f"actual_app_values: {actual_app_values}")
+                Validator.validateAgainstAPP(
+                    expectedApp=expected_app_values, actualApp=actual_app_values
+                )
+
+            except Exception as e:
+                Configuration.perform_app_val_exception(testcase_id, e)
+            logger.info(f"Completed APP validation for the test case: {testcase_id}")
+
+        GlobalVariables.time_calc.validation.end()
+        logger.debug(f"Validation Timer ended in testcase function: {testcase_id}")
+        logger.info(f"Completed Validation for the test case: {testcase_id}")
 
     finally:
         Configuration.executeFinallyBlock(testcase_id)

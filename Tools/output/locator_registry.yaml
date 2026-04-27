@@ -1,12 +1,12 @@
 metadata:
   package: com.razorpay.pos
   app_version: unknown
-  captured_at: '2026-04-15T12:59:59'
+  captured_at: '2026-04-24T18:01:18'
 screens:
-  panDetails:
-    source_xml: panDetails.xml
-    captured_at: 2026-04-15 12:59
-    element_count: 12
+  e-receipt-signature:
+    source_xml: e-receipt-signature.xml
+    captured_at: 2026-04-24 18:01
+    element_count: 13
     elements:
       lbl_view:
         by: TODO
@@ -37,49 +37,53 @@ screens:
         type: label
         android_class: android.widget.TextView
         text: ₹
-      lbl_56559:
+      lbl_542:
         by: AppiumBy.XPATH
-        value: //android.widget.TextView[@text='56,559']
+        value: //android.widget.TextView[@text='542']
         type: label
         android_class: android.widget.TextView
-        text: 56,559
-      btn_pan:
+        text: '542'
+      lbl_tap_confirm_to_record_this_payment_in_th:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='PAN']
-        type: action
-        android_class: android.widget.Button
-        text: PAN
-      btn_form_60:
-        by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='Form 60']
-        type: action
-        android_class: android.widget.Button
-        text: Form 60
-      lbl_pan_number:
-        by: AppiumBy.XPATH
-        value: //android.view.View[@text='PAN Number *']
-        type: label
-        android_class: android.view.View
-        text: PAN Number *
-      txt_edittext:
-        by: TODO
-        value: no resource-id or text; class=android.widget.EditText index=5
-        type: unknown
-        android_class: android.widget.EditText
-        needs_annotation: true
-      lbl_mandatory_for_cash_payments_of_10000or_m:
-        by: AppiumBy.XPATH
-        value: '//android.widget.TextView[@text=''Mandatory for cash payments of 10,000
-
-          or more'']'
+        value: //android.widget.TextView[@text='Tap confirm to record this payment
+          in the daily summary']
         type: label
         android_class: android.widget.TextView
-        text: 'Mandatory for cash payments of 10,000
-
-          or more'
+        text: Tap confirm to record this payment in the daily summary
       btn_confirm_payment:
         by: AppiumBy.XPATH
         value: //android.widget.Button[@text='Confirm Payment']
         type: action
         android_class: android.widget.Button
         text: Confirm Payment
+      btn_close_overlay:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Close overlay']
+        type: action
+        android_class: android.widget.Button
+        text: Close overlay
+      lbl_esign_on_receipt:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='E-sign on Receipt']
+        type: label
+        android_class: android.widget.TextView
+        text: E-sign on Receipt
+      lbl_please_sign_here:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='Please sign here']
+        type: label
+        android_class: android.widget.TextView
+        text: Please sign here
+      lbl_i_agree_to_securely_save_my_signature_fo:
+        by: AppiumBy.XPATH
+        value: //android.view.View[@text='I agree to securely save my signature for
+          verifying this transaction.']
+        type: label
+        android_class: android.view.View
+        text: I agree to securely save my signature for verifying this transaction.
+      btn_skip:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Skip']
+        type: action
+        android_class: android.widget.Button
+        text: Skip

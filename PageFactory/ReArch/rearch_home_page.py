@@ -128,6 +128,11 @@ class ReArchHomePage(ReArchNativeBasePage):
         self.perform_click(HomeScreen.btn_other_apps)
         logger.info("Clicked Other Apps button.")
 
+    def click_settings(self):
+        """Tap the Settings button on the initial home screen."""
+        self.perform_click(HomeScreen.btn_settings)
+        logger.info("Clicked Settings button.")
+
     # ── Compound flows ────────────────────────────────────────────────────────
 
     def enter_amount_and_proceed_upi(self, amount):

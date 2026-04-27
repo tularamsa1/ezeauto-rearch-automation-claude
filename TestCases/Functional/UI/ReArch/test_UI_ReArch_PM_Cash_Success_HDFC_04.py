@@ -172,9 +172,7 @@ def test_common_rearch_0029():
             home_page.click_txn_history()
             txn_history_page = ReArchTxnHistoryPage(app_driver)
             txn_history_page.wait_for_txn_list()
-            assert home_page.is_element_visible(
-                TxnHistoryLocators.btn_my_dashboard, time=10
-            ), "My Dashboard button should be visible on Payment History"
+            home_page.wait_for_element(TxnHistoryLocators.btn_my_dashboard, time=10)
             logger.debug("Payment History loaded with Dashboard visible — settings refreshed")
             home_page.go_back()
             logger.debug("Navigated back from Payment History")
