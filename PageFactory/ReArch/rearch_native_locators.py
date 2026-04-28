@@ -82,6 +82,9 @@ class HomeAmountLocators:
     # Promo overlay (appears on amount screen when paymentPromotionEnabled=true)
     img_promo              = (AppiumBy.XPATH, "//android.widget.Image[@text='e91cc2003e6491b7f659']")
 
+    # Branding logo (appears when brandingInfo is set)
+    img_branding_logo      = (AppiumBy.XPATH, "//android.widget.Image[@text='logo']")  # TODO: verify on first run
+
     # Header navigation — TODO: needs stable locators (no text/id on icon-only buttons)
     btn_menu               = (AppiumBy.XPATH, "//android.widget.Button[@index='0']")  # TODO: needs stable locator
     btn_txn_history        = (AppiumBy.XPATH, "//android.widget.Button[@index='2']")  # TODO: needs stable locator
@@ -409,6 +412,9 @@ class TxnDetailLocators:
 
     # Action buttons
     btn_refund             = (AppiumBy.XPATH, "//android.widget.Button[@text='Refund']")
+    btn_void_amount        = (AppiumBy.XPATH, "//android.widget.Button[@text='Void Amount']")  # TODO: verify text on first run
+    btn_release_pre_auth   = (AppiumBy.XPATH, "//android.widget.Button[@text='Release Pre-Auth']")  # TODO: verify text on first run
+    btn_confirm_pre_auth   = (AppiumBy.XPATH, "//android.widget.Button[@text='Confirm Pre-Auth']")  # TODO: verify text on first run
     btn_print_chargeslip   = (AppiumBy.XPATH, "//android.widget.Button[@text='Print Chargeslip']")
     btn_send_receipt       = (AppiumBy.XPATH, "//android.widget.Button[@text='Send E-Receipt']")
 
@@ -428,6 +434,53 @@ class TxnDetailLocators:
     def lbl_amount(amount: str):
         """Locate the amount TextView on the detail page by its displayed text."""
         return (AppiumBy.XPATH, f"//android.widget.TextView[@text='{amount}']")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# RELEASE PRE-AUTH FLOW
+# ══════════════════════════════════════════════════════════════════════════════
+
+class ReleasePreAuthLocators:
+    """Locators for the Release Pre-Auth confirmation flow."""
+    btn_yes_release      = (AppiumBy.XPATH, "//android.widget.Button[@text='Yes, Release']")  # TODO: verify text on first run
+    btn_done             = (AppiumBy.XPATH, "//android.widget.Button[@text='Done']")  # TODO: verify on first run
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CONFIRM PRE-AUTH FLOW
+# ══════════════════════════════════════════════════════════════════════════════
+
+class ConfirmPreAuthLocators:
+    """Locators for the Confirm Pre-Auth confirmation flow."""
+    btn_confirm_pre_auth = (AppiumBy.XPATH, "//android.widget.Button[@index='22']")  # TODO: verify text on first run
+    btn_done             = (AppiumBy.XPATH, "//android.widget.Button[@text='Done']")  # TODO: verify on first run
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# E-SIGNATURE FLOW
+# ══════════════════════════════════════════════════════════════════════════════
+
+class ESignatureLocators:
+    """Locators for the eSignature capture screen (appears when eSignatureForNonCardEnabled=true)."""
+    chk_agree_signature  = (AppiumBy.XPATH, "//android.widget.CheckBox[contains(@text,'I agree to securely save my signature')]")  # TODO: verify on first run — may be TextView or CheckBox
+    btn_proceed          = (AppiumBy.XPATH, "//android.widget.Button[@text='Proceed']")  # TODO: verify text on first run
+    btn_confirm_payment  = (AppiumBy.XPATH, "//android.widget.Button[@text='Confirm Payment']")  # TODO: verify text on first run
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# VOID TRANSACTION FLOW (Enter Password → Void Confirmation → Done)
+# ══════════════════════════════════════════════════════════════════════════════
+
+class VoidLocators:
+    """Locators for the Void transaction flow screens."""
+    # Enter Password screen
+    lbl_enter_password   = (AppiumBy.XPATH, "//android.widget.TextView[@text='Enter Password']")  # TODO: verify text on first run
+    txt_password         = (AppiumBy.CLASS_NAME, "android.widget.EditText")
+    btn_continue         = (AppiumBy.XPATH, "//android.widget.Button[@text='Continue']")  # TODO: verify on first run
+    # Void confirmation
+    btn_void_payment     = (AppiumBy.XPATH, "//android.widget.Button[@text='Void Payment']")  # TODO: verify on first run
+    # Post-void completion
+    btn_done             = (AppiumBy.XPATH, "//android.widget.Button[@text='Done']")  # TODO: verify on first run
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -473,6 +526,6 @@ class HelpCenterLocators:
 
 class OnboardingLocators:
     lbl_select_environment = (AppiumBy.XPATH, "//android.widget.TextView[@text='Select Environment']")  # TODO: verify text on first run
-    chk_dont_show_again    = (AppiumBy.XPATH, "//android.widget.CheckBox[contains(@text,\"Don't show\")]")  # TODO: verify locator — may be View or Button
+    chk_dont_show_again    = (AppiumBy.XPATH, '//android.view.View[@text="I don\'t want to see this again"]')  # TODO: verify locator — may be View or Button
     btn_next               = (AppiumBy.XPATH, "//android.widget.Button[@text='Next']")
     btn_start              = (AppiumBy.XPATH, "//android.widget.Button[@text='Start']")

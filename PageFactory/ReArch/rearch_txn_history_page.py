@@ -1,3 +1,4 @@
+import time
 import time as _time
 
 from appium.webdriver.common.appiumby import AppiumBy
@@ -54,16 +55,16 @@ class ReArchTxnHistoryPage(ReArchNativeBasePage):
     def click_on_transaction_by_txn_id(self, txn_id: str):
         """Search by Payment ID and open the matching transaction.
 
-        Flow: Search button → Payment ID filter → type txn_id → tap result row.
+        Flow: Search button → Payment ID tab → type txn_id → tap result row.
         """
         self.perform_click(TxnHistoryLocators.btn_search)
-        # self.wait_for_element(TxnSearchLocators.lbl_search)
+        self.perform_click(TxnSearchLocators.btn_payment_id)
         self.perform_click(TxnSearchLocators.txt_search_input)
         self.perform_sendkeys(TxnSearchLocators.txt_search_input, txn_id)
         self.driver.press_keycode(66)   # Android Enter/Search key
 
-
         self.wait_for_element(TxnSearchLocators.txn_row)
+        time.sleep(5)
         self.perform_click(TxnSearchLocators.txn_row)
         logger.info(f"Opened transaction with txn_id: {txn_id}")
 

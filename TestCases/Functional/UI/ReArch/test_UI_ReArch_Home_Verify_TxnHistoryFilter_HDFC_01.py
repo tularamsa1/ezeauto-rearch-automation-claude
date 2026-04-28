@@ -2,7 +2,6 @@ import sys
 import random
 import time
 import pytest
-import allure
 from datetime import datetime
 
 from appium.webdriver.common.appiumby import AppiumBy
@@ -28,7 +27,6 @@ logger = EzeAutoLogger(__name__)
 
 @pytest.mark.usefixtures("log_on_success", "method_setup")
 @pytest.mark.appVal
-@allure.sub_suite("UI_ReArch_Home_Verify_TxnHistoryFilter")
 def test_common_rearch_0040():
     """
     Sub Feature Code: UI_ReArch_Home_Verify_TxnHistoryFilter_HDFC

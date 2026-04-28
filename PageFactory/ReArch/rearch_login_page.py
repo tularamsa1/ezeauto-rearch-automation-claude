@@ -1,5 +1,8 @@
+from appium.webdriver.common.appiumby import AppiumBy
+
 from PageFactory.ReArch.rearch_native_base_page import ReArchNativeBasePage
 from PageFactory.ReArch.rearch_native_locators import LoginLocators, OnboardingLocators
+from Utilities import ConfigReader
 from Utilities.execution_log_processor import EzeAutoLogger
 
 logger = EzeAutoLogger(__name__)
@@ -84,11 +87,14 @@ class ReArchLoginPage(ReArchNativeBasePage):
         """Check if the Select Environment screen appears (manual login flow)."""
         return self.is_element_visible(OnboardingLocators.lbl_select_environment, time=timeout)
 
+
+
     def perform_login_if_required(self, username: str, password: str):
         """Handle login only if the Select Environment screen appears.
 
         Auto-login flow: app lands directly on the home screen — nothing to do.
-        Manual login flow: Select Environment → Login → onboarding (Next, Next, Start).
+        Manual login flow: [Select Environment →] Login → Don't show again → Next → Next → Start.
+        The Select Environment screen may or may not appear.
         """
         if not self.is_select_environment_displayed():
             logger.info("Select Environment not displayed — auto-login flow, skipping login")
@@ -96,11 +102,17 @@ class ReArchLoginPage(ReArchNativeBasePage):
 
         logger.info("Select Environment screen detected — performing manual login flow")
 
-        # Step 1: Select environment (screen is already displayed)
-        # TODO: add environment selection logic once locator is confirmed
-        logger.debug("Select Environment screen acknowledged")
+        # Step 1: Scroll to environment and tap
+        env_name = ConfigReader.read_config("environment", "str_exe_env")
+        logger.debug(f"Environment from config: {env_name}")
+        self.driver.find_element(
+            AppiumBy.ANDROID_UIAUTOMATOR,
+            f'new UiScrollable(new UiSelector().scrollable(true).instance(0))'
+            f'.scrollIntoView(new UiSelector().textContains("{env_name}").instance(0));',
+        ).click()
+        logger.debug(f"Environment '{env_name}' selected")
 
-        # Step 2: Enter credentials and tap Login
+        # Step 2: Enter credentials and tap Login (always required after env selection or directly)
         self.wait_for_element(LoginLocators.txt_username)
         self.enter_username(username)
         self.enter_password(password)
@@ -119,3 +131,4 @@ class ReArchLoginPage(ReArchNativeBasePage):
         # Step 5: Tap Start
         self.perform_click(OnboardingLocators.btn_start)
         logger.info("Clicked Start — manual login flow completed")
+

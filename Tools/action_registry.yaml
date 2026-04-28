@@ -427,6 +427,46 @@ actions:
     method: wait_and_confirm_cash_payment
     code: "cash_confirm_page.wait_and_confirm_cash_payment()"
 
+  # ── eSignature screen ─────────────────────────────────────────────────────
+
+  - patterns:
+      - "wait for esignature screen"
+      - "esignature screen displayed"
+    page: ReArchESignaturePage
+    method: wait_for_esignature_screen
+    code: "esignature_page.wait_for_esignature_screen()"
+
+  - patterns:
+      - "draw signature"
+      - "sign on screen"
+      - "draw esignature"
+    page: ReArchESignaturePage
+    method: draw_signature
+    code: "esignature_page.draw_signature(271, 588, 441, 555)"
+    description: "Draw a signature by swiping between coordinates on the eSignature screen"
+
+  - patterns:
+      - "agree to save signature"
+      - "click agree signature"
+      - "i agree to securely save my signature"
+    page: ReArchESignaturePage
+    method: click_agree_signature
+    code: "esignature_page.click_agree_signature()"
+
+  - patterns:
+      - "click proceed on esignature"
+      - "proceed after signature"
+    page: ReArchESignaturePage
+    method: click_proceed
+    code: "esignature_page.click_proceed()"
+
+  - patterns:
+      - "confirm payment after esignature"
+      - "click confirm payment esignature"
+    page: ReArchESignaturePage
+    method: click_confirm_payment
+    code: "esignature_page.click_confirm_payment()"
+
   # ── Card type selection screen ────────────────────────────────────────────
 
   - patterns:
@@ -874,6 +914,36 @@ actions:
     page: ReArchTxnDetailPage
     method: click_print_chargeslip
     code: "txn_detail_page.click_print_chargeslip()"
+
+  - patterns:
+      - "click void amount"
+      - "tap void amount"
+      - "void amount"
+      - "void transaction"
+    page: ReArchTxnDetailPage
+    method: click_void_amount
+    code: "txn_detail_page.click_void_amount()"
+    description: "Click the Void Amount button on the transaction detail page"
+
+  - patterns:
+      - "click release pre-auth"
+      - "tap release pre-auth"
+      - "release pre-auth"
+      - "release pre auth"
+    page: ReArchTxnDetailPage
+    method: click_release_pre_auth
+    code: "txn_detail_page.click_release_pre_auth()"
+    description: "Click the Release Pre-Auth button on the transaction detail page"
+
+  - patterns:
+      - "click confirm pre-auth"
+      - "tap confirm pre-auth"
+      - "confirm pre-auth"
+      - "confirm pre auth"
+    page: ReArchTxnDetailPage
+    method: click_confirm_pre_auth
+    code: "txn_detail_page.click_confirm_pre_auth()"
+    description: "Click the Confirm Pre-Auth button on the transaction detail page"
 
   - patterns:
       - "click settings"

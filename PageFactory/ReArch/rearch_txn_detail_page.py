@@ -68,6 +68,21 @@ class ReArchTxnDetailPage(ReArchNativeBasePage):
 
     # ── Action buttons ────────────────────────────────────────────────────────
 
+    def click_void_amount(self):
+        self.wait_for_element(TxnDetailLocators.btn_void_amount)
+        self.perform_click(TxnDetailLocators.btn_void_amount)
+        logger.info("Clicked Void Amount button.")
+
+    def click_release_pre_auth(self):
+        self.wait_for_element(TxnDetailLocators.btn_release_pre_auth)
+        self.perform_click(TxnDetailLocators.btn_release_pre_auth)
+        logger.info("Clicked Release Pre-Auth button.")
+
+    def click_confirm_pre_auth(self):
+        self.wait_for_element(TxnDetailLocators.btn_confirm_pre_auth)
+        self.perform_click(TxnDetailLocators.btn_confirm_pre_auth)
+        logger.info("Clicked Confirm Pre-Auth button.")
+
     def click_refund(self):
         self.wait_for_element(TxnDetailLocators.btn_refund)
         self.perform_click(TxnDetailLocators.btn_refund)

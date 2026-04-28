@@ -48,6 +48,12 @@ PAGE_CLASS_MAP = {
     "ReArchNativeBasePage":   "PageFactory.ReArch.rearch_native_base_page.ReArchNativeBasePage",
     "ReArchOrderDetailsPage": "PageFactory.ReArch.rearch_order_details_page.ReArchOrderDetailsPage",
     "ReArchCardTypePage":     "PageFactory.ReArch.rearch_card_type_page.ReArchCardTypePage",
+    "ReArchChequePage":       "PageFactory.ReArch.rearch_cheque_page.ReArchChequePage",
+    "ReArchDemandDraftPage":  "PageFactory.ReArch.rearch_demand_draft_page.ReArchDemandDraftPage",
+    "ReArchTipPage":          "PageFactory.ReArch.rearch_tip_page.ReArchTipPage",
+    "ReArchAccountDetailsPage": "PageFactory.ReArch.rearch_account_details_page.ReArchAccountDetailsPage",
+    "ReArchEMIPage":          "PageFactory.ReArch.rearch_emi_page.ReArchEMIPage",
+    "ReArchESignaturePage":   "PageFactory.ReArch.rearch_esignature_page.ReArchESignaturePage",
 }
 
 # Regex to extract variable.method_name() calls from a code snippet
