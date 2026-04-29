@@ -25,10 +25,29 @@ class ReArchChequePage(ReArchNativeBasePage):
     # ── Cheque Number ─────────────────────────────────────────────────────────
 
     def enter_cheque_number(self, cheque_number: str):
-        """Click the cheque number field and type the number."""
+        """Click the cheque number field and type the number via Android system keyboard keycodes."""
+        _DIGIT_KEYCODES = {
+            "0": 7, "1": 8, "2": 9, "3": 10, "4": 11,
+            "5": 12, "6": 13, "7": 14, "8": 15, "9": 16,
+        }
         self.perform_click(ChequePaymentLocators.txt_enter_cheque_number)
-        self.perform_sendkeys(ChequePaymentLocators.txt_enter_cheque_number, cheque_number)
+        for char in str(cheque_number):
+            keycode = _DIGIT_KEYCODES.get(char)
+            if keycode:
+                self.driver.press_keycode(keycode)
+            else:
+                logger.warning(f"No keycode for character '{char}' -- skipping.")
         logger.info(f"Cheque number entered: {cheque_number}")
+
+    def perform_click_enter_cheque_number(self):
+        """Click the cheque number field."""
+        self.perform_click(ChequePaymentLocators.txt_enter_cheque_number)
+        logger.info("Clicked on cheque number field.")
+
+    def perform_click_on_confirm_payment(self):
+        """Click the Confirm Payment button."""
+        self.perform_click(ChequePaymentLocators.btn_confirm_payment)
+        logger.info("Clicked on Confirm Payment button.")
 
     # ── Bank Selection ────────────────────────────────────────────────────────
 

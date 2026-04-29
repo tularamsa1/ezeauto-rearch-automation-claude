@@ -51,12 +51,26 @@ class ReArchHomePage(ReArchNativeBasePage):
                 logger.warning(f"No numpad locator for character '{char}' -- skipping.")
         logger.info(f"Amount entered: {amount_str}")
 
+    def enter_amount_via_keyboard(self, amount):
+        """Type an amount using Android system keyboard keycodes (KEYCODE_0..KEYCODE_9)."""
+        _DIGIT_KEYCODES = {
+            "0": 7, "1": 8, "2": 9, "3": 10, "4": 11,
+            "5": 12, "6": 13, "7": 14, "8": 15, "9": 16,
+        }
+        amount_str = str(amount)
+        logger.debug(f"Entering amount via system keyboard: {amount_str}")
+        for char in amount_str:
+            keycode = _DIGIT_KEYCODES.get(char)
+            if keycode:
+                self.driver.press_keycode(keycode)
+            else:
+                logger.warning(f"No keycode for character '{char}' -- skipping.")
+        logger.info(f"Amount entered via keyboard: {amount_str}")
+
     def clear_amount(self):
-        """Clear the amount display by pressing numpad back repeatedly."""
+        """Clear the amount display by pressing KEYCODE_DEL repeatedly."""
         for _ in range(10):
-            if not self.is_element_visible(HomeAmountLocators.btn_numpad_back, time=1):
-                break
-            self.perform_click(HomeAmountLocators.btn_numpad_back)
+            self.driver.press_keycode(67)  # KEYCODE_DEL (backspace)
 
     # ── Payment method selection ───────────────────────────────────────────────
 
@@ -112,6 +126,11 @@ class ReArchHomePage(ReArchNativeBasePage):
         """Tap the Collect Payment button on the initial home screen."""
         self.perform_click(HomeScreen.btn_collect_payment)
         logger.info("Clicked Collect Payment button.")
+
+    def click_payments_history(self):
+        """Tap the Payments History button on the initial home screen."""
+        self.perform_click(HomeScreen.btn_payments_history)
+        logger.info("Clicked Payments History button.")
 
     def click_transactions(self):
         """Tap the Transactions button on the initial home screen to navigate to Payment History."""

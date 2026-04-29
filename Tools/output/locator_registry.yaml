@@ -1,12 +1,12 @@
 metadata:
   package: com.razorpay.pos
   app_version: unknown
-  captured_at: '2026-04-24T18:01:18'
+  captured_at: '2026-04-29T14:44:28'
 screens:
-  e-receipt-signature:
-    source_xml: e-receipt-signature.xml
-    captured_at: 2026-04-24 18:01
-    element_count: 13
+  brand_emi_credit_card_details_product2:
+    source_xml: brand_emi_credit_card_details_product2.xml
+    captured_at: 2026-04-29 14:44
+    element_count: 54
     elements:
       lbl_view:
         by: TODO
@@ -25,65 +25,320 @@ screens:
         type: unknown
         android_class: android.widget.Button
         needs_annotation: true
-      lbl_payment_amount:
+      img_brandui:
         by: AppiumBy.XPATH
-        value: //android.widget.TextView[@text='Payment Amount']
+        value: //android.widget.Image[@text='BRAND_UI']
+        type: image
+        android_class: android.widget.Image
+        text: BRAND_UI
+      lbl_branduiproduct2:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='Brand_UI_Product2']
         type: label
         android_class: android.widget.TextView
-        text: Payment Amount
-      lbl_textview:
+        text: Brand_UI_Product2
+      lbl_8000:
         by: AppiumBy.XPATH
-        value: //android.widget.TextView[@text='₹']
+        value: //android.widget.TextView[@text='₹8,000']
         type: label
         android_class: android.widget.TextView
-        text: ₹
-      lbl_542:
+        text: ₹8,000
+      btn_edit:
         by: AppiumBy.XPATH
-        value: //android.widget.TextView[@text='542']
-        type: label
-        android_class: android.widget.TextView
-        text: '542'
-      lbl_tap_confirm_to_record_this_payment_in_th:
-        by: AppiumBy.XPATH
-        value: //android.widget.TextView[@text='Tap confirm to record this payment
-          in the daily summary']
-        type: label
-        android_class: android.widget.TextView
-        text: Tap confirm to record this payment in the daily summary
-      btn_confirm_payment:
-        by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='Confirm Payment']
+        value: //android.widget.Button[@text='Edit']
         type: action
         android_class: android.widget.Button
-        text: Confirm Payment
-      btn_close_overlay:
+        text: Edit
+      btn_bank:
         by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='Close overlay']
+        value: //android.widget.Button[@text='Bank']
         type: action
         android_class: android.widget.Button
-        text: Close overlay
-      lbl_esign_on_receipt:
+        text: Bank
+      btn_low_cost_emi:
         by: AppiumBy.XPATH
-        value: //android.widget.TextView[@text='E-sign on Receipt']
-        type: label
-        android_class: android.widget.TextView
-        text: E-sign on Receipt
-      lbl_please_sign_here:
-        by: AppiumBy.XPATH
-        value: //android.widget.TextView[@text='Please sign here']
-        type: label
-        android_class: android.widget.TextView
-        text: Please sign here
-      lbl_i_agree_to_securely_save_my_signature_fo:
-        by: AppiumBy.XPATH
-        value: //android.view.View[@text='I agree to securely save my signature for
-          verifying this transaction.']
-        type: label
-        android_class: android.view.View
-        text: I agree to securely save my signature for verifying this transaction.
-      btn_skip:
-        by: AppiumBy.XPATH
-        value: //android.widget.Button[@text='Skip']
+        value: //android.widget.Button[@text='Low Cost EMI']
         type: action
         android_class: android.widget.Button
-        text: Skip
+        text: Low Cost EMI
+      btn_no_cost_emi:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='No Cost EMI']
+        type: action
+        android_class: android.widget.Button
+        text: No Cost EMI
+      btn_credit_card:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Credit Card']
+        type: action
+        android_class: android.widget.Button
+        text: Credit Card
+      btn_debit_card:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='Debit Card']
+        type: action
+        android_class: android.widget.Button
+        text: Debit Card
+      btn_bob_bank_credit_card:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='BOB Bank Credit Card']
+        type: action
+        android_class: android.widget.Button
+        text: BOB Bank Credit Card
+      rdb_255017_3m_765051_interest_of_15051_12_pa:
+        by: AppiumBy.XPATH
+        value: //android.widget.RadioButton[@text='₹2,550.17 × 3m ₹7,650.51 Interest
+          of ₹150.51 @ 12% p.a. ₹500 Discount']
+        type: action
+        android_class: android.widget.RadioButton
+        text: ₹2,550.17 × 3m ₹7,650.51 Interest of ₹150.51 @ 12% p.a. ₹500 Discount
+      lbl_255017_3m:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='₹2,550.17 × 3m']
+        type: label
+        android_class: android.widget.TextView
+        text: ₹2,550.17 × 3m
+      lbl_765051:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='₹7,650.51']
+        type: label
+        android_class: android.widget.TextView
+        text: ₹7,650.51
+      lbl_interest_of_15051_12_pa:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='Interest of ₹150.51 @ 12% p.a.']
+        type: label
+        android_class: android.widget.TextView
+        text: Interest of ₹150.51 @ 12% p.a.
+      img_fba821b82f6ca09b365c:
+        by: AppiumBy.XPATH
+        value: //android.widget.Image[@text='fba821b82f6ca09b365c']
+        type: image
+        android_class: android.widget.Image
+        text: fba821b82f6ca09b365c
+      lbl_500_discount:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='₹500 Discount']
+        type: label
+        android_class: android.widget.TextView
+        text: ₹500 Discount
+      rdb_129411_6m_776466_interest_of_26466_12_pa:
+        by: AppiumBy.XPATH
+        value: //android.widget.RadioButton[@text='₹1,294.11 × 6m ₹7,764.66 Interest
+          of ₹264.66 @ 12% p.a. ₹500 Discount']
+        type: action
+        android_class: android.widget.RadioButton
+        text: ₹1,294.11 × 6m ₹7,764.66 Interest of ₹264.66 @ 12% p.a. ₹500 Discount
+      lbl_129411_6m:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='₹1,294.11 × 6m']
+        type: label
+        android_class: android.widget.TextView
+        text: ₹1,294.11 × 6m
+      lbl_776466:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='₹7,764.66']
+        type: label
+        android_class: android.widget.TextView
+        text: ₹7,764.66
+      lbl_interest_of_26466_12_pa:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='Interest of ₹264.66 @ 12% p.a.']
+        type: label
+        android_class: android.widget.TextView
+        text: Interest of ₹264.66 @ 12% p.a.
+      img_fba821b82f6ca09b365c_2:
+        by: AppiumBy.XPATH
+        value: //android.widget.Image[@text='fba821b82f6ca09b365c']
+        type: image
+        android_class: android.widget.Image
+        text: fba821b82f6ca09b365c
+      lbl_500_discount_2:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='₹500 Discount']
+        type: label
+        android_class: android.widget.TextView
+        text: ₹500 Discount
+      rdb_87555_9m_787995_interest_of_37995_12_pa_:
+        by: AppiumBy.XPATH
+        value: //android.widget.RadioButton[@text='₹875.55 × 9m ₹7,879.95 Interest
+          of ₹379.95 @ 12% p.a. ₹500 Discount']
+        type: action
+        android_class: android.widget.RadioButton
+        text: ₹875.55 × 9m ₹7,879.95 Interest of ₹379.95 @ 12% p.a. ₹500 Discount
+      lbl_87555_9m:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='₹875.55 × 9m']
+        type: label
+        android_class: android.widget.TextView
+        text: ₹875.55 × 9m
+      lbl_787995:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='₹7,879.95']
+        type: label
+        android_class: android.widget.TextView
+        text: ₹7,879.95
+      lbl_interest_of_37995_12_pa:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='Interest of ₹379.95 @ 12% p.a.']
+        type: label
+        android_class: android.widget.TextView
+        text: Interest of ₹379.95 @ 12% p.a.
+      img_fba821b82f6ca09b365c_3:
+        by: AppiumBy.XPATH
+        value: //android.widget.Image[@text='fba821b82f6ca09b365c']
+        type: image
+        android_class: android.widget.Image
+        text: fba821b82f6ca09b365c
+      lbl_500_discount_3:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='₹500 Discount']
+        type: label
+        android_class: android.widget.TextView
+        text: ₹500 Discount
+      rdb_66637_12m_799644_interest_of_49644_12_pa:
+        by: AppiumBy.XPATH
+        value: //android.widget.RadioButton[@text='₹666.37 × 12m ₹7,996.44 Interest
+          of ₹496.44 @ 12% p.a. ₹500 Discount']
+        type: action
+        android_class: android.widget.RadioButton
+        text: ₹666.37 × 12m ₹7,996.44 Interest of ₹496.44 @ 12% p.a. ₹500 Discount
+      lbl_66637_12m:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='₹666.37 × 12m']
+        type: label
+        android_class: android.widget.TextView
+        text: ₹666.37 × 12m
+      lbl_799644:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='₹7,996.44']
+        type: label
+        android_class: android.widget.TextView
+        text: ₹7,996.44
+      lbl_interest_of_49644_12_pa:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='Interest of ₹496.44 @ 12% p.a.']
+        type: label
+        android_class: android.widget.TextView
+        text: Interest of ₹496.44 @ 12% p.a.
+      img_fba821b82f6ca09b365c_4:
+        by: AppiumBy.XPATH
+        value: //android.widget.Image[@text='fba821b82f6ca09b365c']
+        type: image
+        android_class: android.widget.Image
+        text: fba821b82f6ca09b365c
+      lbl_500_discount_4:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='₹500 Discount']
+        type: label
+        android_class: android.widget.TextView
+        text: ₹500 Discount
+      rdb_pay_in_full_7500_500_discount:
+        by: AppiumBy.XPATH
+        value: //android.widget.RadioButton[@text='Pay in Full ₹7,500 ₹500 Discount']
+        type: action
+        android_class: android.widget.RadioButton
+        text: Pay in Full ₹7,500 ₹500 Discount
+      lbl_pay_in_full:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='Pay in Full']
+        type: label
+        android_class: android.widget.TextView
+        text: Pay in Full
+      lbl_7500:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='₹7,500']
+        type: label
+        android_class: android.widget.TextView
+        text: ₹7,500
+      img_fba821b82f6ca09b365c_5:
+        by: AppiumBy.XPATH
+        value: //android.widget.Image[@text='fba821b82f6ca09b365c']
+        type: image
+        android_class: android.widget.Image
+        text: fba821b82f6ca09b365c
+      lbl_500_discount_5:
+        by: AppiumBy.XPATH
+        value: //android.widget.TextView[@text='₹500 Discount']
+        type: label
+        android_class: android.widget.TextView
+        text: ₹500 Discount
+      btn_icici_bank_credit_card_emi_starts_66988m:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='ICICI Bank Credit Card EMI starts @
+          ₹669.88/m ₹500 Discount']
+        type: action
+        android_class: android.widget.Button
+        text: ICICI Bank Credit Card EMI starts @ ₹669.88/m ₹500 Discount
+      btn_hdfc_bank_credit_card_emi_starts_87199m_:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='HDFC Bank Credit Card EMI starts @ ₹871.99/m
+          Low Cost EMI ₹500 Discount']
+        type: action
+        android_class: android.widget.Button
+        text: HDFC Bank Credit Card EMI starts @ ₹871.99/m Low Cost EMI ₹500 Discount
+      btn_axis_bank_credit_card_emi_starts_87199m_:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='AXIS Bank Credit Card EMI starts @ ₹871.99/m
+          Low Cost EMI ₹500 Discount']
+        type: action
+        android_class: android.widget.Button
+        text: AXIS Bank Credit Card EMI starts @ ₹871.99/m Low Cost EMI ₹500 Discount
+      btn_indusind_bank_credit_card_emi_starts_710:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='INDUSIND Bank Credit Card EMI starts
+          @ ₹710.79/m']
+        type: action
+        android_class: android.widget.Button
+        text: INDUSIND Bank Credit Card EMI starts @ ₹710.79/m
+      btn_yes_bank_credit_card_emi_starts_71454m:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='YES Bank Credit Card EMI starts @ ₹714.54/m']
+        type: action
+        android_class: android.widget.Button
+        text: YES Bank Credit Card EMI starts @ ₹714.54/m
+      btn_rbl_bank_credit_card_emi_starts_71454m:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='RBL Bank Credit Card EMI starts @ ₹714.54/m']
+        type: action
+        android_class: android.widget.Button
+        text: RBL Bank Credit Card EMI starts @ ₹714.54/m
+      btn_citi_bank_credit_card_emi_starts_71454m:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='CITI Bank Credit Card EMI starts @ ₹714.54/m']
+        type: action
+        android_class: android.widget.Button
+        text: CITI Bank Credit Card EMI starts @ ₹714.54/m
+      btn_kotak_bank_credit_card_emi_starts_71454m:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='KOTAK Bank Credit Card EMI starts @
+          ₹714.54/m']
+        type: action
+        android_class: android.widget.Button
+        text: KOTAK Bank Credit Card EMI starts @ ₹714.54/m
+      btn_amex_bank_credit_card_emi_starts_72207m:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='AMEX Bank Credit Card EMI starts @ ₹722.07/m']
+        type: action
+        android_class: android.widget.Button
+        text: AMEX Bank Credit Card EMI starts @ ₹722.07/m
+      btn_sbi_bank_credit_card_emi_starts_72585m:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='SBI Bank Credit Card EMI starts @ ₹725.85/m']
+        type: action
+        android_class: android.widget.Button
+        text: SBI Bank Credit Card EMI starts @ ₹725.85/m
+      btn_stanchart_bank_credit_card_emi_starts_72:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='STANCHART Bank Credit Card EMI starts
+          @ ₹725.85/m']
+        type: action
+        android_class: android.widget.Button
+        text: STANCHART Bank Credit Card EMI starts @ ₹725.85/m
+      btn_idfcfirst_bank_credit_card_emi_starts_13:
+        by: AppiumBy.XPATH
+        value: //android.widget.Button[@text='IDFCFIRST Bank Credit Card EMI starts
+          @ ₹1,384.34/m']
+        type: action
+        android_class: android.widget.Button
+        text: IDFCFIRST Bank Credit Card EMI starts @ ₹1,384.34/m

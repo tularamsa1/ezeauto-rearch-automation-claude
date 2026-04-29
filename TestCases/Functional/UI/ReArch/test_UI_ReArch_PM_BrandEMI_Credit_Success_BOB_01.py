@@ -1,8 +1,9 @@
 import sys
-import random
 import time
+import random
 
 import pytest
+from appium.webdriver.common.appiumby import AppiumBy
 from datetime import datetime
 
 from Configuration import Configuration, TestSuiteSetup
@@ -11,10 +12,12 @@ from PageFactory.ReArch.rearch_login_page import ReArchLoginPage
 from PageFactory.ReArch.rearch_home_page import ReArchHomePage
 from PageFactory.ReArch.rearch_order_details_page import ReArchOrderDetailsPage
 from PageFactory.ReArch.rearch_payment_method_page import ReArchPaymentMethodPage
-from PageFactory.ReArch.rearch_cheque_page import ReArchChequePage
+from PageFactory.ReArch.rearch_emi_page import ReArchEMIPage
+from PageFactory.ReArch.rearch_card_type_page import ReArchCardTypePage
 from PageFactory.ReArch.rearch_complete_page import ReArchCompletePage
 from PageFactory.ReArch.rearch_txn_history_page import ReArchTxnHistoryPage
 from PageFactory.ReArch.rearch_txn_detail_page import ReArchTxnDetailPage
+from PageFactory.ReArch.rearch_native_locators import TxnHistoryLocators
 from Utilities import (
     APIProcessor, ConfigReader, DBProcessor, ResourceAssigner,
     Validator, date_time_converter, receipt_validator,
@@ -28,43 +31,71 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-def test_common_rearch_0021():
+def test_common_rearch_0052():
     """
-    Sub Feature Code: UI_ReArch_PM_Cheque_Success_HDFC
+    Sub Feature Code: UI_ReArch_PM_BrandEMI_Credit_Success_BOB
     Sub Feature Description:
-        Launch ReArch app, handle login if required, enter a random amount (500-600),
-        navigate via ⋯ → Order Details → Proceed → Payment Methods overlay →
-        scroll down → Cheque → fill cheque form (cheque number, bank, date, IFSC) →
-        Confirm Payment → verify Payment Successful screen, then validate via
-        App (TxnHistory → TxnDetail), API (txnlist), and Charge Slip.
+        Launch ReArch app, login, refresh settings via Payment History,
+        navigate to Catalog, select BRAND_UI brand and Product1 (₹6,000),
+        proceed to EMI via BOB Bank Credit Card, select 3-month tenure,
+        verify breakup (Order Total ₹6,000, Interest +₹120.39,
+        Total ₹6,120.39), enter random 6-digit IMEI, proceed through
+        card type selection (Visa Credit EMV), verify success, then
+        validate via App, API, and Charge Slip.
 
     NL Source Steps:
       Preconditions:
-        1. update org_settings with multiple keys (see preconditions block)
-        NOTE: preconditions are NOT reverted in the finally block
+        1.  update org_settings: autoLoginByTokenEnabled = false
+        2.  update org_settings: enableDemandDraftDD = true
+        3.  update org_settings: preAuthOption = 1
+        4.  update org_settings: cardPaymentEnabled = true
+        5.  update org_settings: enableWebAppRevamp = true
+        6.  update org_settings: p2pEnabled = true
+        7.  update org_settings: mqttEnabled = true
+        8.  update org_settings: cashPaymentEnabled = true
+        9.  update org_settings: addlAuthReqdForCash = false
+        10. update org_settings: orderNumberInputEnabled = true
+        11. update org_settings: customerAuthDataCaptureEnabled = true
+        12. update org_settings: chequePaymentEnabled = true
+        13. update org_settings: amountCutOffForCustomerAuth = 10000
+        14. update org_settings: eSignatureForNonCardEnabled = false
+        15. update org_settings: brandingInfo = ""
+        16. update org_settings: businessDiscountEnabled = true
+        17. update org_settings: boProductsEnabled = true
+        18. update org_settings: boCashbackEnabled = true
+        19. update org_settings: boInstantDiscountEnabled = true
 
       Test Steps:
         1.  launch rearch app and login if present
-        2.  click on collect payment
-        3.  enter any amount between 500 to 600
-        4.  click on overlay button (⋯ More Payment Options)
-        5.  click on proceed button on order details screen
-        6.  scroll down and click on Cheque button
-        7.  click on Enter Cheque Number field and enter random 6 digit number
-        8.  click on Select Bank → click Abn Amro Bank → click Apply
-        9.  click on dd/mm/yyyy date button → click Apply
-        10. click on Enter IFSC Code field and enter BARB0VIVEKA
-        11. click on Confirm Payment
-        12. do app, api and chargeslip validation
+        2.  apply preconditions settings (refresh via Payment History)
+        3.  wait for home page
+        4.  click on back button
+        5.  click on catalog
+        6.  click on brand_ui
+        7.  click on product_1 (₹6,000)
+        8.  click on proceed button
+        9.  wait until bank button is visible
+        10. click on btn_bob_bank_credit_card
+        11. click on 3 month tenure
+        12. click on view breakup
+        13. verify Order Total = ₹6,000, Interest = +₹120.39, Total = ₹6,120.39
+        14. click on back button
+        15. click on Proceed button
+        16. tap and enter random 6 digit IMEI number
+        17. click on proceed button
+        18. click on proceed button
+        19. select Visa Credit(EMV)
+        20. click on Accept more payment
+        21. validate app, api and chargeslip
 
-    Generated by: test_generator.md
+    Generated by: test_generator.md, action_registry.yaml
     """
     try:
         testcase_id = sys._getframe().f_code.co_name
         GlobalVariables.time_calc.setup.resume()
         logger.debug(f"Setup Timer resumed in testcase function: {testcase_id}")
 
-        # ── Setup ──────────────────────────────────────────────────────────────
+        # -- Setup --
         app_cred = ResourceAssigner.getAppUserCredentials(testcase_id)
         logger.debug(f"App credentials fetched: {app_cred}")
         app_username = app_cred["Username"]
@@ -81,7 +112,7 @@ def test_common_rearch_0021():
         org_code = result["org_code"].values[0]
         logger.debug(f"org_code: {org_code}")
 
-        # ── PreConditions ──────────────────────────────────────────────────────
+        # -- PreConditions --
         logger.info(f"Starting Precondition setup for the test case: {testcase_id}")
 
         api_details = DBProcessor.get_api_details('org_settings_update', request_body={
@@ -92,6 +123,7 @@ def test_common_rearch_0021():
         })
         settings = api_details["RequestBody"]["settings"]
         settings["autoLoginByTokenEnabled"] = "true"
+        settings["enableDemandDraftDD"] = "true"
         settings["preAuthOption"] = "1"
         settings["cardPaymentEnabled"] = "true"
         settings["enableWebAppRevamp"] = "true"
@@ -105,6 +137,10 @@ def test_common_rearch_0021():
         settings["amountCutOffForCustomerAuth"] = "10000"
         settings["eSignatureForNonCardEnabled"] = "false"
         settings["brandingInfo"] = ""
+        settings["businessDiscountEnabled"] = "true"
+        settings["boProductsEnabled"] = "true"
+        settings["boCashbackEnabled"] = "true"
+        settings["boInstantDiscountEnabled"] = "true"
         logger.debug(f"Precondition API details: {api_details}")
         response = APIProcessor.send_request(api_details=api_details)
         logger.debug(f"Precondition response: {response}")
@@ -120,93 +156,134 @@ def test_common_rearch_0021():
         GlobalVariables.time_calc.setup.end()
         logger.debug(f"Setup Timer ended in testcase function: {testcase_id}")
 
-        # ── Test Execution ─────────────────────────────────────────────────────
+        # -- Test Execution --
         try:
             logger.info(f"Starting execution for the test case: {testcase_id}")
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
+            amount = "6000"
+            amount_formatted = "\u20b96,000"
+            logger.debug(f"amount={amount}, amount_formatted={amount_formatted}")
 
-            amount = str(random.randint(500, 600))
-            cheque_number = str(random.randint(100000, 999999))
-            logger.debug(f"amount={amount}, cheque_number={cheque_number}")
-
-            # Step 1: Launch ReArch app and handle login if required
+            # Step 1: Launch ReArch app and handle login
             app_driver = TestSuiteSetup.initialize_rearch_driver(testcase_id)
             login_page = ReArchLoginPage(app_driver)
             login_page.perform_login_if_required(app_username, app_password)
             logger.debug("Login flow handled")
 
-            # Step 2: Wait for initial home screen and tap Collect Payment
+            # Step 2: Navigate to home, then refresh settings via Payment History
             home_page = ReArchHomePage(app_driver)
             home_page.wait_for_initial_home_screen()
             home_page.click_collect_payment()
-            logger.debug("Collect Payment tapped")
-
-            # Step 3: Wait for amount screen and enter amount
             home_page.wait_for_home_page_load()
-            home_page.enter_amount(amount)
-            logger.debug(f"Amount {amount} entered")
 
-            # Step 4: Tap ⋯ (More Payment Options / overlay button)
-            home_page.click_more_payment_options()
-            logger.debug("More Payment Options (⋯) tapped")
+            # Refresh settings
+            home_page.click_txn_history()
+            txn_history_page = ReArchTxnHistoryPage(app_driver)
+            txn_history_page.wait_for_txn_list()
+            home_page.wait_for_element(TxnHistoryLocators.btn_my_dashboard, time=10)
+            home_page.go_back()
+            logger.debug("Settings refreshed via Payment History navigation")
 
-            # Step 5: Wait for Order Details overlay → click Proceed
+            # Step 3: Wait for home page
+            home_page.wait_for_home_page_load()
+            logger.debug("Home page ready after settings refresh")
+
+            # Step 4: Click back button to go to initial home screen
+            home_page.go_back()
+            home_page.wait_for_initial_home_screen()
+            logger.debug("Back to initial home screen")
+
+            # Step 5: Click on Catalog
+            login_page.perform_click(
+                (AppiumBy.XPATH, "//android.widget.Button[@text='Catalog']")  # TODO: verify exact text on first run
+            )
+            logger.debug("Clicked Catalog")
+
+            # Step 6: Click on BRAND_UI brand
+            time.sleep(2)  # TODO: adjust wait for catalog page load
+            login_page.perform_click(
+                (AppiumBy.XPATH, "//android.widget.Button[@text='BRAND_UI BRAND_UI']")
+            )
+            logger.debug("Clicked BRAND_UI brand")
+
+            # Step 7: Click on Product1 (₹6,000)
+            time.sleep(2)  # TODO: adjust wait for product list load
+            login_page.perform_click(
+                (AppiumBy.XPATH, "//android.widget.Button[@text='BRAND_UI Brand_UI_Product1 738749 \u20b96,000']")
+            )
+            logger.debug("Clicked Product1 (₹6,000)")
+
+            # Step 8: Click Proceed on Order Details
             order_details_page = ReArchOrderDetailsPage(app_driver)
-            order_details_page.wait_for_order_details_screen()
+            # order_details_page.wait_for_order_details_screen()
             order_details_page.click_proceed()
             logger.debug("Order Details: clicked Proceed")
 
-            # Step 6: Wait for Payment Method overlay → scroll down → click Cheque
-            payment_method_page = ReArchPaymentMethodPage(app_driver)
-            payment_method_page.wait_for_payment_methods()
-            payment_method_page.scroll_to_text("Cheque")
-            payment_method_page.click_cheque()
-            logger.debug("Cheque selected from payment methods")
+            # Step 9: Wait until Bank button is visible
+            emi_page = ReArchEMIPage(app_driver)
+            emi_page.wait_for_bank_button()
+            logger.debug("Bank button visible on EMI screen")
 
-            # Step 7: Enter cheque number
-            cheque_page = ReArchChequePage(app_driver)
-            cheque_page.wait_for_cheque_form()
-            cheque_page.perform_click_enter_cheque_number()
-            cheque_page.enter_cheque_number(cheque_number)
-            logger.debug(f"Cheque number {cheque_number} entered")
-            home_page.go_back()
+            # Step 10: Click BOB Bank Credit Card
+            emi_page.click_bob_bank_credit_card()
+            logger.debug("BOB Bank Credit Card selected")
 
+            # Step 11: Click 3-month tenure (BOB)
+            emi_page.click_bob_3m_plan()
+            logger.debug("BOB 3-month EMI plan selected")
 
-            # Step 8: Select Bank → Abn Amro Bank → Apply
-            cheque_page.click_select_bank()
-            cheque_page.select_bank("Abn Amro Bank")
-            cheque_page.click_apply()
-            logger.debug("Bank selected: Abn Amro Bank")
+            # Step 12: Click View Breakup
+            emi_page.click_view_breakup()
+            logger.debug("View Breakup opened")
 
-            # Step 9: Click date picker (dd/mm/yyyy) → Apply (accepts default/today)
-            cheque_page.click_date_picker()
-            cheque_page.click_apply()
-            logger.debug("Cheque date selected (default)")
+            # Step 13: Fetch breakup values for validation (no asserts here)
+            actual_order_total = emi_page.fetch_order_total()
+            actual_interest = emi_page.fetch_interest_charged()
+            actual_total_amount = emi_page.fetch_total_amount()
+            logger.info(f"Breakup — Order Total: {actual_order_total}, "
+                        f"Interest: {actual_interest}, "
+                        f"Total Amount: {actual_total_amount}")
 
-            # Step 10: Enter IFSC Code
-            cheque_page.enter_ifsc_code("BARB0VIVEKA")
-            logger.debug("IFSC code entered: BARB0VIVEKA")
+            # Step 14: Click back button (close breakup sheet)
+            emi_page.go_back()
+            logger.debug("Back from breakup sheet")
 
-            # Step 11: Click Confirm Payment
-            cheque_page.click_confirm_payment()
-            logger.debug("Cheque payment confirmed")
+            # Step 15: Click Proceed on EMI screen
+            emi_page.click_proceed()
+            logger.debug("EMI: clicked Proceed")
 
-            # Verify payment success screen
+            # Step 16: Enter random 6-digit IMEI number
+            imei_number = str(random.randint(100000, 999999))
+            order_details_page.enter_device_serial(imei_number)
+            logger.debug(f"IMEI entered: {imei_number}")
+
+            # Step 17: Click Proceed on Order Details
+            order_details_page.click_proceed()
+            logger.debug("Order Details: clicked Proceed (with IMEI)")
+
+            # Step 18: Click Proceed (second proceed)
+            # order_details_page.wait_for_order_details_screen()
+            order_details_page.click_proceed()
+            logger.debug("Order Details: clicked Proceed (second)")
+
+            # Step 19: Select Visa Credit (EMV)
+            card_type_page = ReArchCardTypePage(app_driver)
+            card_type_page.wait_for_card_type_screen()
+            card_type_page.select_card_type("Visa Credit (EMV)")
+            logger.debug("Selected Visa Credit (EMV)")
+
+            # Verify payment success
             complete_page = ReArchCompletePage(app_driver)
             complete_page.wait_for_success_screen()
             logger.info("Payment Successful screen confirmed")
 
-            # Accept more payments → back to home screen
-            complete_page.click_proceed_to_home()
-            logger.debug("Clicked Accept More Payments")
-
             # Resolve txn from DB
             query = (
-                f"select id, created_time, posting_date "
+                f"select id, created_time, posting_date, rr_number, auth_code "
                 f"from txn "
                 f"where org_code='{org_code}' AND username='{app_username}' "
-                f"AND payment_mode='CHEQUE' "  # TODO: verify payment_mode value on first run
+                f"AND payment_mode='CARD' "  # TODO: verify if EMI has separate payment_mode
                 f"order by created_time desc limit 1;"
             )
             logger.debug(f"Query to resolve txn_id: {query}")
@@ -214,10 +291,16 @@ def test_common_rearch_0021():
             txn_id       = result["id"].values[0]
             created_time = result["created_time"].values[0]
             posting_date = result["posting_date"].values[0]
+            rrn          = str(result["rr_number"].values[0])
+            auth_code    = str(result["auth_code"].values[0])
             logger.debug(
                 f"Resolved txn_id={txn_id}, created_time={created_time}, "
-                f"posting_date={posting_date}"
+                f"posting_date={posting_date}, rrn={rrn}, auth_code={auth_code}"
             )
+
+            # Step 20: Click Accept More Payments
+            complete_page.click_proceed_to_home()
+            logger.debug("Clicked Accept More Payments")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -228,40 +311,56 @@ def test_common_rearch_0021():
             Configuration.perform_exe_exception(testcase_id)
             pytest.fail("Test case execution failed due to the exception - " + str(e))
 
-        # ── Validation ─────────────────────────────────────────────────────────
+        # -- Validation --
         logger.info(f"Starting Validation for the test case: {testcase_id}")
         GlobalVariables.time_calc.validation.start()
         logger.debug(f"Validation Timer started in testcase function: {testcase_id}")
 
-        # ── App Validation ────────────────────────────────────────────────────
+        # -- App Validation (EMI breakup + TxnDetail) --
         if ConfigReader.read_config("Validations", "app_validation") == "True":
             logger.info(f"Started APP validation for the test case: {testcase_id}")
             try:
+                # EMI Breakup verification
+                expected_breakup_values = {
+                    "order_total": "\u20b96,000",
+                    "interest_charged": "+\u20b9120.39",
+                    "total_amount": "\u20b96,120.39",
+                }
+                actual_breakup_values = {
+                    "order_total": actual_order_total,
+                    "interest_charged": actual_interest,
+                    "total_amount": actual_total_amount,
+                }
+                logger.debug(f"expected_breakup_values: {expected_breakup_values}")
+                logger.debug(f"actual_breakup_values: {actual_breakup_values}")
+                Validator.validateAgainstAPP(
+                    expectedApp=expected_breakup_values, actualApp=actual_breakup_values
+                )
+
+                # TxnDetail validation via Payment History
                 date_and_time = date_time_converter.to_rearch_app_format(created_time)
                 expected_app_values = {
-                    "txn_status": "Payment Settled",  # TODO: verify exact label for Cheque on first run
+                    "txn_status": "Payment Authorized",  # TODO: verify exact label for EMI on first run
                     "txn_id":     txn_id,
                     "date":       date_and_time,
-                    "amount":     amount,
+                    "amount":     f"{int(amount):,}",
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
-                # Navigate to TxnDetail via txn_id search
+                # Navigate to Payment History from Collect Payment page
+                home_page.wait_for_initial_home_screen()
+                home_page.click_collect_payment()
                 home_page.wait_for_home_page_load()
                 home_page.click_txn_history()
 
-                txn_history_page = ReArchTxnHistoryPage(app_driver)
                 txn_history_page.wait_for_txn_list()
                 txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
 
                 txn_detail_page = ReArchTxnDetailPage(app_driver)
-
-                # Fetch and assert transaction fields
-                time.sleep(2)
                 app_txn_id     = txn_detail_page.fetch_payment_id()
-                app_txn_status = txn_detail_page.fetch_status(amount)
+                app_txn_status = txn_detail_page.fetch_status("6,000")
                 app_date_time  = txn_detail_page.fetch_date_time()
-                app_amount     = txn_detail_page.fetch_amount(amount)
+                app_amount     = txn_detail_page.fetch_amount("6,000")
                 logger.info(
                     f"App txn_id={app_txn_id}, date_time={app_date_time}, "
                     f"app_txn_status={app_txn_status}, app_amount={app_amount}"
@@ -278,26 +377,27 @@ def test_common_rearch_0021():
                     expectedApp=expected_app_values, actualApp=actual_app_values
                 )
 
-                assert app_txn_id, "Payment ID should not be empty"
-                assert app_date_time, "Date & Time should not be empty"
-
             except Exception as e:
                 Configuration.perform_app_val_exception(testcase_id, e)
             logger.info(f"Completed APP validation for the test case: {testcase_id}")
 
-        # ── API Validation ────────────────────────────────────────────────────
+        # -- API Validation --
         if ConfigReader.read_config("Validations", "api_validation") == "True":
             logger.info(f"Started API validation for the test case: {testcase_id}")
             try:
                 date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
-                    "pmt_status":    "AUTHORIZED",    # TODO: verify on first run
+                    "pmt_status":    "AUTHORIZED",
                     "txn_amt":       float(amount),
-                    "pmt_mode":      "CHEQUE",        # TODO: verify on first run
+                    "pmt_mode":      "CARD",             # TODO: verify if EMI uses CARD or EMI
                     "txn_type":      "CHARGE",
-                    "acquirer_code": "NONE",           # TODO: verify on first run
+                    "acquirer_code": "HDFC",              # TODO: verify acquirer_code for BOB EMI
                     "org_code":      org_code,
+                    "rrn":           rrn,
                     "date":          date,
+                    "pmt_card_brand": "VISA",
+                    "pmt_card_type":  "CREDIT",
+                    "card_txn_type":  "EMV",
                 }
                 logger.debug(f"expected_api_values: {expected_api_values}")
 
@@ -322,9 +422,13 @@ def test_common_rearch_0021():
                     "txn_type":      txn_data["txnType"],
                     "acquirer_code": txn_data["acquirerCode"],
                     "org_code":      txn_data["orgCode"],
+                    "rrn":           str(txn_data["rrNumber"]),
                     "date":          date_time_converter.from_api_to_datetime_format(
                                          txn_data["createdTime"]
                                      ),
+                    "pmt_card_brand": txn_data["paymentCardBrand"],
+                    "pmt_card_type":  txn_data["paymentCardType"],
+                    "card_txn_type":  txn_data["cardTxnTypeDesc"],
                 }
                 logger.debug(f"actual_api_values: {actual_api_values}")
                 Validator.validationAgainstAPI(
@@ -335,14 +439,15 @@ def test_common_rearch_0021():
                 Configuration.perform_api_val_exception(testcase_id, e)
             logger.info(f"Completed API validation for the test case: {testcase_id}")
 
-        # ── Charge Slip Validation ────────────────────────────────────────────
+        # -- Charge Slip Validation --
         if ConfigReader.read_config("Validations", "charge_slip_validation") == "True":
             logger.info(f"Started ChargeSlip validation for the test case: {testcase_id}")
             try:
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 expected_charge_slip_values = {
-                    "PAID BY:":     "CHEQUE",          # TODO: verify on first run
-                    "BASE AMOUNT:": "Rs." + str(amount) + ".00",
+                    "RRN":          rrn,
+                    "AUTH CODE":    auth_code,
+                    "BASE AMOUNT:": "Rs." + f"{int(amount):,}" + ".00",
                     "date":         txn_date,
                     "time":         txn_time,
                 }

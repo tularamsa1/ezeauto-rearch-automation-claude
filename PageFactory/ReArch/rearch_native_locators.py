@@ -160,7 +160,7 @@ class OrderDetailsLocators:
     lbl_order_id           = (AppiumBy.XPATH, "//android.view.View[@text='Order ID']")
     txt_order_number       = (AppiumBy.ID,    "order-number-input")
     lbl_device_serial      = (AppiumBy.XPATH, "//android.view.View[@text='Device Serial']")
-    txt_additional_field    = (AppiumBy.ID,    "additional-field-input")
+    txt_additional_field    = (AppiumBy.XPATH,   "//android.widget.EditText[@index='2']")
     btn_cancel             = (AppiumBy.XPATH, "//android.widget.Button[@text='Cancel']")
     btn_proceed            = (AppiumBy.XPATH, "//android.widget.Button[@text='Proceed']")
     btn_close_overlay      = (AppiumBy.XPATH, "//android.widget.Button[@text='Close overlay']")
@@ -261,6 +261,8 @@ class EMILocators:
     btn_hdfc_bank_credit   = (AppiumBy.XPATH, "//android.widget.Button[contains(@text,'HDFC Bank Credit Card')]")
     btn_hdfc_bank_debit    = (AppiumBy.XPATH, "//android.widget.Button[contains(@text,'HDFC Bank Debit Card')]")
     btn_sbi_bank_credit    = (AppiumBy.XPATH, "//android.widget.Button[contains(@text,'SBI Bank Credit Card')]")
+    btn_bob_bank_credit    = (AppiumBy.XPATH, "//android.widget.Button[contains(@text,'BOB Bank Credit Card')]")
+    btn_icici_bank_credit  = (AppiumBy.XPATH, "//android.widget.Button[contains(@text,'ICICI Bank Credit Card')]")
     btn_view_breakup       = (AppiumBy.XPATH, "//android.widget.Button[@text='View Breakup']")
     btn_proceed            = (AppiumBy.XPATH, "//android.widget.Button[@text='Proceed']")
     lbl_emi_breakup_sheet  = (AppiumBy.ID, "emi-breakup-bottomsheet")
@@ -276,12 +278,27 @@ class EMILocators:
     val_order_total        = (AppiumBy.XPATH, "//android.widget.TextView[@text='Order Total']/following-sibling::android.widget.TextView[1]")
     val_item_price         = (AppiumBy.XPATH, "//android.widget.TextView[@text='Item Price']/following-sibling::android.widget.TextView[1]")
     val_mydiscount         = (AppiumBy.XPATH, "//android.widget.TextView[@text='MyDiscount']/following-sibling::android.widget.TextView[1]")
+    val_instant_discount   = (AppiumBy.XPATH, "//android.widget.TextView[@text='Instant Discount']/following-sibling::android.widget.TextView[1]")
     val_interest_charged   = (AppiumBy.XPATH, "//android.widget.TextView[@text='Interest charged by Bank']/following-sibling::android.widget.TextView[1]")
+    val_additional_cashback = (AppiumBy.XPATH, "//android.widget.TextView[@text='Additional Cashback']/following-sibling::android.widget.TextView[1]")
+    val_net_effective_price = (AppiumBy.XPATH, "//android.widget.TextView[@text='Net Effective Price']/following-sibling::android.widget.TextView[1]")
     val_total_amount       = (AppiumBy.XPATH, "//android.widget.TextView[@text='Total Amount']/following-sibling::android.widget.TextView[1]")
 
     # 3-month EMI plan radio buttons (amount=5959)
     rdb_3m_plan            = (AppiumBy.XPATH, "//android.widget.RadioButton[contains(@text,'3m') and contains(@text,'6,068.58')]")
     rdb_3m_no_cost_plan    = (AppiumBy.XPATH, "//android.widget.RadioButton[contains(@text,'3m') and contains(@text,'No Cost EMI')]")
+
+    # 3-month EMI plan radio button (amount=6000, BOB)
+    rdb_bob_3m_plan        = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='\u20b92,040.13 \u00d7 3m \u20b96,120.39 Interest of \u20b9120.39 @ 12% p.a.']")
+
+    # 3-month EMI plan radio button (amount=8000, BOB)
+    rdb_bob_3m_plan_8000   = (AppiumBy.XPATH, "//android.widget.RadioButton[contains(@text,'2,550.17') and contains(@text,'3m')]")
+
+    # Pay in Full radio button (amount=8000, BOB, ₹500 discount → ₹7,500)
+    rdb_pay_in_full_7500   = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='Pay in Full \u20b97,500 \u20b9500 Discount']")
+
+    # Generic first 3-month EMI plan radio button (matches first visible × 3m plan)
+    rdb_3m_plan_first      = (AppiumBy.XPATH, "(//*[@class='android.widget.RadioButton'])[1]")
 
     @staticmethod
     def lbl_text(text: str):
@@ -353,6 +370,8 @@ class TxnHistoryLocators:
     btn_search             = (AppiumBy.XPATH, "//android.widget.Button[@index='3']")
     btn_more_options       = (AppiumBy.XPATH, "//android.widget.Button[@index='3']")  # TODO: needs stable locator
     btn_apply_filter       = (AppiumBy.XPATH, "//android.widget.Button[@text='Apply']")
+    btn_today              = (AppiumBy.XPATH, "(//*[@class='android.widget.Button'])[16]")  # TODO: index-based — verify on first run
+    btn_clear_all          = (AppiumBy.XPATH, "//android.widget.Button[@text='Clear all']")
 
     @staticmethod
     def filter_option_btn(text: str):
@@ -462,7 +481,8 @@ class ConfirmPreAuthLocators:
 
 class ESignatureLocators:
     """Locators for the eSignature capture screen (appears when eSignatureForNonCardEnabled=true)."""
-    chk_agree_signature  = (AppiumBy.XPATH, "//android.widget.CheckBox[contains(@text,'I agree to securely save my signature')]")  # TODO: verify on first run — may be TextView or CheckBox
+    lbl_please_sign_here = (AppiumBy.XPATH, "//android.widget.TextView[@text='Please sign here']")
+    chk_agree_signature  = (AppiumBy.XPATH, "//android.view.View[@text='I agree to securely save my signature for verifying this transaction.']")  # TODO: verify on first run — may be TextView or CheckBox
     btn_proceed          = (AppiumBy.XPATH, "//android.widget.Button[@text='Proceed']")  # TODO: verify text on first run
     btn_confirm_payment  = (AppiumBy.XPATH, "//android.widget.Button[@text='Confirm Payment']")  # TODO: verify text on first run
 
@@ -489,6 +509,7 @@ class VoidLocators:
 
 class HomeScreen:
     btn_collect_payment    = (AppiumBy.XPATH, "//android.widget.Button[@text='Collect Payment']")
+    btn_payments_history   = (AppiumBy.XPATH, "//android.widget.Button[@text='Payments History']")
     btn_transactions       = (AppiumBy.XPATH, "//android.widget.Button[@text='Transactions']")
     btn_settings           = (AppiumBy.XPATH, "//android.widget.Button[@text='Settings']")
     btn_help               = (AppiumBy.XPATH, "//android.widget.Button[@text='Help']")

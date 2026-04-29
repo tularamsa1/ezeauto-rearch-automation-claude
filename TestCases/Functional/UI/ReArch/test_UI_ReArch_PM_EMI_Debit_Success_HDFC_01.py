@@ -199,7 +199,11 @@ def test_common_rearch_0037():
             emi_page.wait_for_bank_button()
             logger.debug("Bank button visible on EMI screen")
 
-            # Step 9: Click HDFC Bank Debit Card
+            # Step 9a: Click Debit Card tab
+            emi_page.click_debit_card_tab()
+            logger.debug("Debit Card tab selected")
+
+            # Step 9b: Click HDFC Bank Debit Card
             emi_page.click_hdfc_bank_debit_card()
             logger.debug("HDFC Bank Debit Card selected")
 
@@ -209,7 +213,6 @@ def test_common_rearch_0037():
 
             # Step 11: Click View Breakup
             emi_page.click_view_breakup()
-            emi_page.wait_for_breakup_sheet()
             logger.debug("View Breakup opened")
 
             # Steps 12-14: Fetch breakup values for validation (no asserts here)
@@ -327,9 +330,9 @@ def test_common_rearch_0037():
 
                 time.sleep(2)
                 app_txn_id     = txn_detail_page.fetch_payment_id()
-                app_txn_status = txn_detail_page.fetch_status(backend_amount_formatted)
+                app_txn_status = txn_detail_page.fetch_status("5,959")
                 app_date_time  = txn_detail_page.fetch_date_time()
-                app_amount     = txn_detail_page.fetch_amount(backend_amount_formatted)
+                app_amount     = txn_detail_page.fetch_amount("5,959")
                 logger.info(
                     f"App txn_id={app_txn_id}, date_time={app_date_time}, "
                     f"app_txn_status={app_txn_status}, app_amount={app_amount}"

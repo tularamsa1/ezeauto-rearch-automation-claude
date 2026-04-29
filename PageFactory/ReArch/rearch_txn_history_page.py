@@ -64,7 +64,7 @@ class ReArchTxnHistoryPage(ReArchNativeBasePage):
         self.driver.press_keycode(66)   # Android Enter/Search key
 
         self.wait_for_element(TxnSearchLocators.txn_row)
-        time.sleep(5)
+        time.sleep(3)
         self.perform_click(TxnSearchLocators.txn_row)
         logger.info(f"Opened transaction with txn_id: {txn_id}")
 
@@ -158,6 +158,16 @@ class ReArchTxnHistoryPage(ReArchNativeBasePage):
     def is_filter_text_displayed(self, text: str, timeout: int = 10) -> bool:
         """Check if a specific text is visible on the current page (e.g., active filter chip)."""
         return self.is_element_visible(TxnHistoryLocators.filter_chip_text(text), time=timeout)
+
+    def click_today(self):
+        """Click the Today option in the Date filter dropdown."""
+        self.perform_click(TxnHistoryLocators.btn_today)
+        logger.info("Clicked Today in Date filter.")
+
+    def click_clear_all(self):
+        """Click the Clear all button to remove all applied filters."""
+        self.perform_click(TxnHistoryLocators.btn_clear_all)
+        logger.info("Clicked Clear all button.")
 
     # ── Presence checks ───────────────────────────────────────────────────────
 

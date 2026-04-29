@@ -1,3 +1,5 @@
+import time
+
 from PageFactory.ReArch.rearch_native_base_page import ReArchNativeBasePage
 from PageFactory.ReArch.rearch_native_locators import EMILocators
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -64,6 +66,16 @@ class ReArchEMIPage(ReArchNativeBasePage):
         self.perform_click(EMILocators.btn_sbi_bank_credit)
         logger.info("Clicked SBI Bank Credit Card.")
 
+    def click_bob_bank_credit_card(self):
+        """Select BOB Bank Credit Card."""
+        self.perform_click(EMILocators.btn_bob_bank_credit)
+        logger.info("Clicked BOB Bank Credit Card.")
+
+    def click_icici_bank_credit_card(self):
+        """Select ICICI Bank Credit Card."""
+        self.perform_click(EMILocators.btn_icici_bank_credit)
+        logger.info("Clicked ICICI Bank Credit Card.")
+
     # ── EMI Plan selection ────────────────────────────────────────────────────
 
     def click_3m_plan(self):
@@ -75,6 +87,28 @@ class ReArchEMIPage(ReArchNativeBasePage):
         """Select the 3-month No Cost EMI plan radio button."""
         self.perform_click(EMILocators.rdb_3m_no_cost_plan)
         logger.info("Selected 3-month No Cost EMI plan.")
+
+    def click_bob_3m_plan(self):
+        """Select the BOB 3-month EMI plan radio button (amount=6000)."""
+        self.perform_click(EMILocators.rdb_bob_3m_plan)
+        logger.info("Selected BOB 3-month EMI plan.")
+
+    def click_bob_3m_plan_8000(self):
+        """Select the BOB 3-month EMI plan radio button (amount=8000)."""
+        self.perform_click(EMILocators.rdb_bob_3m_plan_8000)
+        logger.info("Selected BOB 3-month EMI plan (8000).")
+
+    def click_pay_in_full_7500(self):
+        """Scroll down to Pay in Full and select it (₹7,500 with ₹500 discount)."""
+        self.scroll_to_text("Pay in Full")
+        time.sleep(3)
+        self.perform_click(EMILocators.rdb_pay_in_full_7500)
+        logger.info("Selected Pay in Full (₹7,500).")
+
+    def click_3m_plan_first(self):
+        """Select the first visible 3-month EMI plan radio button."""
+        self.perform_click(EMILocators.rdb_3m_plan_first)
+        logger.info("Selected first 3-month EMI plan.")
 
     # ── View Breakup ──────────────────────────────────────────────────────────
 
@@ -95,9 +129,21 @@ class ReArchEMIPage(ReArchNativeBasePage):
         """Fetch the MyDiscount value from the breakup sheet (No Cost EMI)."""
         return self.fetch_text(EMILocators.val_mydiscount)
 
+    def fetch_instant_discount(self) -> str:
+        """Fetch the Instant Discount value from the breakup sheet."""
+        return self.fetch_text(EMILocators.val_instant_discount)
+
     def fetch_interest_charged(self) -> str:
         """Fetch the Interest charged by Bank value from the breakup sheet."""
         return self.fetch_text(EMILocators.val_interest_charged)
+
+    def fetch_additional_cashback(self) -> str:
+        """Fetch the Additional Cashback value from the breakup sheet."""
+        return self.fetch_text(EMILocators.val_additional_cashback)
+
+    def fetch_net_effective_price(self) -> str:
+        """Fetch the Net Effective Price value from the breakup sheet."""
+        return self.fetch_text(EMILocators.val_net_effective_price)
 
     def fetch_total_amount(self) -> str:
         """Fetch the Total Amount value from the breakup sheet."""

@@ -1,3 +1,5 @@
+import re
+
 from PageFactory.ReArch.rearch_native_base_page import ReArchNativeBasePage
 from PageFactory.ReArch.rearch_native_locators import ESignatureLocators
 from Utilities.execution_log_processor import EzeAutoLogger
@@ -25,11 +27,23 @@ class ReArchESignaturePage(ReArchNativeBasePage):
 
     # ── Actions ───────────────────────────────────────────────────────────────
 
-    def draw_signature(self, start_x: int = 271, start_y: int = 588,
-                       end_x: int = 441, end_y: int = 555, duration_ms: int = 800):
-        """Draw a signature by swiping between the given coordinates."""
-        self.driver.swipe(start_x, start_y, end_x, end_y, duration_ms)
-        logger.info(f"Signature drawn from ({start_x},{start_y}) to ({end_x},{end_y})")
+    def get_relative_coordinate_for_signature(self):
+        """Get relative coordinates for signature placement from 'Please sign here' bounds."""
+        bounds_str = self.wait_for_element(ESignatureLocators.lbl_please_sign_here).get_attribute("bounds")
+        matches = re.findall(r'\d+', bounds_str)
+        if len(matches) >= 2:
+            x = int(matches[0]) * 5
+            y = round(int(matches[1]) * 1.25)
+            return x, y
+        else:
+            logger.info("Not enough numeric values found in bounds string")
+
+    def add_signature(self, x: int, y: int):
+        """Add a signature by performing a swipe gesture from (x, y) to (x+60, y)."""
+        from appium.webdriver.common.touch_action import TouchAction
+        x2 = x + 60
+        TouchAction(self.driver).press(x=x, y=y).move_to(x=x2, y=y).release().perform()
+        logger.info(f"Signature drawn at ({x},{y}) to ({x2},{y})")
 
     def click_agree_signature(self):
         """Tap the 'I agree to securely save my signature' checkbox."""

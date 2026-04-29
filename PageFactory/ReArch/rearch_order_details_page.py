@@ -32,6 +32,11 @@ class ReArchOrderDetailsPage(ReArchNativeBasePage):
         self.perform_sendkeys(OrderDetailsLocators.txt_order_number, order_id)
         logger.info(f"Order ID entered: {order_id}")
 
+    def enter_device_serial(self, serial: str):
+        """Type a device serial / IMEI into the additional field input."""
+        self.perform_sendkeys(OrderDetailsLocators.txt_additional_field, serial)
+        logger.info(f"Device serial entered: {serial}")
+
     # ── Actions ───────────────────────────────────────────────────────────────
 
     def click_proceed(self):

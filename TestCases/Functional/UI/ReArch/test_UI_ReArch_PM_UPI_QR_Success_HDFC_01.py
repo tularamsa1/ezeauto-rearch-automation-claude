@@ -224,7 +224,7 @@ def test_common_rearch_0006():
         if ConfigReader.read_config("Validations", "app_validation") == "True":
             logger.info(f"Started APP validation for the test case: {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_app_format(created_time)
+                date_and_time = date_time_converter.to_rearch_app_format(created_time)
                 expected_app_values = {
                     "txn_status": "Payment Settled",
                     "txn_id":     txn_id,

@@ -187,10 +187,10 @@ def test_common_rearch_0048():
             cash_confirm_page.click_confirm_payment()
             logger.debug("Cash payment confirmed — eSignature screen should appear")
 
-            # Step 9: Draw signature (271,588 → 441,555)
+            # Step 9: Draw signature using relative coordinates from "Please sign here" bounds
             esignature_page = ReArchESignaturePage(app_driver)
-            # esignature_page.wait_for_esignature_screen()
-            esignature_page.draw_signature(271, 588, 441, 555)
+            x, y = esignature_page.get_relative_coordinate_for_signature()
+            esignature_page.add_signature(x, y)
             logger.debug("Signature drawn")
 
             # Step 10: Click "I agree to securely save my signature"
@@ -374,5 +374,18 @@ def test_common_rearch_0048():
         logger.info(f"Completed Validation for the test case: {testcase_id}")
 
     finally:
-        # No settings revert — as per user instruction
+        try:
+            revert_api_details = DBProcessor.get_api_details('org_settings_update', request_body={
+                "username": portal_username,
+                "password": portal_password,
+                "entityName": "org",
+                "settingForOrgCode": org_code,
+            })
+            revert_settings = revert_api_details["RequestBody"]["settings"]
+            revert_settings["eSignatureForNonCardEnabled"] = "false"
+            APIProcessor.send_request(api_details=revert_api_details)
+            logger.info("Reverted eSignatureForNonCardEnabled to false")
+        except Exception as e:
+            logger.error(f"Failed to revert eSignature setting: {e}")
+
         Configuration.executeFinallyBlock(testcase_id)
