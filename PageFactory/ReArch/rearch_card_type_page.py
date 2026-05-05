@@ -29,13 +29,12 @@ class ReArchCardTypePage(ReArchNativeBasePage):
     # ── Actions ───────────────────────────────────────────────────────────────
 
     def select_card_type(self, card_name: str):
-        """Select a card type by its display name prefix (e.g. 'Visa Debit (EMV)').
-
-        Always scrolls to the card first, then clicks. This avoids false-positive
-        visibility checks where Appium considers off-screen list items as "visible".
-        """
-        self.scroll_to_text(card_name)
-        self.perform_click(CardTypeSelectionLocators.card_type_btn(card_name))
+        """Scroll to a card type using swipe gestures (hybrid-app safe) and click it."""
+        el = self.scroll_to_text(card_name)
+        if el:
+            el.click()
+        else:
+            self.perform_click(CardTypeSelectionLocators.card_type_btn(card_name))
         logger.info(f"Selected card type: {card_name}")
 
     def click_visa_debit_emv(self):

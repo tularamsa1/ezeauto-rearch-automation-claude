@@ -261,12 +261,15 @@ def test_common_rearch_0041():
                 # Step 8: Navigate to history from the collect payment screen
                 # TODO: on first run, verify if failure "Back to Home" lands on
                 #       initial home screen or amount screen. Adjust navigation if needed.
-                home_page.wait_for_initial_home_screen()
-                home_page.click_collect_payment()
-                home_page.wait_for_home_page_load()
-                home_page.click_txn_history()
+                # home_page.wait_for_initial_home_screen()
+                # home_page.click_collect_payment()
+                # home_page.wait_for_home_page_load()
+                # home_page.click_txn_history()
 
                 # Step 9: Click on the transaction for the amount entered
+
+                home_page.wait_for_home_page_load()
+                home_page.click_txn_history()
                 txn_history_page = ReArchTxnHistoryPage(app_driver)
                 txn_history_page.wait_for_txn_list()
                 txn_history_page.click_on_transaction_by_txn_id(txn_id=txn_id)
@@ -277,7 +280,7 @@ def test_common_rearch_0041():
                 time.sleep(2)
                 app_txn_id     = txn_detail_page.fetch_payment_id()
                 app_txn_status = txn_detail_page.fetch_status(amount)
-                app_date_time  = txn_detail_page.fetch_date_time_failure()  # failure uses sibling index 1
+                app_date_time  = txn_detail_page.fetch_date_time()  # failure uses sibling index 1
                 app_amount     = txn_detail_page.fetch_amount(amount)
                 logger.info(
                     f"App txn_id={app_txn_id}, date_time={app_date_time}, "

@@ -103,7 +103,7 @@ def test_common_rearch_0009():
             "entityName": "org",
             "settingForOrgCode": org_code,
         })
-        api_details["RequestBody"]["settings"]["cardEnabled"] = "true"
+        api_details["RequestBody"]["settings"]["cardPaymentEnabled"] = "true"
         logger.debug(f"Precondition API details: {api_details}")
         response = APIProcessor.send_request(api_details=api_details)
         logger.debug(f"Precondition response: {response}")
@@ -125,7 +125,7 @@ def test_common_rearch_0009():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
-            amount = str(random.randint(300, 500))
+            amount = str(random.randint(90, 150))
             logger.debug(f"amount={amount}")
 
             # Step 1: Launch ReArch app and log in

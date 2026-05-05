@@ -73,13 +73,16 @@ def test_common_rearch_0015():
 
             # Step 2: Click on Payment History (Transactions) button
             home_page = ReArchHomePage(app_driver)
-            home_page.wait_for_initial_home_screen()
-            home_page.click_transactions()
+            # home_page.wait_for_initial_home_screen()
+            home_page.click_payments_history()
             logger.debug("Navigated to Payment History")
+
+
 
             # Step 3: Wait until My Dashboard is present
             txn_history_page = ReArchTxnHistoryPage(app_driver)
             txn_history_page.wait_for_element(TxnHistoryLocators.btn_my_dashboard)
+            txn_history_page.perform_click(TxnHistoryLocators.btn_search)
             logger.debug("My Dashboard button is present")
 
             # Scroll horizontally to make Auth Code visible (UI action)

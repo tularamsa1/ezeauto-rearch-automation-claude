@@ -122,7 +122,7 @@ def test_common_rearch_0004():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
-            amount = str(random.randint(300, 500))
+            amount = str(random.randint(90, 150))
             logger.debug(f"amount={amount}")
 
             # Step 1: Launch ReArch app and log in

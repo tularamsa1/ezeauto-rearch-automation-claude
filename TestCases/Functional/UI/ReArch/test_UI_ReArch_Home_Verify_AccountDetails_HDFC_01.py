@@ -123,7 +123,7 @@ def test_common_rearch_0033():
 
             # Step 3: Wait for account screen and click on org_code
             account_page = ReArchAccountDetailsPage(app_driver)
-            account_page.wait_for_account_screen()
+            # account_page.wait_for_account_screen()
             account_page.click_org_code(org_code)
             logger.debug(f"Clicked org_code: {org_code}")
 

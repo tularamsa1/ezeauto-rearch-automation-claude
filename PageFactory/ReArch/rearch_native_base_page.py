@@ -103,17 +103,20 @@ class ReArchNativeBasePage:
 
     # ── Scroll helpers (native only) ─────────────────────────────────────────
 
-    def scroll_to_text(self, text: str):
-        """Scroll using UiScrollable to bring a text element into view."""
-        try:
-            return self.driver.find_element(
-                AppiumBy.ANDROID_UIAUTOMATOR,
-                f'new UiScrollable(new UiSelector().scrollable(true).instance(0))'
-                f'.scrollIntoView(new UiSelector().text("{text}").instance(0));',
-            )
-        except NoSuchElementException:
-            logger.warning(f"scroll_to_text: '{text}' not found")
-            return None
+    def scroll_to_text(self, text, max_swipes=5):
+        """Scroll to bring a text element into view using swipe gestures (hybrid-app safe)."""
+        locator = (AppiumBy.XPATH, f"//*[contains(@text,'{text}')]")
+        for _ in range(max_swipes):
+            try:
+                el = self.driver.find_element(*locator)
+                if el.is_displayed():
+                    return el
+            except NoSuchElementException:
+                pass
+            self.swipe_up()
+        logger.warning(f"scroll_to_text: '{text}' not found after {max_swipes} swipes")
+        return None
+
 
     def swipe_up(self, duration_ms: int = 800):
         """Swipe up on the screen (scroll content down)."""

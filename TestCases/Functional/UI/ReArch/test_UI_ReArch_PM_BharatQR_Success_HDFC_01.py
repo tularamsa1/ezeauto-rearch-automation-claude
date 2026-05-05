@@ -125,8 +125,8 @@ def test_common_rearch_0002():
 
             # Steps 1-2: Launch ReArch app (already logged in — login skipped)
             app_driver = TestSuiteSetup.initialize_rearch_driver(testcase_id)
-            # login_page = ReArchLoginPage(app_driver)
-            # login_page.perform_login(app_username, app_password)
+            login_page = ReArchLoginPage(app_driver)
+            login_page.perform_login_if_required(app_username, app_password)
             # logger.debug("Login completed")
 
             # Steps 3-4: Wait for initial home screen and tap Collect Payment
@@ -163,7 +163,7 @@ def test_common_rearch_0002():
 
             # Step 13: Wait for QR to register in backend, then trigger success via cancel
             # HDFC PG simulator sends success callback on "Yes, Cancel" confirmation
-            time.sleep(10)
+            time.sleep(7)
             qr_page.cancel_payment()
             logger.debug("Cancel triggered — HDFC PG simulator success callback expected")
 

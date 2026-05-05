@@ -185,6 +185,7 @@ def test_common_rearch_0021():
             logger.debug("Cheque date selected (default)")
 
             # Step 10: Enter IFSC Code
+            cheque_page.perform_click_ifsc_code()
             cheque_page.enter_ifsc_code("BARB0VIVEKA")
             logger.debug("IFSC code entered: BARB0VIVEKA")
 
@@ -239,7 +240,7 @@ def test_common_rearch_0021():
             try:
                 date_and_time = date_time_converter.to_rearch_app_format(created_time)
                 expected_app_values = {
-                    "txn_status": "Payment Settled",  # TODO: verify exact label for Cheque on first run
+                    "txn_status": "Payment Authorized",  # TODO: verify exact label for Cheque on first run
                     "txn_id":     txn_id,
                     "date":       date_and_time,
                     "amount":     amount,

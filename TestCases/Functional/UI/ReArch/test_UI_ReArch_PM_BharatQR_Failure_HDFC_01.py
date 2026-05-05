@@ -147,7 +147,7 @@ def test_common_rearch_0001():
             qr_page.wait_for_qr_screen()
 
             # Step 13: Cancel payment (back button → "Yes, Cancel" dialog)
-            time.sleep(10)
+            time.sleep(7)
             qr_page.cancel_payment()
             logger.info("Payment cancelled via back button")
 

@@ -153,7 +153,7 @@ def test_common_rearch_0008():
 
             # Step 13: Wait for QR to register in backend, then trigger expiry via cancel
             # HDFC PG simulator sends expiry callback on "Yes, Cancel" for amount 51
-            time.sleep(10)
+            time.sleep(7)
             qr_page.cancel_payment()
             logger.debug("Cancel triggered — HDFC PG simulator expiry callback expected")
 

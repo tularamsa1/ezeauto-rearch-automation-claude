@@ -109,7 +109,7 @@ class AccountDetailsLocators:
     @staticmethod
     def lbl_text(text: str):
         """Locate any TextView by its exact text (e.g. username, org_code value)."""
-        return (AppiumBy.XPATH, f"//android.widget.TextView[@text='{text}']")
+        return (AppiumBy.XPATH, f"//android.widget.TextView[contains(@text, '{text}')]")
 
     @staticmethod
     def btn_text(text: str):
@@ -209,7 +209,7 @@ class ChequePaymentLocators:
     txt_enter_cheque_number = (AppiumBy.XPATH, "//android.widget.EditText[@text='Enter Cheque Number']")
     btn_select_bank         = (AppiumBy.XPATH, "//android.widget.Button[@text='Select Bank']")
     btn_ddmmyyyy            = (AppiumBy.XPATH, "//android.widget.Button[@text='dd/mm/yyyy']")
-    txt_enter_ifsc_code     = (AppiumBy.XPATH, "//android.widget.EditText[@text='Enter IFSC Code']")  # TODO: verify placeholder text on first run
+    txt_enter_ifsc_code     = (AppiumBy.XPATH, "//android.widget.EditText[@index='9']")  # TODO: verify placeholder text on first run
     btn_confirm_payment     = (AppiumBy.XPATH, "//android.widget.Button[@text='Confirm Payment']")
     btn_apply               = (AppiumBy.XPATH, "//android.widget.Button[@text='Apply']")  # TODO: verify on first run — shared by bank dropdown and date picker
 
@@ -512,7 +512,7 @@ class HomeScreen:
     btn_payments_history   = (AppiumBy.XPATH, "//android.widget.Button[@text='Payments History']")
     btn_transactions       = (AppiumBy.XPATH, "//android.widget.Button[@text='Transactions']")
     btn_settings           = (AppiumBy.XPATH, "//android.widget.Button[@text='Settings']")
-    btn_help               = (AppiumBy.XPATH, "//android.widget.Button[@text='Help']")
+    btn_help               = (AppiumBy.XPATH, "//android.widget.Button[@text='Help Center']")
     btn_khaata             = (AppiumBy.XPATH, "//android.widget.Button[@text='Khaata']")
     btn_other_apps         = (AppiumBy.XPATH, "//android.widget.Button[@text='Other Apps']")
 

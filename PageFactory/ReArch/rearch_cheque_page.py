@@ -44,6 +44,8 @@ class ReArchChequePage(ReArchNativeBasePage):
         self.perform_click(ChequePaymentLocators.txt_enter_cheque_number)
         logger.info("Clicked on cheque number field.")
 
+
+
     def perform_click_on_confirm_payment(self):
         """Click the Confirm Payment button."""
         self.perform_click(ChequePaymentLocators.btn_confirm_payment)
@@ -81,6 +83,11 @@ class ReArchChequePage(ReArchNativeBasePage):
         self.perform_click(ChequePaymentLocators.txt_enter_ifsc_code)
         self.perform_sendkeys(ChequePaymentLocators.txt_enter_ifsc_code, ifsc_code)
         logger.info(f"IFSC code entered: {ifsc_code}")
+
+
+    def perform_click_ifsc_code(self):
+        """Tap the IFSC code field and type the code."""
+        self.perform_click(ChequePaymentLocators.txt_enter_ifsc_code)
 
     # ── Confirm ───────────────────────────────────────────────────────────────
 

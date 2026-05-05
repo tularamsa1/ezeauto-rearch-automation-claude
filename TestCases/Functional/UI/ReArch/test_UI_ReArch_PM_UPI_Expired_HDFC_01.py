@@ -159,7 +159,7 @@ def test_common_rearch_0024():
             logger.debug("QR screen confirmed")
 
             # Step 9: Cancel payment — HDFC simulator Expired scenario
-            time.sleep(10)
+            time.sleep(7)
             qr_page.cancel_payment()
             logger.info("Payment cancelled — HDFC simulator expired scenario")
 
@@ -168,7 +168,7 @@ def test_common_rearch_0024():
             logger.debug("Returned to home/amount screen after cancel")
 
             # Resolve txn_id from DB
-            time.sleep(3)
+            time.sleep(2)
             query = (
                 f"select id, created_time "
                 f"from txn "
@@ -221,7 +221,7 @@ def test_common_rearch_0024():
                 # Fetch transaction fields (failure/expired flow uses fetch_date_time_failure)
                 app_txn_id     = txn_detail_page.fetch_payment_id()
                 app_txn_status = txn_detail_page.fetch_status(amount)
-                app_date_time  = txn_detail_page.fetch_date_time_failure()
+                app_date_time  = txn_detail_page.fetch_date_time()
                 app_amount     = txn_detail_page.fetch_amount(amount)
                 logger.info(
                     f"App txn_id={app_txn_id}, status={app_txn_status}, "

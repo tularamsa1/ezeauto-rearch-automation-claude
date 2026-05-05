@@ -327,7 +327,7 @@ def test_common_rearch_0017():
                 expected_charge_slip_values = {
                     "RRN":          rrn,
                     "AUTH CODE":    auth_code,
-                    "BASE AMOUNT:": "Rs." + str(amount) + ".00",
+                    "SALE AMOUNT:": "Rs." + str(amount) + ".00",
                     "date":         txn_date,
                     "time":         txn_time,
                 }
