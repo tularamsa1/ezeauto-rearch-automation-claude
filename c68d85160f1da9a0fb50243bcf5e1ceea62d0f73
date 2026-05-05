@@ -1,0 +1,8 @@
+PageFactory/ReArch/rearch_card_type_page.py
+  e8bc5618-812d-408a-af80-ddad1bc4d94b:2026-04-30T08:38:31.957Z 32-37
+PageFactory/ReArch/rearch_native_base_page.py
+  e8bc5618-812d-408a-af80-ddad1bc4d94b:2026-04-30T08:38:07.677Z 106-118
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Card_Success_ViewDetails_HDFC_DUMMY_01.py
+  e8bc5618-812d-408a-af80-ddad1bc4d94b:2026-04-30T10:06:09.406Z 98,120,159,182-192,214,218
+---
+{"schema_version": "authorship/3.0.0", "base_commit_sha": "HEAD~1", "prompts": {"e8bc5618-812d-408a-af80-ddad1bc4d94b:2026-04-30T08:38:31.957Z": {"agent_id": {"tool": "claude_code", "model": ""}, "human_author": "tularam.sa@razorpay.com", "accepted_lines": 6, "overriden_lines": 0}, "e8bc5618-812d-408a-af80-ddad1bc4d94b:2026-04-30T08:38:07.677Z": {"agent_id": {"tool": "claude_code", "model": ""}, "human_author": "tularam.sa@razorpay.com", "accepted_lines": 13, "overriden_lines": 0}, "e8bc5618-812d-408a-af80-ddad1bc4d94b:2026-04-30T10:06:09.406Z": {"agent_id": {"tool": "claude_code", "model": ""}, "human_author": "tularam.sa@razorpay.com", "accepted_lines": 16, "overriden_lines": 0}}}
