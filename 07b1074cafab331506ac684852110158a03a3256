@@ -1,0 +1,84 @@
+PageFactory/ReArch/rearch_txn_history_page.py
+  3bdad2e4-514b-4ed5-98db-87d509741269:2026-05-05T11:39:48.456Z 74-75,77-80,84-88
+TestCases/Functional/UI/ReArch/test_UI_ReArch_Home_Verify_BrandingLogo_HDFC_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T12:55:21.517Z 2,5,11,13,182-191,193-200,245,247-252,254-256,258-259,261,263-271,273-274,276-279,281
+TestCases/Functional/UI/ReArch/test_UI_ReArch_Home_Verify_DeleteCacheRelaunch_HDFC_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T10:53:28.121Z 143,146-150
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_BharatQR_Expiry_HDFC_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 117,205,223,225
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_BharatQR_Failure_HDFC_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 113,195,210,212
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_BharatQR_Success_HDFC_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 124,216,232,234
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_BrandEMI_Credit_PayInFull_Success_BOB_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 340,355,357
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_BrandEMI_Credit_Success_BOB_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 346,361,363
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_BrandEMI_Credit_Success_BOB_02.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 355,370,372
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_BrandEMI_Credit_Success_ICICI_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 357,372,374
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Card_Debit_Failure_HDFC_DUMMY_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 164-165,258,283,285
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:15:00.787Z 133,222,238,240
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_02.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 126,212,229,231
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_03.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 129,215,232,234
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_04.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 128,214,231,233
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_05.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 131,217,234,236
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_06.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 129,218,235,237
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_07.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:15:00.787Z 131,220,237,239,331
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_08.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 131,220,237,239
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_09.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 131,220,237,239,331
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_10.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 130,219,236,238
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Card_Debit_Success_HDFC_DUMMY_11.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 132,218,235,237
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Card_PreAuth_Confirm_HDFC_DUMMY_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 139,141,266,278,280
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Card_PreAuth_Release_HDFC_DUMMY_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 139,141,266,281,283
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Card_Void_RuPay_Debit_EMV_HDFC_DUMMY_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 142,144,267,282,284
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Cash_ESign_Success_HDFC_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 137,261,275,277
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Cash_Success_HDFC_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 137,224,242,244
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Cash_Success_HDFC_02.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 135,229,246,248
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Cash_Success_HDFC_03.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 139,244,261,263
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Cash_Success_HDFC_04.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 154,263,278,280
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Cash_Tip_Success_HDFC_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:43:10.064Z 139,259,274,276
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_Cheque_Success_HDFC_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 130,247,264,266
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_DD_Success_HDFC_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 131,246,263,265
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_EMI_Credit_Success_HDFC_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 307,324,326
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_EMI_Debit_Success_HDFC_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 316,333,335
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_MyDiscountEMI_Credit_Success_SBI_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 319,336,338
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_UPI_Expired_HDFC_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 127,211,224,226
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_UPI_Failed_HDFC_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z 128,212,225,227
+TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_UPI_QR_Success_HDFC_01.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:15:00.787Z 135
+Tools/rearch_xpath_extractor.py
+  917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T07:21:43.711Z 588-589,591
+Utilities/date_time_converter.py
+  3bdad2e4-514b-4ed5-98db-87d509741269:2026-05-05T11:46:30.200Z 72
+---
+{"schema_version": "authorship/3.0.0", "base_commit_sha": "HEAD~1", "prompts": {"3bdad2e4-514b-4ed5-98db-87d509741269:2026-05-05T11:39:48.456Z": {"agent_id": {"tool": "claude_code", "model": ""}, "human_author": "tularam.sa@razorpay.com", "accepted_lines": 11, "overriden_lines": 0}, "917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T12:55:21.517Z": {"agent_id": {"tool": "claude_code", "model": ""}, "human_author": "tularam.sa@razorpay.com", "accepted_lines": 51, "overriden_lines": 0}, "917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T10:53:28.121Z": {"agent_id": {"tool": "claude_code", "model": ""}, "human_author": "tularam.sa@razorpay.com", "accepted_lines": 6, "overriden_lines": 0}, "917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:34:29.648Z": {"agent_id": {"tool": "claude_code", "model": ""}, "human_author": "tularam.sa@razorpay.com", "accepted_lines": 4, "overriden_lines": 0}, "917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:15:00.787Z": {"agent_id": {"tool": "claude_code", "model": ""}, "human_author": "tularam.sa@razorpay.com", "accepted_lines": 4, "overriden_lines": 0}, "917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T06:43:10.064Z": {"agent_id": {"tool": "claude_code", "model": ""}, "human_author": "tularam.sa@razorpay.com", "accepted_lines": 4, "overriden_lines": 0}, "917798b5-1354-4197-89c6-aff66a3674b9:2026-05-07T07:21:43.711Z": {"agent_id": {"tool": "claude_code", "model": ""}, "human_author": "tularam.sa@razorpay.com", "accepted_lines": 3, "overriden_lines": 0}, "3bdad2e4-514b-4ed5-98db-87d509741269:2026-05-05T11:46:30.200Z": {"agent_id": {"tool": "claude_code", "model": ""}, "human_author": "tularam.sa@razorpay.com", "accepted_lines": 1, "overriden_lines": 0}}}
