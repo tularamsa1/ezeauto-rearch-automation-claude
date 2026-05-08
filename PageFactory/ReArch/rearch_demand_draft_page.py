@@ -39,7 +39,7 @@ class ReArchDemandDraftPage(ReArchNativeBasePage):
 
     def select_bank(self, bank_name: str):
         """Select a bank from the dropdown by name."""
-        self.scroll_to_text(bank_name)
+        # self.scroll_to_text(bank_name)
         self.perform_click(DemandDraftLocators.bank_btn(bank_name))
         logger.info(f"Selected bank: {bank_name}")
 

@@ -71,12 +71,21 @@ class ReArchTxnHistoryPage(ReArchNativeBasePage):
     def click_on_transaction_by_amount(self, amount: str):
         """Search by Amount and open the matching transaction.
 
-        Flow: Search button → Amount tab → type amount → tap result row.
+        Flow: Search button → Amount tab → tap input → enter digits via numpad keycodes → tap result row.
+        Amount search uses Android built-in numpad, so digits are entered via press_keycode.
         """
+        _DIGIT_KEYCODES = {
+            "0": 7, "1": 8, "2": 9, "3": 10, "4": 11,
+            "5": 12, "6": 13, "7": 14, "8": 15, "9": 16,
+        }
         self.perform_click(TxnHistoryLocators.btn_search)
         self.perform_click(TxnSearchLocators.btn_amount)
-        self.perform_click(TxnSearchLocators.txt_search_input)
-        self.perform_sendkeys(TxnSearchLocators.txt_search_input, amount)
+        # self.perform_click(TxnSearchLocators.txt_search_input)
+        amount_str = str(amount)
+        for char in amount_str:
+            keycode = _DIGIT_KEYCODES.get(char)
+            if keycode:
+                self.driver.press_keycode(keycode)
         self.driver.press_keycode(66)   # Android Enter/Search key
 
         self.wait_for_element(TxnSearchLocators.txn_row)

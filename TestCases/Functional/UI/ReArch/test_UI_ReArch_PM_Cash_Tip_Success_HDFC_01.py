@@ -105,6 +105,7 @@ def test_common_rearch_0045():
         settings["orderNumberInputEnabled"] = "true"
         settings["customerAuthDataCaptureEnabled"] = "true"
         settings["chequePaymentEnabled"] = "true"
+        settings["tipEnabled"] = "true"
         settings["amountCutOffForCustomerAuth"] = "10000"
         settings["eSignatureForNonCardEnabled"] = "false"
         settings["brandingInfo"] = ""
@@ -135,6 +136,7 @@ def test_common_rearch_0045():
 
             base_amount = "515"
             total_amount = "546"  # 515 + 31 (6% tip)
+            display_total_amount = total_amount + ".00"
 
             # Step 1: Launch ReArch app and login if present
             app_driver = TestSuiteSetup.initialize_rearch_driver(testcase_id)
@@ -186,14 +188,13 @@ def test_common_rearch_0045():
             # Step 7: Click Proceed on Order Details overlay
             order_details_page = ReArchOrderDetailsPage(app_driver)
             # order_details_page.wait_for_order_details_screen()
-            time.sleep(3)
             order_details_page.click_proceed()
             logger.debug("Order Details: clicked Proceed")
 
             # Step 8: Click Cash from Payment Methods
             payment_method_page = ReArchPaymentMethodPage(app_driver)
             # payment_method_page.wait_for_payment_methods()
-            time.sleep(3)
+
             payment_method_page.click_cash()
             logger.debug("Cash selected from payment methods")
 
@@ -255,7 +256,7 @@ def test_common_rearch_0045():
                     "txn_status": "Payment Settled",  # TODO: verify exact text on first run
                     "txn_id":     txn_id,
                     "date":       date_and_time,
-                    "amount":     total_amount,
+                    "amount":     display_total_amount,
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
@@ -270,9 +271,9 @@ def test_common_rearch_0045():
                 # Fetch and assert transaction fields
                 time.sleep(2)
                 app_txn_id     = txn_detail_page.fetch_payment_id()
-                app_txn_status = txn_detail_page.fetch_status(total_amount)
+                app_txn_status = txn_detail_page.fetch_status(display_total_amount)
                 app_date_time  = txn_detail_page.fetch_date_time()
-                app_amount     = txn_detail_page.fetch_amount(total_amount)
+                app_amount     = txn_detail_page.fetch_amount(display_total_amount)
                 logger.info(
                     f"App txn_id={app_txn_id}, date_time={app_date_time}, "
                     f"app_txn_status={app_txn_status}, app_amount={app_amount}"

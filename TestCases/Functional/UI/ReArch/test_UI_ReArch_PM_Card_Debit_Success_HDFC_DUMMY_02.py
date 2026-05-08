@@ -123,6 +123,7 @@ def test_common_rearch_0004():
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
             amount = str(random.randint(90, 150))
+            display_amount = str(amount) + ".00"
             logger.debug(f"amount={amount}")
 
             # Step 1: Launch ReArch app and log in
@@ -208,7 +209,7 @@ def test_common_rearch_0004():
                     "txn_status": "Payment Authorized",
                     "txn_id":     txn_id,
                     "date":       date_and_time,
-                    "amount":     amount,
+                    "amount":     display_amount,
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
@@ -225,9 +226,9 @@ def test_common_rearch_0004():
 
                 # Step 10: Verify amount is correct and "Payment Authorized" is seen
                 app_txn_id     = txn_detail_page.fetch_payment_id()
-                app_txn_status = txn_detail_page.fetch_status(amount)
+                app_txn_status = txn_detail_page.fetch_status(display_amount)
                 app_date_time  = txn_detail_page.fetch_date_time()
-                app_amount     = txn_detail_page.fetch_amount(amount)
+                app_amount     = txn_detail_page.fetch_amount(display_amount)
                 logger.info(
                     f"App txn_id={app_txn_id}, date_time={app_date_time}, "
                     f"app_txn_status={app_txn_status}, app_amount={app_amount}"

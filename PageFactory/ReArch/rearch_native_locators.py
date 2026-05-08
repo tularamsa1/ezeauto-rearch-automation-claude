@@ -206,10 +206,10 @@ class CustomerAuthLocators:
 # ══════════════════════════════════════════════════════════════════════════════
 
 class ChequePaymentLocators:
-    txt_enter_cheque_number = (AppiumBy.XPATH, "//android.widget.EditText[@text='Enter Cheque Number']")
+    txt_enter_cheque_number = (AppiumBy.XPATH, "//android.view.View[@resource-id='page']/android.view.View[2]/android.widget.EditText[1]")
     btn_select_bank         = (AppiumBy.XPATH, "//android.widget.Button[@text='Select Bank']")
     btn_ddmmyyyy            = (AppiumBy.XPATH, "//android.widget.Button[@text='dd/mm/yyyy']")
-    txt_enter_ifsc_code     = (AppiumBy.XPATH, "//android.widget.EditText[@index='9']")  # TODO: verify placeholder text on first run
+    txt_enter_ifsc_code     = (AppiumBy.XPATH, "//android.view.View[@resource-id='page']/android.view.View[2]/android.widget.EditText[2]")  # TODO: verify placeholder text on first run
     btn_confirm_payment     = (AppiumBy.XPATH, "//android.widget.Button[@text='Confirm Payment']")
     btn_apply               = (AppiumBy.XPATH, "//android.widget.Button[@text='Apply']")  # TODO: verify on first run — shared by bank dropdown and date picker
 
@@ -230,9 +230,9 @@ class ChequePaymentLocators:
 # ══════════════════════════════════════════════════════════════════════════════
 
 class DemandDraftLocators:
-    txt_enter_dd_number     = (AppiumBy.XPATH, "//android.widget.EditText[@text='Enter DD Number']")
+    txt_enter_dd_number     = (AppiumBy.XPATH, "//android.view.View[@resource-id='page']/android.view.View[2]/android.widget.EditText[1]")
     btn_select_bank         = (AppiumBy.XPATH, "//android.widget.Button[@text='Select Bank']")
-    txt_enter_branch_name   = (AppiumBy.XPATH, "//android.widget.EditText[@text='Enter Branch Name']")  # TODO: verify placeholder text on first run
+    txt_enter_branch_name   = (AppiumBy.XPATH, "//android.view.View[@resource-id='page']/android.view.View[2]/android.widget.EditText[2]")  # TODO: verify placeholder text on first run
     btn_ddmmyyyy            = (AppiumBy.XPATH, "//android.widget.Button[@text='dd/mm/yyyy']")
     btn_confirm_payment     = (AppiumBy.XPATH, "//android.widget.Button[@text='Confirm Payment']")
     btn_apply               = (AppiumBy.XPATH, "//android.widget.Button[@text='Apply']")  # TODO: verify on first run

@@ -343,7 +343,7 @@ def test_common_rearch_0052():
                     "txn_status": "Payment Authorized",  # TODO: verify exact label for EMI on first run
                     "txn_id":     txn_id,
                     "date":       date_and_time,
-                    "amount":     f"{int(amount):,}",
+                    "amount":     f"{int(amount):,}" + ".00",
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
@@ -358,9 +358,9 @@ def test_common_rearch_0052():
 
                 txn_detail_page = ReArchTxnDetailPage(app_driver)
                 app_txn_id     = txn_detail_page.fetch_payment_id()
-                app_txn_status = txn_detail_page.fetch_status("6,000")
+                app_txn_status = txn_detail_page.fetch_status("6,000.00")
                 app_date_time  = txn_detail_page.fetch_date_time()
-                app_amount     = txn_detail_page.fetch_amount("6,000")
+                app_amount     = txn_detail_page.fetch_amount("6,000.00")
                 logger.info(
                     f"App txn_id={app_txn_id}, date_time={app_date_time}, "
                     f"app_txn_status={app_txn_status}, app_amount={app_amount}"

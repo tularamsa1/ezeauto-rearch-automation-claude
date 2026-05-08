@@ -578,3 +578,29 @@ class brand_emi_credit_card_details_product2:
     btn_sbi_bank_credit_card_emi_starts_72585m = (AppiumBy.XPATH, "//android.widget.Button[@text='SBI Bank Credit Card EMI starts @ ₹725.85/m']")  # Button · "SBI Bank Credit Card EMI starts @ ₹725.85/m"
     btn_stanchart_bank_credit_card_emi_starts_72 = (AppiumBy.XPATH, "//android.widget.Button[@text='STANCHART Bank Credit Card EMI starts @ ₹725.85/m']")  # Button · "STANCHART Bank Credit Card EMI starts @ ₹725.85/m"
     btn_idfcfirst_bank_credit_card_emi_starts_13 = (AppiumBy.XPATH, "//android.widget.Button[@text='IDFCFIRST Bank Credit Card EMI starts @ ₹1,384.34/m']")  # Button · "IDFCFIRST Bank Credit Card EMI starts @ ₹1,384.34/m"
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# ChequePayment
+# ════════════════════════════════════════════════════════════════════════════
+
+class ChequePayment:
+    """Auto-generated from uiautomator dump — review and adjust as needed."""
+    # TODO: lbl_view — needs stable locator (no resource-id or text; class=android.view.View index=0)
+    lbl_page                       = (AppiumBy.ID, "page")  # View · [page]
+    # TODO: btn_button — needs stable locator (no resource-id or text; class=android.widget.Button index=0)
+    lbl_payment_amount             = (AppiumBy.XPATH, "//android.widget.TextView[@text='Payment Amount']")  # TextView · "Payment Amount"
+    lbl_textview                   = (AppiumBy.XPATH, "//android.widget.TextView[@text='₹']")  # TextView · "₹"
+    lbl_56500                      = (AppiumBy.XPATH, "//android.widget.TextView[@text='565.00']")  # TextView · "565.00"
+    lbl_cheque_number              = (AppiumBy.XPATH, "//android.view.View[@text='Cheque Number*']")  # View · "Cheque Number*"
+    # TODO: txt_edittext — needs stable locator (no resource-id or text; class=android.widget.EditText index=2)
+    lbl_minimum_6_digits           = (AppiumBy.XPATH, "//android.widget.TextView[@text='Minimum 6 digits']")  # TextView · "Minimum 6 digits"
+    lbl_bank                       = (AppiumBy.XPATH, "//android.view.View[@text='Bank *']")  # View · "Bank *"
+    btn_select_bank                = (AppiumBy.XPATH, "//android.widget.Button[@text='Select Bank']")  # Button · "Select Bank"
+    lbl_cheque_dated               = (AppiumBy.XPATH, "//android.view.View[@text='Cheque Dated *']")  # View · "Cheque Dated *"
+    btn_ddmmyyyy                   = (AppiumBy.XPATH, "//android.widget.Button[@text='dd/mm/yyyy']")  # Button · "dd/mm/yyyy"
+    lbl_ifsc_code                  = (AppiumBy.XPATH, "//android.view.View[@text='IFSC Code *']")  # View · "IFSC Code *"
+    # TODO: txt_edittext_2 — needs stable locator (no resource-id or text; class=android.widget.EditText index=9)
+    lbl_payer_name_optional        = (AppiumBy.XPATH, "//android.view.View[@text='Payer Name (optional)']")  # View · "Payer Name (optional)"
+    # TODO: txt_edittext_3 — needs stable locator (no resource-id or text; class=android.widget.EditText index=11)
+    btn_confirm_payment            = (AppiumBy.XPATH, "//android.widget.Button[@text='Confirm Payment']")  # Button · "Confirm Payment"

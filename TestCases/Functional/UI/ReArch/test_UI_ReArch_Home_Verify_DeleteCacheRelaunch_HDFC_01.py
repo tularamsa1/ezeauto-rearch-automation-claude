@@ -140,16 +140,14 @@ def test_common_rearch_0035():
             time.sleep(10)  # TODO: adjust wait time based on actual app restart duration
 
             # Step 5: Scroll down and select env
+            login_page.wait_for_element(OnboardingLocators.lbl_select_environment, time=60)
             env_name = ConfigReader.read_config("environment", "str_exe_env")
             logger.debug(f"Environment from config: {env_name}")
-            login_page.wait_for_element(OnboardingLocators.lbl_select_environment, time=60)
-            env_element = login_page.scroll_to_text(env_name)
-            if env_element:
-                env_element.click()
-            else:
-                login_page.perform_click(
-                    (AppiumBy.XPATH, f"//android.widget.Button[contains(@text,'{env_name}')]")  # TODO: verify locator on first run
-                )
+            login_page.driver.find_element(
+                AppiumBy.ANDROID_UIAUTOMATOR,
+                f'new UiScrollable(new UiSelector().scrollable(true).instance(0))'
+                f'.scrollIntoView(new UiSelector().textContains("{env_name}").instance(0));',
+            ).click()
             logger.debug(f"Environment '{env_name}' selected")
 
             # Step 6: Tap "I dont want to see this again"
@@ -157,6 +155,8 @@ def test_common_rearch_0035():
             logger.debug("Checked 'I dont want to see this again'")
 
             # Step 7: Click on start button
+            login_page.perform_click(OnboardingLocators.btn_next)
+            login_page.perform_click(OnboardingLocators.btn_next)
             login_page.perform_click(OnboardingLocators.btn_start)
             logger.debug("Start button tapped")
 

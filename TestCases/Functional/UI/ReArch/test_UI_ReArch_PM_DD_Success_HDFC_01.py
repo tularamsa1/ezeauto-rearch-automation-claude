@@ -128,6 +128,7 @@ def test_common_rearch_0022():
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
             amount = str(random.randint(500, 600))
+            display_amount = str(amount) + ".00"
             dd_number = str(random.randint(100000, 999999))
             logger.debug(f"amount={amount}, dd_number={dd_number}")
 
@@ -170,6 +171,7 @@ def test_common_rearch_0022():
             dd_page.wait_for_dd_form()
             dd_page.enter_dd_number(dd_number)
             logger.debug(f"DD number {dd_number} entered")
+            home_page.go_back()
 
             # Step 8: Select Bank → Pallavan Gramma Bank → Apply
             dd_page.click_select_bank()
@@ -180,6 +182,7 @@ def test_common_rearch_0022():
             # Step 9: Enter Branch Name
             dd_page.enter_branch_name("Branch_1")
             logger.debug("Branch name entered: Branch_1")
+            home_page.go_back()
 
             # Step 10: Click date picker (dd/mm/yyyy) → Apply (accepts default/today)
             dd_page.click_date_picker()
@@ -237,10 +240,10 @@ def test_common_rearch_0022():
             try:
                 date_and_time = date_time_converter.to_rearch_app_format(created_time)
                 expected_app_values = {
-                    "txn_status": "Payment Settled",  # TODO: verify exact label for DD on first run
+                    "txn_status": "Payment Authorized",  # TODO: verify exact label for DD on first run
                     "txn_id":     txn_id,
                     "date":       date_and_time,
-                    "amount":     amount,
+                    "amount":     display_amount,
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
@@ -257,9 +260,9 @@ def test_common_rearch_0022():
                 # Fetch and assert transaction fields
                 time.sleep(2)
                 app_txn_id     = txn_detail_page.fetch_payment_id()
-                app_txn_status = txn_detail_page.fetch_status(amount)
+                app_txn_status = txn_detail_page.fetch_status(display_amount)
                 app_date_time  = txn_detail_page.fetch_date_time()
-                app_amount     = txn_detail_page.fetch_amount(amount)
+                app_amount     = txn_detail_page.fetch_amount(display_amount)
                 logger.info(
                     f"App txn_id={app_txn_id}, date_time={app_date_time}, "
                     f"app_txn_status={app_txn_status}, app_amount={app_amount}"
@@ -337,7 +340,7 @@ def test_common_rearch_0022():
         if ConfigReader.read_config("Validations", "charge_slip_validation") == "True":
             logger.info(f"Started ChargeSlip validation for the test case: {testcase_id}")
             try:
-                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
+                txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=created_time)
                 expected_charge_slip_values = {
                     "PAID BY:":     "DD",              # TODO: verify on first run (DD or DEMAND DRAFT)
                     "BASE AMOUNT:": "Rs." + str(amount) + ".00",

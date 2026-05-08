@@ -132,6 +132,7 @@ def test_common_rearch_0006():
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
             amount = str(random.randint(100, 999))
+            display_amount = str(amount) + ".00"
             order_id = f"{datetime.now().strftime('%m%d%H%M%S')}{testcase_id[-4:]}"
             logger.debug(f"amount={amount}, order_id={order_id}")
 
@@ -244,7 +245,7 @@ def test_common_rearch_0006():
 
                 # Steps 18-21: Fetch and assert transaction fields
                 app_txn_id     = txn_detail_page.fetch_payment_id()
-                app_txn_status = txn_detail_page.fetch_status(amount)
+                app_txn_status = txn_detail_page.fetch_status(display_amount)
                 app_date_time  = txn_detail_page.fetch_date_time()
                 logger.info(
                     f"App txn_id={app_txn_id}, date_time={app_date_time}, app_txn_status = {app_txn_status} "

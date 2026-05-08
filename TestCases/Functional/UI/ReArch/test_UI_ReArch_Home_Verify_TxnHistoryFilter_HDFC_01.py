@@ -263,6 +263,9 @@ def test_common_rearch_0040():
             txn_history_page.select_filter_option("Settled")
             logger.debug("Settled filter option selected")
 
+            txn_history_page.click_apply_filter()
+            logger.debug("Apply filter clicked")
+
             # Store Settled filter verification result
             time.sleep(1)  # brief wait for filter to apply
             settled_filter_visible = txn_history_page.is_filter_text_displayed("Settled", timeout=10)

@@ -1,13 +1,16 @@
 import sys
+import time
 
 import pytest
+from appium.webdriver.common.appiumby import AppiumBy
 
 from Configuration import Configuration, TestSuiteSetup
 from DataProvider import GlobalVariables
 from PageFactory.ReArch.rearch_login_page import ReArchLoginPage
 from PageFactory.ReArch.rearch_home_page import ReArchHomePage
+from PageFactory.ReArch.rearch_account_details_page import ReArchAccountDetailsPage
 from PageFactory.ReArch.rearch_txn_history_page import ReArchTxnHistoryPage
-from PageFactory.ReArch.rearch_native_locators import HomeAmountLocators, TxnHistoryLocators
+from PageFactory.ReArch.rearch_native_locators import HomeAmountLocators, OnboardingLocators, TxnHistoryLocators
 from Utilities import (
     APIProcessor, ConfigReader, DBProcessor, ResourceAssigner,
     Validator,
@@ -176,6 +179,26 @@ def test_common_rearch_0049():
             )
             logger.info(f"Branding logo on initial home screen: {logo_on_home_screen}")
 
+            # Step 7: Revert brandingInfo to empty and refresh settings
+            revert_api_details = DBProcessor.get_api_details('org_settings_update', request_body={
+                "username": portal_username,
+                "password": portal_password,
+                "entityName": "org",
+                "settingForOrgCode": org_code,
+            })
+            revert_api_details["RequestBody"]["settings"]["brandingInfo"] = ""
+            APIProcessor.send_request(api_details=revert_api_details)
+            logger.info("Set brandingInfo to empty")
+
+            # Refresh settings via Payment History
+            home_page.click_collect_payment()
+            home_page.wait_for_home_page_load()
+            home_page.click_txn_history()
+            txn_history_page.wait_for_txn_list()
+            home_page.wait_for_element(TxnHistoryLocators.btn_my_dashboard, time=10)
+            home_page.go_back()
+            logger.debug("Settings refreshed after reverting brandingInfo")
+
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in testcase function: {testcase_id}")
@@ -219,17 +242,41 @@ def test_common_rearch_0049():
         logger.info(f"Completed Validation for the test case: {testcase_id}")
 
     finally:
-        # Revert brandingInfo to empty
+        # NOTE: brandingInfo is already reverted to empty during execution (step 7)
         try:
-            revert_api_details = DBProcessor.get_api_details('org_settings_update', request_body={
-                "username": portal_username,
-                "password": portal_password,
-                "entityName": "org",
-                "settingForOrgCode": org_code,
-            })
-            revert_api_details["RequestBody"]["settings"]["brandingInfo"] = ""
-            APIProcessor.send_request(api_details=revert_api_details)
-            logger.info("Reverted brandingInfo to empty")
+            # Delete cache and relaunch to clear branding from app
+            home_page.wait_for_home_page_load()
+            home_page.go_back()
+            home_page.wait_for_initial_home_screen()
+            home_page.click_settings()
+            logger.debug("Settings tapped")
+
+            account_page = ReArchAccountDetailsPage(app_driver)
+            account_page.click_delete_cache_and_relaunch()
+            logger.debug("Delete Cache & Relaunch App tapped")
+
+            account_page.click_confirm_delete_relaunch()
+            logger.debug("Confirmed Delete & Relaunch")
+
+            time.sleep(10)
+
+            # Select env and complete onboarding
+            login_page.wait_for_element(OnboardingLocators.lbl_select_environment, time=60)
+            env_name = ConfigReader.read_config("environment", "str_exe_env")
+            login_page.driver.find_element(
+                AppiumBy.ANDROID_UIAUTOMATOR,
+                f'new UiScrollable(new UiSelector().scrollable(true).instance(0))'
+                f'.scrollIntoView(new UiSelector().textContains("{env_name}").instance(0));',
+            ).click()
+            logger.debug(f"Environment '{env_name}' selected")
+
+            login_page.perform_click(OnboardingLocators.chk_dont_show_again)
+            logger.debug("Checked 'I dont want to see this again'")
+
+            login_page.perform_click(OnboardingLocators.btn_next)
+            login_page.perform_click(OnboardingLocators.btn_next)
+            login_page.perform_click(OnboardingLocators.btn_start)
+            logger.debug("Delete cache relaunch cleanup completed")
         except Exception:
-            logger.warning("Failed to revert brandingInfo — manual cleanup may be needed")
+            logger.warning("Delete cache relaunch cleanup failed — manual cleanup may be needed")
         Configuration.executeFinallyBlock(testcase_id)

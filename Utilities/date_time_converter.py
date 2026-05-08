@@ -69,7 +69,7 @@ def to_portal_format(created_date_db):
 def to_rearch_app_format(posting_date_db) -> str:
     """Format datetime for ReArch app display (no leading zero on hour: '2:18 PM' not '02:18 PM')."""
     date_format = "%Y-%m-%dT%H:%M:%S.%f"
-    app_format = "%d %b %Y, %-I:%M %p"
+    app_format = "%-d %b %Y, %-I:%M %p"
     dt_str1 = datetime.strptime(str(posting_date_db), '%Y-%m-%dT%H:%M:%S.%f000').strftime("%Y-%m-%dT%H:%M:%S.%f")
     dt_utc = datetime.strptime(dt_str1, date_format)
     utc_date = dt_utc.replace(tzinfo=pytz.UTC)

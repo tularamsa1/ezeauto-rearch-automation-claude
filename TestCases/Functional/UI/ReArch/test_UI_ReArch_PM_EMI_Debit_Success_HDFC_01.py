@@ -313,7 +313,7 @@ def test_common_rearch_0037():
                     "txn_status": "Payment Authorized",  # TODO: verify exact label for debit EMI on first run
                     "txn_id":     txn_id,
                     "date":       date_and_time,
-                    "amount":     backend_amount_formatted,
+                    "amount":     backend_amount + ".00",
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
@@ -330,9 +330,9 @@ def test_common_rearch_0037():
 
                 time.sleep(2)
                 app_txn_id     = txn_detail_page.fetch_payment_id()
-                app_txn_status = txn_detail_page.fetch_status("5,959")
+                app_txn_status = txn_detail_page.fetch_status("5,959.00")
                 app_date_time  = txn_detail_page.fetch_date_time()
-                app_amount     = txn_detail_page.fetch_amount("5,959")
+                app_amount     = txn_detail_page.fetch_amount("5,959.00")
                 logger.info(
                     f"App txn_id={app_txn_id}, date_time={app_date_time}, "
                     f"app_txn_status={app_txn_status}, app_amount={app_amount}"

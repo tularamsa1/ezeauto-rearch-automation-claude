@@ -585,8 +585,10 @@ def cmd_single_screen(screen_name: str, xml_file: Optional[str], class_name: Opt
     final_class_name = class_name if class_name else screen_name
     if xml_file:
         xml_path = Path(xml_file)
+        if xml_path.is_dir():
+            xml_path = xml_path / screen_name
         if not xml_path.exists():
-            print(f"[ERROR] File not found: {xml_file}")
+            print(f"[ERROR] File not found: {xml_path}")
             sys.exit(1)
         process_xml_file(xml_path, final_class_name)
     else:

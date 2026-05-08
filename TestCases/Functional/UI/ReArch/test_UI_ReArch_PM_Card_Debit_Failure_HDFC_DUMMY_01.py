@@ -161,7 +161,8 @@ def test_common_rearch_0041():
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
             amount = "401"
-            logger.debug(f"amount={amount}")
+            display_amount = amount + ".00"
+            logger.debug(f"amount={amount}, display_amount={display_amount}")
 
             # Step 1: Launch ReArch app and login if required
             app_driver = TestSuiteSetup.initialize_rearch_driver(testcase_id)
@@ -254,7 +255,7 @@ def test_common_rearch_0041():
                     "txn_status": "Payment Failed",  # TODO: verify exact label on first run
                     "txn_id":     txn_id,
                     "date":       date_and_time,
-                    "amount":     amount,
+                    "amount":     display_amount,
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
@@ -279,9 +280,9 @@ def test_common_rearch_0041():
                 # Step 10: Verify amount and payment failed status
                 time.sleep(2)
                 app_txn_id     = txn_detail_page.fetch_payment_id()
-                app_txn_status = txn_detail_page.fetch_status(amount)
+                app_txn_status = txn_detail_page.fetch_status(display_amount)
                 app_date_time  = txn_detail_page.fetch_date_time()  # failure uses sibling index 1
-                app_amount     = txn_detail_page.fetch_amount(amount)
+                app_amount     = txn_detail_page.fetch_amount(display_amount)
                 logger.info(
                     f"App txn_id={app_txn_id}, date_time={app_date_time}, "
                     f"app_txn_status={app_txn_status}, app_amount={app_amount}"
