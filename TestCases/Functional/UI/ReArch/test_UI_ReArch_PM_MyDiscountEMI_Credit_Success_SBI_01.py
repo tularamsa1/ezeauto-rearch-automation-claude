@@ -4,6 +4,8 @@ import time
 import pytest
 from datetime import datetime
 
+from appium.webdriver.common.appiumby import AppiumBy
+
 from Configuration import Configuration, TestSuiteSetup
 from DataProvider import GlobalVariables
 from PageFactory.ReArch.rearch_login_page import ReArchLoginPage
@@ -144,6 +146,7 @@ def test_common_rearch_0038():
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
             amount = "5959"
+            discount_amount = "5841.61"
             amount_formatted = "\u20b95,959"
             logger.debug(f"amount={amount}, amount_formatted={amount_formatted}")
 
@@ -191,11 +194,17 @@ def test_common_rearch_0038():
             payment_method_page.click_my_discount_emi()
             logger.debug("My Discount EMI selected from payment methods")
 
+            # # Handle "TURN ON LOCATION" popup if present
+            # emi_page = ReArchEMIPage(app_driver)
+            # turn_on_loc = (AppiumBy.XPATH, "//android.widget.Button[@resource-id='android:id/button1']")
+            # if emi_page.is_element_visible(turn_on_loc, time=5):
+            #     emi_page.perform_click(turn_on_loc)
+            #     logger.debug("Clicked TURN ON LOCATION")
+
             # Step 8: Wait until Bank button is visible
             emi_page = ReArchEMIPage(app_driver)
             emi_page.wait_for_bank_button()
             logger.debug("Bank button visible on EMI screen")
-
             # Step 9: Click SBI Bank Credit Card
             emi_page.click_sbi_bank_credit_card()
             logger.debug("SBI Bank Credit Card selected")
@@ -206,7 +215,7 @@ def test_common_rearch_0038():
 
             # Step 11: Click View Breakup
             emi_page.click_view_breakup()
-            emi_page.wait_for_breakup_sheet()
+            # emi_page.wait_for_breakup_sheet()
             logger.debug("View Breakup opened")
 
             # Steps 12-16: Fetch breakup values for validation (no asserts here)
@@ -231,10 +240,10 @@ def test_common_rearch_0038():
             emi_page.click_proceed()
             logger.debug("EMI: clicked Proceed")
 
-            # Step 19: Click Proceed on Order Details (second proceed)
-            order_details_page.wait_for_order_details_screen()
-            order_details_page.click_proceed()
-            logger.debug("Order Details: clicked Proceed (second)")
+            # # Step 19: Click Proceed on Order Details (second proceed)
+            # order_details_page.wait_for_order_details_screen()
+            # order_details_page.click_proceed()
+            # logger.debug("Order Details: clicked Proceed (second)")
 
             # Step 20: Tap Visa Credit (EMV)
             card_type_page = ReArchCardTypePage(app_driver)
@@ -316,13 +325,10 @@ def test_common_rearch_0038():
                     "txn_status": "Payment Authorized",  # TODO: verify exact label on first run
                     "txn_id":     txn_id,
                     "date":       date_and_time,
-                    "amount":     "5,959.00",
+                    "amount":     "5,841.61",
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
-                # Navigate to Payment History from Collect Payment page
-                home_page.wait_for_initial_home_screen()
-                home_page.click_collect_payment()
                 home_page.wait_for_home_page_load()
                 home_page.click_txn_history()
 
@@ -333,9 +339,9 @@ def test_common_rearch_0038():
 
                 time.sleep(2)
                 app_txn_id     = txn_detail_page.fetch_payment_id()
-                app_txn_status = txn_detail_page.fetch_status("5,959.00")
+                app_txn_status = txn_detail_page.fetch_status("5,841.61")
                 app_date_time  = txn_detail_page.fetch_date_time()
-                app_amount     = txn_detail_page.fetch_amount("5,959.00")
+                app_amount     = txn_detail_page.fetch_amount("5,841.61")
                 logger.info(
                     f"App txn_id={app_txn_id}, date_time={app_date_time}, "
                     f"app_txn_status={app_txn_status}, app_amount={app_amount}"
@@ -363,7 +369,7 @@ def test_common_rearch_0038():
                 date = date_time_converter.db_datetime(created_time)
                 expected_api_values = {
                     "pmt_status":    "AUTHORIZED",
-                    "txn_amt":       float(amount),
+                    "txn_amt":       5841.61,
                     "pmt_mode":      "CARD",             # TODO: verify on first run
                     "txn_type":      "CHARGE",
                     "acquirer_code": "HDFC",              # TODO: verify acquirer for SBI EMI
@@ -422,7 +428,7 @@ def test_common_rearch_0038():
                 expected_charge_slip_values = {
                     "RRN":          rrn,
                     "AUTH CODE":    auth_code,
-                    "BASE AMOUNT:": "Rs." + amount + ".00",
+                    "BASE AMOUNT:": "Rs.5,841.61",
                     "date":         txn_date,
                     "time":         txn_time,
                 }

@@ -121,7 +121,7 @@ def test_common_rearch_0002():
             GlobalVariables.time_calc.execution.start()
 
             amount = str(random.randint(500, 600))
-            display_amount = str(amount) + ".00"
+            display_amount = f"{int(amount):,}.00"
             logger.debug(f"amount={amount}")
 
             # Steps 1-2: Launch ReArch app (already logged in — login skipped)
@@ -313,7 +313,7 @@ def test_common_rearch_0002():
                 expected_charge_slip_values = {
                     "PAID BY:":     "BHARATQR",  # TODO: verify exact PAID BY label for BharatQR on first run
                     "RRN":          rrn,
-                    "BASE AMOUNT:": "Rs." + str(amount) + ".00",
+                    "BASE AMOUNT:": f"Rs.{int(amount):,}.00",
                     "date":         txn_date,
                     "time":         txn_time,
                     # No AUTH CODE for BharatQR/UPI

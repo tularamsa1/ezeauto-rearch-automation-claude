@@ -161,7 +161,7 @@ def test_common_rearch_0041():
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
             amount = "401"
-            display_amount = amount + ".00"
+            display_amount = f"{int(amount):,}.00"
             logger.debug(f"amount={amount}, display_amount={display_amount}")
 
             # Step 1: Launch ReArch app and login if required

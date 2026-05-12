@@ -187,6 +187,9 @@ def test_common_rearch_0043():
             ).click()
             logger.debug(f"Environment '{env_name}' selected")
 
+
+            login_page.handle_welcome_screen()
+
             # Step 10: Wait until login page is visible
             login_page.wait_for_login_page()
             logger.debug("Login page is visible")
@@ -244,6 +247,15 @@ def test_common_rearch_0043():
         logger.info(f"Completed Validation for the test case: {testcase_id}")
 
     finally:
+        # Re-login with valid credentials so subsequent tests are not broken
+        try:
+            login_page.enter_username(app_username)
+            login_page.enter_password(app_password)
+            login_page.click_login()
+            logger.debug("Re-logged in with valid credentials in finally block")
+        except Exception as e:
+            logger.exception(f"Re-login with valid credentials failed: {e}")
+
         # Revert autoLoginByTokenEnabled back to true
         try:
             api_details = DBProcessor.get_api_details('org_settings_update', request_body={

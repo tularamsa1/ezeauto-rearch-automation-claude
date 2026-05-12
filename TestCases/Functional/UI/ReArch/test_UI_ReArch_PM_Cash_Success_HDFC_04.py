@@ -1,3 +1,4 @@
+import random
 import sys
 import time
 import pytest
@@ -150,8 +151,8 @@ def test_common_rearch_0029():
             GlobalVariables.time_calc.execution.start()
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
-            amount = "95"
-            display_amount = str(amount) + ".00"
+            amount = str(random.randint(10000, 11000))
+            display_amount = f"{int(amount):,}.00"
             logger.debug(f"amount={amount}")
 
             # Step 1: Launch ReArch app and login if required
@@ -358,7 +359,7 @@ def test_common_rearch_0029():
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 expected_charge_slip_values = {
                     "PAID BY:":     "CASH",
-                    "BASE AMOUNT:": "Rs." + str(amount) + ".00",
+                    "BASE AMOUNT:": f"Rs.{int(amount):,}.00",
                     "date":         txn_date,
                     "time":         txn_time,
                 }

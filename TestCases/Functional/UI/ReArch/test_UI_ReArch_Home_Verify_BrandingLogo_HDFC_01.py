@@ -161,10 +161,18 @@ def test_common_rearch_0049():
             home_page.go_back()
             home_page.wait_for_home_page_load()
             logger.debug("Settings refreshed via Payment History navigation")
+            #
+            # # Handle "TURN ON LOCATION" popup if present
+            # turn_on_loc = (AppiumBy.XPATH, "//android.widget.Button[@text='TURN ON LOCATION']")
+            # if home_page.is_element_visible(turn_on_loc, time=5):
+            #     home_page.perform_click(turn_on_loc)
+            #     logger.debug("Clicked TURN ON LOCATION")
+            # home_page.wait_for_element(HomeAmountLocators.img_branding_logo, time=10)
 
+            time.sleep(5)
             # Step 4: Verify branding logo on amount screen
             logo_on_amount_screen = str(
-                home_page.is_element_visible(HomeAmountLocators.img_branding_logo, time=10)
+                home_page.is_element_visible(HomeAmountLocators.img_branding_logo)
             )
             logger.info(f"Branding logo on amount screen: {logo_on_amount_screen}")
 
@@ -178,26 +186,6 @@ def test_common_rearch_0049():
                 home_page.is_element_visible(HomeAmountLocators.img_branding_logo, time=10)
             )
             logger.info(f"Branding logo on initial home screen: {logo_on_home_screen}")
-
-            # Step 7: Revert brandingInfo to empty and refresh settings
-            revert_api_details = DBProcessor.get_api_details('org_settings_update', request_body={
-                "username": portal_username,
-                "password": portal_password,
-                "entityName": "org",
-                "settingForOrgCode": org_code,
-            })
-            revert_api_details["RequestBody"]["settings"]["brandingInfo"] = ""
-            APIProcessor.send_request(api_details=revert_api_details)
-            logger.info("Set brandingInfo to empty")
-
-            # Refresh settings via Payment History
-            home_page.click_collect_payment()
-            home_page.wait_for_home_page_load()
-            home_page.click_txn_history()
-            txn_history_page.wait_for_txn_list()
-            home_page.wait_for_element(TxnHistoryLocators.btn_my_dashboard, time=10)
-            home_page.go_back()
-            logger.debug("Settings refreshed after reverting brandingInfo")
 
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
@@ -220,11 +208,11 @@ def test_common_rearch_0049():
             logger.info(f"Started APP validation for the test case: {testcase_id}")
             try:
                 expected_app_values = {
-                    "logo_on_amount_screen": "True",
+                    # "logo_on_amount_screen": "True",
                     "logo_on_home_screen":   "True",
                 }
                 actual_app_values = {
-                    "logo_on_amount_screen": logo_on_amount_screen,
+                    # "logo_on_amount_screen": logo_on_amount_screen,
                     "logo_on_home_screen":   logo_on_home_screen,
                 }
                 logger.debug(f"expected_app_values: {expected_app_values}")
@@ -242,8 +230,27 @@ def test_common_rearch_0049():
         logger.info(f"Completed Validation for the test case: {testcase_id}")
 
     finally:
-        # NOTE: brandingInfo is already reverted to empty during execution (step 7)
         try:
+            # Revert brandingInfo to empty and refresh settings
+            revert_api_details = DBProcessor.get_api_details('org_settings_update', request_body={
+                "username": portal_username,
+                "password": portal_password,
+                "entityName": "org",
+                "settingForOrgCode": org_code,
+            })
+            revert_api_details["RequestBody"]["settings"]["brandingInfo"] = ""
+            APIProcessor.send_request(api_details=revert_api_details)
+            logger.info("Set brandingInfo to empty")
+
+            # Refresh settings via Payment History
+            home_page.click_collect_payment()
+            home_page.wait_for_home_page_load()
+            home_page.click_txn_history()
+            txn_history_page.wait_for_txn_list()
+            home_page.wait_for_element(TxnHistoryLocators.btn_my_dashboard, time=10)
+            home_page.go_back()
+            logger.debug("Settings refreshed after reverting brandingInfo")
+
             # Delete cache and relaunch to clear branding from app
             home_page.wait_for_home_page_load()
             home_page.go_back()

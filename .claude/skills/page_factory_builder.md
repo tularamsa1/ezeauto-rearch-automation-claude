@@ -93,6 +93,11 @@ EXISTING PAGE OBJECTS (do not duplicate)
   - ReArchTxnDetailPage (rearch_txn_detail_page.py)
   - ReArchPaymentMethodPage (rearch_payment_method_page.py)
   - ReArchCashConfirmPage (rearch_cash_confirm_page.py)
+  - ReArchChequePage (rearch_cheque_page.py)
+  - ReArchDemandDraftPage (rearch_demand_draft_page.py)
+  - ReArchTipPage (rearch_tip_page.py)
+  - ReArchAccountDetailsPage (rearch_account_details_page.py)
+  - ReArchEMIPage (rearch_emi_page.py)
 
 VALIDATION
 After creating a page object:

@@ -171,9 +171,10 @@ def test_common_rearch_0040():
             home_page.wait_for_initial_home_screen()
             logger.debug("Initial home screen loaded")
 
+            time.sleep(2)
             # Step 3: Check Razorpay logo presence (store result for validation)
             razorpay_logo_visible = home_page.is_element_visible(
-                (AppiumBy.XPATH, "//android.widget.Image[@text='e91cc2003e6491b7f659']"), time=10
+                (AppiumBy.XPATH, "//android.widget.Image[@text='logo']"), time=10
             )
             logger.debug(f"Razorpay logo visible: {razorpay_logo_visible}")
 
@@ -230,9 +231,8 @@ def test_common_rearch_0040():
             logger.debug("Clicked Accept More Payments")
 
             # Step 10: Navigate to txn history details screen
-            home_page.wait_for_initial_home_screen()
-            home_page.click_transactions()
-            logger.debug("Navigated to Transaction History")
+            home_page.wait_for_home_page_load()
+            home_page.click_txn_history()
 
             txn_history_page = ReArchTxnHistoryPage(app_driver)
             txn_history_page.wait_for_txn_list()

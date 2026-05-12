@@ -38,7 +38,7 @@ def test_common_rearch_0004():
 
     NL Source Steps:
       Preconditions:
-        1. update org_settings: cardEnabled = true
+        1. update org_settings: cardPaymentEnabled = true
 
       Test Steps:
         1.  launch rearch app and login
@@ -100,7 +100,7 @@ def test_common_rearch_0004():
             "entityName": "org",
             "settingForOrgCode": org_code,
         })
-        api_details["RequestBody"]["settings"]["cardEnabled"] = "true"
+        api_details["RequestBody"]["settings"]["cardPaymentEnabled"] = "true"
         logger.debug(f"Precondition API details: {api_details}")
         response = APIProcessor.send_request(api_details=api_details)
         logger.debug(f"Precondition response: {response}")
@@ -123,7 +123,7 @@ def test_common_rearch_0004():
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
             amount = str(random.randint(90, 150))
-            display_amount = str(amount) + ".00"
+            display_amount = f"{int(amount):,}.00"
             logger.debug(f"amount={amount}")
 
             # Step 1: Launch ReArch app and log in
@@ -320,7 +320,7 @@ def test_common_rearch_0004():
                 expected_charge_slip_values = {
                     "RRN":          rrn,
                     "AUTH CODE":    auth_code,
-                    "BASE AMOUNT:": "Rs." + str(amount) + ".00",
+                    "BASE AMOUNT:": f"Rs.{int(amount):,}.00",
                     "date":         txn_date,
                     "time":         txn_time,
                 }

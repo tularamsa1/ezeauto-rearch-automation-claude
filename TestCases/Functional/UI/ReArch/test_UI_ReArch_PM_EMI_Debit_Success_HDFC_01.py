@@ -232,9 +232,9 @@ def test_common_rearch_0037():
             logger.debug("EMI: clicked Proceed")
 
             # Step 17: Click Proceed on Order Details (second proceed)
-            order_details_page.wait_for_order_details_screen()
-            order_details_page.click_proceed()
-            logger.debug("Order Details: clicked Proceed (second)")
+            # order_details_page.wait_for_order_details_screen()
+            # order_details_page.click_proceed()
+            # logger.debug("Order Details: clicked Proceed (second)")
 
             # Step 18: Tap Visa Debit (EMV)
             card_type_page = ReArchCardTypePage(app_driver)
@@ -318,8 +318,8 @@ def test_common_rearch_0037():
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
                 # Navigate to Payment History from Collect Payment page
-                home_page.wait_for_initial_home_screen()
-                home_page.click_collect_payment()
+                # home_page.wait_for_initial_home_screen()
+                # home_page.click_collect_payment()
                 home_page.wait_for_home_page_load()
                 home_page.click_txn_history()
 
@@ -330,9 +330,9 @@ def test_common_rearch_0037():
 
                 time.sleep(2)
                 app_txn_id     = txn_detail_page.fetch_payment_id()
-                app_txn_status = txn_detail_page.fetch_status("5,959.00")
+                app_txn_status = txn_detail_page.fetch_status("1.00")
                 app_date_time  = txn_detail_page.fetch_date_time()
-                app_amount     = txn_detail_page.fetch_amount("5,959.00")
+                app_amount     = txn_detail_page.fetch_amount("1.00")
                 logger.info(
                     f"App txn_id={app_txn_id}, date_time={app_date_time}, "
                     f"app_txn_status={app_txn_status}, app_amount={app_amount}"
@@ -419,7 +419,7 @@ def test_common_rearch_0037():
                 expected_charge_slip_values = {
                     "RRN":          rrn,
                     "AUTH CODE":    auth_code,
-                    "BASE AMOUNT:": "Rs." + backend_amount + ".00",  # ₹1 for debit EMI
+                    "BASE AMOUNT:": f"Rs.{int(backend_amount):,}.00",  # ₹1 for debit EMI
                     "date":         txn_date,
                     "time":         txn_time,
                 }

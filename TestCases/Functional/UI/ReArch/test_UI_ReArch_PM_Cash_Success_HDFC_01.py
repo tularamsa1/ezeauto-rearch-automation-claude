@@ -134,7 +134,7 @@ def test_common_rearch_0005():
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
             amount = str(random.randint(100, 500))
-            display_amount = str(amount) + ".00"
+            display_amount = f"{int(amount):,}.00"
             logger.debug(f"amount={amount}")
 
             # Steps 1-2: Wait for initial home screen and tap Collect Payment
@@ -322,7 +322,7 @@ def test_common_rearch_0005():
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 expected_charge_slip_values = {
                     "PAID BY:":     "CASH",
-                    "BASE AMOUNT:": "Rs." + str(amount) + ".00",
+                    "BASE AMOUNT:": f"Rs.{int(amount):,}.00",
                     "date":         txn_date,
                     "time":         txn_time,
                 }

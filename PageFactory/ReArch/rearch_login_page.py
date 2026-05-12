@@ -112,12 +112,6 @@ class ReArchLoginPage(ReArchNativeBasePage):
         ).click()
         logger.debug(f"Environment '{env_name}' selected")
 
-        # Step 2: Enter credentials and tap Login (always required after env selection or directly)
-        self.wait_for_element(LoginLocators.txt_username)
-        self.enter_username(username)
-        self.enter_password(password)
-        self.click_login()
-
         # Step 3: Check "Don't show me again" checkbox
         self.perform_click(OnboardingLocators.chk_dont_show_again)
         logger.debug("Checked 'Don't show me again'")
@@ -131,4 +125,28 @@ class ReArchLoginPage(ReArchNativeBasePage):
         # Step 5: Tap Start
         self.perform_click(OnboardingLocators.btn_start)
         logger.info("Clicked Start — manual login flow completed")
+
+        # Step 2: Enter credentials and tap Login (always required after env selection or directly)
+        self.wait_for_element(LoginLocators.txt_username)
+        self.enter_username(username)
+        self.enter_password(password)
+        self.click_login()
+
+
+    def handle_welcome_screen(self):
+
+        self.perform_click(OnboardingLocators.chk_dont_show_again)
+        logger.debug("Checked 'Don't show me again'")
+
+        # Step 4: Tap Next twice
+        self.perform_click(OnboardingLocators.btn_next)
+        logger.debug("Clicked Next (1/2)")
+        self.perform_click(OnboardingLocators.btn_next)
+        logger.debug("Clicked Next (2/2)")
+
+        self.perform_click(OnboardingLocators.btn_start)
+        logger.info("Clicked Start — manual login flow completed")
+
+
+
 

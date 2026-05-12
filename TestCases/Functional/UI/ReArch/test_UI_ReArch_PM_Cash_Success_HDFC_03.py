@@ -113,6 +113,7 @@ def test_common_rearch_0028():
         api_details["RequestBody"]["settings"]["enableWebAppRevamp"] = "true"
         api_details["RequestBody"]["settings"]["cashPaymentEnabled"] = "true"
         api_details["RequestBody"]["settings"]["brandingInfo"] = ""
+        api_details["RequestBody"]["settings"]["chequePaymentEnabled"] = "false"
         api_details["RequestBody"]["settings"]["orderNumberInputEnabled"] = "true"
         logger.debug(f"Precondition API details: {api_details}")
         response = APIProcessor.send_request(api_details=api_details)
@@ -136,7 +137,7 @@ def test_common_rearch_0028():
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
             amount = str(random.randint(500, 600))
-            display_amount = str(amount) + ".00"
+            display_amount = f"{int(amount):,}.00"
             logger.debug(f"amount={amount}")
 
             # Step 1: Launch ReArch app and login if required
@@ -341,7 +342,7 @@ def test_common_rearch_0028():
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 expected_charge_slip_values = {
                     "PAID BY:":     "CASH",
-                    "BASE AMOUNT:": "Rs." + str(amount) + ".00",
+                    "BASE AMOUNT:": f"Rs.{int(amount):,}.00",
                     "date":         txn_date,
                     "time":         txn_time,
                 }

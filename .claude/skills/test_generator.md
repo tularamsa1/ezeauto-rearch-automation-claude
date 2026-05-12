@@ -101,6 +101,17 @@ Step 6: Register in TestCasesDetail.xlsx
     [ERROR] ...                                                     ← fix the error before continuing
   Report the registration result to the user alongside the generated file summary.
 
+Step 7: Update action_registry.yaml (if new page objects or methods were created)
+  If test generation required creating or extending a page object (new locators,
+  new page class, new methods on an existing page class), you MUST:
+    a. Add the page object to the page_objects section of Tools/action_registry.yaml
+       (if not already present)
+    b. Add action entries for every new public method with at least 2-3 NL patterns
+    c. Run: python Tools/validate_registry.py — fix any failures
+  This ensures future NL-to-test generation can discover and use the new actions.
+  Skipping this step causes registry drift where page objects exist but the
+  action registry doesn't know about them.
+
 LOCATOR SOURCE
 For ReArch (com.razorpay.pos) tests:
   - Use NATIVE locators from: PageFactory/ReArch/rearch_native_locators.py
@@ -121,6 +132,11 @@ PAGE FACTORY ARCHITECTURE (ReArch)
     - rearch_txn_detail_page.py    → ReArchTxnDetailPage
     - rearch_payment_method_page.py → ReArchPaymentMethodPage
     - rearch_cash_confirm_page.py  → ReArchCashConfirmPage
+    - rearch_cheque_page.py        → ReArchChequePage
+    - rearch_demand_draft_page.py  → ReArchDemandDraftPage
+    - rearch_tip_page.py           → ReArchTipPage
+    - rearch_account_details_page.py → ReArchAccountDetailsPage
+    - rearch_emi_page.py             → ReArchEMIPage
 
 DRIVER INITIALIZATION
 ReArch tests MUST use `TestSuiteSetup.initialize_rearch_driver(testcase_id)`
@@ -230,7 +246,11 @@ in parallel test runs. NEVER use external_ref/order_id as the filter (not stored
 Add AND payment_mode='<MODE>' once the exact value is verified on first run (add TODO if unknown).
 
 PARAMETER HANDLING
-- Amount values: extracted from step text, passed as string
+- Amount values: extracted from step text, passed as string.
+  For UI matching (fetch_status, fetch_amount, expected_app_values["amount"]),
+  always define `display_amount = f"{int(amount):,}.00"` which adds comma
+  separators for thousands (e.g., `1000` → `1,000.00`).
+  Keep raw `amount` for enter_amount() (numpad), float(amount) (API), and charge slip.
 - Credentials: default to ResourceAssigner unless explicitly provided
 - Payment method: extracted from step text (UPI, Card, Cash, etc.)
 - Transaction fields: Status, Payment ID, RRN, Auth Code, etc.
@@ -270,7 +290,6 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-@allure.sub_suite("UI_ReArch_<FlowDescription>")
 def test_common_rearch_<NNNN>():
     # NNNN = zero-padded 4-digit sequence number (e.g. 0001, 0002, ...)
     """

@@ -458,7 +458,7 @@ def test_common_rearch_0055():
                 expected_charge_slip_values = {
                     "RRN":          rrn,
                     "AUTH CODE":    auth_code,
-                    "BASE AMOUNT:": "Rs." + f"{int(amount):,}" + ".00",  # TODO: verify if 9,500 on first run
+                    "BASE AMOUNT:": f"Rs.{int(amount):,}.00",  # TODO: verify if 9,500 on first run
                     "date":         txn_date,
                     "time":         txn_time,
                 }

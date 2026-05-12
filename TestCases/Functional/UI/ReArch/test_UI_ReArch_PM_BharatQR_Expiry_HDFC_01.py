@@ -114,7 +114,7 @@ def test_common_rearch_0008():
             GlobalVariables.time_calc.execution.start()
 
             amount = "51"  # Magic number for HDFC PG simulator expiry callback
-            display_amount = amount + ".00"
+            display_amount = f"{int(amount):,}.00"
             logger.debug(f"amount={amount}")
 
             # Steps 1-2: Launch ReArch app (already logged in — login skipped)

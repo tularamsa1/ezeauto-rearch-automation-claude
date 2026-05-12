@@ -41,7 +41,7 @@ class ReArchESignaturePage(ReArchNativeBasePage):
     def add_signature(self, x: int, y: int):
         """Add a signature by performing a swipe gesture from (x, y) to (x+60, y)."""
         from appium.webdriver.common.touch_action import TouchAction
-        x2 = x + 60
+        x2 = x + 200
         TouchAction(self.driver).press(x=x, y=y).move_to(x=x2, y=y).release().perform()
         logger.info(f"Signature drawn at ({x},{y}) to ({x2},{y})")
 
@@ -59,3 +59,7 @@ class ReArchESignaturePage(ReArchNativeBasePage):
         """Tap the Confirm Payment button after eSignature."""
         self.perform_click(ESignatureLocators.btn_confirm_payment)
         logger.info("Clicked Confirm Payment after eSignature.")
+
+    def click_on_esignature(self):
+        """Tap the 'I agree to securely save my signature' checkbox."""
+        self.perform_click(ESignatureLocators.btn_e_signature)

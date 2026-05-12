@@ -2,6 +2,7 @@ import sys
 import time
 
 import pytest
+from appium.webdriver.common.appiumby import AppiumBy
 from datetime import datetime
 
 from Configuration import Configuration, TestSuiteSetup
@@ -190,10 +191,20 @@ def test_common_rearch_0036():
             payment_method_page.click_emi()
             logger.debug("EMI selected from payment methods")
 
-            # Step 8: Wait until Bank button is visible
+
+            # Handle "TURN ON LOCATION" popup if present
             emi_page = ReArchEMIPage(app_driver)
+            turn_on_loc = (AppiumBy.XPATH, "//android.widget.Button[@resource-id='android:id/button1']")
+            if emi_page.is_element_visible(turn_on_loc, time=5):
+                emi_page.perform_click(turn_on_loc)
+                logger.debug("Clicked TURN ON LOCATION")
+
+            # Step 8: Wait until Bank button is visible
+
             emi_page.wait_for_bank_button()
             logger.debug("Bank button visible on EMI screen")
+
+
 
             # Step 9: Click HDFC Bank Credit Card
             emi_page.click_hdfc_bank_credit_card()
@@ -224,9 +235,9 @@ def test_common_rearch_0036():
             logger.debug("EMI: clicked Proceed")
 
             # Step 17: Click Proceed on Order Details (second proceed)
-            order_details_page.wait_for_order_details_screen()
-            order_details_page.click_proceed()
-            logger.debug("Order Details: clicked Proceed (second)")
+            # order_details_page.wait_for_order_details_screen()
+            # order_details_page.click_proceed()
+            # logger.debug("Order Details: clicked Proceed (second)")
 
             # Step 18: Tap Visa Credit (EMV)
             card_type_page = ReArchCardTypePage(app_driver)
@@ -309,8 +320,8 @@ def test_common_rearch_0036():
                 logger.debug(f"expected_app_values: {expected_app_values}")
 
                 # Navigate to Payment History from Collect Payment page
-                home_page.wait_for_initial_home_screen()
-                home_page.click_collect_payment()
+                # home_page.wait_for_initial_home_screen()
+                # home_page.click_collect_payment()
                 home_page.wait_for_home_page_load()
                 home_page.click_txn_history()
 
@@ -410,7 +421,7 @@ def test_common_rearch_0036():
                 expected_charge_slip_values = {
                     "RRN":          rrn,
                     "AUTH CODE":    auth_code,
-                    "BASE AMOUNT:": "Rs." + f"{int(amount):,}" + ".00",
+                    "BASE AMOUNT:": f"Rs.{int(amount):,}.00",
                     "date":         txn_date,
                     "time":         txn_time,
                 }

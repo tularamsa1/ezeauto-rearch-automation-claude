@@ -66,7 +66,7 @@ class ReArchPaymentMethodPage(ReArchNativeBasePage):
         logger.info("Selected EMI from payment methods.")
 
     def click_my_discount_emi(self):
-        self.scroll_to_text("My Discount EMI")
+        self.scroll_to_text("Demand Draft")
         self.perform_click(PaymentMethodLocators.btn_my_discount_emi)
         logger.info("Selected My Discount EMI from payment methods.")
 

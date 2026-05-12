@@ -47,7 +47,7 @@ def test_common_rearch_0014():
 
     NL Source Steps:
       Preconditions:
-        1. update org_settings: cardEnabled = true
+        1. update org_settings: cardPaymentEnabled = true
 
       Test Steps:
         1.  launch rearch app and login if present

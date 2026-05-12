@@ -40,7 +40,7 @@ def test_common_rearch_0016():
 
     NL Source Steps:
       Preconditions:
-        1. update org_settings: cardEnabled = true
+        1. update org_settings: cardPaymentEnabled = true
 
       Test Steps:
         1.  launch rearch app and login if present
@@ -128,7 +128,7 @@ def test_common_rearch_0016():
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
             amount = str(random.randint(90, 150))
-            display_amount = str(amount) + ".00"
+            display_amount = f"{int(amount):,}.00"
             logger.debug(f"amount={amount}")
 
             # Step 1: Launch ReArch app and login if required
@@ -328,7 +328,7 @@ def test_common_rearch_0016():
                 expected_charge_slip_values = {
                     "RRN":          rrn,
                     "AUTH CODE":    auth_code,
-                    "SALE AMOUNT:": "Rs." + str(amount) + ".00",
+                    "SALE AMOUNT:": f"Rs.{int(amount):,}.00",
                     "date":         txn_date,
                     "time":         txn_time,
                 }

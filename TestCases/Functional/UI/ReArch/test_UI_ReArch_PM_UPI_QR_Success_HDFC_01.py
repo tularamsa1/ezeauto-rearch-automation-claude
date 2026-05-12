@@ -132,7 +132,7 @@ def test_common_rearch_0006():
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
             amount = str(random.randint(100, 999))
-            display_amount = str(amount) + ".00"
+            display_amount = f"{int(amount):,}.00"
             order_id = f"{datetime.now().strftime('%m%d%H%M%S')}{testcase_id[-4:]}"
             logger.debug(f"amount={amount}, order_id={order_id}")
 
@@ -332,7 +332,7 @@ def test_common_rearch_0006():
                     "PAID BY:":        "UPI",
                     # "merchant_ref_no": "Ref # " + str(order_id),
                     "RRN":             rrn,
-                    "BASE AMOUNT:":    "Rs." + str(amount) + ".00",
+                    "BASE AMOUNT:":    f"Rs.{int(amount):,}.00",
                     "date":            txn_date,
                     "time":            txn_time,
                     # No AUTH CODE for UPI

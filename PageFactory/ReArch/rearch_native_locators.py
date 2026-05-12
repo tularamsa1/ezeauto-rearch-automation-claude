@@ -147,7 +147,7 @@ class PaymentMethodLocators:
     btn_cheque             = (AppiumBy.XPATH, "//android.widget.Button[@text='Cheque']")
     btn_demand_draft       = (AppiumBy.XPATH, "//android.widget.Button[@text='Demand Draft']")
     btn_emi                = (AppiumBy.XPATH, "//android.widget.Button[@text='EMI']")
-    btn_my_discount_emi    = (AppiumBy.XPATH, "//android.widget.Button[@text='My Discount EMI']")
+    btn_my_discount_emi    = (AppiumBy.XPATH, "//android.widget.Button[@text='myDiscountEMI']")
     lbl_secured_by         = (AppiumBy.XPATH, "//android.widget.TextView[@text='Secured by']")
 
 
@@ -197,7 +197,7 @@ class CashConfirmLocators:
 # ══════════════════════════════════════════════════════════════════════════════
 
 class CustomerAuthLocators:
-    txt_pan_number         = (AppiumBy.XPATH, "//android.widget.EditText[@text='Ex: ABCDE1234A']")
+    txt_pan_number         = (AppiumBy.XPATH, "//android.widget.EditText")
     btn_confirm_payment    = (AppiumBy.XPATH, "//android.widget.Button[@text='Confirm Payment']")
 
 
@@ -295,7 +295,7 @@ class EMILocators:
     rdb_bob_3m_plan_8000   = (AppiumBy.XPATH, "//android.widget.RadioButton[contains(@text,'2,550.17') and contains(@text,'3m')]")
 
     # Pay in Full radio button (amount=8000, BOB, ₹500 discount → ₹7,500)
-    rdb_pay_in_full_7500   = (AppiumBy.XPATH, "//android.widget.RadioButton[@text='Pay in Full \u20b97,500 \u20b9500 Discount']")
+    rdb_pay_in_full_7500   = (AppiumBy.XPATH, "//*[contains(@text,'Pay in Full')]/parent::android.view.View")
 
     # Generic first 3-month EMI plan radio button (matches first visible × 3m plan)
     rdb_3m_plan_first      = (AppiumBy.XPATH, "(//*[@class='android.widget.RadioButton'])[1]")
@@ -485,6 +485,25 @@ class ESignatureLocators:
     chk_agree_signature  = (AppiumBy.XPATH, "//android.view.View[@text='I agree to securely save my signature for verifying this transaction.']")  # TODO: verify on first run — may be TextView or CheckBox
     btn_proceed          = (AppiumBy.XPATH, "//android.widget.Button[@text='Proceed']")  # TODO: verify text on first run
     btn_confirm_payment  = (AppiumBy.XPATH, "//android.widget.Button[@text='Confirm Payment']")  # TODO: verify text on first run
+    btn_e_signature      = (AppiumBy.XPATH, "//android.widget.Button[@text='E-Signature']")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# REFUND TRANSACTION FLOW (Refund Amount → Enter Password → Refund Payment → Done)
+# ══════════════════════════════════════════════════════════════════════════════
+
+class RefundLocators:
+    """Locators for the Refund transaction flow screens."""
+    # Refund Amount screen
+    btn_refund_amount    = (AppiumBy.XPATH, "//android.widget.Button[@text='Refund Amount']")  # TODO: verify text on first run
+    # Enter Password screen
+    lbl_enter_password   = (AppiumBy.XPATH, "//android.widget.TextView[@text='Enter Password']")  # TODO: verify text on first run
+    txt_password         = (AppiumBy.CLASS_NAME, "android.widget.EditText")
+    btn_continue         = (AppiumBy.XPATH, "//android.widget.Button[@text='Continue']")  # TODO: verify on first run
+    # Refund confirmation
+    btn_refund_payment   = (AppiumBy.XPATH, "//android.widget.Button[@text='Refund Payment']")  # TODO: verify on first run
+    # Post-refund completion
+    btn_done             = (AppiumBy.XPATH, "//android.widget.Button[@text='Done']")  # TODO: verify on first run
 
 
 # ══════════════════════════════════════════════════════════════════════════════

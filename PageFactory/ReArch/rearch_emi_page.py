@@ -101,7 +101,7 @@ class ReArchEMIPage(ReArchNativeBasePage):
     def click_pay_in_full_7500(self):
         """Scroll down to Pay in Full and select it (₹7,500 with ₹500 discount)."""
         self.scroll_to_text("Pay in Full")
-        time.sleep(3)
+        time.sleep(5)
         self.perform_click(EMILocators.rdb_pay_in_full_7500)
         logger.info("Selected Pay in Full (₹7,500).")
 

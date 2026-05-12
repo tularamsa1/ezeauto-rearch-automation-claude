@@ -139,7 +139,7 @@ def test_common_rearch_0042():
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
             amount = str(random.randint(90, 150))
-            display_amount = amount + ".00"
+            display_amount = f"{int(amount):,}.00"
             order_id = f"{datetime.now().strftime('%m%d%H%M%S')}{testcase_id[-4:]}"
             logger.debug(f"amount={amount}, display_amount={display_amount}, order_id={order_id}")
 
@@ -203,14 +203,6 @@ def test_common_rearch_0042():
             logger.debug(f"Query to resolve txn_id: {query}")
             result = DBProcessor.getValueFromDB(query)
             txn_id       = result["id"].values[0]
-            created_time = result["created_time"].values[0]
-            posting_date = result["posting_date"].values[0]
-            rrn          = str(result["rr_number"].values[0])
-            auth_code    = str(result["auth_code"].values[0])
-            logger.debug(
-                f"Resolved txn_id={txn_id}, created_time={created_time}, "
-                f"posting_date={posting_date}, rrn={rrn}, auth_code={auth_code}"
-            )
 
             # Step 8: Navigate to txn details (Accept more payments → Home → TxnHistory → TxnDetail)
             complete_page.click_proceed_to_home()
@@ -239,6 +231,26 @@ def test_common_rearch_0042():
             txn_detail_page.perform_click(VoidLocators.btn_done)
             logger.debug("Clicked Done button — void completed")
 
+
+            query = (
+                f"select id, created_time, posting_date, rr_number, auth_code "
+                f"from txn "
+                f"where org_code='{org_code}' AND username='{app_username}' "
+                f"AND payment_mode='CARD' "
+                f"order by created_time desc limit 1;"
+            )
+            logger.debug(f"Query to resolve txn_id: {query}")
+            result = DBProcessor.getValueFromDB(query)
+            txn_id       = result["id"].values[0]
+            created_time = result["created_time"].values[0]
+            posting_date = result["posting_date"].values[0]
+            rrn          = str(result["rr_number"].values[0])
+            auth_code    = str(result["auth_code"].values[0])
+            logger.debug(
+                f"Resolved txn_id={txn_id}, created_time={created_time}, "
+                f"posting_date={posting_date}, rrn={rrn}, auth_code={auth_code}"
+            )
+
             GlobalVariables.EXCEL_TC_Execution = "Pass"
             GlobalVariables.time_calc.execution.pause()
             logger.debug(f"Execution Timer paused in try block of testcase function: {testcase_id}")
@@ -259,7 +271,7 @@ def test_common_rearch_0042():
         if ConfigReader.read_config("Validations", "app_validation") == "True":
             logger.info(f"Started APP validation for the test case: {testcase_id}")
             try:
-                date_and_time = date_time_converter.to_rearch_app_format(created_time)
+                date_and_time = date_time_converter.to_rearch_app_format(posting_date)
                 expected_app_values = {
                     "txn_status": "Payment Voided",  # TODO: verify exact text on first run
                     "txn_id":     txn_id,
@@ -377,7 +389,7 @@ def test_common_rearch_0042():
                 expected_charge_slip_values = {
                     "RRN":            rrn,
                     "AUTH CODE":      auth_code,
-                    "BASE AMOUNT:":   "Rs." + str(amount) + ".00",
+                    "BASE AMOUNT:":   f"Rs.{int(amount):,}.00",
                     "date":           txn_date,
                     "time":           txn_time,
                     "payment_option": "VOID SALE",  # TODO: verify on first run — may differ in ReArch

@@ -136,7 +136,7 @@ def test_common_rearch_0047():
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
             amount = str(random.randint(90, 150))
-            display_amount = amount + ".00"
+            display_amount = f"{int(amount):,}.00"
             order_id = f"{datetime.now().strftime('%m%d%H%M%S')}{testcase_id[-4:]}"
             logger.debug(f"amount={amount}, display_amount={display_amount}, order_id={order_id}")
 

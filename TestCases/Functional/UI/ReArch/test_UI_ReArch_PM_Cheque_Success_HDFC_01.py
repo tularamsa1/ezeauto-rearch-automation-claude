@@ -127,7 +127,7 @@ def test_common_rearch_0021():
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
             amount = str(random.randint(500, 600))
-            display_amount = str(amount) + ".00"
+            display_amount = f"{int(amount):,}.00"
             cheque_number = str(random.randint(100000, 999999))
             logger.debug(f"amount={amount}, cheque_number={cheque_number}")
 
@@ -344,7 +344,7 @@ def test_common_rearch_0021():
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=created_time)
                 expected_charge_slip_values = {
                     "PAID BY:":     "CHEQUE",          # TODO: verify on first run
-                    "BASE AMOUNT:": "Rs." + str(amount) + ".00",
+                    "BASE AMOUNT:": f"Rs.{int(amount):,}.00",
                     "date":         txn_date,
                     "time":         txn_time,
                 }

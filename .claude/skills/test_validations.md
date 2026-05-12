@@ -49,6 +49,12 @@ These assertions go in the App Validation section AFTER any user-specified asser
 > detail page locator it polls is unreliable. Each `fetch_*` method already has its own
 > `WebDriverWait` internally. Do NOT call `wait_for_detail_page()` — ever.
 
+> **Amount display format:** The device shows amounts with `.00` suffix (e.g., `150.00`).
+> Always define `display_amount = f"{int(amount):,}.00"` which adds comma separators
+> for thousands (e.g., `1000` → `1,000.00`). Use `display_amount` in `fetch_status()`, `fetch_amount()`, and
+> `expected_app_values["amount"]`. Keep raw `amount` for `enter_amount()` (numpad),
+> `float(amount)` (API validation), and charge slip `f"Rs.{int(amount):,}.00"`.
+
 ```python
 if ConfigReader.read_config("Validations", "app_validation") == "True":
     try:
@@ -206,7 +212,7 @@ if ConfigReader.read_config("Validations", "charge_slip_validation") == "True":
             "PAID BY:":        "UPI",                          # adjust per payment method
             "merchant_ref_no": "Ref # " + str(order_id),
             "RRN":             str(rrn),
-            "BASE AMOUNT:":    "Rs." + str(amount) + ".00",
+            "BASE AMOUNT:":    f"Rs.{int(amount):,}.00",
             "date":            txn_date,
             "time":            txn_time,
             # "AUTH CODE": str(auth_code),                    # card only

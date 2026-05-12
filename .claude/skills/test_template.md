@@ -35,7 +35,6 @@ logger = EzeAutoLogger(__name__)
 @pytest.mark.apiVal
 @pytest.mark.appVal
 @pytest.mark.chargeSlipVal
-@allure.sub_suite("UI_ReArch_<FlowDescription>")
 def test_common_rearch_<NNNN>():
     # NNNN = zero-padded 4-digit sequence number (e.g. 0001, 0002, ...)
     # Check existing tests in TestCases/Functional/UI/ReArch/ for the next available number.
@@ -89,6 +88,7 @@ def test_common_rearch_<NNNN>():
                 GlobalVariables.time_calc.execution.start()
 
                 amount = "45"  # fixed amount for reproducibility
+                display_amount = f"{int(amount):,}.00"  # device shows amount with .00 suffix
                 # order_id suffix from testcase_id ensures uniqueness within the same second
                 order_id = f"{datetime.now().strftime('%m%d%H%M%S')}{testcase_id[-4:]}"
 
@@ -134,10 +134,12 @@ def test_common_rearch_<NNNN>():
             # ── App Validation ──
             # IMPORTANT: use to_rearch_app_format(), NOT to_app_format() (that is for the old mpos app)
             # DO NOT call wait_for_detail_page() — go straight to fetch_* methods (each has its own WebDriverWait)
+            # IMPORTANT: use display_amount (with .00) for fetch_status(), fetch_amount(),
+            # and expected_app_values["amount"] — the device shows amounts with .00 suffix.
             if ConfigReader.read_config("Validations", "app_validation") == "True":
                 try:
                     # Navigate to TxnHistory → TxnDetail
-                    # Assert: payment_id non-empty, amount matches, date non-empty
+                    # Assert: payment_id non-empty, amount matches (use display_amount), date non-empty
                     pass
                 except Exception as e:
                     Configuration.perform_app_val_exception(testcase_id, e)
@@ -159,7 +161,7 @@ def test_common_rearch_<NNNN>():
                         "PAID BY:":       "<UPI|CARD|CASH>",       # payment method
                         "merchant_ref_no": "Ref # " + str(order_id),
                         "RRN":            str(rrn),
-                        "BASE AMOUNT:":   "Rs." + str(amount) + ".00",
+                        "BASE AMOUNT:":   f"Rs.{int(amount):,}.00",
                         "date":           txn_date,
                         "time":           txn_time,
                         # "AUTH CODE": auth_code,  # include for card; omit for UPI/cash

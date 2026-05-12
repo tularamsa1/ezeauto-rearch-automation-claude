@@ -136,7 +136,7 @@ def test_common_rearch_0045():
 
             base_amount = "515"
             total_amount = "546"  # 515 + 31 (6% tip)
-            display_total_amount = total_amount + ".00"
+            display_total_amount = f"{int(total_amount):,}.00"
 
             # Step 1: Launch ReArch app and login if present
             app_driver = TestSuiteSetup.initialize_rearch_driver(testcase_id)
@@ -354,7 +354,7 @@ def test_common_rearch_0045():
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 expected_charge_slip_values = {
                     "PAID BY:":     "CASH",
-                    "BASE AMOUNT:": "Rs." + total_amount + ".00",
+                    "BASE AMOUNT:": f"Rs.{int(total_amount):,}.00",
                     "date":         txn_date,
                     "time":         txn_time,
                 }

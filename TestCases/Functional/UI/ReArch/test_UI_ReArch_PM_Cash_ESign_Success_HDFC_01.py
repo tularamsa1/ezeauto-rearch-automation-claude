@@ -134,7 +134,7 @@ def test_common_rearch_0048():
             logger.debug(f"Execution Timer started in testcase function: {testcase_id}")
 
             amount = str(random.randint(90, 150))
-            display_amount = str(amount) + ".00"
+            display_amount = f"{int(amount):,}.00"
             order_id = f"{datetime.now().strftime('%m%d%H%M%S')}{testcase_id[-4:]}"
             logger.debug(f"amount={amount}, order_id={order_id}")
 
@@ -188,8 +188,12 @@ def test_common_rearch_0048():
             cash_confirm_page.click_confirm_payment()
             logger.debug("Cash payment confirmed — eSignature screen should appear")
 
+
+
             # Step 9: Draw signature using relative coordinates from "Please sign here" bounds
             esignature_page = ReArchESignaturePage(app_driver)
+            esignature_page.click_on_esignature()
+
             x, y = esignature_page.get_relative_coordinate_for_signature()
             esignature_page.add_signature(x, y)
             logger.debug("Signature drawn")
@@ -203,15 +207,13 @@ def test_common_rearch_0048():
             logger.debug("Clicked Proceed on eSignature screen")
 
             # Step 12: Click Confirm Payment (post-eSignature)
-            esignature_page.click_confirm_payment()
-            logger.debug("Clicked Confirm Payment after eSignature")
+            # esignature_page.click_confirm_payment()
+            # logger.debug("Clicked Confirm Payment after eSignature")
 
             # Verify payment success screen
             complete_page = ReArchCompletePage(app_driver)
             complete_page.wait_for_success_screen()
             logger.info("Payment Successful screen confirmed")
-
-            # Step 13: Click Accept More Payments
             complete_page.click_proceed_to_home()
             logger.debug("Clicked Accept More Payments")
 
@@ -355,7 +357,7 @@ def test_common_rearch_0048():
                 txn_date, txn_time = date_time_converter.to_chargeslip_format(posting_date_db=posting_date)
                 expected_charge_slip_values = {
                     "PAID BY:":     "CASH",
-                    "BASE AMOUNT:": "Rs." + str(amount) + ".00",
+                    "BASE AMOUNT:": f"Rs.{int(amount):,}.00",
                     "date":         txn_date,
                     "time":         txn_time,
                 }

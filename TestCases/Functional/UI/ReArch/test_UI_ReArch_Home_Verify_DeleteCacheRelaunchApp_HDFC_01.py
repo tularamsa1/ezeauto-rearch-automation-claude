@@ -165,7 +165,7 @@ def test_common_rearch_0051():
             logger.debug("Confirmed Delete & Relaunch")
 
             # Wait for the app to restart after cache deletion
-            time.sleep(4)  # TODO: adjust wait time based on actual app restart duration
+            time.sleep(6)  # TODO: adjust wait time based on actual app restart duration
 
             # Step 5: Navigate and select env
             env_name = ConfigReader.read_config("environment", "str_exe_env")
@@ -179,8 +179,8 @@ def test_common_rearch_0051():
             logger.debug(f"Environment '{env_name}' selected")
 
             # Step 6: Wait for 3 sec
-            time.sleep(3)
-
+            login_page.perform_click(OnboardingLocators.btn_next)
+            login_page.perform_click(OnboardingLocators.btn_next)
             # Step 7: Verify "Access payments instantly!" is visible
             access_payments_visible = login_page.is_element_visible(
                 (AppiumBy.XPATH, "//android.widget.TextView[@text='Access payments instantly!']"), time=15

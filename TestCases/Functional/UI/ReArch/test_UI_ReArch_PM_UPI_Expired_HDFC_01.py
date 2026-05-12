@@ -124,7 +124,7 @@ def test_common_rearch_0024():
             GlobalVariables.time_calc.execution.start()
 
             amount = "95"
-            display_amount = amount + ".00"
+            display_amount = f"{int(amount):,}.00"
             logger.debug(f"amount={amount}")
 
             # Step 1: Launch ReArch app and handle login if required
