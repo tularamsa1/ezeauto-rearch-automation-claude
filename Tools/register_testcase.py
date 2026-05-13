@@ -9,10 +9,39 @@ Example:
     python Tools/register_testcase.py TestCases/Functional/UI/ReArch/test_UI_ReArch_PM_BharatQR_Expiry_HDFC_01.py
 """
 import re
+import subprocess
 import sys
+import time
 from pathlib import Path
 
 import openpyxl
+
+
+def _close_file_owner(xlsx_path: Path):
+    """If a process has xlsx_path open, kill it and wait for the lock file to clear."""
+    try:
+        result = subprocess.run(
+            ["lsof", str(xlsx_path)],
+            capture_output=True, text=True
+        )
+        pids = [
+            line.split()[1]
+            for line in result.stdout.splitlines()[1:]
+            if line.strip()
+        ]
+        if not pids:
+            return
+        for pid in set(pids):
+            print(f"[INFO] Closing process {pid} that has {xlsx_path.name} open...")
+            subprocess.run(["kill", pid], capture_output=True)
+        # Wait for lock file to disappear (up to 5 s)
+        lock_file = xlsx_path.parent / f".~lock.{xlsx_path.name}#"
+        for _ in range(10):
+            time.sleep(0.5)
+            if not lock_file.exists():
+                break
+    except Exception as e:
+        print(f"[WARN] Could not auto-close file owner: {e}")
 
 XLSX_PATH = Path(__file__).parent.parent / "DataProvider" / "TestCasesDetail.xlsx"
 
@@ -97,10 +126,11 @@ def register(file_path: str):
 
     tc_id, sfc, fn, dn = parse_file(path)
 
+    _close_file_owner(XLSX_PATH)
     try:
         wb = openpyxl.load_workbook(XLSX_PATH)
     except PermissionError:
-        print(f"[ERROR] {XLSX_PATH.name} is open in another application — close it and retry.")
+        print(f"[ERROR] {XLSX_PATH.name} is still locked — could not close it automatically.")
         sys.exit(1)
 
     ws = find_or_create_sheet(wb)
